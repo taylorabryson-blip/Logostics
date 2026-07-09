@@ -1,1 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logostics - Personal Cognitive Research Platform</title>
+    <style>
+        :root {
+            --bg: #000;
+            --bg2: #0a0a0a;
+            --bg3: #111;
+            --border: #1a1a1a;
+            --text: #fff;
+            --text2: #666;
+            --grey: #2a2a2a;
+            --grey2: #333;
+            --grey3: #3a3a3a;
+        }
 
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .nav {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: 1px solid var(--grey);
+            color: var(--text2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--grey);
+            border-color: var(--grey2);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: rgba(20,20,20,0.8);
+            border: 1px solid rgba(40,40,40,0.6);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+        .grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; }
+        .grid4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
+
+        .stat {
+            background: rgba(20,20,20,0.8);
+            border: 1px solid rgba(40,40,40,0.6);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat:hover {
+            transform: translateY(-2px);
+            background: var(--bg3);
+        }
+
+        .stat-val {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .stat-lbl {
+            color: var(--text2);
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .btn {
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn:hover { background: #ccc; }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-o {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--grey);
+        }
+
+        .btn-o:hover {
+            background: var(--grey);
+        }
+
+        .btn-s {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-r {
+            background: transparent;
+            color: #f44;
+            border: 1px solid #f44;
+        }
+
+        .btn-r:hover {
+            background: #f44;
+            color: #000;
+        }
+
+        .f-group {
+            margin-bottom: 1rem;
+        }
+
+        .f-label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--text2);
+            font-size: 0.85rem;
+        }
+
+        .f-input {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--grey);
+            color: var(--text);
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .f-input:focus {
+            outline: none;
+            border-color: var(--text2);
+            background: var(--bg2);
+        }
+
+        select.f-input {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            padding-right: 2rem;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--grey);
+            border: 1px solid var(--grey2);
+            color: var(--text2);
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            margin: 0.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .tag:hover {
+            background: var(--grey3);
+            color: var(--text);
+        }
+
+        .tag.sel {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        .tag.del:hover {
+            background: #f44;
+            color: #fff;
+            border-color: #f44;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            color: var(--text2);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.on {
+            display: flex;
+        }
+
+        .modal-inner {
+            background: var(--bg2);
+            border: 1px solid var(--grey);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 650px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .test-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .test-overlay.on {
+            display: flex;
+        }
+
+        .react-area {
+            width: 280px;
+            height: 280px;
+            background: var(--bg3);
+            border: 2px solid var(--grey);
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--text2);
+            user-select: none;
+            transition: all 0.15s;
+        }
+
+        .react-area.go {
+            background: #fff;
+            border-color: #fff;
+            color: #000;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .mem-grid {
+            display: grid;
+            gap: 4px;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .mem-cell {
+            width: 55px;
+            height: 55px;
+            background: var(--bg3);
+            border: 2px solid var(--grey);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mem-cell.on {
+            background: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 12px rgba(255,255,255,0.25);
+        }
+
+        .mem-cell.ok {
+            background: var(--grey2);
+            border-color: var(--text);
+        }
+
+        .mem-cell.bad {
+            background: #333;
+            border-color: #666;
+        }
+
+        .num-big {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .num-inp {
+            background: var(--bg3);
+            border: 2px solid var(--grey);
+            color: var(--text);
+            font-size: 1.8rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            width: 200px;
+            text-align: center;
+            letter-spacing: 0.4rem;
+        }
+
+        .num-inp:focus {
+            outline: none;
+            border-color: var(--text2);
+        }
+
+        .shape-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 75px);
+            gap: 8px;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .shape-cell {
+            width: 75px;
+            height: 75px;
+            background: var(--bg3);
+            border: 2px solid var(--grey);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            transition: all 0.2s;
+        }
+
+        .shape-cell:hover {
+            border-color: var(--text2);
+        }
+
+        .shape-cell.good {
+            background: var(--grey2);
+            border-color: #fff;
+        }
+
+        .shape-cell.bad {
+            background: #333;
+            border-color: #666;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .prog {
+            width: 100%;
+            height: 3px;
+            background: var(--bg3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0.8rem 0;
+        }
+
+        .prog-fill {
+            height: 100%;
+            background: var(--text);
+            transition: width 0.3s;
+            border-radius: 2px;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            max-height: 140px;
+            overflow-y: auto;
+            background: var(--bg3);
+            border: 1px solid var(--grey);
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .emoji-opt {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1.1rem;
+        }
+
+        .emoji-opt:hover {
+            background: var(--grey);
+        }
+
+        .item-icon {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--grey);
+        }
+
+        .graph-box {
+            width: 100%;
+            height: 280px;
+            background: var(--bg3);
+            border: 1px solid var(--grey);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .graph-box svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .alert {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin: 0.8rem 0;
+            border-left: 3px solid;
+            font-size: 0.9rem;
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 380px;
+            background: var(--bg2);
+            animation: fadeIn 0.3s;
+        }
+
+        .alert-i { border-color: var(--text2); }
+        .alert-s { border-color: #4a4; }
+        .alert-w { border-color: #a84; }
+
+        @keyframes fadeIn {
+            from { opacity:0; transform:translateY(-10px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+
+        .hidden { display: none !important; }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--grey);
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 0.8rem;
+            }
+            .nav-tab {
+                padding: 0.35rem 0.7rem;
+                font-size: 0.75rem;
+            }
+            .container {
+                padding: 1rem 0.5rem;
+            }
+            .stat-val {
+                font-size: 2rem;
+            }
+            .react-area {
+                width: 240px;
+                height: 240px;
+            }
+            .mem-cell {
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-brand">⬡ Logostics</div>
+        <div class="nav-tabs" id="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+            <button class="nav-tab" data-tab="items">Items</button>
+            <button class="nav-tab" data-tab="sessions">Sessions</button>
+            <button class="nav-tab" data-tab="analytics">Analytics</button>
+        </div>
+    </nav>
+
+    <div class="container" id="main-content"></div>
+
+    <div class="test-overlay" id="test-overlay">
+        <div style="text-align:center;max-width:550px;width:90%;">
+            <div id="test-phase" style="margin-bottom:1.5rem;color:var(--text2);"></div>
+            <div id="test-area"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-inner" id="modal-content"></div>
+    </div>
+
+    <script>
+        (function() {
+            // ===== DATABASE =====
+            const DB_NAME = 'LogosticsDB';
+            const DB_VER = 4;
+            let db;
+
+            function openDB() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(DB_NAME, DB_VER);
+                    req.onupgradeneeded = (e) => {
+                        const d = e.target.result;
+                        if (!d.objectStoreNames.contains('items')) {
+                            const s = d.createObjectStore('items', { keyPath: 'id', autoIncrement: true });
+                            s.createIndex('name', 'name', { unique: false });
+                        }
+                        if (!d.objectStoreNames.contains('sessions')) {
+                            const s = d.createObjectStore('sessions', { keyPath: 'id', autoIncrement: true });
+                            s.createIndex('date', 'date', { unique: false });
+                        }
+                    };
+                    req.onsuccess = (e) => {
+                        db = e.target.result;
+                        resolve();
+                    };
+                    req.onerror = (e) => reject(e.target.error);
+                });
+            }
+
+            function dbAdd(store, data) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(store, 'readwrite');
+                    const s = tx.objectStore(store);
+                    const req = s.add(data);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            function dbPut(store, data) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(store, 'readwrite');
+                    const s = tx.objectStore(store);
+                    const req = s.put(data);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            function dbGet(store, id) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(store, 'readonly');
+                    const s = tx.objectStore(store);
+                    const req = s.get(id);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            function dbAll(store) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(store, 'readonly');
+                    const s = tx.objectStore(store);
+                    const req = s.getAll();
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            function dbDel(store, id) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(store, 'readwrite');
+                    const s = tx.objectStore(store);
+                    const req = s.delete(id);
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            // ===== APP STATE =====
+            const state = {
+                currentTab: 'dashboard',
+                testResults: {},
+                sessionMeta: null,
+                itemEmoji: '📦',
+                itemImage: null,
+                itemTags: [],
+                editItemId: null,
+                editEmoji: '📦',
+                editImage: null,
+                editTags: [],
+                sessionTags: [],
+            };
+
+            // ===== UI HELPERS =====
+            function $(sel) { return document.querySelector(sel); }
+            function $$(sel) { return document.querySelectorAll(sel); }
+
+            function showModal(html) {
+                $('#modal-content').innerHTML = html;
+                $('#modal').classList.add('on');
+            }
+
+            function hideModal() {
+                $('#modal').classList.remove('on');
+            }
+
+            function alert(msg, type = 'i') {
+                const el = document.createElement('div');
+                el.className = `alert alert-${type}`;
+                el.textContent = msg;
+                document.body.appendChild(el);
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transition = 'opacity 0.3s';
+                    setTimeout(() => el.remove(), 300);
+                }, 2800);
+            }
+
+            // ===== NAVIGATION =====
+            function switchTab(tab) {
+                state.currentTab = tab;
+                $$('.nav-tab').forEach(t => t.classList.remove('active'));
+                $(`.nav-tab[data-tab="${tab}"]`).classList.add('active');
+                renderTab();
+            }
+
+            function renderTab() {
+                switch (state.currentTab) {
+                    case 'dashboard': renderDashboard(); break;
+                    case 'items': renderItems(); break;
+                    case 'sessions': renderSessions(); break;
+                    case 'analytics': renderAnalytics(); break;
+                }
+            }
+
+            // ===== DASHBOARD =====
+            async function renderDashboard() {
+                const sessions = await dbAll('sessions');
+                const total = sessions.length;
+                const avgR = total > 0 ? Math.round(sessions.reduce((a,b) => a + (b.reaction_avg||0), 0) / total) : '--';
+                const avgM = total > 0 ? Math.round(sessions.reduce((a,b) => a + (b.memory_score||0), 0) / total) : '--';
+                const streak = calcStreak(sessions);
+
+                let recentHTML = '<p style="color:var(--text2);">No sessions yet</p>';
+                if (total > 0) {
+                    const recent = sessions.slice(-5).reverse();
+                    recentHTML = recent.map(s => `
+                        <div style="padding:0.7rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <div style="font-weight:600;">${new Date(s.date).toLocaleDateString()}</div>
+                                <div style="color:var(--text2);font-size:0.8rem;">${s.item_names||'Unknown'} • Score: ${s.overall_score||'--'}</div>
+                            </div>
+                            <button class="btn btn-o btn-s" onclick="viewSession(${s.id})">View</button>
+                        </div>
+                    `).join('');
+                }
+
+                $('#main-content').innerHTML = `
+                    <h2 style="margin-bottom:1.5rem;">Cognitive Dashboard</h2>
+                    <div class="grid4">
+                        <div class="stat"><div class="stat-val">${total}</div><div class="stat-lbl">Total Sessions</div></div>
+                        <div class="stat"><div class="stat-val">${avgR}</div><div class="stat-lbl">Avg Reaction (ms)</div></div>
+                        <div class="stat"><div class="stat-val">${avgM}</div><div class="stat-lbl">Avg Memory Score</div></div>
+                        <div class="stat"><div class="stat-val">${streak}</div><div class="stat-lbl">Day Streak</div></div>
+                    </div>
+                    <div class="grid2" style="margin-top:1.5rem;">
+                        <div class="card">
+                            <h3>Quick Start</h3>
+                            <p style="color:var(--text2);margin:0.8rem 0;">Run a new experimental session</p>
+                            <button class="btn" onclick="startSession()">▶ New Session</button>
+                        </div>
+                        <div class="card">
+                            <h3>Recent Sessions</h3>
+                            <div style="margin-top:0.8rem;">${recentHTML}</div>
+                        </div>
+                    </div>`;
+            }
+
+            function calcStreak(sessions) {
+                if (sessions.length === 0) return 0;
+                const sorted = sessions.sort((a,b) => new Date(b.date) - new Date(a.date));
+                let streak = 1;
+                let cur = new Date(sorted[0].date);
+                for (let i = 1; i < sorted.length; i++) {
+                    const prev = new Date(cur);
+                    prev.setDate(prev.getDate() - 1);
+                    if (new Date(sorted[i].date).toDateString() === prev.toDateString()) {
+                        streak++;
+                        cur = new Date(sorted[i].date);
+                    } else break;
+                }
+                return streak;
+            }
+
+            // ===== ITEMS =====
+            async function renderItems() {
+                const items = await dbAll('items');
+                let html = '';
+                if (items.length === 0) {
+                    html = `<div class="card" style="text-align:center;grid-column:1/-1;">
+                        <p style="color:var(--text2);">No items created yet</p>
+                        <button class="btn" onclick="showAddItem()" style="margin-top:1rem;">Create First Item</button>
+                    </div>`;
+                } else {
+                    html = items.map(item => {
+                        const icon = item.icon || item.emoji || '📦';
+                        const isImg = item.icon && item.icon.startsWith('data:image');
+                        return `<div class="card">
+                            <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.8rem;">
+                                ${isImg ? `<img src="${item.icon}" class="item-icon" alt="">` : `<span style="font-size:2rem;">${icon}</span>`}
+                                <div>
+                                    <h3>${esc(item.name)}</h3>
+                                    <div style="color:var(--text2);font-size:0.8rem;">${esc(item.type||'Uncategorized')}</div>
+                                </div>
+                            </div>
+                            <div style="margin:0.5rem 0;">
+                                ${(item.components||[]).map(c => `<span class="tag">${esc(c.name)}: ${c.dose}${esc(c.unit)}</span>`).join('')}
+                                ${(item.tags||[]).map(t => `<span class="tag">${esc(t)}</span>`).join('')}
+                            </div>
+                            ${item.notes ? `<p style="color:var(--text2);font-size:0.8rem;">${esc(item.notes)}</p>` : ''}
+                            <div style="display:flex;gap:0.5rem;margin-top:0.8rem;">
+                                <button class="btn btn-o btn-s" onclick="showEditItem(${item.id})">Edit</button>
+                                <button class="btn btn-r btn-s" onclick="deleteItem(${item.id})">Delete</button>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+
+                $('#main-content').innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                        <h2>Item Profiles</h2>
+                        <button class="btn" onclick="showAddItem()">+ New Item</button>
+                    </div>
+                    <div class="grid3">${html}</div>`;
+            }
+
+            function showAddItem() {
+                state.itemEmoji = '📦';
+                state.itemImage = null;
+                state.itemTags = [];
+                showModal(`
+                    <h2>Create Item</h2>
+                    <form id="add-item-form" onsubmit="addItem(event)">
+                        <div class="f-group">
+                            <label class="f-label">Icon</label>
+                            <div style="display:flex;gap:0.5rem;align-items:center;">
+                                <span id="modal-emoji-preview" style="font-size:2rem;">📦</span>
+                                <button type="button" class="btn btn-o btn-s" onclick="toggleEmojiPicker()">Emoji</button>
+                                <span style="color:var(--text2);">or</span>
+                                <label class="btn btn-o btn-s" style="cursor:pointer;">
+                                    Image
+                                    <input type="file" accept="image/*" style="display:none;" onchange="handleItemImage(event)">
+                                </label>
+                            </div>
+                            <div id="emoji-picker-box" class="emoji-grid hidden"></div>
+                            <img id="modal-img-preview" style="display:none;width:48px;height:48px;object-fit:cover;border-radius:8px;margin-top:0.5rem;border:1px solid var(--grey);">
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Name</label>
+                            <input type="text" class="f-input" id="item-name" placeholder="e.g. Monster Energy" required>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Type</label>
+                            <input type="text" class="f-input" id="item-type" placeholder="e.g. Drink, Supplement">
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Components</label>
+                            <div id="components-list">
+                                <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;">
+                                    <input type="text" class="f-input" placeholder="Name" style="flex:2;">
+                                    <input type="number" class="f-input" placeholder="Dose" style="flex:1;" step="any">
+                                    <input type="text" class="f-input" placeholder="Unit" style="flex:1;">
+                                    <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-o btn-s" onclick="addCompField()" style="margin-top:0.4rem;">+ Component</button>
+                        </div>
+                        <div class="f-group">
+                            <label class="form-label">Custom Tags</label>
+                            <div id="item-tags-display" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.4rem 0;"></div>
+                            <div style="display:flex;gap:0.4rem;">
+                                <input type="text" class="f-input" id="new-item-tag" placeholder="Add tag...">
+                                <button type="button" class="btn btn-o btn-s" onclick="addItemTag()">+</button>
+                            </div>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Notes</label>
+                            <textarea class="f-input" id="item-notes" rows="2" placeholder="Optional..."></textarea>
+                        </div>
+                        <div style="display:flex;gap:0.8rem;margin-top:1.5rem;">
+                            <button type="submit" class="btn">Save</button>
+                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
+                        </div>
+                    </form>`);
+                renderEmojiPicker('emoji-picker-box');
+            }
+
+            async function showEditItem(id) {
+                const item = await dbGet('items', id);
+                if (!item) return;
+                state.editItemId = id;
+                state.editEmoji = item.emoji || '📦';
+                state.editImage = item.icon || null;
+                state.editTags = [...(item.tags || [])];
+
+                showModal(`
+                    <h2>Edit Item</h2>
+                    <form id="edit-item-form" onsubmit="editItem(event)">
+                        <div class="f-group">
+                            <label class="f-label">Icon</label>
+                            <div style="display:flex;gap:0.5rem;align-items:center;">
+                                <span id="edit-emoji-preview" style="font-size:2rem;">${state.editEmoji}</span>
+                                <button type="button" class="btn btn-o btn-s" onclick="toggleEditEmojiPicker()">Emoji</button>
+                                <span style="color:var(--text2);">or</span>
+                                <label class="btn btn-o btn-s" style="cursor:pointer;">
+                                    Image
+                                    <input type="file" accept="image/*" style="display:none;" onchange="handleEditImage(event)">
+                                </label>
+                            </div>
+                            <div id="edit-emoji-picker-box" class="emoji-grid hidden"></div>
+                            <img id="edit-img-preview" style="${state.editImage ? '' : 'display:none;'}width:48px;height:48px;object-fit:cover;border-radius:8px;margin-top:0.5rem;border:1px solid var(--grey);" src="${state.editImage||''}">
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Name</label>
+                            <input type="text" class="f-input" id="edit-item-name" value="${esc(item.name)}" required>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Type</label>
+                            <input type="text" class="f-input" id="edit-item-type" value="${esc(item.type||'')}">
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Components</label>
+                            <div id="edit-components-list">
+                                ${(item.components||[]).map(c => `
+                                    <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;">
+                                        <input type="text" class="f-input" value="${esc(c.name)}" style="flex:2;">
+                                        <input type="number" class="f-input" value="${c.dose}" style="flex:1;" step="any">
+                                        <input type="text" class="f-input" value="${esc(c.unit)}" style="flex:1;">
+                                        <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>
+                                    </div>`).join('')}
+                                <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;">
+                                    <input type="text" class="f-input" placeholder="Name" style="flex:2;">
+                                    <input type="number" class="f-input" placeholder="Dose" style="flex:1;" step="any">
+                                    <input type="text" class="f-input" placeholder="Unit" style="flex:1;">
+                                    <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-o btn-s" onclick="addEditCompField()" style="margin-top:0.4rem;">+ Component</button>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Tags</label>
+                            <div id="edit-tags-display" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.4rem 0;"></div>
+                            <div style="display:flex;gap:0.4rem;">
+                                <input type="text" class="f-input" id="edit-new-tag" placeholder="Add tag...">
+                                <button type="button" class="btn btn-o btn-s" onclick="addEditTag()">+</button>
+                            </div>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Notes</label>
+                            <textarea class="f-input" id="edit-item-notes" rows="2">${esc(item.notes||'')}</textarea>
+                        </div>
+                        <div style="display:flex;gap:0.8rem;margin-top:1.5rem;">
+                            <button type="submit" class="btn">Update</button>
+                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
+                        </div>
+                    </form>`);
+                renderEmojiPicker('edit-emoji-picker-box', true);
+                renderEditTags();
+            }
+
+            function renderEmojiPicker(boxId, isEdit = false) {
+                const emojis = ['📦','☕','🧪','💊','🍵','🥤','🧃','🍬','🏋️','😴','🧠','⚡','🔥','💪','🎯','🌟','💤','🍎','🥜','🧬','🔋','💡','🎮','📱','💻','🎵','🌿','🍄','🧘','🏃'];
+                const box = document.getElementById(boxId);
+                if (!box) return;
+                box.innerHTML = emojis.map(e => 
+                    `<div class="emoji-opt" onclick="pickEmoji('${e}', ${isEdit})">${e}</div>`
+                ).join('');
+            }
+
+            function toggleEmojiPicker() {
+                const box = document.getElementById('emoji-picker-box');
+                if (box) box.classList.toggle('hidden');
+            }
+
+            function toggleEditEmojiPicker() {
+                const box = document.getElementById('edit-emoji-picker-box');
+                if (box) box.classList.toggle('hidden');
+            }
+
+            function pickEmoji(emoji, isEdit) {
+                if (isEdit) {
+                    state.editEmoji = emoji;
+                    state.editImage = null;
+                    const prev = document.getElementById('edit-emoji-preview');
+                    if (prev) prev.textContent = emoji;
+                    const img = document.getElementById('edit-img-preview');
+                    if (img) img.style.display = 'none';
+                } else {
+                    state.itemEmoji = emoji;
+                    state.itemImage = null;
+                    const prev = document.getElementById('modal-emoji-preview');
+                    if (prev) prev.textContent = emoji;
+                    const img = document.getElementById('modal-img-preview');
+                    if (img) img.style.display = 'none';
+                }
+            }
+
+            function handleItemImage(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    state.itemImage = ev.target.result;
+                    state.itemEmoji = '🖼️';
+                    const prev = document.getElementById('modal-emoji-preview');
+                    if (prev) prev.textContent = '🖼️';
+                    const img = document.getElementById('modal-img-preview');
+                    if (img) {
+                        img.src = ev.target.result;
+                        img.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function handleEditImage(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    state.editImage = ev.target.result;
+                    state.editEmoji = '🖼️';
+                    const prev = document.getElementById('edit-emoji-preview');
+                    if (prev) prev.textContent = '🖼️';
+                    const img = document.getElementById('edit-img-preview');
+                    if (img) {
+                        img.src = ev.target.result;
+                        img.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function addItemTag() {
+                const input = document.getElementById('new-item-tag');
+                if (!input) return;
+                const tag = input.value.trim();
+                if (tag && !state.itemTags.includes(tag)) {
+                    state.itemTags.push(tag);
+                    renderItemTags();
+                }
+                input.value = '';
+                input.focus();
+            }
+
+            function renderItemTags() {
+                const display = document.getElementById('item-tags-display');
+                if (!display) return;
+                display.innerHTML = state.itemTags.map(t => 
+                    `<span class="tag del" onclick="removeItemTag('${esc(t)}')">${esc(t)} ×</span>`
+                ).join('');
+            }
+
+            function removeItemTag(tag) {
+                state.itemTags = state.itemTags.filter(t => t !== tag);
+                renderItemTags();
+            }
+
+            function addEditTag() {
+                const input = document.getElementById('edit-new-tag');
+                if (!input) return;
+                const tag = input.value.trim();
+                if (tag && !state.editTags.includes(tag)) {
+                    state.editTags.push(tag);
+                    renderEditTags();
+                }
+                input.value = '';
+                input.focus();
+            }
+
+            function renderEditTags() {
+                const display = document.getElementById('edit-tags-display');
+                if (!display) return;
+                display.innerHTML = state.editTags.map(t => 
+                    `<span class="tag del" onclick="removeEditTag('${esc(t)}')">${esc(t)} ×</span>`
+                ).join('');
+            }
+
+            function removeEditTag(tag) {
+                state.editTags = state.editTags.filter(t => t !== tag);
+                renderEditTags();
+            }
+
+            function addCompField() {
+                const list = document.getElementById('components-list');
+                if (!list) return;
+                const div = document.createElement('div');
+                div.style.cssText = 'display:flex;gap:0.4rem;margin-bottom:0.4rem;';
+                div.innerHTML = `
+                    <input type="text" class="f-input" placeholder="Name" style="flex:2;">
+                    <input type="number" class="f-input" placeholder="Dose" style="flex:1;" step="any">
+                    <input type="text" class="f-input" placeholder="Unit" style="flex:1;">
+                    <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
+                list.appendChild(div);
+            }
+
+            function addEditCompField() {
+                const list = document.getElementById('edit-components-list');
+                if (!list) return;
+                const div = document.createElement('div');
+                div.style.cssText = 'display:flex;gap:0.4rem;margin-bottom:0.4rem;';
+                div.innerHTML = `
+                    <input type="text" class="f-input" placeholder="Name" style="flex:2;">
+                    <input type="number" class="f-input" placeholder="Dose" style="flex:1;" step="any">
+                    <input type="text" class="f-input" placeholder="Unit" style="flex:1;">
+                    <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
+                list.appendChild(div);
+            }
+
+            async function addItem(e) {
+                e.preventDefault();
+                const name = document.getElementById('item-name')?.value;
+                if (!name) return;
+                const type = document.getElementById('item-type')?.value || '';
+                const notes = document.getElementById('item-notes')?.value || '';
+                
+                const compDivs = document.querySelectorAll('#components-list > div');
+                const components = Array.from(compDivs).map(d => {
+                    const inputs = d.querySelectorAll('input');
+                    if (!inputs[0]?.value) return null;
+                    return {
+                        name: inputs[0].value,
+                        dose: parseFloat(inputs[1]?.value) || 0,
+                        unit: inputs[2]?.value || ''
+                    };
+                }).filter(Boolean);
+
+                const item = {
+                    name, type, components, notes,
+                    emoji: state.itemEmoji,
+                    icon: state.itemImage || null,
+                    tags: [...state.itemTags],
+                    created: new Date().toISOString()
+                };
+
+                await dbAdd('items', item);
+                hideModal();
+                renderItems();
+                alert('Item created!', 's');
+            }
+
+            async function editItem(e) {
+                e.preventDefault();
+                const name = document.getElementById('edit-item-name')?.value;
+                if (!name) return;
+                const type = document.getElementById('edit-item-type')?.value || '';
+                const notes = document.getElementById('edit-item-notes')?.value || '';
+                
+                const compDivs = document.querySelectorAll('#edit-components-list > div');
+                const components = Array.from(compDivs).map(d => {
+                    const inputs = d.querySelectorAll('input');
+                    if (!inputs[0]?.value) return null;
+                    return {
+                        name: inputs[0].value,
+                        dose: parseFloat(inputs[1]?.value) || 0,
+                        unit: inputs[2]?.value || ''
+                    };
+                }).filter(Boolean);
+
+                const original = await dbGet('items', state.editItemId);
+                const item = {
+                    id: state.editItemId,
+                    name, type, components, notes,
+                    emoji: state.editEmoji,
+                    icon: state.editImage || null,
+                    tags: [...state.editTags],
+                    created: original?.created || new Date().toISOString(),
+                    updated: new Date().toISOString()
+                };
+
+                await dbPut('items', item);
+                hideModal();
+                renderItems();
+                alert('Item updated!', 's');
+            }
+
+            async function deleteItem(id) {
+                if (confirm('Delete this item?')) {
+                    await dbDel('items', id);
+                    renderItems();
+                    alert('Item deleted.', 'i');
+                }
+            }
+
+            // ===== SESSIONS =====
+            async function renderSessions() {
+                const sessions = await dbAll('sessions');
+                let rows = '<tr><td colspan="8" style="text-align:center;color:var(--text2);">No sessions yet</td></tr>';
+                if (sessions.length > 0) {
+                    rows = sessions.sort((a,b) => new Date(b.date) - new Date(a.date)).map(s => `
+                        <tr>
+                            <td>${new Date(s.date).toLocaleDateString()}</td>
+                            <td>${esc(s.item_names||'Unknown')}</td>
+                            <td>${s.reaction_avg||'--'}ms</td>
+                            <td>${s.memory_score||'--'}/20</td>
+                            <td>${s.number_span||'--'}</td>
+                            <td>${s.focus_score||'--'}%</td>
+                            <td><strong>${s.overall_score||'--'}</strong></td>
+                            <td><button class="btn btn-o btn-s" onclick="viewSession(${s.id})">View</button></td>
+                        </tr>
+                    `).join('');
+                }
+
+                $('#main-content').innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                        <h2>Session History</h2>
+                        <button class="btn btn-o" onclick="exportData()">⬇ Export</button>
+                    </div>
+                    <div class="card">
+                        <table>
+                            <thead><tr><th>Date</th><th>Items</th><th>Reaction</th><th>Memory</th><th>Number</th><th>Focus</th><th>Score</th><th></th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+            }
+
+            async function viewSession(id) {
+                const s = await dbGet('sessions', id);
+                if (!s) return;
+                showModal(`
+                    <h2>Session Results</h2>
+                    <div style="margin:1rem 0;padding:1rem;background:var(--bg3);border-radius:8px;">
+                        <p><strong>Date:</strong> ${new Date(s.date).toLocaleString()}</p>
+                        <p><strong>Items:</strong> ${esc(s.item_names||'Unknown')}</p>
+                        ${s.time_since ? `<p><strong>Time Since:</strong> ${s.time_since}</p>` : ''}
+                        ${s.tags?.length ? `<p><strong>Tags:</strong> ${s.tags.join(', ')}</p>` : ''}
+                        ${s.notes ? `<p><strong>Notes:</strong> ${esc(s.notes)}</p>` : ''}
+                    </div>
+                    <div class="grid3">
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${s.reaction_avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${s.memory_score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${s.number_span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
+                    </div>
+                    <div style="text-align:center;margin-top:1.5rem;">
+                        <button class="btn btn-o" onclick="hideModal()">Close</button>
+                    </div>`);
+            }
+
+            async function startSession() {
+                hideModal();
+                state.testResults = {};
+                state.sessionMeta = null;
+                state.sessionTags = [];
+                
+                const items = await dbAll('items');
+                let itemsHTML = '<p style="color:var(--text2);">No items available. Create one first.</p>';
+                if (items.length > 0) {
+                    itemsHTML = items.map(item => {
+                        const icon = item.icon || item.emoji || '📦';
+                        const isImg = item.icon && item.icon.startsWith('data:image');
+                        return `<div style="margin:0.4rem 0;padding:0.5rem;background:var(--bg3);border-radius:8px;">
+                            <label style="display:flex;align-items:center;cursor:pointer;">
+                                <input type="checkbox" value="${item.id}" data-name="${esc(item.name)}" style="margin-right:0.6rem;">
+                                ${isImg ? `<img src="${item.icon}" style="width:28px;height:28px;object-fit:cover;border-radius:4px;margin-right:0.4rem;">` : `<span style="font-size:1.4rem;margin-right:0.4rem;">${icon}</span>`}
+                                <span style="font-weight:600;">${esc(item.name)}</span>
+                                ${(item.components||[]).map(c => `<span class="tag" style="margin-left:0.4rem;">${esc(c.name)}: ${c.dose}${esc(c.unit)}</span>`).join('')}
+                            </label>
+                        </div>`;
+                    }).join('');
+                }
+
+                const defaultTags = ['😴 Tired','🤒 Sick','😰 Stressed','🏃 Exercised','😋 Hungry','🌅 Morning','🌙 Evening','💪 Energized','😤 Irritated','😌 Calm'];
+                
+                showModal(`
+                    <h2>New Session Setup</h2>
+                    <form id="session-form" onsubmit="beginTests(event)">
+                        <div class="f-group">
+                            <label class="f-label">Select Items</label>
+                            <div style="max-height:200px;overflow-y:auto;">${itemsHTML}</div>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Time Since Intake</label>
+                            <select class="f-input" id="intake-time">
+                                <option value="immediate">Immediate</option>
+                                <option value="15min">15 Minutes</option>
+                                <option value="30min">30 Minutes</option>
+                                <option value="45min">45 Minutes</option>
+                                <option value="1hour">1 Hour</option>
+                                <option value="1.5hours">1.5 Hours</option>
+                                <option value="2hours">2 Hours</option>
+                                <option value="3hours">3 Hours</option>
+                                <option value="4hours">4 Hours</option>
+                                <option value="6hours">6 Hours</option>
+                                <option value="8hours">8 Hours</option>
+                                <option value="12hours">12 Hours</option>
+                                <option value="24hours">24 Hours</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <input type="text" class="f-input hidden" id="custom-intake-time" placeholder="e.g. 45 minutes ago" style="margin-top:0.4rem;">
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Session Tags</label>
+                            <div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.4rem 0;">
+                                ${defaultTags.map(t => `<span class="tag" onclick="toggleSessionTag(this)" data-tag="${t}">${t}</span>`).join('')}
+                            </div>
+                            <div id="session-tags-custom" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.4rem 0;"></div>
+                            <div style="display:flex;gap:0.4rem;">
+                                <input type="text" class="f-input" id="new-session-tag" placeholder="Add custom tag...">
+                                <button type="button" class="btn btn-o btn-s" onclick="addSessionTag()">+</button>
+                            </div>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Notes</label>
+                            <textarea class="f-input" id="session-notes" rows="2" placeholder="How are you feeling?"></textarea>
+                        </div>
+                        <div style="display:flex;gap:0.8rem;margin-top:1.5rem;">
+                            <button type="submit" class="btn">▶ Start Tests</button>
+                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
+                        </div>
+                    </form>`);
+
+                document.getElementById('intake-time')?.addEventListener('change', function() {
+                    const custom = document.getElementById('custom-intake-time');
+                    if (custom) custom.classList.toggle('hidden', this.value !== 'custom');
+                });
+            }
+
+            function toggleSessionTag(el) {
+                el.classList.toggle('sel');
+                const tag = el.dataset.tag;
+                if (el.classList.contains('sel')) {
+                    if (!state.sessionTags.includes(tag)) state.sessionTags.push(tag);
+                } else {
+                    state.sessionTags = state.sessionTags.filter(t => t !== tag);
+                }
+            }
+
+            function addSessionTag() {
+                const input = document.getElementById('new-session-tag');
+                if (!input) return;
+                const tag = input.value.trim();
+                if (tag && !state.sessionTags.includes(tag)) {
+                    state.sessionTags.push(tag);
+                    renderSessionCustomTags();
+                }
+                input.value = '';
+                input.focus();
+            }
+
+            function renderSessionCustomTags() {
+                const container = document.getElementById('session-tags-custom');
+                if (!container) return;
+                container.innerHTML = state.sessionTags.map(t => 
+                    `<span class="tag sel del" onclick="removeSessionTag('${esc(t)}')">${esc(t)} ×</span>`
+                ).join('');
+            }
+
+            function removeSessionTag(tag) {
+                state.sessionTags = state.sessionTags.filter(t => t !== tag);
+                renderSessionCustomTags();
+                $$('#session-form .tag.sel').forEach(el => {
+                    if (el.dataset.tag === tag) el.classList.remove('sel');
+                });
+            }
+
+            // ===== TESTS =====
+            async function beginTests(e) {
+                e.preventDefault();
+                const checkboxes = document.querySelectorAll('#session-form input[type="checkbox"]:checked');
+                const items = Array.from(checkboxes).map(cb => ({
+                    id: parseInt(cb.value),
+                    name: cb.dataset.name
+                }));
+
+                if (items.length === 0) {
+                    alert('Select at least one item!', 'w');
+                    return;
+                }
+
+                const intakeSelect = document.getElementById('intake-time');
+                let timeSince = intakeSelect?.value || 'immediate';
+                if (timeSince === 'custom') {
+                    timeSince = document.getElementById('custom-intake-time')?.value || 'custom';
+                }
+
+                const notes = document.getElementById('session-notes')?.value || '';
+
+                state.sessionMeta = {
+                    items, timeSince, notes,
+                    tags: [...state.sessionTags],
+                    date: new Date().toISOString()
+                };
+
+                hideModal();
+                $('#test-overlay').classList.add('on');
+
+                await runReactionTest();
+                await runMemoryTest();
+                await runNumberTest();
+                await runFocusTest();
+                
+                await saveSession();
+                showResults();
+            }
+
+            function runReactionTest() {
+                return new Promise(resolve => {
+                    $('#test-phase').textContent = 'Test 1/4: Reaction Time';
+                    const trials = [];
+                    let count = 0;
+                    const total = 5;
+                    let phase = 'wait';
+                    let start;
+
+                    $('#test-area').innerHTML = `
+                        <p style="color:var(--text2);margin-bottom:1rem;">Click when screen turns white</p>
+                        <div class="react-area" id="react-box">Wait for white...</div>
+                        <p style="color:var(--text2);margin-top:0.8rem;">Trial: <span id="trial-num">1</span>/${total}</p>
+                        <div class="prog"><div class="prog-fill" style="width:0%"></div></div>`;
+
+                    const box = $('#react-box');
+
+                    function startTrial() {
+                        box.className = 'react-area';
+                        box.textContent = 'Wait for white...';
+                        const delay = 800 + Math.random() * 2000;
+                        setTimeout(() => {
+                            if (phase !== 'testing') return;
+                            box.classList.add('go');
+                            box.textContent = 'NOW!';
+                            start = Date.now();
+                        }, delay);
+                    }
+
+                    box.addEventListener('click', () => {
+                        if (phase !== 'testing') return;
+                        if (box.classList.contains('go')) {
+                            const rt = Date.now() - start;
+                            trials.push(rt);
+                            count++;
+                            box.className = 'react-area';
+                            box.style.background = 'var(--grey)';
+                            box.style.borderColor = 'var(--text2)';
+                            box.textContent = `${rt}ms`;
+                            $('#trial-num').textContent = count;
+                            $('.prog-fill').style.width = `${(count/total)*100}%`;
+
+                            if (count >= total) {
+                                state.testResults.reaction = {
+                                    avg: Math.round(trials.reduce((a,b)=>a+b,0)/trials.length),
+                                    best: Math.min(...trials),
+                                    consistency: Math.round((1 - (Math.max(...trials)-Math.min(...trials))/(trials.reduce((a,b)=>a+b,0)/trials.length))*100)
+                                };
+                                $('#test-phase').textContent = '✓ Reaction test done!';
+                                setTimeout(resolve, 800);
+                            } else {
+                                setTimeout(startTrial, 600);
+                            }
+                        } else if (!box.classList.contains('go') && box.style.background !== 'var(--grey)') {
+                            box.textContent = 'Too early!';
+                            setTimeout(startTrial, 1000);
+                        }
+                    });
+
+                    phase = 'testing';
+                    startTrial();
+                });
+            }
+
+            function runMemoryTest() {
+                return new Promise(resolve => {
+                    $('#test-phase').textContent = 'Test 2/4: Memory Grid';
+                    const size = 4;
+                    const len = 6;
+                    const pattern = new Set();
+                    while (pattern.size < len) pattern.add(Math.floor(Math.random() * (size*size)));
+
+                    $('#test-area').innerHTML = `
+                        <p id="mem-msg" style="color:var(--text2);margin-bottom:1rem;">Memorize the pattern (2 sec)</p>
+                        <div class="mem-grid" style="grid-template-columns:repeat(${size},55px);" id="mem-grid">
+                            ${Array.from({length:size*size}, (_,i) => `<div class="mem-cell ${pattern.has(i)?'on':''}" data-idx="${i}"></div>`).join('')}
+                        </div>
+                        <p style="color:var(--text2);margin-top:0.8rem;">Found: <span id="mem-found">0</span>/${len}</p>
+                        <div class="prog"><div class="prog-fill" style="width:0%"></div></div>`;
+
+                    let correct = 0;
+                    let wrong = 0;
+                    let phase = 'memorize';
+
+                    setTimeout(() => {
+                        phase = 'recall';
+                        $('#mem-msg').textContent = 'Click the tiles you remember';
+                        $$('#mem-grid .mem-cell').forEach(c => c.classList.remove('on'));
+                    }, 2000);
+
+                    $('#mem-grid').addEventListener('click', (e) => {
+                        if (phase !== 'recall') return;
+                        const cell = e.target.closest('.mem-cell');
+                        if (!cell) return;
+                        const idx = parseInt(cell.dataset.idx);
+                        
+                        if (pattern.has(idx) && !cell.classList.contains('ok')) {
+                            cell.classList.add('ok');
+                            correct++;
+                            $('#mem-found').textContent = correct;
+                            $('.prog-fill').style.width = `${(correct/len)*100}%`;
+                            if (correct >= len) {
+                                state.testResults.memory = {
+                                    score: Math.min(Math.round((correct/(correct+wrong))*20), 20),
+                                    correct, mistakes: wrong
+                                };
+                                $('#test-phase').textContent = '✓ Memory test done!';
+                                setTimeout(resolve, 800);
+                            }
+                        } else if (!cell.classList.contains('ok')) {
+                            cell.classList.add('bad');
+                            wrong++;
+                            setTimeout(() => cell.classList.remove('bad'), 300);
+                        }
+                    });
+                });
+            }
+
+            function runNumberTest() {
+                return new Promise(resolve => {
+                    $('#test-phase').textContent = 'Test 3/4: Number Recall';
+                    let span = 4;
+
+                    function showNumber() {
+                        const num = Array.from({length: span}, () => Math.floor(Math.random()*10)).join('');
+                        $('#test-area').innerHTML = `
+                            <p style="color:var(--text2);margin-bottom:1rem;">Remember this number</p>
+                            <div class="num-big">${num}</div>
+                            <p style="color:var(--text2);">Digit Span: ${span}</p>`;
+
+                        setTimeout(() => {
+                            $('#test-area').innerHTML = `
+                                <p style="color:var(--text2);margin-bottom:1rem;">Enter the number</p>
+                                <input type="text" class="num-inp" id="num-inp" maxlength="${span}" autofocus>
+                                <p style="color:var(--text2);margin-top:0.8rem;">Digit Span: ${span}</p>
+                                <button class="btn" id="num-submit" style="margin-top:0.8rem;">Submit</button>`;
+
+                            $('#num-submit').addEventListener('click', () => checkNumber(num));
+                            $('#num-inp').addEventListener('keypress', (e) => {
+                                if (e.key === 'Enter') checkNumber(num);
+                            });
+                        }, 2500);
+                    }
+
+                    function checkNumber(correct) {
+                        const input = $('#num-inp')?.value;
+                        if (input === correct && span < 10) {
+                            span++;
+                            alert('Correct! Increasing span...', 's');
+                            showNumber();
+                        } else {
+                            state.testResults.number = { span: input === correct ? span : span - 1 };
+                            $('#test-phase').textContent = '✓ Number recall done!';
+                            resolve();
+                        }
+                    }
+
+                    showNumber();
+                });
+            }
+
+            function runFocusTest() {
+                return new Promise(resolve => {
+                    $('#test-phase').textContent = 'Test 4/4: Shape Focus';
+                    const shapes = ['●','■','▲','◆'];
+                    const target = shapes[Math.floor(Math.random()*shapes.length)];
+                    let correct = 0;
+                    let wrong = 0;
+                    let round = 0;
+                    const total = 10;
+
+                    function makeGrid() {
+                        const cells = [];
+                        const tpos = Math.floor(Math.random()*9);
+                        for (let i = 0; i < 9; i++) {
+                            if (i === tpos) cells.push(target);
+                            else {
+                                let s;
+                                do { s = shapes[Math.floor(Math.random()*shapes.length)]; }
+                                while (s === target);
+                                cells.push(s);
+                            }
+                        }
+                        $('#test-area').innerHTML = `
+                            <p style="color:var(--text2);margin-bottom:1rem;">Tap only: <span style="font-size:1.8rem;">${target}</span></p>
+                            <div class="shape-grid">${cells.map(s => `<div class="shape-cell" data-shape="${s}">${s}</div>`).join('')}</div>
+                            <p style="color:var(--text2);margin-top:0.8rem;">Round: <span id="focus-round">${round+1}</span>/${total}</p>
+                            <div class="prog"><div class="prog-fill" style="width:${(round/total)*100}%"></div></div>`;
+
+                        $$('.shape-cell').forEach(c => {
+                            c.addEventListener('click', () => {
+                                if (c.dataset.shape === target) {
+                                    c.classList.add('good');
+                                    correct++;
+                                    round++;
+                                    $('#focus-round').textContent = Math.min(round+1, total);
+                                    $('.prog-fill').style.width = `${(round/total)*100}%`;
+                                    if (round >= total) {
+                                        state.testResults.focus = {
+                                            accuracy: Math.round((correct/(correct+wrong))*100),
+                                            correct, incorrect: wrong
+                                        };
+                                        $('#test-phase').textContent = '✓ Focus test done!';
+                                        resolve();
+                                    } else {
+                                        setTimeout(makeGrid, 300);
+                                    }
+                                } else {
+                                    c.classList.add('bad');
+                                    wrong++;
+                                    setTimeout(() => c.classList.remove('bad'), 400);
+                                }
+                            });
+                        });
+                    }
+
+                    makeGrid();
+                });
+            }
+
+            function calcOverall() {
+                const r = state.testResults.reaction ? Math.max(0, Math.min(100, (300 - state.testResults.reaction.avg)/2)) : 0;
+                const m = state.testResults.memory ? (state.testResults.memory.score/20)*100 : 0;
+                const n = state.testResults.number ? (state.testResults.number.span/10)*100 : 0;
+                const f = state.testResults.focus?.accuracy || 0;
+                return Math.round((r+m+n+f)/4);
+            }
+
+            async function saveSession() {
+                const session = {
+                    ...state.sessionMeta,
+                    reaction_avg: state.testResults.reaction?.avg,
+                    reaction_best: state.testResults.reaction?.best,
+                    reaction_consistency: state.testResults.reaction?.consistency,
+                    memory_score: state.testResults.memory?.score,
+                    number_span: state.testResults.number?.span,
+                    focus_score: state.testResults.focus?.accuracy,
+                    overall_score: calcOverall(),
+                    item_names: state.sessionMeta.items.map(i => i.name).join(' + '),
+                    item_ids: state.sessionMeta.items.map(i => i.id)
+                };
+                await dbAdd('sessions', session);
+            }
+
+            function showResults() {
+                $('#test-overlay').classList.remove('on');
+                const m = state.sessionMeta;
+                const r = state.testResults;
+                showModal(`
+                    <h2>⬡ Session Complete!</h2>
+                    <div style="margin:1rem 0;padding:1rem;background:var(--bg3);border-radius:8px;">
+                        <h3>${esc(m.items.map(i=>i.name).join(' + '))}</h3>
+                        ${m.timeSince ? `<p><strong>Time Since:</strong> ${m.timeSince}</p>` : ''}
+                        ${m.tags?.length ? `<p><strong>Tags:</strong> ${m.tags.join(', ')}</p>` : ''}
+                        ${m.notes ? `<p><strong>Notes:</strong> ${esc(m.notes)}</p>` : ''}
+                    </div>
+                    <div class="grid2">
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${r.reaction?.avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${r.memory?.score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${r.number?.span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${r.focus?.accuracy||'--'}%</div><div class="stat-lbl">Focus</div></div>
+                    </div>
+                    <div style="text-align:center;margin:1.5rem 0;padding:1.5rem;background:var(--bg3);border:1px solid var(--grey);border-radius:12px;">
+                        <div style="font-size:3rem;font-weight:700;">${calcOverall()}/100</div>
+                        <div style="color:var(--text2);">Overall Score</div>
+                    </div>
+                    <div style="display:flex;gap:0.8rem;justify-content:center;">
+                        <button class="btn" onclick="startSession()">▶ New Session</button>
+                        <button class="btn btn-o" onclick="hideModal();renderDashboard();">Done</button>
+                    </div>`);
+            }
+
+            // ===== ANALYTICS =====
+            async function renderAnalytics() {
+                const sessions = await dbAll('sessions');
+                const items = await dbAll('items');
+                
+                // Collect all unique component names
+                const compNames = new Set();
+                items.forEach(item => {
+                    (item.components||[]).forEach(c => compNames.add(c.name));
+                });
+
+                let compOptions = '<option value="">Select...</option>';
+                compNames.forEach(n => {
+                    compOptions += `<option value="${esc(n)}">${esc(n)}</option>`;
+                });
+
+                $('#main-content').innerHTML = `
+                    <h2 style="margin-bottom:1.5rem;">Component Analysis</h2>
+                    <div class="card">
+                        <h3>Component Explorer</h3>
+                        <div style="display:flex;gap:0.8rem;margin:1rem 0;">
+                            <select class="f-input" id="comp-select" onchange="runAnalysis()" style="flex:2;">
+                                ${compOptions}
+                            </select>
+                            <select class="f-input" id="metric-select" onchange="runAnalysis()" style="flex:1;">
+                                <option value="reaction_avg">Reaction</option>
+                                <option value="memory_score">Memory</option>
+                                <option value="focus_score">Focus</option>
+                                <option value="overall_score">Overall</option>
+                            </select>
+                        </div>
+                        <div id="analysis-detail"><p style="color:var(--text2);">Select a component to analyze</p></div>
+                    </div>
+                    <div class="grid2" style="margin-top:1.5rem;">
+                        <div class="card">
+                            <h3>Correlation Graph</h3>
+                            <div id="graph-area"><p style="color:var(--text2);">Select a component</p></div>
+                        </div>
+                        <div class="card">
+                            <h3>Statistics</h3>
+                            <div id="stats-area"><p style="color:var(--text2);">Component stats appear here</p></div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:1.5rem;">
+                        <h3>Trend Detection</h3>
+                        <div id="trend-area"><p style="color:var(--text2);">Automatic trend analysis</p></div>
+                    </div>`;
+            }
+
+            async function runAnalysis() {
+                const comp = $('#comp-select')?.value;
+                const metric = $('#metric-select')?.value;
+                if (!comp) return;
+
+                const sessions = await dbAll('sessions');
+                const withComp = sessions.filter(s => s.item_names?.includes(comp) && s[metric] != null);
+                const withoutComp = sessions.filter(s => !s.item_names?.includes(comp) && s[metric] != null);
+
+                const metricLabels = {
+                    reaction_avg: 'Reaction (ms)',
+                    memory_score: 'Memory (/20)',
+                    focus_score: 'Focus (%)',
+                    overall_score: 'Overall Score'
+                };
+
+                // Detail
+                $('#analysis-detail').innerHTML = `
+                    <div class="grid2">
+                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${withComp.length}</div><div class="stat-lbl">With ${esc(comp)}</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${withoutComp.length}</div><div class="stat-lbl">Baseline</div></div>
+                    </div>`;
+
+                // Graph
+                if (withComp.length >= 2) {
+                    drawGraph('graph-area', withComp, metric, comp, metricLabels[metric]);
+                } else {
+                    $('#graph-area').innerHTML = '<p style="color:var(--text2);">Need 2+ sessions for graph</p>';
+                }
+
+                // Stats
+                if (withComp.length > 0) {
+                    const wAvg = Math.round(withComp.reduce((a,b)=>a+(b[metric]||0),0)/withComp.length);
+                    const woAvg = withoutComp.length > 0 ? Math.round(withoutComp.reduce((a,b)=>a+(b[metric]||0),0)/withoutComp.length) : null;
+                    const change = woAvg ? Math.round(((wAvg-woAvg)/woAvg)*100) : null;
+                    const better = metric === 'reaction_avg' ? (change < 0) : (change > 0);
+
+                    $('#stats-area').innerHTML = `
+                        <div style="background:var(--bg3);border:1px solid var(--grey);border-radius:8px;padding:1rem;">
+                            <h4>${esc(comp)}</h4>
+                            <div class="grid2" style="margin-top:0.5rem;">
+                                <div><strong>Sessions:</strong> ${withComp.length}</div>
+                                <div><strong>Avg ${metricLabels[metric]}:</strong> ${wAvg}</div>
+                                ${woAvg !== null ? `<div><strong>Baseline:</strong> ${woAvg}</div>` : ''}
+                                ${change !== null ? `<div style="color:${better?'#4a4':'#a44'}"><strong>Change:</strong> ${change>0?'+':''}${change}%</div>` : ''}
+                            </div>
+                        </div>`;
+                }
+
+                // Trend
+                if (withComp.length >= 3) {
+                    const sorted = withComp.sort((a,b) => new Date(a.date) - new Date(b.date));
+                    const vals = sorted.map(s => s[metric]);
+                    const mid = Math.floor(vals.length/2);
+                    const first = vals.slice(0,mid).reduce((a,b)=>a+b,0)/mid;
+                    const second = vals.slice(mid).reduce((a,b)=>a+b,0)/(vals.length-mid);
+                    const pct = ((second-first)/first)*100;
+                    const better = metric === 'reaction_avg' ? (pct < 0) : (pct > 0);
+
+                    $('#trend-area').innerHTML = `
+                        <p><strong>Direction:</strong> <span style="color:${better?'#4a4':'#a44'}">${better?'Improving':'Declining'}</span> (${pct>0?'+':''}${pct.toFixed(1)}%)</p>
+                        <p style="color:var(--text2);margin-top:0.4rem;">Based on ${withComp.length} sessions</p>`;
+                } else {
+                    $('#trend-area').innerHTML = '<p style="color:var(--text2);">Need 3+ sessions for trends</p>';
+                }
+            }
+
+            function drawGraph(containerId, sessions, metric, compName, metricLabel) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                const sorted = sessions.sort((a,b) => new Date(a.date) - new Date(b.date));
+                const vals = sorted.map(s => s[metric]||0);
+                const max = Math.max(...vals);
+                const min = Math.min(...vals);
+                const range = max - min || 1;
+                const w = 560, h = 260, pad = 35;
+                const pts = vals.map((v,i) => ({
+                    x: pad + (i/(vals.length-1))*(w-2*pad),
+                    y: h - pad - ((v-min)/range)*(h-2*pad),
+                    v, d: new Date(sorted[i].date).toLocaleDateString()
+                }));
+                const path = pts.map((p,i) => `${i===0?'M':'L'} ${p.x} ${p.y}`).join(' ');
+
+                container.innerHTML = `
+                    <div class="graph-box">
+                        <svg viewBox="0 0 ${w} ${h}">
+                            <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
+                            <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
+                            <path d="${path}" fill="none" stroke="#fff" stroke-width="2"/>
+                            ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#fff"><title>${p.d}: ${p.v}</title></circle>`).join('')}
+                            <text x="${w/2}" y="${h-8}" fill="#666" font-size="11" text-anchor="middle">Sessions →</text>
+                        </svg>
+                    </div>
+                    <p style="color:var(--text2);font-size:0.8rem;margin-top:0.4rem;">${esc(compName)} vs ${metricLabel}</p>`;
+            }
+
+            async function exportData() {
+                const data = {
+                    exportDate: new Date().toISOString(),
+                    sessions: await dbAll('sessions'),
+                    items: await dbAll('items')
+                };
+                const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `logostics-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                alert('Exported!', 's');
+            }
+
+            function esc(str) {
+                if (!str) return '';
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // ===== INIT =====
+            async function init() {
+                await openDB();
+                
+                // Nav clicks
+                $$('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+                });
+
+                // Modal backdrop close
+                $('#modal').addEventListener('click', (e) => {
+                    if (e.target === $('#modal')) hideModal();
+                });
+
+                // Initial render
+                renderDashboard();
+            }
+
+            // Expose functions globally
+            window.switchTab = switchTab;
+            window.showAddItem = showAddItem;
+            window.showEditItem = showEditItem;
+            window.deleteItem = deleteItem;
+            window.addItem = addItem;
+            window.editItem = editItem;
+            window.startSession = startSession;
+            window.beginTests = beginTests;
+            window.viewSession = viewSession;
+            window.runAnalysis = runAnalysis;
+            window.exportData = exportData;
+            window.toggleEmojiPicker = toggleEmojiPicker;
+            window.toggleEditEmojiPicker = toggleEditEmojiPicker;
+            window.pickEmoji = pickEmoji;
+            window.handleItemImage = handleItemImage;
+            window.handleEditImage = handleEditImage;
+            window.addItemTag = addItemTag;
+            window.removeItemTag = removeItemTag;
+            window.addEditTag = addEditTag;
+            window.removeEditTag = removeEditTag;
+            window.addCompField = addCompField;
+            window.addEditCompField = addEditCompField;
+            window.toggleSessionTag = toggleSessionTag;
+            window.addSessionTag = addSessionTag;
+            window.removeSessionTag = removeSessionTag;
+            window.hideModal = hideModal;
+            window.renderDashboard = renderDashboard;
+            window.esc = esc;
+
+            init().catch(console.error);
+        })();
+    </script>
+</body>
+</html>
