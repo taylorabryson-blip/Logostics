@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logostics - Personal Cognitive Research Platform</title>
+    <title>Logostics · Cognitive Research</title>
     <style>
         :root {
             --bg: #000;
@@ -15,237 +15,132 @@
             --grey: #2a2a2a;
             --grey2: #333;
             --grey3: #3a3a3a;
+            --green: #4a4;
+            --red: #a44;
+            --yellow: #ca4;
         }
-
         * { margin:0; padding:0; box-sizing:border-box; }
-
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
         }
-
         .nav {
             background: var(--bg2);
             border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
+            padding: 0.6rem 1rem;
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
+            gap: 0.4rem;
         }
-
-        .nav-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
+        .nav-brand { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; }
+        .nav-tabs { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; }
         .nav-tab {
             background: transparent;
             border: 1px solid var(--grey);
             color: var(--text2);
-            padding: 0.5rem 1rem;
+            padding: 0.35rem 0.7rem;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             white-space: nowrap;
         }
-
-        .nav-tab:hover, .nav-tab.active {
-            background: var(--grey);
-            border-color: var(--grey2);
-            color: var(--text);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
+        .nav-tab:hover, .nav-tab.active { background: var(--grey); border-color: var(--grey2); color: var(--text); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.2rem 0.8rem; }
         .card {
             background: rgba(20,20,20,0.8);
             border: 1px solid rgba(40,40,40,0.6);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            backdrop-filter: blur(12px);
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(8px);
         }
-
-        .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
-        .grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; }
-        .grid4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
-
+        .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem; }
+        .grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
+        .grid4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:0.6rem; }
         .stat {
             background: rgba(20,20,20,0.8);
             border: 1px solid rgba(40,40,40,0.6);
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1rem;
             text-align: center;
             transition: all 0.2s;
         }
-
-        .stat:hover {
-            transform: translateY(-2px);
-            background: var(--bg3);
-        }
-
-        .stat-val {
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-
-        .stat-lbl {
-            color: var(--text2);
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
-        }
-
+        .stat:hover { transform: translateY(-2px); background: var(--bg3); }
+        .stat-val { font-size: 2rem; font-weight: 700; }
+        .stat-lbl { color: var(--text2); margin-top: 0.3rem; font-size: 0.75rem; }
         .btn {
             background: var(--text);
             color: var(--bg);
             border: none;
-            padding: 0.7rem 1.4rem;
+            padding: 0.5rem 1rem;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             transition: all 0.2s;
             white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
         }
-
         .btn:hover { background: #ccc; }
-        .btn:active { transform: scale(0.98); }
-
-        .btn-o {
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--grey);
-        }
-
-        .btn-o:hover {
-            background: var(--grey);
-        }
-
-        .btn-s {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-        }
-
-        .btn-r {
-            background: transparent;
-            color: #f44;
-            border: 1px solid #f44;
-        }
-
-        .btn-r:hover {
-            background: #f44;
-            color: #000;
-        }
-
-        .f-group {
-            margin-bottom: 1rem;
-        }
-
-        .f-label {
-            display: block;
-            margin-bottom: 0.4rem;
-            color: var(--text2);
-            font-size: 0.85rem;
-        }
-
+        .btn:active { transform: scale(0.97); }
+        .btn-o { background: transparent; color: var(--text); border: 1px solid var(--grey); }
+        .btn-o:hover { background: var(--grey); }
+        .btn-s { padding: 0.25rem 0.6rem; font-size: 0.7rem; }
+        .btn-r { background: transparent; color: #f44; border: 1px solid #f44; }
+        .btn-r:hover { background: #f44; color: #000; }
+        .btn-g { background: transparent; color: var(--green); border: 1px solid var(--green); }
+        .btn-g:hover { background: var(--green); color: #000; }
+        .f-group { margin-bottom: 0.7rem; }
+        .f-label { display: block; margin-bottom: 0.2rem; color: var(--text2); font-size: 0.75rem; }
         .f-input {
             width: 100%;
             background: var(--bg3);
             border: 1px solid var(--grey);
             color: var(--text);
-            padding: 0.7rem;
+            padding: 0.5rem;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             transition: all 0.2s;
         }
-
-        .f-input:focus {
-            outline: none;
-            border-color: var(--text2);
-            background: var(--bg2);
-        }
-
+        .f-input:focus { outline: none; border-color: var(--text2); background: var(--bg2); }
         select.f-input {
             cursor: pointer;
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 0.7rem center;
-            padding-right: 2rem;
+            background-position: right 0.6rem center;
+            padding-right: 1.8rem;
         }
-
         .tag {
             display: inline-block;
             background: var(--grey);
             border: 1px solid var(--grey2);
             color: var(--text2);
-            padding: 0.25rem 0.7rem;
+            padding: 0.15rem 0.5rem;
             border-radius: 20px;
-            font-size: 0.78rem;
-            margin: 0.2rem;
+            font-size: 0.7rem;
+            margin: 0.1rem;
             cursor: pointer;
             transition: all 0.2s;
             user-select: none;
         }
-
-        .tag:hover {
-            background: var(--grey3);
-            color: var(--text);
-        }
-
-        .tag.sel {
-            background: var(--text);
-            color: var(--bg);
-            border-color: var(--text);
-        }
-
-        .tag.del:hover {
-            background: #f44;
-            color: #fff;
-            border-color: #f44;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 0.8rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-        }
-
-        th {
-            color: var(--text2);
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        tr:hover {
-            background: rgba(255,255,255,0.02);
-        }
-
+        .tag:hover { background: var(--grey3); color: var(--text); }
+        .tag.sel { background: var(--text); color: var(--bg); border-color: var(--text); }
+        .tag.del:hover { background: #f44; color: #fff; border-color: #f44; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+        th { color: var(--text2); font-weight: 600; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:hover { background: rgba(255,255,255,0.02); }
         .modal {
             display: none;
             position: fixed;
@@ -255,24 +150,19 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
+            padding: 0.8rem;
         }
-
-        .modal.on {
-            display: flex;
-        }
-
+        .modal.on { display: flex; }
         .modal-inner {
             background: var(--bg2);
             border: 1px solid var(--grey);
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 14px;
+            padding: 1.2rem;
             max-width: 650px;
             width: 100%;
             max-height: 85vh;
             overflow-y: auto;
         }
-
         .test-overlay {
             display: none;
             position: fixed;
@@ -283,267 +173,168 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
         }
-
-        .test-overlay.on {
-            display: flex;
-        }
-
+        .test-overlay.on { display: flex; }
         .react-area {
-            width: 280px;
-            height: 280px;
+            width: 210px;
+            height: 210px;
             background: var(--bg3);
             border: 2px solid var(--grey);
-            border-radius: 16px;
+            border-radius: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: var(--text2);
             user-select: none;
             transition: all 0.15s;
+            margin: 0 auto;
         }
-
-        .react-area.go {
-            background: #fff;
-            border-color: #fff;
-            color: #000;
-            animation: pulse 0.8s infinite;
-        }
-
-        @keyframes pulse {
-            0%,100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-
-        .mem-grid {
-            display: grid;
-            gap: 4px;
-            justify-content: center;
-            margin: 1rem 0;
-        }
-
-        .mem-cell {
-            width: 55px;
-            height: 55px;
-            background: var(--bg3);
-            border: 2px solid var(--grey);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .mem-cell.on {
-            background: #fff;
-            border-color: #fff;
-            box-shadow: 0 0 12px rgba(255,255,255,0.25);
-        }
-
-        .mem-cell.ok {
-            background: var(--grey2);
-            border-color: var(--text);
-        }
-
-        .mem-cell.bad {
-            background: #333;
-            border-color: #666;
-        }
-
-        .num-big {
-            font-size: 2.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5rem;
-            margin: 1.5rem 0;
-        }
-
+        .react-area.go { background: #fff; border-color: #fff; color: #000; animation: pulse 0.8s infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+        .mem-grid { display: grid; gap: 3px; justify-content: center; margin: 0.6rem 0; }
+        .mem-cell { width: 42px; height: 42px; background: var(--bg3); border: 2px solid var(--grey); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .mem-cell.on { background: #fff; border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .mem-cell.ok { background: var(--grey2); border-color: var(--text); }
+        .mem-cell.bad { background: #333; border-color: #666; }
+        .num-big { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.4rem; margin: 0.8rem 0; }
         .num-inp {
             background: var(--bg3);
             border: 2px solid var(--grey);
             color: var(--text);
-            font-size: 1.8rem;
-            padding: 0.8rem;
+            font-size: 1.4rem;
+            padding: 0.5rem;
             border-radius: 8px;
-            width: 200px;
+            width: 160px;
             text-align: center;
-            letter-spacing: 0.4rem;
+            letter-spacing: 0.3rem;
         }
-
-        .num-inp:focus {
-            outline: none;
-            border-color: var(--text2);
-        }
-
-        .shape-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 75px);
-            gap: 8px;
-            justify-content: center;
-            margin: 1.5rem 0;
-        }
-
-        .shape-cell {
-            width: 75px;
-            height: 75px;
-            background: var(--bg3);
-            border: 2px solid var(--grey);
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            transition: all 0.2s;
-        }
-
-        .shape-cell:hover {
-            border-color: var(--text2);
-        }
-
-        .shape-cell.good {
-            background: var(--grey2);
-            border-color: #fff;
-        }
-
-        .shape-cell.bad {
-            background: #333;
-            border-color: #666;
-            animation: shake 0.4s;
-        }
-
-        @keyframes shake {
-            0%,100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
-        }
-
-        .prog {
-            width: 100%;
-            height: 3px;
-            background: var(--bg3);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 0.8rem 0;
-        }
-
-        .prog-fill {
-            height: 100%;
-            background: var(--text);
-            transition: width 0.3s;
-            border-radius: 2px;
-        }
-
+        .num-inp:focus { outline: none; border-color: var(--text2); }
+        .shape-grid { display: grid; grid-template-columns: repeat(3, 60px); gap: 5px; justify-content: center; margin: 0.8rem 0; }
+        .shape-cell { width: 60px; height: 60px; background: var(--bg3); border: 2px solid var(--grey); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: all 0.2s; }
+        .shape-cell:hover { border-color: var(--text2); }
+        .shape-cell.good { background: var(--grey2); border-color: #fff; }
+        .shape-cell.bad { background: #333; border-color: #666; animation: shake 0.4s; }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+        .prog { width: 100%; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin: 0.5rem 0; }
+        .prog-fill { height: 100%; background: var(--text); transition: width 0.3s; border-radius: 2px; }
         .emoji-grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
-            gap: 4px;
-            max-height: 140px;
+            gap: 2px;
+            max-height: 100px;
             overflow-y: auto;
             background: var(--bg3);
             border: 1px solid var(--grey);
-            border-radius: 8px;
-            padding: 0.5rem;
-            margin-top: 0.5rem;
+            border-radius: 6px;
+            padding: 0.3rem;
+            margin-top: 0.3rem;
         }
-
-        .emoji-opt {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 1.1rem;
-        }
-
-        .emoji-opt:hover {
-            background: var(--grey);
-        }
-
-        .item-icon {
-            width: 48px;
-            height: 48px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid var(--grey);
-        }
-
-        .graph-box {
-            width: 100%;
-            height: 280px;
-            background: var(--bg3);
-            border: 1px solid var(--grey);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .graph-box svg {
-            width: 100%;
-            height: 100%;
-        }
-
+        .emoji-opt { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; font-size: 0.9rem; }
+        .emoji-opt:hover { background: var(--grey); }
+        .item-icon { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid var(--grey); }
+        .graph-box { width: 100%; height: 200px; background: var(--bg3); border: 1px solid var(--grey); border-radius: 8px; overflow: hidden; }
+        .graph-box svg { width: 100%; height: 100%; }
         .alert {
-            padding: 0.8rem 1rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 8px;
-            margin: 0.8rem 0;
+            margin: 0.5rem 0;
             border-left: 3px solid;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             position: fixed;
-            top: 80px;
-            right: 20px;
+            top: 70px;
+            right: 10px;
             z-index: 10000;
-            max-width: 380px;
+            max-width: 290px;
             background: var(--bg2);
             animation: fadeIn 0.3s;
         }
-
         .alert-i { border-color: var(--text2); }
-        .alert-s { border-color: #4a4; }
-        .alert-w { border-color: #a84; }
-
-        @keyframes fadeIn {
-            from { opacity:0; transform:translateY(-10px); }
-            to { opacity:1; transform:translateY(0); }
-        }
-
+        .alert-s { border-color: var(--green); }
+        .alert-w { border-color: var(--yellow); }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
         .hidden { display: none !important; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
 
-        ::-webkit-scrollbar {
-            width: 6px;
+        .analytics-subnav {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.6rem;
         }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
+        .analytics-subnav .btn {
+            background: transparent;
+            color: var(--text2);
+            border: 1px solid var(--grey);
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
         }
-
-        ::-webkit-scrollbar-thumb {
+        .analytics-subnav .btn.active {
             background: var(--grey);
-            border-radius: 3px;
+            color: var(--text);
+            border-color: var(--grey2);
         }
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            max-width: 300px;
+            margin: 0.5rem 0;
+        }
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            background: var(--bg3);
+            border: 1px solid var(--grey);
+            transition: all 0.2s;
+            position: relative;
+        }
+        .heatmap-cell:hover { transform: scale(1.1); z-index: 2; }
+        .heatmap-cell.high { background: var(--green); }
+        .heatmap-cell.medium { background: var(--yellow); }
+        .heatmap-cell.low { background: var(--red); }
+        .heatmap-cell.none { background: var(--bg3); }
+        .goal-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--bg3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0.3rem 0;
+        }
+        .goal-bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s; }
+        .profile-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin: 0.3rem 0;
+        }
+        .profile-stat .label { min-width: 80px; font-size: 0.8rem; color: var(--text2); }
+        .profile-stat .bar { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+        .profile-stat .bar-fill { height: 100%; border-radius: 3px; }
+        .profile-stat .value { min-width: 40px; text-align: right; font-size: 0.8rem; font-weight: 600; }
 
-        @media (max-width: 768px) {
-            .nav {
-                padding: 0.8rem;
-            }
-            .nav-tab {
-                padding: 0.35rem 0.7rem;
-                font-size: 0.75rem;
-            }
-            .container {
-                padding: 1rem 0.5rem;
-            }
-            .stat-val {
-                font-size: 2rem;
-            }
-            .react-area {
-                width: 240px;
-                height: 240px;
-            }
-            .mem-cell {
-                width: 45px;
-                height: 45px;
-            }
+        @media (max-width: 600px) {
+            .nav { padding: 0.4rem 0.5rem; }
+            .nav-brand { font-size: 1rem; }
+            .nav-tab { padding: 0.25rem 0.5rem; font-size: 0.6rem; }
+            .container { padding: 0.8rem 0.3rem; }
+            .stat-val { font-size: 1.6rem; }
+            .react-area { width: 170px; height: 170px; }
+            .mem-cell { width: 36px; height: 36px; }
+            .shape-cell { width: 50px; height: 50px; font-size: 1.2rem; }
+            .grid4 { grid-template-columns: repeat(2,1fr); }
+            .btn { padding: 0.4rem 0.7rem; font-size: 0.7rem; }
+            .modal-inner { padding: 0.8rem; }
+            .num-big { font-size: 1.8rem; }
+            .num-inp { width: 130px; font-size: 1.2rem; }
+            .heatmap-grid { max-width: 200px; }
         }
     </style>
 </head>
@@ -561,8 +352,8 @@
     <div class="container" id="main-content"></div>
 
     <div class="test-overlay" id="test-overlay">
-        <div style="text-align:center;max-width:550px;width:90%;">
-            <div id="test-phase" style="margin-bottom:1.5rem;color:var(--text2);"></div>
+        <div style="text-align:center;max-width:480px;width:95%;">
+            <div id="test-phase" style="margin-bottom:0.8rem;color:var(--text2);font-size:0.85rem;"></div>
             <div id="test-area"></div>
         </div>
     </div>
@@ -573,9 +364,8 @@
 
     <script>
         (function() {
-            // ===== DATABASE =====
             const DB_NAME = 'LogosticsDB';
-            const DB_VER = 4;
+            const DB_VER = 5;
             let db;
 
             function openDB() {
@@ -591,11 +381,14 @@
                             const s = d.createObjectStore('sessions', { keyPath: 'id', autoIncrement: true });
                             s.createIndex('date', 'date', { unique: false });
                         }
+                        if (!d.objectStoreNames.contains('goals')) {
+                            d.createObjectStore('goals', { keyPath: 'id', autoIncrement: true });
+                        }
+                        if (!d.objectStoreNames.contains('experiments')) {
+                            d.createObjectStore('experiments', { keyPath: 'id', autoIncrement: true });
+                        }
                     };
-                    req.onsuccess = (e) => {
-                        db = e.target.result;
-                        resolve();
-                    };
+                    req.onsuccess = (e) => { db = e.target.result; resolve(); };
                     req.onerror = (e) => reject(e.target.error);
                 });
             }
@@ -603,56 +396,47 @@
             function dbAdd(store, data) {
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readwrite');
-                    const s = tx.objectStore(store);
-                    const req = s.add(data);
+                    const req = tx.objectStore(store).add(data);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
             }
-
             function dbPut(store, data) {
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readwrite');
-                    const s = tx.objectStore(store);
-                    const req = s.put(data);
+                    const req = tx.objectStore(store).put(data);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
             }
-
             function dbGet(store, id) {
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readonly');
-                    const s = tx.objectStore(store);
-                    const req = s.get(id);
+                    const req = tx.objectStore(store).get(id);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
             }
-
             function dbAll(store) {
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readonly');
-                    const s = tx.objectStore(store);
-                    const req = s.getAll();
+                    const req = tx.objectStore(store).getAll();
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
             }
-
             function dbDel(store, id) {
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readwrite');
-                    const s = tx.objectStore(store);
-                    const req = s.delete(id);
+                    const req = tx.objectStore(store).delete(id);
                     req.onsuccess = () => resolve();
                     req.onerror = () => reject(req.error);
                 });
             }
 
-            // ===== APP STATE =====
             const state = {
                 currentTab: 'dashboard',
+                analyticsSub: 'stats',
                 testResults: {},
                 sessionMeta: null,
                 itemEmoji: '📦',
@@ -663,9 +447,10 @@
                 editImage: null,
                 editTags: [],
                 sessionTags: [],
+                goals: [],
+                experiments: [],
             };
 
-            // ===== UI HELPERS =====
             function $(sel) { return document.querySelector(sel); }
             function $$(sel) { return document.querySelectorAll(sel); }
 
@@ -673,10 +458,7 @@
                 $('#modal-content').innerHTML = html;
                 $('#modal').classList.add('on');
             }
-
-            function hideModal() {
-                $('#modal').classList.remove('on');
-            }
+            function hideModal() { $('#modal').classList.remove('on'); }
 
             function alert(msg, type = 'i') {
                 const el = document.createElement('div');
@@ -687,10 +469,9 @@
                     el.style.opacity = '0';
                     el.style.transition = 'opacity 0.3s';
                     setTimeout(() => el.remove(), 300);
-                }, 2800);
+                }, 2600);
             }
 
-            // ===== NAVIGATION =====
             function switchTab(tab) {
                 state.currentTab = tab;
                 $$('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -707,7 +488,7 @@
                 }
             }
 
-            // ===== DASHBOARD =====
+            // --- DASHBOARD ---
             async function renderDashboard() {
                 const sessions = await dbAll('sessions');
                 const total = sessions.length;
@@ -719,33 +500,36 @@
                 if (total > 0) {
                     const recent = sessions.slice(-5).reverse();
                     recentHTML = recent.map(s => `
-                        <div style="padding:0.7rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                        <div style="padding:0.5rem;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.3rem;">
                             <div>
                                 <div style="font-weight:600;">${new Date(s.date).toLocaleDateString()}</div>
-                                <div style="color:var(--text2);font-size:0.8rem;">${s.item_names||'Unknown'} • Score: ${s.overall_score||'--'}</div>
+                                <div style="color:var(--text2);font-size:0.7rem;">${s.item_names||'Unknown'} • Score: ${s.overall_score||'--'}</div>
                             </div>
-                            <button class="btn btn-o btn-s" onclick="viewSession(${s.id})">View</button>
+                            <div style="display:flex;gap:0.3rem;">
+                                <button class="btn btn-o btn-s" onclick="viewSession(${s.id})">View</button>
+                                <button class="btn btn-r btn-s" onclick="deleteSession(${s.id})">✕</button>
+                            </div>
                         </div>
                     `).join('');
                 }
 
                 $('#main-content').innerHTML = `
-                    <h2 style="margin-bottom:1.5rem;">Cognitive Dashboard</h2>
+                    <h2 style="margin-bottom:1rem;">Cognitive Dashboard</h2>
                     <div class="grid4">
                         <div class="stat"><div class="stat-val">${total}</div><div class="stat-lbl">Total Sessions</div></div>
                         <div class="stat"><div class="stat-val">${avgR}</div><div class="stat-lbl">Avg Reaction (ms)</div></div>
                         <div class="stat"><div class="stat-val">${avgM}</div><div class="stat-lbl">Avg Memory Score</div></div>
                         <div class="stat"><div class="stat-val">${streak}</div><div class="stat-lbl">Day Streak</div></div>
                     </div>
-                    <div class="grid2" style="margin-top:1.5rem;">
+                    <div class="grid2" style="margin-top:1rem;">
                         <div class="card">
                             <h3>Quick Start</h3>
-                            <p style="color:var(--text2);margin:0.8rem 0;">Run a new experimental session</p>
+                            <p style="color:var(--text2);margin:0.5rem 0;font-size:0.85rem;">Run a new experimental session</p>
                             <button class="btn" onclick="startSession()">▶ New Session</button>
                         </div>
                         <div class="card">
                             <h3>Recent Sessions</h3>
-                            <div style="margin-top:0.8rem;">${recentHTML}</div>
+                            <div style="margin-top:0.5rem;">${recentHTML}</div>
                         </div>
                     </div>`;
             }
@@ -766,407 +550,7 @@
                 return streak;
             }
 
-            // ===== ITEMS =====
-            async function renderItems() {
-                const items = await dbAll('items');
-                let html = '';
-                if (items.length === 0) {
-                    html = `<div class="card" style="text-align:center;grid-column:1/-1;">
-                        <p style="color:var(--text2);">No items created yet</p>
-                        <button class="btn" onclick="showAddItem()" style="margin-top:1rem;">Create First Item</button>
-                    </div>`;
-                } else {
-                    html = items.map(item => {
-                        const icon = item.icon || item.emoji || '📦';
-                        const isImg = item.icon && item.icon.startsWith('data:image');
-                        return `<div class="card">
-                            <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.8rem;">
-                                ${isImg ? `<img src="${item.icon}" class="item-icon" alt="">` : `<span style="font-size:2rem;">${icon}</span>`}
-                                <div>
-                                    <h3>${esc(item.name)}</h3>
-                                    <div style="color:var(--text2);font-size:0.8rem;">${esc(item.type||'Uncategorized')}</div>
-                                </div>
-                            </div>
-                            <div style="margin:0.5rem 0;">
-                                ${(item.components||[]).map(c => `<span class="tag">${esc(c.name)}: ${c.dose}${esc(c.unit)}</span>`).join('')}
-                                ${(item.tags||[]).map(t => `<span class="tag">${esc(t)}</span>`).join('')}
-                            </div>
-                            ${item.notes ? `<p style="color:var(--text2);font-size:0.8rem;">${esc(item.notes)}</p>` : ''}
-                            <div style="display:flex;gap:0.5rem;margin-top:0.8rem;">
-                                <button class="btn btn-o btn-s" onclick="showEditItem(${item.id})">Edit</button>
-                                <button class="btn btn-r btn-s" onclick="deleteItem(${item.id})">Delete</button>
-                            </div>
-                        </div>`;
-                    }).join('');
-                }
-
-                $('#main-content').innerHTML = `
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
-                        <h2>Item Profiles</h2>
-                        <button class="btn" onclick="showAddItem()">+ New Item</button>
-                    </div>
-                    <div class="grid3">${html}</div>`;
-            }
-
-            function showAddItem() {
-                state.itemEmoji = '📦';
-                state.itemImage = null;
-                state.itemTags = [];
-                showModal(`
-                    <h2>Create Item</h2>
-                    <form id="add-item-form" onsubmit="addItem(event)">
-                        <div class="f-group">
-                            <label class="f-label">Icon</label>
-                            <div style="display:flex;gap:0.5rem;align-items:center;">
-                                <span id="modal-emoji-preview" style="font-size:2rem;">📦</span>
-                                <button type="button" class="btn btn-o btn-s" onclick="toggleEmojiPicker()">Emoji</button>
-                                <span style="color:var(--text2);">or</span>
-                                <label class="btn btn-o btn-s" style="cursor:pointer;">
-                                    Image
-                                    <input type="file" accept="image/*" style="display:none;" onchange="handleItemImage(event)">
-                                </label>
-                            </div>
-                            <div id="emoji-picker-box" class="emoji-grid hidden"></div>
-                            <img id="modal-img-preview" style="display:none;width:48px;height:48px;object-fit:cover;border-radius:8px;margin-top:0.5rem;border:1px solid var(--grey);">
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Name</label>
-                            <input type="text" class="f-input" id="item-name" placeholder="e.g. Monster Energy" required>
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Type</label>
-                            <input type="text" class="f-input" id="item-type" placeholder="e.g. Drink, Supplement">
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Components</label>
-                            <div id="components-list">
-                                <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;">
-                                    <input type="text" class="f-input" placeholder="Name" style="flex:2;">
-                                    <input type="number" class="f-input" placeholder="Dose" style="flex:1;" step="any">
-                                    <input type="text" class="f-input" placeholder="Unit" style="flex:1;">
-                                    <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-o btn-s" onclick="addCompField()" style="margin-top:0.4rem;">+ Component</button>
-                        </div>
-                        <div class="f-group">
-                            <label class="form-label">Custom Tags</label>
-                            <div id="item-tags-display" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.4rem 0;"></div>
-                            <div style="display:flex;gap:0.4rem;">
-                                <input type="text" class="f-input" id="new-item-tag" placeholder="Add tag...">
-                                <button type="button" class="btn btn-o btn-s" onclick="addItemTag()">+</button>
-                            </div>
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Notes</label>
-                            <textarea class="f-input" id="item-notes" rows="2" placeholder="Optional..."></textarea>
-                        </div>
-                        <div style="display:flex;gap:0.8rem;margin-top:1.5rem;">
-                            <button type="submit" class="btn">Save</button>
-                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
-                        </div>
-                    </form>`);
-                renderEmojiPicker('emoji-picker-box');
-            }
-
-            async function showEditItem(id) {
-                const item = await dbGet('items', id);
-                if (!item) return;
-                state.editItemId = id;
-                state.editEmoji = item.emoji || '📦';
-                state.editImage = item.icon || null;
-                state.editTags = [...(item.tags || [])];
-
-                showModal(`
-                    <h2>Edit Item</h2>
-                    <form id="edit-item-form" onsubmit="editItem(event)">
-                        <div class="f-group">
-                            <label class="f-label">Icon</label>
-                            <div style="display:flex;gap:0.5rem;align-items:center;">
-                                <span id="edit-emoji-preview" style="font-size:2rem;">${state.editEmoji}</span>
-                                <button type="button" class="btn btn-o btn-s" onclick="toggleEditEmojiPicker()">Emoji</button>
-                                <span style="color:var(--text2);">or</span>
-                                <label class="btn btn-o btn-s" style="cursor:pointer;">
-                                    Image
-                                    <input type="file" accept="image/*" style="display:none;" onchange="handleEditImage(event)">
-                                </label>
-                            </div>
-                            <div id="edit-emoji-picker-box" class="emoji-grid hidden"></div>
-                            <img id="edit-img-preview" style="${state.editImage ? '' : 'display:none;'}width:48px;height:48px;object-fit:cover;border-radius:8px;margin-top:0.5rem;border:1px solid var(--grey);" src="${state.editImage||''}">
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Name</label>
-                            <input type="text" class="f-input" id="edit-item-name" value="${esc(item.name)}" required>
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Type</label>
-                            <input type="text" class="f-input" id="edit-item-type" value="${esc(item.type||'')}">
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Components</label>
-                            <div id="edit-components-list">
-                                ${(item.components||[]).map(c => `
-                                    <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;">
-                                        <input type="text" class="f-input" value="${esc(c.name)}" style="flex:2;">
-                                        <input type="number" class="f-input" value="${c.dose}" style="flex:1;" step="any">
-                                        <input type="text" class="f-input" value="${esc(c.unit)}" style="flex:1;">
-                                        <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>
-                                    </div>`).join('')}
-                                <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;">
-                                    <input type="text" class="f-input" placeholder="Name" style="flex:2;">
-                                    <input type="number" class="f-input" placeholder="Dose" style="flex:1;" step="any">
-                                    <input type="text" class="f-input" placeholder="Unit" style="flex:1;">
-                                    <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-o btn-s" onclick="addEditCompField()" style="margin-top:0.4rem;">+ Component</button>
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Tags</label>
-                            <div id="edit-tags-display" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.4rem 0;"></div>
-                            <div style="display:flex;gap:0.4rem;">
-                                <input type="text" class="f-input" id="edit-new-tag" placeholder="Add tag...">
-                                <button type="button" class="btn btn-o btn-s" onclick="addEditTag()">+</button>
-                            </div>
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Notes</label>
-                            <textarea class="f-input" id="edit-item-notes" rows="2">${esc(item.notes||'')}</textarea>
-                        </div>
-                        <div style="display:flex;gap:0.8rem;margin-top:1.5rem;">
-                            <button type="submit" class="btn">Update</button>
-                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
-                        </div>
-                    </form>`);
-                renderEmojiPicker('edit-emoji-picker-box', true);
-                renderEditTags();
-            }
-
-            function renderEmojiPicker(boxId, isEdit = false) {
-                const emojis = ['📦','☕','🧪','💊','🍵','🥤','🧃','🍬','🏋️','😴','🧠','⚡','🔥','💪','🎯','🌟','💤','🍎','🥜','🧬','🔋','💡','🎮','📱','💻','🎵','🌿','🍄','🧘','🏃'];
-                const box = document.getElementById(boxId);
-                if (!box) return;
-                box.innerHTML = emojis.map(e => 
-                    `<div class="emoji-opt" onclick="pickEmoji('${e}', ${isEdit})">${e}</div>`
-                ).join('');
-            }
-
-            function toggleEmojiPicker() {
-                const box = document.getElementById('emoji-picker-box');
-                if (box) box.classList.toggle('hidden');
-            }
-
-            function toggleEditEmojiPicker() {
-                const box = document.getElementById('edit-emoji-picker-box');
-                if (box) box.classList.toggle('hidden');
-            }
-
-            function pickEmoji(emoji, isEdit) {
-                if (isEdit) {
-                    state.editEmoji = emoji;
-                    state.editImage = null;
-                    const prev = document.getElementById('edit-emoji-preview');
-                    if (prev) prev.textContent = emoji;
-                    const img = document.getElementById('edit-img-preview');
-                    if (img) img.style.display = 'none';
-                } else {
-                    state.itemEmoji = emoji;
-                    state.itemImage = null;
-                    const prev = document.getElementById('modal-emoji-preview');
-                    if (prev) prev.textContent = emoji;
-                    const img = document.getElementById('modal-img-preview');
-                    if (img) img.style.display = 'none';
-                }
-            }
-
-            function handleItemImage(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    state.itemImage = ev.target.result;
-                    state.itemEmoji = '🖼️';
-                    const prev = document.getElementById('modal-emoji-preview');
-                    if (prev) prev.textContent = '🖼️';
-                    const img = document.getElementById('modal-img-preview');
-                    if (img) {
-                        img.src = ev.target.result;
-                        img.style.display = 'block';
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-
-            function handleEditImage(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    state.editImage = ev.target.result;
-                    state.editEmoji = '🖼️';
-                    const prev = document.getElementById('edit-emoji-preview');
-                    if (prev) prev.textContent = '🖼️';
-                    const img = document.getElementById('edit-img-preview');
-                    if (img) {
-                        img.src = ev.target.result;
-                        img.style.display = 'block';
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-
-            function addItemTag() {
-                const input = document.getElementById('new-item-tag');
-                if (!input) return;
-                const tag = input.value.trim();
-                if (tag && !state.itemTags.includes(tag)) {
-                    state.itemTags.push(tag);
-                    renderItemTags();
-                }
-                input.value = '';
-                input.focus();
-            }
-
-            function renderItemTags() {
-                const display = document.getElementById('item-tags-display');
-                if (!display) return;
-                display.innerHTML = state.itemTags.map(t => 
-                    `<span class="tag del" onclick="removeItemTag('${esc(t)}')">${esc(t)} ×</span>`
-                ).join('');
-            }
-
-            function removeItemTag(tag) {
-                state.itemTags = state.itemTags.filter(t => t !== tag);
-                renderItemTags();
-            }
-
-            function addEditTag() {
-                const input = document.getElementById('edit-new-tag');
-                if (!input) return;
-                const tag = input.value.trim();
-                if (tag && !state.editTags.includes(tag)) {
-                    state.editTags.push(tag);
-                    renderEditTags();
-                }
-                input.value = '';
-                input.focus();
-            }
-
-            function renderEditTags() {
-                const display = document.getElementById('edit-tags-display');
-                if (!display) return;
-                display.innerHTML = state.editTags.map(t => 
-                    `<span class="tag del" onclick="removeEditTag('${esc(t)}')">${esc(t)} ×</span>`
-                ).join('');
-            }
-
-            function removeEditTag(tag) {
-                state.editTags = state.editTags.filter(t => t !== tag);
-                renderEditTags();
-            }
-
-            function addCompField() {
-                const list = document.getElementById('components-list');
-                if (!list) return;
-                const div = document.createElement('div');
-                div.style.cssText = 'display:flex;gap:0.4rem;margin-bottom:0.4rem;';
-                div.innerHTML = `
-                    <input type="text" class="f-input" placeholder="Name" style="flex:2;">
-                    <input type="number" class="f-input" placeholder="Dose" style="flex:1;" step="any">
-                    <input type="text" class="f-input" placeholder="Unit" style="flex:1;">
-                    <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
-                list.appendChild(div);
-            }
-
-            function addEditCompField() {
-                const list = document.getElementById('edit-components-list');
-                if (!list) return;
-                const div = document.createElement('div');
-                div.style.cssText = 'display:flex;gap:0.4rem;margin-bottom:0.4rem;';
-                div.innerHTML = `
-                    <input type="text" class="f-input" placeholder="Name" style="flex:2;">
-                    <input type="number" class="f-input" placeholder="Dose" style="flex:1;" step="any">
-                    <input type="text" class="f-input" placeholder="Unit" style="flex:1;">
-                    <button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
-                list.appendChild(div);
-            }
-
-            async function addItem(e) {
-                e.preventDefault();
-                const name = document.getElementById('item-name')?.value;
-                if (!name) return;
-                const type = document.getElementById('item-type')?.value || '';
-                const notes = document.getElementById('item-notes')?.value || '';
-                
-                const compDivs = document.querySelectorAll('#components-list > div');
-                const components = Array.from(compDivs).map(d => {
-                    const inputs = d.querySelectorAll('input');
-                    if (!inputs[0]?.value) return null;
-                    return {
-                        name: inputs[0].value,
-                        dose: parseFloat(inputs[1]?.value) || 0,
-                        unit: inputs[2]?.value || ''
-                    };
-                }).filter(Boolean);
-
-                const item = {
-                    name, type, components, notes,
-                    emoji: state.itemEmoji,
-                    icon: state.itemImage || null,
-                    tags: [...state.itemTags],
-                    created: new Date().toISOString()
-                };
-
-                await dbAdd('items', item);
-                hideModal();
-                renderItems();
-                alert('Item created!', 's');
-            }
-
-            async function editItem(e) {
-                e.preventDefault();
-                const name = document.getElementById('edit-item-name')?.value;
-                if (!name) return;
-                const type = document.getElementById('edit-item-type')?.value || '';
-                const notes = document.getElementById('edit-item-notes')?.value || '';
-                
-                const compDivs = document.querySelectorAll('#edit-components-list > div');
-                const components = Array.from(compDivs).map(d => {
-                    const inputs = d.querySelectorAll('input');
-                    if (!inputs[0]?.value) return null;
-                    return {
-                        name: inputs[0].value,
-                        dose: parseFloat(inputs[1]?.value) || 0,
-                        unit: inputs[2]?.value || ''
-                    };
-                }).filter(Boolean);
-
-                const original = await dbGet('items', state.editItemId);
-                const item = {
-                    id: state.editItemId,
-                    name, type, components, notes,
-                    emoji: state.editEmoji,
-                    icon: state.editImage || null,
-                    tags: [...state.editTags],
-                    created: original?.created || new Date().toISOString(),
-                    updated: new Date().toISOString()
-                };
-
-                await dbPut('items', item);
-                hideModal();
-                renderItems();
-                alert('Item updated!', 's');
-            }
-
-            async function deleteItem(id) {
-                if (confirm('Delete this item?')) {
-                    await dbDel('items', id);
-                    renderItems();
-                    alert('Item deleted.', 'i');
-                }
-            }
-
-            // ===== SESSIONS =====
+            // --- SESSIONS ---
             async function renderSessions() {
                 const sessions = await dbAll('sessions');
                 let rows = '<tr><td colspan="8" style="text-align:center;color:var(--text2);">No sessions yet</td></tr>';
@@ -1180,17 +564,25 @@
                             <td>${s.number_span||'--'}</td>
                             <td>${s.focus_score||'--'}%</td>
                             <td><strong>${s.overall_score||'--'}</strong></td>
-                            <td><button class="btn btn-o btn-s" onclick="viewSession(${s.id})">View</button></td>
+                            <td>
+                                <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+                                    <button class="btn btn-o btn-s" onclick="viewSession(${s.id})">View</button>
+                                    <button class="btn btn-r btn-s" onclick="deleteSession(${s.id})">✕</button>
+                                </div>
+                            </td>
                         </tr>
                     `).join('');
                 }
 
                 $('#main-content').innerHTML = `
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
                         <h2>Session History</h2>
-                        <button class="btn btn-o" onclick="exportData()">⬇ Export</button>
+                        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                            <button class="btn btn-o" onclick="exportData()">⬇ Export</button>
+                            <button class="btn btn-r" onclick="clearAllSessions()">🗑 Clear All</button>
+                        </div>
                     </div>
-                    <div class="card">
+                    <div class="card" style="overflow-x:auto;">
                         <table>
                             <thead><tr><th>Date</th><th>Items</th><th>Reaction</th><th>Memory</th><th>Number</th><th>Focus</th><th>Score</th><th></th></tr></thead>
                             <tbody>${rows}</tbody>
@@ -1198,12 +590,27 @@
                     </div>`;
             }
 
+            async function deleteSession(id) {
+                if (confirm('Delete this session?')) {
+                    await dbDel('sessions', id);
+                    renderSessions();
+                    alert('Session deleted.', 'i');
+                }
+            }
+            async function clearAllSessions() {
+                if (confirm('Delete ALL sessions?')) {
+                    const all = await dbAll('sessions');
+                    for (const s of all) await dbDel('sessions', s.id);
+                    renderSessions();
+                    alert('All sessions cleared.', 'i');
+                }
+            }
             async function viewSession(id) {
                 const s = await dbGet('sessions', id);
                 if (!s) return;
                 showModal(`
                     <h2>Session Results</h2>
-                    <div style="margin:1rem 0;padding:1rem;background:var(--bg3);border-radius:8px;">
+                    <div style="margin:0.6rem 0;padding:0.6rem;background:var(--bg3);border-radius:8px;font-size:0.85rem;">
                         <p><strong>Date:</strong> ${new Date(s.date).toLocaleString()}</p>
                         <p><strong>Items:</strong> ${esc(s.item_names||'Unknown')}</p>
                         ${s.time_since ? `<p><strong>Time Since:</strong> ${s.time_since}</p>` : ''}
@@ -1211,189 +618,333 @@
                         ${s.notes ? `<p><strong>Notes:</strong> ${esc(s.notes)}</p>` : ''}
                     </div>
                     <div class="grid3">
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${s.reaction_avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${s.memory_score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${s.number_span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${s.reaction_avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${s.memory_score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${s.number_span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
                     </div>
-                    <div style="text-align:center;margin-top:1.5rem;">
+                    <div style="text-align:center;margin-top:1rem;">
                         <button class="btn btn-o" onclick="hideModal()">Close</button>
                     </div>`);
             }
 
-            async function startSession() {
-                hideModal();
-                state.testResults = {};
-                state.sessionMeta = null;
-                state.sessionTags = [];
-                
+            // --- ITEMS (condensed but functional) ---
+            async function renderItems() {
                 const items = await dbAll('items');
-                let itemsHTML = '<p style="color:var(--text2);">No items available. Create one first.</p>';
-                if (items.length > 0) {
-                    itemsHTML = items.map(item => {
+                let html = '';
+                if (items.length === 0) {
+                    html = `<div class="card" style="text-align:center;grid-column:1/-1;">
+                        <p style="color:var(--text2);">No items created yet</p>
+                        <button class="btn" onclick="showAddItem()" style="margin-top:0.6rem;">Create First Item</button>
+                    </div>`;
+                } else {
+                    html = items.map(item => {
                         const icon = item.icon || item.emoji || '📦';
                         const isImg = item.icon && item.icon.startsWith('data:image');
-                        return `<div style="margin:0.4rem 0;padding:0.5rem;background:var(--bg3);border-radius:8px;">
-                            <label style="display:flex;align-items:center;cursor:pointer;">
-                                <input type="checkbox" value="${item.id}" data-name="${esc(item.name)}" style="margin-right:0.6rem;">
-                                ${isImg ? `<img src="${item.icon}" style="width:28px;height:28px;object-fit:cover;border-radius:4px;margin-right:0.4rem;">` : `<span style="font-size:1.4rem;margin-right:0.4rem;">${icon}</span>`}
-                                <span style="font-weight:600;">${esc(item.name)}</span>
-                                ${(item.components||[]).map(c => `<span class="tag" style="margin-left:0.4rem;">${esc(c.name)}: ${c.dose}${esc(c.unit)}</span>`).join('')}
-                            </label>
+                        return `<div class="card">
+                            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+                                ${isImg ? `<img src="${item.icon}" class="item-icon" alt="">` : `<span style="font-size:1.6rem;">${icon}</span>`}
+                                <div>
+                                    <h3>${esc(item.name)}</h3>
+                                    <div style="color:var(--text2);font-size:0.7rem;">${esc(item.type||'Uncategorized')}</div>
+                                </div>
+                            </div>
+                            <div style="margin:0.3rem 0;">
+                                ${(item.components||[]).map(c => `<span class="tag">${esc(c.name)}: ${c.dose}${esc(c.unit)}</span>`).join('')}
+                                ${(item.tags||[]).map(t => `<span class="tag">${esc(t)}</span>`).join('')}
+                            </div>
+                            ${item.notes ? `<p style="color:var(--text2);font-size:0.7rem;">${esc(item.notes)}</p>` : ''}
+                            <div style="display:flex;gap:0.3rem;margin-top:0.5rem;flex-wrap:wrap;">
+                                <button class="btn btn-o btn-s" onclick="showEditItem(${item.id})">Edit</button>
+                                <button class="btn btn-r btn-s" onclick="deleteItem(${item.id})">Delete</button>
+                            </div>
                         </div>`;
                     }).join('');
                 }
 
+                $('#main-content').innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+                        <h2>Item Profiles</h2>
+                        <button class="btn" onclick="showAddItem()">+ New Item</button>
+                    </div>
+                    <div class="grid3">${html}</div>`;
+            }
+
+            // Item CRUD (abbreviated, same as before)
+            window.showAddItem = function() {
+                state.itemEmoji = '📦'; state.itemImage = null; state.itemTags = [];
+                showModal(`
+                    <h2>Create Item</h2>
+                    <form id="add-item-form" onsubmit="addItem(event)">
+                        <div class="f-group">
+                            <label class="f-label">Icon</label>
+                            <div style="display:flex;gap:0.3rem;align-items:center;flex-wrap:wrap;">
+                                <span id="modal-emoji-preview" style="font-size:1.6rem;">📦</span>
+                                <button type="button" class="btn btn-o btn-s" onclick="toggleEmojiPicker()">Emoji</button>
+                                <span style="color:var(--text2);">or</span>
+                                <label class="btn btn-o btn-s" style="cursor:pointer;">Image<input type="file" accept="image/*" style="display:none;" onchange="handleItemImage(event)"></label>
+                            </div>
+                            <div id="emoji-picker-box" class="emoji-grid hidden"></div>
+                            <img id="modal-img-preview" style="display:none;width:36px;height:36px;object-fit:cover;border-radius:6px;margin-top:0.3rem;border:1px solid var(--grey);">
+                        </div>
+                        <div class="f-group"><label class="f-label">Name</label><input type="text" class="f-input" id="item-name" placeholder="e.g. Monster" required></div>
+                        <div class="f-group"><label class="f-label">Type</label><input type="text" class="f-input" id="item-type" placeholder="e.g. Drink"></div>
+                        <div class="f-group">
+                            <label class="f-label">Components</label>
+                            <div id="components-list"><div style="display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:70px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div></div>
+                            <button type="button" class="btn btn-o btn-s" onclick="addCompField()">+ Component</button>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Tags</label>
+                            <div id="item-tags-display" style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0;"></div>
+                            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" id="new-item-tag" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addItemTag()">+</button></div>
+                        </div>
+                        <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input" id="item-notes" rows="2"></textarea></div>
+                        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button type="submit" class="btn">Save</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
+                    </form>`);
+                renderEmojiPicker('emoji-picker-box');
+            };
+
+            window.showEditItem = async function(id) {
+                const item = await dbGet('items', id);
+                if (!item) return;
+                state.editItemId = id; state.editEmoji = item.emoji || '📦'; state.editImage = item.icon || null; state.editTags = [...(item.tags || [])];
+                showModal(`
+                    <h2>Edit Item</h2>
+                    <form id="edit-item-form" onsubmit="editItem(event)">
+                        <div class="f-group">
+                            <label class="f-label">Icon</label>
+                            <div style="display:flex;gap:0.3rem;align-items:center;flex-wrap:wrap;">
+                                <span id="edit-emoji-preview" style="font-size:1.6rem;">${state.editEmoji}</span>
+                                <button type="button" class="btn btn-o btn-s" onclick="toggleEditEmojiPicker()">Emoji</button>
+                                <span style="color:var(--text2);">or</span>
+                                <label class="btn btn-o btn-s" style="cursor:pointer;">Image<input type="file" accept="image/*" style="display:none;" onchange="handleEditImage(event)"></label>
+                            </div>
+                            <div id="edit-emoji-picker-box" class="emoji-grid hidden"></div>
+                            <img id="edit-img-preview" style="${state.editImage ? '' : 'display:none;'}width:36px;height:36px;object-fit:cover;border-radius:6px;margin-top:0.3rem;border:1px solid var(--grey);" src="${state.editImage||''}">
+                        </div>
+                        <div class="f-group"><label class="f-label">Name</label><input type="text" class="f-input" id="edit-item-name" value="${esc(item.name)}" required></div>
+                        <div class="f-group"><label class="f-label">Type</label><input type="text" class="f-input" id="edit-item-type" value="${esc(item.type||'')}"></div>
+                        <div class="f-group">
+                            <label class="f-label">Components</label>
+                            <div id="edit-components-list">
+                                ${(item.components||[]).map(c => `<div style="display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" value="${esc(c.name)}" style="flex:2;min-width:70px;"><input type="number" class="f-input" value="${c.dose}" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" value="${esc(c.unit)}" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div>`).join('')}
+                                <div style="display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:70px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div>
+                            </div>
+                            <button type="button" class="btn btn-o btn-s" onclick="addEditCompField()">+ Component</button>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Tags</label>
+                            <div id="edit-tags-display" style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0;"></div>
+                            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" id="edit-new-tag" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addEditTag()">+</button></div>
+                        </div>
+                        <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input" id="edit-item-notes" rows="2">${esc(item.notes||'')}</textarea></div>
+                        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button type="submit" class="btn">Update</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
+                    </form>`);
+                renderEmojiPicker('edit-emoji-picker-box', true);
+                renderEditTags();
+            };
+
+            window.deleteItem = async function(id) { if (confirm('Delete?')) { await dbDel('items', id); renderItems(); alert('Item deleted.', 'i'); } };
+            window.addItem = async function(e) {
+                e.preventDefault();
+                const name = document.getElementById('item-name')?.value;
+                if (!name) return;
+                const type = document.getElementById('item-type')?.value || '';
+                const notes = document.getElementById('item-notes')?.value || '';
+                const compDivs = document.querySelectorAll('#components-list > div');
+                const components = Array.from(compDivs).map(d => {
+                    const inputs = d.querySelectorAll('input');
+                    if (!inputs[0]?.value) return null;
+                    return { name: inputs[0].value, dose: parseFloat(inputs[1]?.value) || 0, unit: inputs[2]?.value || '' };
+                }).filter(Boolean);
+                const item = { name, type, components, notes, emoji: state.itemEmoji, icon: state.itemImage || null, tags: [...state.itemTags], created: new Date().toISOString() };
+                await dbAdd('items', item);
+                hideModal();
+                renderItems();
+                alert('Item created!', 's');
+            };
+            window.editItem = async function(e) {
+                e.preventDefault();
+                const name = document.getElementById('edit-item-name')?.value;
+                if (!name) return;
+                const type = document.getElementById('edit-item-type')?.value || '';
+                const notes = document.getElementById('edit-item-notes')?.value || '';
+                const compDivs = document.querySelectorAll('#edit-components-list > div');
+                const components = Array.from(compDivs).map(d => {
+                    const inputs = d.querySelectorAll('input');
+                    if (!inputs[0]?.value) return null;
+                    return { name: inputs[0].value, dose: parseFloat(inputs[1]?.value) || 0, unit: inputs[2]?.value || '' };
+                }).filter(Boolean);
+                const original = await dbGet('items', state.editItemId);
+                const item = { id: state.editItemId, name, type, components, notes, emoji: state.editEmoji, icon: state.editImage || null, tags: [...state.editTags], created: original?.created || new Date().toISOString(), updated: new Date().toISOString() };
+                await dbPut('items', item);
+                hideModal();
+                renderItems();
+                alert('Item updated!', 's');
+            };
+
+            // Helper functions
+            function renderEmojiPicker(boxId, isEdit = false) {
+                const emojis = ['📦','☕','🧪','💊','🍵','🥤','🧃','🍬','🏋️','😴','🧠','⚡','🔥','💪','🎯','🌟','💤','🍎','🥜','🧬','🔋','💡','🎮','📱','💻','🎵','🌿','🍄','🧘','🏃'];
+                const box = document.getElementById(boxId);
+                if (!box) return;
+                box.innerHTML = emojis.map(e => `<div class="emoji-opt" onclick="pickEmoji('${e}', ${isEdit})">${e}</div>`).join('');
+            }
+            window.toggleEmojiPicker = function() { document.getElementById('emoji-picker-box')?.classList.toggle('hidden'); };
+            window.toggleEditEmojiPicker = function() { document.getElementById('edit-emoji-picker-box')?.classList.toggle('hidden'); };
+            window.pickEmoji = function(emoji, isEdit) {
+                if (isEdit) { state.editEmoji = emoji; state.editImage = null; document.getElementById('edit-emoji-preview').textContent = emoji; document.getElementById('edit-img-preview').style.display = 'none'; }
+                else { state.itemEmoji = emoji; state.itemImage = null; document.getElementById('modal-emoji-preview').textContent = emoji; document.getElementById('modal-img-preview').style.display = 'none'; }
+            };
+            window.handleItemImage = function(e) {
+                const file = e.target.files[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => { state.itemImage = ev.target.result; state.itemEmoji = '🖼️'; document.getElementById('modal-emoji-preview').textContent = '🖼️'; const img = document.getElementById('modal-img-preview'); img.src = ev.target.result; img.style.display = 'block'; };
+                reader.readAsDataURL(file);
+            };
+            window.handleEditImage = function(e) {
+                const file = e.target.files[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => { state.editImage = ev.target.result; state.editEmoji = '🖼️'; document.getElementById('edit-emoji-preview').textContent = '🖼️'; const img = document.getElementById('edit-img-preview'); img.src = ev.target.result; img.style.display = 'block'; };
+                reader.readAsDataURL(file);
+            };
+            window.addItemTag = function() {
+                const input = document.getElementById('new-item-tag'); if (!input) return;
+                const tag = input.value.trim(); if (tag && !state.itemTags.includes(tag)) { state.itemTags.push(tag); renderItemTags(); }
+                input.value = ''; input.focus();
+            };
+            function renderItemTags() {
+                const display = document.getElementById('item-tags-display'); if (!display) return;
+                display.innerHTML = state.itemTags.map(t => `<span class="tag del" onclick="removeItemTag('${esc(t)}')">${esc(t)} ×</span>`).join('');
+            }
+            window.removeItemTag = function(tag) { state.itemTags = state.itemTags.filter(t => t !== tag); renderItemTags(); };
+            window.addEditTag = function() {
+                const input = document.getElementById('edit-new-tag'); if (!input) return;
+                const tag = input.value.trim(); if (tag && !state.editTags.includes(tag)) { state.editTags.push(tag); renderEditTags(); }
+                input.value = ''; input.focus();
+            };
+            function renderEditTags() {
+                const display = document.getElementById('edit-tags-display'); if (!display) return;
+                display.innerHTML = state.editTags.map(t => `<span class="tag del" onclick="removeEditTag('${esc(t)}')">${esc(t)} ×</span>`).join('');
+            }
+            window.removeEditTag = function(tag) { state.editTags = state.editTags.filter(t => t !== tag); renderEditTags(); };
+            window.addCompField = function() {
+                const list = document.getElementById('components-list'); if (!list) return;
+                const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;';
+                div.innerHTML = `<input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:70px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
+                list.appendChild(div);
+            };
+            window.addEditCompField = function() {
+                const list = document.getElementById('edit-components-list'); if (!list) return;
+                const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;';
+                div.innerHTML = `<input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:70px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
+                list.appendChild(div);
+            };
+
+            // --- SESSION TESTS (same as before, abbreviated) ---
+            window.startSession = async function() {
+                hideModal();
+                state.testResults = {};
+                state.sessionMeta = null;
+                state.sessionTags = [];
+                const items = await dbAll('items');
+                let itemsHTML = '<p style="color:var(--text2);">No items available.</p>';
+                if (items.length > 0) {
+                    itemsHTML = items.map(item => {
+                        const icon = item.icon || item.emoji || '📦';
+                        const isImg = item.icon && item.icon.startsWith('data:image');
+                        return `<div style="margin:0.2rem 0;padding:0.3rem;background:var(--bg3);border-radius:6px;">
+                            <label style="display:flex;align-items:center;cursor:pointer;gap:0.3rem;flex-wrap:wrap;">
+                                <input type="checkbox" value="${item.id}" data-name="${esc(item.name)}" style="flex-shrink:0;">
+                                ${isImg ? `<img src="${item.icon}" style="width:22px;height:22px;object-fit:cover;border-radius:4px;">` : `<span style="font-size:1.2rem;">${icon}</span>`}
+                                <span style="font-weight:600;">${esc(item.name)}</span>
+                                ${(item.components||[]).map(c => `<span class="tag" style="margin-left:0.2rem;">${esc(c.name)}</span>`).join('')}
+                            </label>
+                        </div>`;
+                    }).join('');
+                }
                 const defaultTags = ['😴 Tired','🤒 Sick','😰 Stressed','🏃 Exercised','😋 Hungry','🌅 Morning','🌙 Evening','💪 Energized','😤 Irritated','😌 Calm'];
-                
                 showModal(`
                     <h2>New Session Setup</h2>
                     <form id="session-form" onsubmit="beginTests(event)">
-                        <div class="f-group">
-                            <label class="f-label">Select Items</label>
-                            <div style="max-height:200px;overflow-y:auto;">${itemsHTML}</div>
-                        </div>
+                        <div class="f-group"><label class="f-label">Select Items</label><div style="max-height:160px;overflow-y:auto;">${itemsHTML}</div></div>
                         <div class="f-group">
                             <label class="f-label">Time Since Intake</label>
                             <select class="f-input" id="intake-time">
                                 <option value="immediate">Immediate</option>
-                                <option value="15min">15 Minutes</option>
-                                <option value="30min">30 Minutes</option>
-                                <option value="45min">45 Minutes</option>
-                                <option value="1hour">1 Hour</option>
-                                <option value="1.5hours">1.5 Hours</option>
-                                <option value="2hours">2 Hours</option>
-                                <option value="3hours">3 Hours</option>
-                                <option value="4hours">4 Hours</option>
-                                <option value="6hours">6 Hours</option>
-                                <option value="8hours">8 Hours</option>
-                                <option value="12hours">12 Hours</option>
-                                <option value="24hours">24 Hours</option>
+                                <option value="15min">15m</option><option value="30min">30m</option><option value="45min">45m</option>
+                                <option value="1hour">1h</option><option value="1.5hours">1.5h</option><option value="2hours">2h</option>
+                                <option value="3hours">3h</option><option value="4hours">4h</option><option value="6hours">6h</option>
+                                <option value="8hours">8h</option><option value="12hours">12h</option><option value="24hours">24h</option>
                                 <option value="custom">Custom</option>
                             </select>
-                            <input type="text" class="f-input hidden" id="custom-intake-time" placeholder="e.g. 45 minutes ago" style="margin-top:0.4rem;">
+                            <input type="text" class="f-input hidden" id="custom-intake-time" placeholder="e.g. 45 min ago" style="margin-top:0.3rem;">
                         </div>
                         <div class="f-group">
-                            <label class="f-label">Session Tags</label>
-                            <div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.4rem 0;">
-                                ${defaultTags.map(t => `<span class="tag" onclick="toggleSessionTag(this)" data-tag="${t}">${t}</span>`).join('')}
-                            </div>
-                            <div id="session-tags-custom" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.4rem 0;"></div>
-                            <div style="display:flex;gap:0.4rem;">
-                                <input type="text" class="f-input" id="new-session-tag" placeholder="Add custom tag...">
-                                <button type="button" class="btn btn-o btn-s" onclick="addSessionTag()">+</button>
-                            </div>
+                            <label class="f-label">Tags</label>
+                            <div style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0;">${defaultTags.map(t => `<span class="tag" onclick="toggleSessionTag(this)" data-tag="${t}">${t}</span>`).join('')}</div>
+                            <div id="session-tags-custom" style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0;"></div>
+                            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" id="new-session-tag" placeholder="Custom tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addSessionTag()">+</button></div>
                         </div>
-                        <div class="f-group">
-                            <label class="f-label">Notes</label>
-                            <textarea class="f-input" id="session-notes" rows="2" placeholder="How are you feeling?"></textarea>
-                        </div>
-                        <div style="display:flex;gap:0.8rem;margin-top:1.5rem;">
-                            <button type="submit" class="btn">▶ Start Tests</button>
-                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
-                        </div>
+                        <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input" id="session-notes" rows="2"></textarea></div>
+                        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button type="submit" class="btn">▶ Start Tests</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
                     </form>`);
-
                 document.getElementById('intake-time')?.addEventListener('change', function() {
-                    const custom = document.getElementById('custom-intake-time');
-                    if (custom) custom.classList.toggle('hidden', this.value !== 'custom');
+                    document.getElementById('custom-intake-time')?.classList.toggle('hidden', this.value !== 'custom');
                 });
-            }
+            };
 
-            function toggleSessionTag(el) {
+            window.toggleSessionTag = function(el) {
                 el.classList.toggle('sel');
                 const tag = el.dataset.tag;
-                if (el.classList.contains('sel')) {
-                    if (!state.sessionTags.includes(tag)) state.sessionTags.push(tag);
-                } else {
-                    state.sessionTags = state.sessionTags.filter(t => t !== tag);
-                }
-            }
-
-            function addSessionTag() {
-                const input = document.getElementById('new-session-tag');
-                if (!input) return;
-                const tag = input.value.trim();
-                if (tag && !state.sessionTags.includes(tag)) {
-                    state.sessionTags.push(tag);
-                    renderSessionCustomTags();
-                }
-                input.value = '';
-                input.focus();
-            }
-
+                if (el.classList.contains('sel')) { if (!state.sessionTags.includes(tag)) state.sessionTags.push(tag); }
+                else { state.sessionTags = state.sessionTags.filter(t => t !== tag); }
+            };
+            window.addSessionTag = function() {
+                const input = document.getElementById('new-session-tag'); if (!input) return;
+                const tag = input.value.trim(); if (tag && !state.sessionTags.includes(tag)) { state.sessionTags.push(tag); renderSessionCustomTags(); }
+                input.value = ''; input.focus();
+            };
             function renderSessionCustomTags() {
-                const container = document.getElementById('session-tags-custom');
-                if (!container) return;
-                container.innerHTML = state.sessionTags.map(t => 
-                    `<span class="tag sel del" onclick="removeSessionTag('${esc(t)}')">${esc(t)} ×</span>`
-                ).join('');
+                const container = document.getElementById('session-tags-custom'); if (!container) return;
+                container.innerHTML = state.sessionTags.map(t => `<span class="tag sel del" onclick="removeSessionTag('${esc(t)}')">${esc(t)} ×</span>`).join('');
             }
-
-            function removeSessionTag(tag) {
+            window.removeSessionTag = function(tag) {
                 state.sessionTags = state.sessionTags.filter(t => t !== tag);
                 renderSessionCustomTags();
-                $$('#session-form .tag.sel').forEach(el => {
-                    if (el.dataset.tag === tag) el.classList.remove('sel');
-                });
-            }
+                $$('#session-form .tag.sel').forEach(el => { if (el.dataset.tag === tag) el.classList.remove('sel'); });
+            };
 
-            // ===== TESTS =====
-            async function beginTests(e) {
+            window.beginTests = async function(e) {
                 e.preventDefault();
                 const checkboxes = document.querySelectorAll('#session-form input[type="checkbox"]:checked');
-                const items = Array.from(checkboxes).map(cb => ({
-                    id: parseInt(cb.value),
-                    name: cb.dataset.name
-                }));
-
-                if (items.length === 0) {
-                    alert('Select at least one item!', 'w');
-                    return;
-                }
-
+                const items = Array.from(checkboxes).map(cb => ({ id: parseInt(cb.value), name: cb.dataset.name }));
+                if (items.length === 0) { alert('Select at least one item!', 'w'); return; }
                 const intakeSelect = document.getElementById('intake-time');
                 let timeSince = intakeSelect?.value || 'immediate';
-                if (timeSince === 'custom') {
-                    timeSince = document.getElementById('custom-intake-time')?.value || 'custom';
-                }
-
+                if (timeSince === 'custom') timeSince = document.getElementById('custom-intake-time')?.value || 'custom';
                 const notes = document.getElementById('session-notes')?.value || '';
-
-                state.sessionMeta = {
-                    items, timeSince, notes,
-                    tags: [...state.sessionTags],
-                    date: new Date().toISOString()
-                };
-
+                state.sessionMeta = { items, timeSince, notes, tags: [...state.sessionTags], date: new Date().toISOString() };
                 hideModal();
                 $('#test-overlay').classList.add('on');
-
                 await runReactionTest();
                 await runMemoryTest();
                 await runNumberTest();
                 await runFocusTest();
-                
                 await saveSession();
                 showResults();
-            }
+            };
 
             function runReactionTest() {
                 return new Promise(resolve => {
                     $('#test-phase').textContent = 'Test 1/4: Reaction Time';
-                    const trials = [];
-                    let count = 0;
-                    const total = 5;
-                    let phase = 'wait';
-                    let start;
-
+                    const trials = []; let count = 0; const total = 5; let phase = 'wait'; let start;
                     $('#test-area').innerHTML = `
-                        <p style="color:var(--text2);margin-bottom:1rem;">Click when screen turns white</p>
+                        <p style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Click when screen turns white</p>
                         <div class="react-area" id="react-box">Wait for white...</div>
-                        <p style="color:var(--text2);margin-top:0.8rem;">Trial: <span id="trial-num">1</span>/${total}</p>
+                        <p style="color:var(--text2);margin-top:0.5rem;font-size:0.8rem;">Trial: <span id="trial-num">1</span>/${total}</p>
                         <div class="prog"><div class="prog-fill" style="width:0%"></div></div>`;
-
                     const box = $('#react-box');
-
                     function startTrial() {
                         box.className = 'react-area';
                         box.textContent = 'Wait for white...';
@@ -1405,37 +956,27 @@
                             start = Date.now();
                         }, delay);
                     }
-
                     box.addEventListener('click', () => {
                         if (phase !== 'testing') return;
                         if (box.classList.contains('go')) {
                             const rt = Date.now() - start;
-                            trials.push(rt);
-                            count++;
+                            trials.push(rt); count++;
                             box.className = 'react-area';
                             box.style.background = 'var(--grey)';
                             box.style.borderColor = 'var(--text2)';
                             box.textContent = `${rt}ms`;
                             $('#trial-num').textContent = count;
                             $('.prog-fill').style.width = `${(count/total)*100}%`;
-
                             if (count >= total) {
-                                state.testResults.reaction = {
-                                    avg: Math.round(trials.reduce((a,b)=>a+b,0)/trials.length),
-                                    best: Math.min(...trials),
-                                    consistency: Math.round((1 - (Math.max(...trials)-Math.min(...trials))/(trials.reduce((a,b)=>a+b,0)/trials.length))*100)
-                                };
+                                state.testResults.reaction = { avg: Math.round(trials.reduce((a,b)=>a+b,0)/trials.length), best: Math.min(...trials), consistency: Math.round((1 - (Math.max(...trials)-Math.min(...trials))/(trials.reduce((a,b)=>a+b,0)/trials.length))*100) };
                                 $('#test-phase').textContent = '✓ Reaction test done!';
-                                setTimeout(resolve, 800);
-                            } else {
-                                setTimeout(startTrial, 600);
-                            }
+                                setTimeout(resolve, 500);
+                            } else { setTimeout(startTrial, 400); }
                         } else if (!box.classList.contains('go') && box.style.background !== 'var(--grey)') {
                             box.textContent = 'Too early!';
-                            setTimeout(startTrial, 1000);
+                            setTimeout(startTrial, 700);
                         }
                     });
-
                     phase = 'testing';
                     startTrial();
                 });
@@ -1444,51 +985,37 @@
             function runMemoryTest() {
                 return new Promise(resolve => {
                     $('#test-phase').textContent = 'Test 2/4: Memory Grid';
-                    const size = 4;
-                    const len = 6;
-                    const pattern = new Set();
+                    const size = 4; const len = 6; const pattern = new Set();
                     while (pattern.size < len) pattern.add(Math.floor(Math.random() * (size*size)));
-
                     $('#test-area').innerHTML = `
-                        <p id="mem-msg" style="color:var(--text2);margin-bottom:1rem;">Memorize the pattern (2 sec)</p>
-                        <div class="mem-grid" style="grid-template-columns:repeat(${size},55px);" id="mem-grid">
+                        <p id="mem-msg" style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Memorize (2 sec)</p>
+                        <div class="mem-grid" style="grid-template-columns:repeat(${size},42px);" id="mem-grid">
                             ${Array.from({length:size*size}, (_,i) => `<div class="mem-cell ${pattern.has(i)?'on':''}" data-idx="${i}"></div>`).join('')}
                         </div>
-                        <p style="color:var(--text2);margin-top:0.8rem;">Found: <span id="mem-found">0</span>/${len}</p>
+                        <p style="color:var(--text2);margin-top:0.5rem;font-size:0.8rem;">Found: <span id="mem-found">0</span>/${len}</p>
                         <div class="prog"><div class="prog-fill" style="width:0%"></div></div>`;
-
-                    let correct = 0;
-                    let wrong = 0;
-                    let phase = 'memorize';
-
+                    let correct = 0, wrong = 0, phase = 'memorize';
                     setTimeout(() => {
                         phase = 'recall';
                         $('#mem-msg').textContent = 'Click the tiles you remember';
                         $$('#mem-grid .mem-cell').forEach(c => c.classList.remove('on'));
                     }, 2000);
-
                     $('#mem-grid').addEventListener('click', (e) => {
                         if (phase !== 'recall') return;
                         const cell = e.target.closest('.mem-cell');
                         if (!cell) return;
                         const idx = parseInt(cell.dataset.idx);
-                        
                         if (pattern.has(idx) && !cell.classList.contains('ok')) {
-                            cell.classList.add('ok');
-                            correct++;
+                            cell.classList.add('ok'); correct++;
                             $('#mem-found').textContent = correct;
                             $('.prog-fill').style.width = `${(correct/len)*100}%`;
                             if (correct >= len) {
-                                state.testResults.memory = {
-                                    score: Math.min(Math.round((correct/(correct+wrong))*20), 20),
-                                    correct, mistakes: wrong
-                                };
+                                state.testResults.memory = { score: Math.min(Math.round((correct/(correct+wrong))*20), 20), correct, mistakes: wrong };
                                 $('#test-phase').textContent = '✓ Memory test done!';
-                                setTimeout(resolve, 800);
+                                setTimeout(resolve, 500);
                             }
                         } else if (!cell.classList.contains('ok')) {
-                            cell.classList.add('bad');
-                            wrong++;
+                            cell.classList.add('bad'); wrong++;
                             setTimeout(() => cell.classList.remove('bad'), 300);
                         }
                     });
@@ -1499,41 +1026,28 @@
                 return new Promise(resolve => {
                     $('#test-phase').textContent = 'Test 3/4: Number Recall';
                     let span = 4;
-
                     function showNumber() {
                         const num = Array.from({length: span}, () => Math.floor(Math.random()*10)).join('');
                         $('#test-area').innerHTML = `
-                            <p style="color:var(--text2);margin-bottom:1rem;">Remember this number</p>
+                            <p style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Remember this number</p>
                             <div class="num-big">${num}</div>
-                            <p style="color:var(--text2);">Digit Span: ${span}</p>`;
-
+                            <p style="color:var(--text2);font-size:0.8rem;">Digit Span: ${span}</p>`;
                         setTimeout(() => {
                             $('#test-area').innerHTML = `
-                                <p style="color:var(--text2);margin-bottom:1rem;">Enter the number</p>
+                                <p style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Enter the number</p>
                                 <input type="text" class="num-inp" id="num-inp" maxlength="${span}" autofocus>
-                                <p style="color:var(--text2);margin-top:0.8rem;">Digit Span: ${span}</p>
-                                <button class="btn" id="num-submit" style="margin-top:0.8rem;">Submit</button>`;
-
+                                <p style="color:var(--text2);margin-top:0.5rem;font-size:0.8rem;">Digit Span: ${span}</p>
+                                <button class="btn" id="num-submit" style="margin-top:0.5rem;">Submit</button>`;
                             $('#num-submit').addEventListener('click', () => checkNumber(num));
-                            $('#num-inp').addEventListener('keypress', (e) => {
-                                if (e.key === 'Enter') checkNumber(num);
-                            });
-                        }, 2500);
+                            $('#num-inp').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkNumber(num); });
+                            setTimeout(() => $('#num-inp')?.focus(), 100);
+                        }, 1800);
                     }
-
                     function checkNumber(correct) {
                         const input = $('#num-inp')?.value;
-                        if (input === correct && span < 10) {
-                            span++;
-                            alert('Correct! Increasing span...', 's');
-                            showNumber();
-                        } else {
-                            state.testResults.number = { span: input === correct ? span : span - 1 };
-                            $('#test-phase').textContent = '✓ Number recall done!';
-                            resolve();
-                        }
+                        if (input === correct && span < 10) { span++; alert('Correct! +1 span', 's'); showNumber(); }
+                        else { state.testResults.number = { span: input === correct ? span : span - 1 }; $('#test-phase').textContent = '✓ Number recall done!'; resolve(); }
                     }
-
                     showNumber();
                 });
             }
@@ -1543,56 +1057,38 @@
                     $('#test-phase').textContent = 'Test 4/4: Shape Focus';
                     const shapes = ['●','■','▲','◆'];
                     const target = shapes[Math.floor(Math.random()*shapes.length)];
-                    let correct = 0;
-                    let wrong = 0;
-                    let round = 0;
+                    let correct = 0, wrong = 0, round = 0;
                     const total = 10;
-
                     function makeGrid() {
                         const cells = [];
                         const tpos = Math.floor(Math.random()*9);
                         for (let i = 0; i < 9; i++) {
                             if (i === tpos) cells.push(target);
-                            else {
-                                let s;
-                                do { s = shapes[Math.floor(Math.random()*shapes.length)]; }
-                                while (s === target);
-                                cells.push(s);
-                            }
+                            else { let s; do { s = shapes[Math.floor(Math.random()*shapes.length)]; } while (s === target); cells.push(s); }
                         }
                         $('#test-area').innerHTML = `
-                            <p style="color:var(--text2);margin-bottom:1rem;">Tap only: <span style="font-size:1.8rem;">${target}</span></p>
+                            <p style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Tap only: <span style="font-size:1.4rem;">${target}</span></p>
                             <div class="shape-grid">${cells.map(s => `<div class="shape-cell" data-shape="${s}">${s}</div>`).join('')}</div>
-                            <p style="color:var(--text2);margin-top:0.8rem;">Round: <span id="focus-round">${round+1}</span>/${total}</p>
+                            <p style="color:var(--text2);margin-top:0.5rem;font-size:0.8rem;">Round: <span id="focus-round">${round+1}</span>/${total}</p>
                             <div class="prog"><div class="prog-fill" style="width:${(round/total)*100}%"></div></div>`;
-
                         $$('.shape-cell').forEach(c => {
                             c.addEventListener('click', () => {
                                 if (c.dataset.shape === target) {
-                                    c.classList.add('good');
-                                    correct++;
-                                    round++;
+                                    c.classList.add('good'); correct++; round++;
                                     $('#focus-round').textContent = Math.min(round+1, total);
                                     $('.prog-fill').style.width = `${(round/total)*100}%`;
                                     if (round >= total) {
-                                        state.testResults.focus = {
-                                            accuracy: Math.round((correct/(correct+wrong))*100),
-                                            correct, incorrect: wrong
-                                        };
+                                        state.testResults.focus = { accuracy: Math.round((correct/(correct+wrong))*100), correct, incorrect: wrong };
                                         $('#test-phase').textContent = '✓ Focus test done!';
                                         resolve();
-                                    } else {
-                                        setTimeout(makeGrid, 300);
-                                    }
+                                    } else { setTimeout(makeGrid, 250); }
                                 } else {
-                                    c.classList.add('bad');
-                                    wrong++;
-                                    setTimeout(() => c.classList.remove('bad'), 400);
+                                    c.classList.add('bad'); wrong++;
+                                    setTimeout(() => c.classList.remove('bad'), 350);
                                 }
                             });
                         });
                     }
-
                     makeGrid();
                 });
             }
@@ -1606,201 +1102,434 @@
             }
 
             async function saveSession() {
-                const session = {
-                    ...state.sessionMeta,
-                    reaction_avg: state.testResults.reaction?.avg,
-                    reaction_best: state.testResults.reaction?.best,
-                    reaction_consistency: state.testResults.reaction?.consistency,
-                    memory_score: state.testResults.memory?.score,
-                    number_span: state.testResults.number?.span,
-                    focus_score: state.testResults.focus?.accuracy,
-                    overall_score: calcOverall(),
-                    item_names: state.sessionMeta.items.map(i => i.name).join(' + '),
-                    item_ids: state.sessionMeta.items.map(i => i.id)
-                };
+                const session = { ...state.sessionMeta, reaction_avg: state.testResults.reaction?.avg, reaction_best: state.testResults.reaction?.best, reaction_consistency: state.testResults.reaction?.consistency, memory_score: state.testResults.memory?.score, number_span: state.testResults.number?.span, focus_score: state.testResults.focus?.accuracy, overall_score: calcOverall(), item_names: state.sessionMeta.items.map(i => i.name).join(' + '), item_ids: state.sessionMeta.items.map(i => i.id) };
                 await dbAdd('sessions', session);
             }
 
             function showResults() {
                 $('#test-overlay').classList.remove('on');
-                const m = state.sessionMeta;
-                const r = state.testResults;
+                const m = state.sessionMeta, r = state.testResults;
                 showModal(`
                     <h2>⬡ Session Complete!</h2>
-                    <div style="margin:1rem 0;padding:1rem;background:var(--bg3);border-radius:8px;">
+                    <div style="margin:0.6rem 0;padding:0.6rem;background:var(--bg3);border-radius:8px;font-size:0.85rem;">
                         <h3>${esc(m.items.map(i=>i.name).join(' + '))}</h3>
-                        ${m.timeSince ? `<p><strong>Time Since:</strong> ${m.timeSince}</p>` : ''}
+                        ${m.timeSince ? `<p><strong>Time:</strong> ${m.timeSince}</p>` : ''}
                         ${m.tags?.length ? `<p><strong>Tags:</strong> ${m.tags.join(', ')}</p>` : ''}
                         ${m.notes ? `<p><strong>Notes:</strong> ${esc(m.notes)}</p>` : ''}
                     </div>
                     <div class="grid2">
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${r.reaction?.avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${r.memory?.score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${r.number?.span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${r.focus?.accuracy||'--'}%</div><div class="stat-lbl">Focus</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${r.reaction?.avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${r.memory?.score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${r.number?.span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${r.focus?.accuracy||'--'}%</div><div class="stat-lbl">Focus</div></div>
                     </div>
-                    <div style="text-align:center;margin:1.5rem 0;padding:1.5rem;background:var(--bg3);border:1px solid var(--grey);border-radius:12px;">
-                        <div style="font-size:3rem;font-weight:700;">${calcOverall()}/100</div>
+                    <div style="text-align:center;margin:1rem 0;padding:1rem;background:var(--bg3);border:1px solid var(--grey);border-radius:10px;">
+                        <div style="font-size:2.2rem;font-weight:700;">${calcOverall()}/100</div>
                         <div style="color:var(--text2);">Overall Score</div>
                     </div>
-                    <div style="display:flex;gap:0.8rem;justify-content:center;">
+                    <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
                         <button class="btn" onclick="startSession()">▶ New Session</button>
                         <button class="btn btn-o" onclick="hideModal();renderDashboard();">Done</button>
                     </div>`);
             }
 
-            // ===== ANALYTICS =====
+            // --- ANALYTICS: Enhanced with tabs ---
             async function renderAnalytics() {
                 const sessions = await dbAll('sessions');
                 const items = await dbAll('items');
-                
-                // Collect all unique component names
+                // collect all components
                 const compNames = new Set();
-                items.forEach(item => {
-                    (item.components||[]).forEach(c => compNames.add(c.name));
-                });
-
+                items.forEach(item => { (item.components||[]).forEach(c => compNames.add(c.name)); });
                 let compOptions = '<option value="">Select...</option>';
-                compNames.forEach(n => {
-                    compOptions += `<option value="${esc(n)}">${esc(n)}</option>`;
-                });
+                compNames.forEach(n => { compOptions += `<option value="${esc(n)}">${esc(n)}</option>`; });
+
+                // goals
+                const goals = await dbAll('goals');
+                const experiments = await dbAll('experiments');
 
                 $('#main-content').innerHTML = `
-                    <h2 style="margin-bottom:1.5rem;">Component Analysis</h2>
+                    <h2 style="margin-bottom:0.8rem;">Analytics</h2>
+                    <div class="analytics-subnav">
+                        <button class="btn ${state.analyticsSub === 'stats' ? 'active' : ''}" onclick="switchAnalytics('stats')">📊 Stats</button>
+                        <button class="btn ${state.analyticsSub === 'graphs' ? 'active' : ''}" onclick="switchAnalytics('graphs')">📈 Graphs</button>
+                        <button class="btn ${state.analyticsSub === 'profile' ? 'active' : ''}" onclick="switchAnalytics('profile')">🧠 Profile</button>
+                        <button class="btn ${state.analyticsSub === 'compare' ? 'active' : ''}" onclick="switchAnalytics('compare')">⚖️ Compare</button>
+                        <button class="btn ${state.analyticsSub === 'goals' ? 'active' : ''}" onclick="switchAnalytics('goals')">🎯 Goals</button>
+                        <button class="btn ${state.analyticsSub === 'experiments' ? 'active' : ''}" onclick="switchAnalytics('experiments')">🧪 Experiments</button>
+                    </div>
+                    <div id="analytics-content">
+                        ${state.analyticsSub === 'stats' ? renderStatsTab(sessions, items, compOptions) :
+                          state.analyticsSub === 'graphs' ? renderGraphsTab(sessions, items, compOptions) :
+                          state.analyticsSub === 'profile' ? renderProfileTab(sessions) :
+                          state.analyticsSub === 'compare' ? renderCompareTab(sessions) :
+                          state.analyticsSub === 'goals' ? renderGoalsTab(sessions, goals) :
+                          renderExperimentsTab(sessions, experiments)}
+                    </div>
+                `;
+            }
+
+            function switchAnalytics(sub) {
+                state.analyticsSub = sub;
+                renderAnalytics();
+            }
+
+            // --- STATS TAB ---
+            function renderStatsTab(sessions, items, compOptions) {
+                let html = `
                     <div class="card">
-                        <h3>Component Explorer</h3>
-                        <div style="display:flex;gap:0.8rem;margin:1rem 0;">
-                            <select class="f-input" id="comp-select" onchange="runAnalysis()" style="flex:2;">
-                                ${compOptions}
-                            </select>
-                            <select class="f-input" id="metric-select" onchange="runAnalysis()" style="flex:1;">
+                        <h3>Component Statistics</h3>
+                        <div style="display:flex;gap:0.5rem;margin:0.6rem 0;flex-wrap:wrap;">
+                            <select class="f-input" id="stats-comp-select" onchange="updateStats()" style="flex:2;min-width:120px;">${compOptions}</select>
+                            <select class="f-input" id="stats-metric-select" onchange="updateStats()" style="flex:1;min-width:80px;">
+                                <option value="overall_score">Overall</option>
                                 <option value="reaction_avg">Reaction</option>
                                 <option value="memory_score">Memory</option>
                                 <option value="focus_score">Focus</option>
-                                <option value="overall_score">Overall</option>
                             </select>
                         </div>
-                        <div id="analysis-detail"><p style="color:var(--text2);">Select a component to analyze</p></div>
+                        <div id="stats-detail"><p style="color:var(--text2);">Select a component to see stats</p></div>
                     </div>
-                    <div class="grid2" style="margin-top:1.5rem;">
+                    <div class="grid2">
+                        <div class="card"><h3>Best & Worst Performances</h3><div id="best-worst"><p style="color:var(--text2);">Select a component</p></div></div>
+                        <div class="card"><h3>Factor Tracking</h3><div id="factor-tracking"><p style="color:var(--text2);">Tags & factors analysis</p></div></div>
+                    </div>
+                `;
+                // store for later
+                window._statsData = { sessions, items, compOptions };
+                return html;
+            }
+
+            window.updateStats = function() {
+                const comp = document.getElementById('stats-comp-select')?.value;
+                const metric = document.getElementById('stats-metric-select')?.value || 'overall_score';
+                const data = window._statsData;
+                if (!data || !comp) return;
+                const { sessions } = data;
+                const withComp = sessions.filter(s => s.item_names?.includes(comp) && s[metric] != null);
+                if (withComp.length === 0) {
+                    document.getElementById('stats-detail').innerHTML = '<p style="color:var(--text2);">No sessions with this component</p>';
+                    document.getElementById('best-worst').innerHTML = '<p style="color:var(--text2);">No data</p>';
+                    document.getElementById('factor-tracking').innerHTML = '<p style="color:var(--text2);">No data</p>';
+                    return;
+                }
+                const vals = withComp.map(s => s[metric]);
+                const avg = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+                const best = Math.max(...vals);
+                const worst = Math.min(...vals);
+                const sorted = withComp.sort((a,b) => new Date(a.date) - new Date(b.date));
+                const first = sorted[0]?.[metric] || 0;
+                const last = sorted[sorted.length-1]?.[metric] || 0;
+                const improvement = first ? Math.round(((last-first)/first)*100) : 0;
+                const consistency = Math.round((1 - (Math.max(...vals)-Math.min(...vals))/(avg || 1))*100);
+
+                document.getElementById('stats-detail').innerHTML = `
+                    <div class="grid4">
+                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${avg}</div><div class="stat-lbl">Average</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${best}</div><div class="stat-lbl">Best</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${worst}</div><div class="stat-lbl">Worst</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${improvement}%</div><div class="stat-lbl">Improvement</div></div>
+                    </div>
+                    <p style="color:var(--text2);font-size:0.8rem;">Consistency: ${consistency}% • ${withComp.length} sessions</p>
+                `;
+
+                // Best/Worst sessions
+                const bestS = withComp.find(s => s[metric] === best);
+                const worstS = withComp.find(s => s[metric] === worst);
+                document.getElementById('best-worst').innerHTML = `
+                    <div style="background:var(--bg3);padding:0.5rem;border-radius:8px;margin-bottom:0.4rem;">
+                        <span style="color:var(--green);">▲ Best:</span> ${best} (${new Date(bestS?.date||Date.now()).toLocaleDateString()})
+                    </div>
+                    <div style="background:var(--bg3);padding:0.5rem;border-radius:8px;">
+                        <span style="color:var(--red);">▼ Worst:</span> ${worst} (${new Date(worstS?.date||Date.now()).toLocaleDateString()})
+                    </div>
+                `;
+
+                // Factor tracking - analyze tags
+                const tagMap = {};
+                withComp.forEach(s => {
+                    (s.tags||[]).forEach(t => {
+                        if (!tagMap[t]) tagMap[t] = [];
+                        tagMap[t].push(s[metric]);
+                    });
+                });
+                let factorHTML = '';
+                const entries = Object.entries(tagMap);
+                if (entries.length === 0) factorHTML = '<p style="color:var(--text2);">No tags tracked yet</p>';
+                else {
+                    factorHTML = entries.slice(0,5).map(([tag, vals]) => {
+                        const avgTag = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+                        const diff = avgTag - avg;
+                        const dir = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+                        const color = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--text2)';
+                        return `<div style="display:flex;justify-content:space-between;padding:0.2rem 0;border-bottom:1px solid var(--border);font-size:0.8rem;">
+                            <span>${esc(tag)}</span>
+                            <span style="color:${color};">${dir} ${Math.abs(diff)} pts (${vals.length}x)</span>
+                        </div>`;
+                    }).join('');
+                }
+                document.getElementById('factor-tracking').innerHTML = factorHTML;
+            };
+
+            // --- GRAPHS TAB ---
+            function renderGraphsTab(sessions, items, compOptions) {
+                const hasData = sessions.length > 0;
+                return `
+                    <div class="card">
+                        <h3>Performance Timeline</h3>
+                        <div id="timeline-graph">
+                            ${hasData ? drawTimeline(sessions) : '<p style="color:var(--text2);">Complete tests to generate graphs.</p>'}
+                        </div>
+                    </div>
+                    <div class="grid2">
                         <div class="card">
                             <h3>Correlation Graph</h3>
-                            <div id="graph-area"><p style="color:var(--text2);">Select a component</p></div>
+                            <div id="correlation-graph">
+                                ${hasData ? drawCorrelation(sessions) : '<p style="color:var(--text2);">Need at least 1 session</p>'}
+                            </div>
                         </div>
                         <div class="card">
-                            <h3>Statistics</h3>
-                            <div id="stats-area"><p style="color:var(--text2);">Component stats appear here</p></div>
+                            <h3>Trend Detection</h3>
+                            <div id="trend-detection">
+                                ${sessions.length >= 2 ? drawTrend(sessions) : '<p style="color:var(--text2);">Need 2+ sessions for trends</p>'}
+                            </div>
                         </div>
                     </div>
-                    <div class="card" style="margin-top:1.5rem;">
-                        <h3>Trend Detection</h3>
-                        <div id="trend-area"><p style="color:var(--text2);">Automatic trend analysis</p></div>
-                    </div>`;
+                    <div class="card">
+                        <h3>Heatmap Calendar</h3>
+                        <div id="heatmap">${hasData ? drawHeatmap(sessions) : '<p style="color:var(--text2);">No data yet</p>'}</div>
+                    </div>
+                `;
             }
 
-            async function runAnalysis() {
-                const comp = $('#comp-select')?.value;
-                const metric = $('#metric-select')?.value;
-                if (!comp) return;
-
-                const sessions = await dbAll('sessions');
-                const withComp = sessions.filter(s => s.item_names?.includes(comp) && s[metric] != null);
-                const withoutComp = sessions.filter(s => !s.item_names?.includes(comp) && s[metric] != null);
-
-                const metricLabels = {
-                    reaction_avg: 'Reaction (ms)',
-                    memory_score: 'Memory (/20)',
-                    focus_score: 'Focus (%)',
-                    overall_score: 'Overall Score'
-                };
-
-                // Detail
-                $('#analysis-detail').innerHTML = `
-                    <div class="grid2">
-                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${withComp.length}</div><div class="stat-lbl">With ${esc(comp)}</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${withoutComp.length}</div><div class="stat-lbl">Baseline</div></div>
-                    </div>`;
-
-                // Graph
-                if (withComp.length >= 2) {
-                    drawGraph('graph-area', withComp, metric, comp, metricLabels[metric]);
-                } else {
-                    $('#graph-area').innerHTML = '<p style="color:var(--text2);">Need 2+ sessions for graph</p>';
-                }
-
-                // Stats
-                if (withComp.length > 0) {
-                    const wAvg = Math.round(withComp.reduce((a,b)=>a+(b[metric]||0),0)/withComp.length);
-                    const woAvg = withoutComp.length > 0 ? Math.round(withoutComp.reduce((a,b)=>a+(b[metric]||0),0)/withoutComp.length) : null;
-                    const change = woAvg ? Math.round(((wAvg-woAvg)/woAvg)*100) : null;
-                    const better = metric === 'reaction_avg' ? (change < 0) : (change > 0);
-
-                    $('#stats-area').innerHTML = `
-                        <div style="background:var(--bg3);border:1px solid var(--grey);border-radius:8px;padding:1rem;">
-                            <h4>${esc(comp)}</h4>
-                            <div class="grid2" style="margin-top:0.5rem;">
-                                <div><strong>Sessions:</strong> ${withComp.length}</div>
-                                <div><strong>Avg ${metricLabels[metric]}:</strong> ${wAvg}</div>
-                                ${woAvg !== null ? `<div><strong>Baseline:</strong> ${woAvg}</div>` : ''}
-                                ${change !== null ? `<div style="color:${better?'#4a4':'#a44'}"><strong>Change:</strong> ${change>0?'+':''}${change}%</div>` : ''}
-                            </div>
-                        </div>`;
-                }
-
-                // Trend
-                if (withComp.length >= 3) {
-                    const sorted = withComp.sort((a,b) => new Date(a.date) - new Date(b.date));
-                    const vals = sorted.map(s => s[metric]);
-                    const mid = Math.floor(vals.length/2);
-                    const first = vals.slice(0,mid).reduce((a,b)=>a+b,0)/mid;
-                    const second = vals.slice(mid).reduce((a,b)=>a+b,0)/(vals.length-mid);
-                    const pct = ((second-first)/first)*100;
-                    const better = metric === 'reaction_avg' ? (pct < 0) : (pct > 0);
-
-                    $('#trend-area').innerHTML = `
-                        <p><strong>Direction:</strong> <span style="color:${better?'#4a4':'#a44'}">${better?'Improving':'Declining'}</span> (${pct>0?'+':''}${pct.toFixed(1)}%)</p>
-                        <p style="color:var(--text2);margin-top:0.4rem;">Based on ${withComp.length} sessions</p>`;
-                } else {
-                    $('#trend-area').innerHTML = '<p style="color:var(--text2);">Need 3+ sessions for trends</p>';
-                }
-            }
-
-            function drawGraph(containerId, sessions, metric, compName, metricLabel) {
-                const container = document.getElementById(containerId);
-                if (!container) return;
-
+            function drawTimeline(sessions) {
                 const sorted = sessions.sort((a,b) => new Date(a.date) - new Date(b.date));
-                const vals = sorted.map(s => s[metric]||0);
-                const max = Math.max(...vals);
-                const min = Math.min(...vals);
+                const data = sorted.slice(-14).map(s => ({ date: new Date(s.date).toLocaleDateString(), score: s.overall_score || 0 }));
+                const w = 500, h = 160, pad = 25;
+                if (data.length === 0) return '<p style="color:var(--text2);">No data</p>';
+                const max = Math.max(...data.map(d => d.score), 50);
+                const min = Math.min(...data.map(d => d.score), 0);
                 const range = max - min || 1;
-                const w = 560, h = 260, pad = 35;
-                const pts = vals.map((v,i) => ({
-                    x: pad + (i/(vals.length-1))*(w-2*pad),
-                    y: h - pad - ((v-min)/range)*(h-2*pad),
-                    v, d: new Date(sorted[i].date).toLocaleDateString()
+                const pts = data.map((d,i) => ({
+                    x: pad + (i/(data.length-1||1))*(w-2*pad),
+                    y: h - pad - ((d.score-min)/range)*(h-2*pad),
+                    label: d.date,
+                    val: d.score
                 }));
                 const path = pts.map((p,i) => `${i===0?'M':'L'} ${p.x} ${p.y}`).join(' ');
-
-                container.innerHTML = `
-                    <div class="graph-box">
-                        <svg viewBox="0 0 ${w} ${h}">
-                            <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
-                            <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
-                            <path d="${path}" fill="none" stroke="#fff" stroke-width="2"/>
-                            ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#fff"><title>${p.d}: ${p.v}</title></circle>`).join('')}
-                            <text x="${w/2}" y="${h-8}" fill="#666" font-size="11" text-anchor="middle">Sessions →</text>
-                        </svg>
-                    </div>
-                    <p style="color:var(--text2);font-size:0.8rem;margin-top:0.4rem;">${esc(compName)} vs ${metricLabel}</p>`;
+                return `<div class="graph-box"><svg viewBox="0 0 ${w} ${h}">
+                    <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
+                    <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
+                    <path d="${path}" fill="none" stroke="#fff" stroke-width="2"/>
+                    ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#fff"><title>${p.label}: ${p.val}</title></circle>`).join('')}
+                    <text x="${w/2}" y="${h-4}" fill="#666" font-size="9" text-anchor="middle">Recent sessions</text>
+                </svg></div>`;
             }
 
-            async function exportData() {
-                const data = {
-                    exportDate: new Date().toISOString(),
-                    sessions: await dbAll('sessions'),
-                    items: await dbAll('items')
-                };
+            function drawCorrelation(sessions) {
+                // Simple: compare overall_score vs reaction_avg
+                const data = sessions.filter(s => s.overall_score != null && s.reaction_avg != null);
+                if (data.length === 0) return '<p style="color:var(--text2);">Not enough data</p>';
+                const w = 500, h = 160, pad = 25;
+                const maxScore = Math.max(...data.map(d => d.overall_score), 50);
+                const minScore = Math.min(...data.map(d => d.overall_score), 0);
+                const maxReaction = Math.max(...data.map(d => d.reaction_avg), 200);
+                const minReaction = Math.min(...data.map(d => d.reaction_avg), 100);
+                const rangeS = maxScore - minScore || 1;
+                const rangeR = maxReaction - minReaction || 1;
+                const pts = data.map(d => ({
+                    x: pad + ((d.overall_score - minScore)/rangeS)*(w-2*pad),
+                    y: h - pad - ((d.reaction_avg - minReaction)/rangeR)*(h-2*pad)
+                }));
+                const dots = pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#4a4"/>`).join('');
+                return `<div class="graph-box"><svg viewBox="0 0 ${w} ${h}">
+                    <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
+                    <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
+                    ${dots}
+                    <text x="${w/2}" y="${h-4}" fill="#666" font-size="9" text-anchor="middle">Score vs Reaction (faster = lower ms)</text>
+                </svg></div>`;
+            }
+
+            function drawTrend(sessions) {
+                const sorted = sessions.sort((a,b) => new Date(a.date) - new Date(b.date));
+                const vals = sorted.map(s => s.overall_score || 0);
+                const mid = Math.floor(vals.length/2);
+                const first = vals.slice(0,mid).reduce((a,b)=>a+b,0)/mid;
+                const second = vals.slice(mid).reduce((a,b)=>a+b,0)/(vals.length-mid);
+                const pct = ((second-first)/first)*100;
+                const better = pct > 0;
+                return `<div style="padding:0.5rem;">
+                    <p style="font-size:1.2rem;">${better ? '📈 Improving' : '📉 Declining'}</p>
+                    <p style="color:var(--text2);">${pct > 0 ? '+' : ''}${pct.toFixed(1)}% over ${vals.length} sessions</p>
+                    <p style="color:var(--text2);font-size:0.8rem;">First avg: ${Math.round(first)} → Latest avg: ${Math.round(second)}</p>
+                </div>`;
+            }
+
+            function drawHeatmap(sessions) {
+                // Simple 7-day grid
+                const now = new Date();
+                const weekAgo = new Date(now);
+                weekAgo.setDate(weekAgo.getDate() - 6);
+                const days = [];
+                for (let d = new Date(weekAgo); d <= now; d.setDate(d.getDate()+1)) {
+                    const dateStr = d.toDateString();
+                    const s = sessions.find(ses => new Date(ses.date).toDateString() === dateStr);
+                    const score = s?.overall_score || 0;
+                    let cls = 'none';
+                    if (score >= 80) cls = 'high';
+                    else if (score >= 50) cls = 'medium';
+                    else if (score > 0) cls = 'low';
+                    days.push({ date: d.toLocaleDateString(), cls, score });
+                }
+                return `<div class="heatmap-grid">${days.map(d => `<div class="heatmap-cell ${d.cls}" title="${d.date}: ${d.score}">${d.cls === 'high' ? '🟩' : d.cls === 'medium' ? '🟨' : d.cls === 'low' ? '🟥' : '⬛'}</div>`).join('')}</div>
+                        <p style="color:var(--text2);font-size:0.7rem;">🟩 High • 🟨 Avg • 🟥 Low • ⬛ No test</p>`;
+            }
+
+            // --- PROFILE TAB ---
+            function renderProfileTab(sessions) {
+                if (sessions.length === 0) return `<div class="card"><p style="color:var(--text2);">Complete tests to build your profile.</p></div>`;
+                const avgFocus = Math.round(sessions.reduce((a,b) => a + (b.focus_score||0), 0) / sessions.length);
+                const avgMemory = Math.round(sessions.reduce((a,b) => a + (b.memory_score||0), 0) / sessions.length);
+                const avgReaction = Math.round(sessions.reduce((a,b) => a + (b.reaction_avg||0), 0) / sessions.length);
+                const avgOverall = Math.round(sessions.reduce((a,b) => a + (b.overall_score||0), 0) / sessions.length);
+                // Problem solving: proxy from memory + focus
+                const problemSolving = Math.min(100, Math.round((avgMemory + avgFocus)/2));
+
+                const stats = [
+                    { label: 'Focus', val: avgFocus, max: 100 },
+                    { label: 'Memory', val: avgMemory, max: 20 },
+                    { label: 'Reaction', val: Math.max(0, 100 - Math.round(avgReaction/3)), max: 100, labelSuffix: 'ms' },
+                    { label: 'Problem Solving', val: problemSolving, max: 100 },
+                ];
+
+                return `<div class="card">
+                    <h3>🧠 Personal Performance Profile</h3>
+                    ${stats.map(s => `
+                        <div class="profile-stat">
+                            <span class="label">${s.label}</span>
+                            <div class="bar"><div class="bar-fill" style="width:${Math.min(100, (s.val/s.max)*100)}%;background:${s.val > s.max/2 ? 'var(--green)' : 'var(--yellow)'};"></div></div>
+                            <span class="value">${s.val}${s.labelSuffix||''}</span>
+                        </div>
+                    `).join('')}
+                    <div style="margin-top:0.6rem;padding:0.5rem;background:var(--bg3);border-radius:6px;">
+                        <p style="color:var(--text2);font-size:0.8rem;">Based on ${sessions.length} sessions • Avg Overall: ${avgOverall}/100</p>
+                    </div>
+                </div>`;
+            }
+
+            // --- COMPARE TAB ---
+            function renderCompareTab(sessions) {
+                if (sessions.length < 2) return `<div class="card"><p style="color:var(--text2);">Need at least 2 sessions to compare.</p></div>`;
+                const sorted = sessions.sort((a,b) => new Date(a.date) - new Date(b.date));
+                const mid = Math.floor(sorted.length/2);
+                const oldS = sorted.slice(0, mid);
+                const newS = sorted.slice(mid);
+                const oldAvg = Math.round(oldS.reduce((a,b)=>a+(b.overall_score||0),0)/oldS.length);
+                const newAvg = Math.round(newS.reduce((a,b)=>a+(b.overall_score||0),0)/newS.length);
+                const change = ((newAvg - oldAvg)/oldAvg)*100;
+
+                return `<div class="card">
+                    <h3>⚖️ Version Comparison</h3>
+                    <div class="grid2">
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${oldAvg}</div><div class="stat-lbl">Earlier (${oldS.length} sessions)</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${newAvg}</div><div class="stat-lbl">Recent (${newS.length} sessions)</div></div>
+                    </div>
+                    <div style="text-align:center;padding:0.8rem;background:var(--bg3);border-radius:8px;margin-top:0.5rem;">
+                        <span style="font-size:1.4rem;color:${change > 0 ? 'var(--green)' : 'var(--red)'};">${change > 0 ? '📈' : '📉'} ${change > 0 ? '+' : ''}${change.toFixed(1)}%</span>
+                        <span style="color:var(--text2);margin-left:0.5rem;">improvement</span>
+                    </div>
+                </div>`;
+            }
+
+            // --- GOALS TAB ---
+            function renderGoalsTab(sessions, goals) {
+                const current = sessions.length > 0 ? Math.round(sessions.reduce((a,b)=>a+(b.overall_score||0),0)/sessions.length) : 0;
+                let goalHTML = goals.length === 0 ? '<p style="color:var(--text2);">No goals set. Add one below.</p>' :
+                    goals.map(g => {
+                        const progress = Math.min(100, Math.round((current / g.target) * 100));
+                        return `<div style="margin:0.5rem 0;padding:0.5rem;background:var(--bg3);border-radius:6px;">
+                            <div style="display:flex;justify-content:space-between;">
+                                <span><strong>${esc(g.name)}</strong> (${g.metric})</span>
+                                <span>${current} → ${g.target}</span>
+                            </div>
+                            <div class="goal-bar"><div class="goal-bar-fill" style="width:${progress}%;background:${progress >= 100 ? 'var(--green)' : 'var(--yellow)'};"></div></div>
+                            <span style="color:var(--text2);font-size:0.7rem;">${progress}% complete</span>
+                            <button class="btn btn-r btn-s" onclick="deleteGoal(${g.id})" style="float:right;">✕</button>
+                        </div>`;
+                    }).join('');
+
+                return `<div class="card">
+                    <h3>🎯 Goals</h3>
+                    ${goalHTML}
+                    <div style="margin-top:0.8rem;">
+                        <form onsubmit="addGoal(event)" style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+                            <input type="text" class="f-input" id="goal-name" placeholder="Goal name" style="flex:2;min-width:100px;" required>
+                            <input type="number" class="f-input" id="goal-target" placeholder="Target score" style="flex:1;min-width:70px;" required>
+                            <button type="submit" class="btn btn-s">Add Goal</button>
+                        </form>
+                    </div>
+                </div>`;
+            }
+
+            window.addGoal = async function(e) {
+                e.preventDefault();
+                const name = document.getElementById('goal-name')?.value;
+                const target = parseInt(document.getElementById('goal-target')?.value);
+                if (!name || !target) return;
+                await dbAdd('goals', { name, target, metric: 'overall_score', created: new Date().toISOString() });
+                alert('Goal added!', 's');
+                renderAnalytics();
+            };
+            window.deleteGoal = async function(id) {
+                if (confirm('Delete goal?')) { await dbDel('goals', id); renderAnalytics(); }
+            };
+
+            // --- EXPERIMENTS TAB ---
+            function renderExperimentsTab(sessions, experiments) {
+                let expHTML = experiments.length === 0 ? '<p style="color:var(--text2);">No experiments yet. Create one!</p>' :
+                    experiments.map(e => {
+                        const relevant = sessions.filter(s => s.item_names?.includes(e.variable));
+                        const avg = relevant.length ? Math.round(relevant.reduce((a,b)=>a+(b.overall_score||0),0)/relevant.length) : 0;
+                        return `<div style="margin:0.4rem 0;padding:0.5rem;background:var(--bg3);border-radius:6px;border-left:3px solid var(--text2);">
+                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;">
+                                <span><strong>${esc(e.name)}</strong> (${esc(e.variable)})</span>
+                                <span style="color:var(--text2);font-size:0.75rem;">${relevant.length} sessions • Avg: ${avg}</span>
+                            </div>
+                            <p style="color:var(--text2);font-size:0.75rem;">${esc(e.description||'')}</p>
+                            <button class="btn btn-r btn-s" onclick="deleteExperiment(${e.id})">✕</button>
+                        </div>`;
+                    }).join('');
+
+                return `<div class="card">
+                    <h3>🧪 Experiment Mode</h3>
+                    ${expHTML}
+                    <div style="margin-top:0.8rem;">
+                        <form onsubmit="addExperiment(event)" style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+                            <input type="text" class="f-input" id="exp-name" placeholder="Experiment name" style="flex:2;min-width:80px;" required>
+                            <input type="text" class="f-input" id="exp-variable" placeholder="Variable (e.g. Caffeine)" style="flex:1;min-width:70px;" required>
+                            <input type="text" class="f-input" id="exp-desc" placeholder="Description" style="flex:2;min-width:80px;">
+                            <button type="submit" class="btn btn-s">Create</button>
+                        </form>
+                    </div>
+                </div>`;
+            }
+
+            window.addExperiment = async function(e) {
+                e.preventDefault();
+                const name = document.getElementById('exp-name')?.value;
+                const variable = document.getElementById('exp-variable')?.value;
+                const description = document.getElementById('exp-desc')?.value || '';
+                if (!name || !variable) return;
+                await dbAdd('experiments', { name, variable, description, created: new Date().toISOString() });
+                alert('Experiment created!', 's');
+                renderAnalytics();
+            };
+            window.deleteExperiment = async function(id) {
+                if (confirm('Delete experiment?')) { await dbDel('experiments', id); renderAnalytics(); }
+            };
+
+            // --- EXPORT ---
+            window.exportData = async function() {
+                const data = { exportDate: new Date().toISOString(), sessions: await dbAll('sessions'), items: await dbAll('items'), goals: await dbAll('goals'), experiments: await dbAll('experiments') };
                 const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1809,62 +1538,34 @@
                 a.click();
                 URL.revokeObjectURL(url);
                 alert('Exported!', 's');
-            }
+            };
 
-            function esc(str) {
-                if (!str) return '';
-                const div = document.createElement('div');
-                div.textContent = str;
-                return div.innerHTML;
-            }
+            function esc(str) { if (!str) return ''; const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 
-            // ===== INIT =====
+            // --- INIT ---
             async function init() {
                 await openDB();
-                
-                // Nav clicks
                 $$('.nav-tab').forEach(tab => {
                     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
                 });
-
-                // Modal backdrop close
-                $('#modal').addEventListener('click', (e) => {
-                    if (e.target === $('#modal')) hideModal();
-                });
-
-                // Initial render
+                $('#modal').addEventListener('click', (e) => { if (e.target === $('#modal')) hideModal(); });
+                // Expose
+                window.switchTab = switchTab;
+                window.switchAnalytics = switchAnalytics;
+                window.updateStats = updateStats;
+                window.viewSession = viewSession;
+                window.deleteSession = deleteSession;
+                window.clearAllSessions = clearAllSessions;
+                window.hideModal = hideModal;
+                window.esc = esc;
+                window.renderDashboard = renderDashboard;
+                window.renderAnalytics = renderAnalytics;
+                window.addGoal = addGoal;
+                window.deleteGoal = deleteGoal;
+                window.addExperiment = addExperiment;
+                window.deleteExperiment = deleteExperiment;
                 renderDashboard();
             }
-
-            // Expose functions globally
-            window.switchTab = switchTab;
-            window.showAddItem = showAddItem;
-            window.showEditItem = showEditItem;
-            window.deleteItem = deleteItem;
-            window.addItem = addItem;
-            window.editItem = editItem;
-            window.startSession = startSession;
-            window.beginTests = beginTests;
-            window.viewSession = viewSession;
-            window.runAnalysis = runAnalysis;
-            window.exportData = exportData;
-            window.toggleEmojiPicker = toggleEmojiPicker;
-            window.toggleEditEmojiPicker = toggleEditEmojiPicker;
-            window.pickEmoji = pickEmoji;
-            window.handleItemImage = handleItemImage;
-            window.handleEditImage = handleEditImage;
-            window.addItemTag = addItemTag;
-            window.removeItemTag = removeItemTag;
-            window.addEditTag = addEditTag;
-            window.removeEditTag = removeEditTag;
-            window.addCompField = addCompField;
-            window.addEditCompField = addEditCompField;
-            window.toggleSessionTag = toggleSessionTag;
-            window.addSessionTag = addSessionTag;
-            window.removeSessionTag = removeSessionTag;
-            window.hideModal = hideModal;
-            window.renderDashboard = renderDashboard;
-            window.esc = esc;
 
             init().catch(console.error);
         })();
