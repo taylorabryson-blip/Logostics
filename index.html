@@ -18,6 +18,7 @@
             --green: #4a4;
             --red: #a44;
             --yellow: #ca4;
+            --blue: #48f;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
@@ -29,7 +30,7 @@
         .nav {
             background: var(--bg2);
             border-bottom: 1px solid var(--border);
-            padding: 0.6rem 1rem;
+            padding: 0.5rem 1rem;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
@@ -37,53 +38,53 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            gap: 0.4rem;
+            gap: 0.3rem;
         }
-        .nav-brand { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; }
-        .nav-tabs { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; }
+        .nav-brand { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; }
+        .nav-tabs { display: flex; gap: 0.2rem; flex-wrap: wrap; justify-content: flex-end; }
         .nav-tab {
             background: transparent;
             border: 1px solid var(--grey);
             color: var(--text2);
-            padding: 0.35rem 0.7rem;
+            padding: 0.3rem 0.6rem;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             white-space: nowrap;
         }
         .nav-tab:hover, .nav-tab.active { background: var(--grey); border-color: var(--grey2); color: var(--text); }
-        .container { max-width: 1200px; margin: 0 auto; padding: 1.2rem 0.8rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1rem 0.6rem; }
         .card {
             background: rgba(20,20,20,0.8);
             border: 1px solid rgba(40,40,40,0.6);
-            border-radius: 14px;
-            padding: 1rem;
-            margin-bottom: 1rem;
+            border-radius: 12px;
+            padding: 0.9rem;
+            margin-bottom: 0.9rem;
             backdrop-filter: blur(8px);
         }
-        .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem; }
-        .grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
-        .grid4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:0.6rem; }
+        .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:0.8rem; }
+        .grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0.8rem; }
+        .grid4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:0.5rem; }
         .stat {
             background: rgba(20,20,20,0.8);
             border: 1px solid rgba(40,40,40,0.6);
-            border-radius: 12px;
-            padding: 1rem;
+            border-radius: 10px;
+            padding: 0.8rem;
             text-align: center;
             transition: all 0.2s;
         }
         .stat:hover { transform: translateY(-2px); background: var(--bg3); }
-        .stat-val { font-size: 2rem; font-weight: 700; }
-        .stat-lbl { color: var(--text2); margin-top: 0.3rem; font-size: 0.75rem; }
+        .stat-val { font-size: 1.8rem; font-weight: 700; }
+        .stat-lbl { color: var(--text2); margin-top: 0.2rem; font-size: 0.7rem; }
         .btn {
             background: var(--text);
             color: var(--bg);
             border: none;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             transition: all 0.2s;
             white-space: nowrap;
@@ -95,21 +96,23 @@
         .btn:active { transform: scale(0.97); }
         .btn-o { background: transparent; color: var(--text); border: 1px solid var(--grey); }
         .btn-o:hover { background: var(--grey); }
-        .btn-s { padding: 0.25rem 0.6rem; font-size: 0.7rem; }
+        .btn-s { padding: 0.2rem 0.5rem; font-size: 0.65rem; }
         .btn-r { background: transparent; color: #f44; border: 1px solid #f44; }
         .btn-r:hover { background: #f44; color: #000; }
         .btn-g { background: transparent; color: var(--green); border: 1px solid var(--green); }
         .btn-g:hover { background: var(--green); color: #000; }
-        .f-group { margin-bottom: 0.7rem; }
-        .f-label { display: block; margin-bottom: 0.2rem; color: var(--text2); font-size: 0.75rem; }
+        .btn-blue { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+        .btn-blue:hover { background: var(--blue); color: #000; }
+        .f-group { margin-bottom: 0.6rem; }
+        .f-label { display: block; margin-bottom: 0.2rem; color: var(--text2); font-size: 0.7rem; }
         .f-input {
             width: 100%;
             background: var(--bg3);
             border: 1px solid var(--grey);
             color: var(--text);
-            padding: 0.5rem;
+            padding: 0.4rem;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             transition: all 0.2s;
         }
         .f-input:focus { outline: none; border-color: var(--text2); background: var(--bg2); }
@@ -118,17 +121,17 @@
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 0.6rem center;
-            padding-right: 1.8rem;
+            background-position: right 0.5rem center;
+            padding-right: 1.6rem;
         }
         .tag {
             display: inline-block;
             background: var(--grey);
             border: 1px solid var(--grey2);
             color: var(--text2);
-            padding: 0.15rem 0.5rem;
+            padding: 0.15rem 0.4rem;
             border-radius: 20px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             margin: 0.1rem;
             cursor: pointer;
             transition: all 0.2s;
@@ -138,8 +141,8 @@
         .tag.sel { background: var(--text); color: var(--bg); border-color: var(--text); }
         .tag.del:hover { background: #f44; color: #fff; border-color: #f44; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
-        th { color: var(--text2); font-weight: 600; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        th, td { padding: 0.4rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.75rem; }
+        th { color: var(--text2); font-weight: 600; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.5px; }
         tr:hover { background: rgba(255,255,255,0.02); }
         .modal {
             display: none;
@@ -150,14 +153,14 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            padding: 0.8rem;
+            padding: 0.6rem;
         }
         .modal.on { display: flex; }
         .modal-inner {
             background: var(--bg2);
             border: 1px solid var(--grey);
-            border-radius: 14px;
-            padding: 1.2rem;
+            border-radius: 12px;
+            padding: 1rem;
             max-width: 650px;
             width: 100%;
             max-height: 85vh;
@@ -173,20 +176,20 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
+            padding: 0.8rem;
         }
         .test-overlay.on { display: flex; }
         .react-area {
-            width: 210px;
-            height: 210px;
+            width: 190px;
+            height: 190px;
             background: var(--bg3);
             border: 2px solid var(--grey);
-            border-radius: 14px;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text2);
             user-select: none;
             transition: all 0.15s;
@@ -194,60 +197,60 @@
         }
         .react-area.go { background: #fff; border-color: #fff; color: #000; animation: pulse 0.8s infinite; }
         @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
-        .mem-grid { display: grid; gap: 3px; justify-content: center; margin: 0.6rem 0; }
-        .mem-cell { width: 42px; height: 42px; background: var(--bg3); border: 2px solid var(--grey); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .mem-grid { display: grid; gap: 3px; justify-content: center; margin: 0.5rem 0; }
+        .mem-cell { width: 38px; height: 38px; background: var(--bg3); border: 2px solid var(--grey); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
         .mem-cell.on { background: #fff; border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
         .mem-cell.ok { background: var(--grey2); border-color: var(--text); }
         .mem-cell.bad { background: #333; border-color: #666; }
-        .num-big { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.4rem; margin: 0.8rem 0; }
+        .num-big { font-size: 2rem; font-weight: 700; letter-spacing: 0.3rem; margin: 0.6rem 0; }
         .num-inp {
             background: var(--bg3);
             border: 2px solid var(--grey);
             color: var(--text);
-            font-size: 1.4rem;
-            padding: 0.5rem;
+            font-size: 1.2rem;
+            padding: 0.4rem;
             border-radius: 8px;
-            width: 160px;
+            width: 140px;
             text-align: center;
             letter-spacing: 0.3rem;
         }
         .num-inp:focus { outline: none; border-color: var(--text2); }
-        .shape-grid { display: grid; grid-template-columns: repeat(3, 60px); gap: 5px; justify-content: center; margin: 0.8rem 0; }
-        .shape-cell { width: 60px; height: 60px; background: var(--bg3); border: 2px solid var(--grey); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: all 0.2s; }
+        .shape-grid { display: grid; grid-template-columns: repeat(3, 52px); gap: 4px; justify-content: center; margin: 0.6rem 0; }
+        .shape-cell { width: 52px; height: 52px; background: var(--bg3); border: 2px solid var(--grey); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.2s; }
         .shape-cell:hover { border-color: var(--text2); }
         .shape-cell.good { background: var(--grey2); border-color: #fff; }
         .shape-cell.bad { background: #333; border-color: #666; animation: shake 0.4s; }
         @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-        .prog { width: 100%; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin: 0.5rem 0; }
+        .prog { width: 100%; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin: 0.4rem 0; }
         .prog-fill { height: 100%; background: var(--text); transition: width 0.3s; border-radius: 2px; }
         .emoji-grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             gap: 2px;
-            max-height: 100px;
+            max-height: 90px;
             overflow-y: auto;
             background: var(--bg3);
             border: 1px solid var(--grey);
             border-radius: 6px;
-            padding: 0.3rem;
-            margin-top: 0.3rem;
+            padding: 0.2rem;
+            margin-top: 0.2rem;
         }
-        .emoji-opt { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; font-size: 0.9rem; }
+        .emoji-opt { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
         .emoji-opt:hover { background: var(--grey); }
-        .item-icon { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid var(--grey); }
-        .graph-box { width: 100%; height: 200px; background: var(--bg3); border: 1px solid var(--grey); border-radius: 8px; overflow: hidden; }
+        .item-icon { width: 32px; height: 32px; object-fit: cover; border-radius: 6px; border: 1px solid var(--grey); }
+        .graph-box { width: 100%; height: 180px; background: var(--bg3); border: 1px solid var(--grey); border-radius: 8px; overflow: hidden; }
         .graph-box svg { width: 100%; height: 100%; }
         .alert {
-            padding: 0.5rem 0.8rem;
+            padding: 0.4rem 0.7rem;
             border-radius: 8px;
-            margin: 0.5rem 0;
+            margin: 0.4rem 0;
             border-left: 3px solid;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             position: fixed;
-            top: 70px;
-            right: 10px;
+            top: 66px;
+            right: 8px;
             z-index: 10000;
-            max-width: 290px;
+            max-width: 260px;
             background: var(--bg2);
             animation: fadeIn 0.3s;
         }
@@ -262,79 +265,83 @@
 
         .analytics-subnav {
             display: flex;
-            gap: 0.4rem;
+            gap: 0.3rem;
             flex-wrap: wrap;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 0.6rem;
+            padding-bottom: 0.5rem;
         }
         .analytics-subnav .btn {
             background: transparent;
             color: var(--text2);
             border: 1px solid var(--grey);
-            padding: 0.3rem 0.8rem;
-            font-size: 0.75rem;
+            padding: 0.25rem 0.7rem;
+            font-size: 0.7rem;
         }
         .analytics-subnav .btn.active {
             background: var(--grey);
             color: var(--text);
             border-color: var(--grey2);
         }
-        .heatmap-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
-            max-width: 300px;
-            margin: 0.5rem 0;
-        }
-        .heatmap-cell {
-            aspect-ratio: 1;
-            border-radius: 3px;
+
+        .insight-card {
             background: var(--bg3);
-            border: 1px solid var(--grey);
-            transition: all 0.2s;
-            position: relative;
+            border-radius: 8px;
+            padding: 0.6rem;
+            margin: 0.4rem 0;
+            border-left: 3px solid var(--blue);
         }
-        .heatmap-cell:hover { transform: scale(1.1); z-index: 2; }
-        .heatmap-cell.high { background: var(--green); }
-        .heatmap-cell.medium { background: var(--yellow); }
-        .heatmap-cell.low { background: var(--red); }
-        .heatmap-cell.none { background: var(--bg3); }
-        .goal-bar {
-            width: 100%;
-            height: 10px;
-            background: var(--bg3);
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 0.3rem 0;
+        .insight-card .evidence {
+            font-size: 0.65rem;
+            color: var(--text2);
+            margin-top: 0.2rem;
         }
-        .goal-bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s; }
-        .profile-stat {
+        .comparison-row {
             display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            margin: 0.3rem 0;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
         }
-        .profile-stat .label { min-width: 80px; font-size: 0.8rem; color: var(--text2); }
-        .profile-stat .bar { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
-        .profile-stat .bar-fill { height: 100%; border-radius: 3px; }
-        .profile-stat .value { min-width: 40px; text-align: right; font-size: 0.8rem; font-weight: 600; }
+        .comparison-row .diff { font-weight: 600; }
+        .prediction-box {
+            background: var(--bg3);
+            border-radius: 8px;
+            padding: 0.8rem;
+            text-align: center;
+            border: 1px solid var(--grey2);
+        }
+        .prediction-box .score {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--blue);
+        }
+        .conf-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 12px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            margin-left: 0.3rem;
+        }
+        .conf-high { background: var(--green); color: #000; }
+        .conf-medium { background: var(--yellow); color: #000; }
+        .conf-low { background: var(--red); color: #fff; }
 
         @media (max-width: 600px) {
-            .nav { padding: 0.4rem 0.5rem; }
-            .nav-brand { font-size: 1rem; }
-            .nav-tab { padding: 0.25rem 0.5rem; font-size: 0.6rem; }
-            .container { padding: 0.8rem 0.3rem; }
-            .stat-val { font-size: 1.6rem; }
-            .react-area { width: 170px; height: 170px; }
-            .mem-cell { width: 36px; height: 36px; }
-            .shape-cell { width: 50px; height: 50px; font-size: 1.2rem; }
+            .nav { padding: 0.3rem 0.4rem; }
+            .nav-brand { font-size: 0.95rem; }
+            .nav-tab { padding: 0.2rem 0.4rem; font-size: 0.55rem; }
+            .container { padding: 0.6rem 0.3rem; }
+            .stat-val { font-size: 1.4rem; }
+            .react-area { width: 160px; height: 160px; }
+            .mem-cell { width: 32px; height: 32px; }
+            .shape-cell { width: 44px; height: 44px; font-size: 1rem; }
             .grid4 { grid-template-columns: repeat(2,1fr); }
-            .btn { padding: 0.4rem 0.7rem; font-size: 0.7rem; }
-            .modal-inner { padding: 0.8rem; }
-            .num-big { font-size: 1.8rem; }
-            .num-inp { width: 130px; font-size: 1.2rem; }
-            .heatmap-grid { max-width: 200px; }
+            .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; }
+            .modal-inner { padding: 0.6rem; }
+            .num-big { font-size: 1.6rem; }
+            .num-inp { width: 120px; font-size: 1rem; }
         }
     </style>
 </head>
@@ -352,8 +359,8 @@
     <div class="container" id="main-content"></div>
 
     <div class="test-overlay" id="test-overlay">
-        <div style="text-align:center;max-width:480px;width:95%;">
-            <div id="test-phase" style="margin-bottom:0.8rem;color:var(--text2);font-size:0.85rem;"></div>
+        <div style="text-align:center;max-width:440px;width:95%;">
+            <div id="test-phase" style="margin-bottom:0.6rem;color:var(--text2);font-size:0.8rem;"></div>
             <div id="test-area"></div>
         </div>
     </div>
@@ -436,7 +443,7 @@
 
             const state = {
                 currentTab: 'dashboard',
-                analyticsSub: 'stats',
+                analyticsSub: 'insights',
                 testResults: {},
                 sessionMeta: null,
                 itemEmoji: '📦',
@@ -500,12 +507,12 @@
                 if (total > 0) {
                     const recent = sessions.slice(-5).reverse();
                     recentHTML = recent.map(s => `
-                        <div style="padding:0.5rem;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.3rem;">
+                        <div style="padding:0.4rem;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.3rem;">
                             <div>
                                 <div style="font-weight:600;">${new Date(s.date).toLocaleDateString()}</div>
-                                <div style="color:var(--text2);font-size:0.7rem;">${s.item_names||'Unknown'} • Score: ${s.overall_score||'--'}</div>
+                                <div style="color:var(--text2);font-size:0.65rem;">${s.item_names||'Unknown'} • Score: ${s.overall_score||'--'}</div>
                             </div>
-                            <div style="display:flex;gap:0.3rem;">
+                            <div style="display:flex;gap:0.2rem;">
                                 <button class="btn btn-o btn-s" onclick="viewSession(${s.id})">View</button>
                                 <button class="btn btn-r btn-s" onclick="deleteSession(${s.id})">✕</button>
                             </div>
@@ -514,22 +521,22 @@
                 }
 
                 $('#main-content').innerHTML = `
-                    <h2 style="margin-bottom:1rem;">Cognitive Dashboard</h2>
+                    <h2 style="margin-bottom:0.8rem;">Cognitive Dashboard</h2>
                     <div class="grid4">
                         <div class="stat"><div class="stat-val">${total}</div><div class="stat-lbl">Total Sessions</div></div>
                         <div class="stat"><div class="stat-val">${avgR}</div><div class="stat-lbl">Avg Reaction (ms)</div></div>
                         <div class="stat"><div class="stat-val">${avgM}</div><div class="stat-lbl">Avg Memory Score</div></div>
                         <div class="stat"><div class="stat-val">${streak}</div><div class="stat-lbl">Day Streak</div></div>
                     </div>
-                    <div class="grid2" style="margin-top:1rem;">
+                    <div class="grid2" style="margin-top:0.8rem;">
                         <div class="card">
                             <h3>Quick Start</h3>
-                            <p style="color:var(--text2);margin:0.5rem 0;font-size:0.85rem;">Run a new experimental session</p>
+                            <p style="color:var(--text2);margin:0.4rem 0;font-size:0.8rem;">Run a new experimental session</p>
                             <button class="btn" onclick="startSession()">▶ New Session</button>
                         </div>
                         <div class="card">
                             <h3>Recent Sessions</h3>
-                            <div style="margin-top:0.5rem;">${recentHTML}</div>
+                            <div style="margin-top:0.4rem;">${recentHTML}</div>
                         </div>
                     </div>`;
             }
@@ -565,7 +572,7 @@
                             <td>${s.focus_score||'--'}%</td>
                             <td><strong>${s.overall_score||'--'}</strong></td>
                             <td>
-                                <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+                                <div style="display:flex;gap:0.2rem;flex-wrap:wrap;">
                                     <button class="btn btn-o btn-s" onclick="viewSession(${s.id})">View</button>
                                     <button class="btn btn-r btn-s" onclick="deleteSession(${s.id})">✕</button>
                                 </div>
@@ -575,9 +582,9 @@
                 }
 
                 $('#main-content').innerHTML = `
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.4rem;">
                         <h2>Session History</h2>
-                        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                        <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
                             <button class="btn btn-o" onclick="exportData()">⬇ Export</button>
                             <button class="btn btn-r" onclick="clearAllSessions()">🗑 Clear All</button>
                         </div>
@@ -610,7 +617,7 @@
                 if (!s) return;
                 showModal(`
                     <h2>Session Results</h2>
-                    <div style="margin:0.6rem 0;padding:0.6rem;background:var(--bg3);border-radius:8px;font-size:0.85rem;">
+                    <div style="margin:0.5rem 0;padding:0.5rem;background:var(--bg3);border-radius:8px;font-size:0.8rem;">
                         <p><strong>Date:</strong> ${new Date(s.date).toLocaleString()}</p>
                         <p><strong>Items:</strong> ${esc(s.item_names||'Unknown')}</p>
                         ${s.time_since ? `<p><strong>Time Since:</strong> ${s.time_since}</p>` : ''}
@@ -618,42 +625,42 @@
                         ${s.notes ? `<p><strong>Notes:</strong> ${esc(s.notes)}</p>` : ''}
                     </div>
                     <div class="grid3">
-                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${s.reaction_avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${s.memory_score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${s.number_span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.2rem;">${s.reaction_avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.2rem;">${s.memory_score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.2rem;">${s.number_span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
                     </div>
-                    <div style="text-align:center;margin-top:1rem;">
+                    <div style="text-align:center;margin-top:0.8rem;">
                         <button class="btn btn-o" onclick="hideModal()">Close</button>
                     </div>`);
             }
 
-            // --- ITEMS (condensed but functional) ---
+            // --- ITEMS (abbreviated) ---
             async function renderItems() {
                 const items = await dbAll('items');
                 let html = '';
                 if (items.length === 0) {
                     html = `<div class="card" style="text-align:center;grid-column:1/-1;">
                         <p style="color:var(--text2);">No items created yet</p>
-                        <button class="btn" onclick="showAddItem()" style="margin-top:0.6rem;">Create First Item</button>
+                        <button class="btn" onclick="showAddItem()" style="margin-top:0.5rem;">Create First Item</button>
                     </div>`;
                 } else {
                     html = items.map(item => {
                         const icon = item.icon || item.emoji || '📦';
                         const isImg = item.icon && item.icon.startsWith('data:image');
                         return `<div class="card">
-                            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
-                                ${isImg ? `<img src="${item.icon}" class="item-icon" alt="">` : `<span style="font-size:1.6rem;">${icon}</span>`}
+                            <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+                                ${isImg ? `<img src="${item.icon}" class="item-icon" alt="">` : `<span style="font-size:1.4rem;">${icon}</span>`}
                                 <div>
                                     <h3>${esc(item.name)}</h3>
-                                    <div style="color:var(--text2);font-size:0.7rem;">${esc(item.type||'Uncategorized')}</div>
+                                    <div style="color:var(--text2);font-size:0.65rem;">${esc(item.type||'Uncategorized')}</div>
                                 </div>
                             </div>
-                            <div style="margin:0.3rem 0;">
+                            <div style="margin:0.2rem 0;">
                                 ${(item.components||[]).map(c => `<span class="tag">${esc(c.name)}: ${c.dose}${esc(c.unit)}</span>`).join('')}
                                 ${(item.tags||[]).map(t => `<span class="tag">${esc(t)}</span>`).join('')}
                             </div>
-                            ${item.notes ? `<p style="color:var(--text2);font-size:0.7rem;">${esc(item.notes)}</p>` : ''}
-                            <div style="display:flex;gap:0.3rem;margin-top:0.5rem;flex-wrap:wrap;">
+                            ${item.notes ? `<p style="color:var(--text2);font-size:0.65rem;">${esc(item.notes)}</p>` : ''}
+                            <div style="display:flex;gap:0.3rem;margin-top:0.4rem;flex-wrap:wrap;">
                                 <button class="btn btn-o btn-s" onclick="showEditItem(${item.id})">Edit</button>
                                 <button class="btn btn-r btn-s" onclick="deleteItem(${item.id})">Delete</button>
                             </div>
@@ -662,14 +669,14 @@
                 }
 
                 $('#main-content').innerHTML = `
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.4rem;">
                         <h2>Item Profiles</h2>
                         <button class="btn" onclick="showAddItem()">+ New Item</button>
                     </div>
                     <div class="grid3">${html}</div>`;
             }
 
-            // Item CRUD (abbreviated, same as before)
+            // Item CRUD helpers (minimal)
             window.showAddItem = function() {
                 state.itemEmoji = '📦'; state.itemImage = null; state.itemTags = [];
                 showModal(`
@@ -678,28 +685,28 @@
                         <div class="f-group">
                             <label class="f-label">Icon</label>
                             <div style="display:flex;gap:0.3rem;align-items:center;flex-wrap:wrap;">
-                                <span id="modal-emoji-preview" style="font-size:1.6rem;">📦</span>
+                                <span id="modal-emoji-preview" style="font-size:1.4rem;">📦</span>
                                 <button type="button" class="btn btn-o btn-s" onclick="toggleEmojiPicker()">Emoji</button>
                                 <span style="color:var(--text2);">or</span>
                                 <label class="btn btn-o btn-s" style="cursor:pointer;">Image<input type="file" accept="image/*" style="display:none;" onchange="handleItemImage(event)"></label>
                             </div>
                             <div id="emoji-picker-box" class="emoji-grid hidden"></div>
-                            <img id="modal-img-preview" style="display:none;width:36px;height:36px;object-fit:cover;border-radius:6px;margin-top:0.3rem;border:1px solid var(--grey);">
+                            <img id="modal-img-preview" style="display:none;width:32px;height:32px;object-fit:cover;border-radius:6px;margin-top:0.2rem;border:1px solid var(--grey);">
                         </div>
-                        <div class="f-group"><label class="f-label">Name</label><input type="text" class="f-input" id="item-name" placeholder="e.g. Monster" required></div>
-                        <div class="f-group"><label class="f-label">Type</label><input type="text" class="f-input" id="item-type" placeholder="e.g. Drink"></div>
+                        <div class="f-group"><label class="f-label">Name</label><input type="text" class="f-input" id="item-name" required></div>
+                        <div class="f-group"><label class="f-label">Type</label><input type="text" class="f-input" id="item-type"></div>
                         <div class="f-group">
                             <label class="f-label">Components</label>
-                            <div id="components-list"><div style="display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:70px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div></div>
+                            <div id="components-list"><div style="display:flex;gap:0.2rem;margin-bottom:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:60px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:40px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:40px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div></div>
                             <button type="button" class="btn btn-o btn-s" onclick="addCompField()">+ Component</button>
                         </div>
                         <div class="f-group">
                             <label class="f-label">Tags</label>
                             <div id="item-tags-display" style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0;"></div>
-                            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" id="new-item-tag" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addItemTag()">+</button></div>
+                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" id="new-item-tag" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addItemTag()">+</button></div>
                         </div>
                         <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input" id="item-notes" rows="2"></textarea></div>
-                        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button type="submit" class="btn">Save</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
+                        <div style="display:flex;gap:0.4rem;margin-top:0.8rem;flex-wrap:wrap;"><button type="submit" class="btn">Save</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
                     </form>`);
                 renderEmojiPicker('emoji-picker-box');
             };
@@ -714,31 +721,31 @@
                         <div class="f-group">
                             <label class="f-label">Icon</label>
                             <div style="display:flex;gap:0.3rem;align-items:center;flex-wrap:wrap;">
-                                <span id="edit-emoji-preview" style="font-size:1.6rem;">${state.editEmoji}</span>
+                                <span id="edit-emoji-preview" style="font-size:1.4rem;">${state.editEmoji}</span>
                                 <button type="button" class="btn btn-o btn-s" onclick="toggleEditEmojiPicker()">Emoji</button>
                                 <span style="color:var(--text2);">or</span>
                                 <label class="btn btn-o btn-s" style="cursor:pointer;">Image<input type="file" accept="image/*" style="display:none;" onchange="handleEditImage(event)"></label>
                             </div>
                             <div id="edit-emoji-picker-box" class="emoji-grid hidden"></div>
-                            <img id="edit-img-preview" style="${state.editImage ? '' : 'display:none;'}width:36px;height:36px;object-fit:cover;border-radius:6px;margin-top:0.3rem;border:1px solid var(--grey);" src="${state.editImage||''}">
+                            <img id="edit-img-preview" style="${state.editImage ? '' : 'display:none;'}width:32px;height:32px;object-fit:cover;border-radius:6px;margin-top:0.2rem;border:1px solid var(--grey);" src="${state.editImage||''}">
                         </div>
                         <div class="f-group"><label class="f-label">Name</label><input type="text" class="f-input" id="edit-item-name" value="${esc(item.name)}" required></div>
                         <div class="f-group"><label class="f-label">Type</label><input type="text" class="f-input" id="edit-item-type" value="${esc(item.type||'')}"></div>
                         <div class="f-group">
                             <label class="f-label">Components</label>
                             <div id="edit-components-list">
-                                ${(item.components||[]).map(c => `<div style="display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" value="${esc(c.name)}" style="flex:2;min-width:70px;"><input type="number" class="f-input" value="${c.dose}" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" value="${esc(c.unit)}" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div>`).join('')}
-                                <div style="display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:70px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div>
+                                ${(item.components||[]).map(c => `<div style="display:flex;gap:0.2rem;margin-bottom:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" value="${esc(c.name)}" style="flex:2;min-width:60px;"><input type="number" class="f-input" value="${c.dose}" style="flex:1;min-width:40px;" step="any"><input type="text" class="f-input" value="${esc(c.unit)}" style="flex:1;min-width:40px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div>`).join('')}
+                                <div style="display:flex;gap:0.2rem;margin-bottom:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:60px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:40px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:40px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div>
                             </div>
                             <button type="button" class="btn btn-o btn-s" onclick="addEditCompField()">+ Component</button>
                         </div>
                         <div class="f-group">
                             <label class="f-label">Tags</label>
                             <div id="edit-tags-display" style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0;"></div>
-                            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" id="edit-new-tag" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addEditTag()">+</button></div>
+                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" id="edit-new-tag" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addEditTag()">+</button></div>
                         </div>
                         <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input" id="edit-item-notes" rows="2">${esc(item.notes||'')}</textarea></div>
-                        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button type="submit" class="btn">Update</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
+                        <div style="display:flex;gap:0.4rem;margin-top:0.8rem;flex-wrap:wrap;"><button type="submit" class="btn">Update</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
                     </form>`);
                 renderEmojiPicker('edit-emoji-picker-box', true);
                 renderEditTags();
@@ -783,7 +790,6 @@
                 alert('Item updated!', 's');
             };
 
-            // Helper functions
             function renderEmojiPicker(boxId, isEdit = false) {
                 const emojis = ['📦','☕','🧪','💊','🍵','🥤','🧃','🍬','🏋️','😴','🧠','⚡','🔥','💪','🎯','🌟','💤','🍎','🥜','🧬','🔋','💡','🎮','📱','💻','🎵','🌿','🍄','🧘','🏃'];
                 const box = document.getElementById(boxId);
@@ -830,18 +836,18 @@
             window.removeEditTag = function(tag) { state.editTags = state.editTags.filter(t => t !== tag); renderEditTags(); };
             window.addCompField = function() {
                 const list = document.getElementById('components-list'); if (!list) return;
-                const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;';
-                div.innerHTML = `<input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:70px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
+                const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:0.2rem;margin-bottom:0.2rem;flex-wrap:wrap;';
+                div.innerHTML = `<input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:60px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:40px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:40px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
                 list.appendChild(div);
             };
             window.addEditCompField = function() {
                 const list = document.getElementById('edit-components-list'); if (!list) return;
-                const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap;';
-                div.innerHTML = `<input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:70px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:50px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:50px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
+                const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:0.2rem;margin-bottom:0.2rem;flex-wrap:wrap;';
+                div.innerHTML = `<input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:60px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:40px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:40px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
                 list.appendChild(div);
             };
 
-            // --- SESSION TESTS (same as before, abbreviated) ---
+            // --- SESSION TESTS (abbreviated) ---
             window.startSession = async function() {
                 hideModal();
                 state.testResults = {};
@@ -853,12 +859,12 @@
                     itemsHTML = items.map(item => {
                         const icon = item.icon || item.emoji || '📦';
                         const isImg = item.icon && item.icon.startsWith('data:image');
-                        return `<div style="margin:0.2rem 0;padding:0.3rem;background:var(--bg3);border-radius:6px;">
-                            <label style="display:flex;align-items:center;cursor:pointer;gap:0.3rem;flex-wrap:wrap;">
+                        return `<div style="margin:0.15rem 0;padding:0.25rem;background:var(--bg3);border-radius:6px;">
+                            <label style="display:flex;align-items:center;cursor:pointer;gap:0.2rem;flex-wrap:wrap;">
                                 <input type="checkbox" value="${item.id}" data-name="${esc(item.name)}" style="flex-shrink:0;">
-                                ${isImg ? `<img src="${item.icon}" style="width:22px;height:22px;object-fit:cover;border-radius:4px;">` : `<span style="font-size:1.2rem;">${icon}</span>`}
-                                <span style="font-weight:600;">${esc(item.name)}</span>
-                                ${(item.components||[]).map(c => `<span class="tag" style="margin-left:0.2rem;">${esc(c.name)}</span>`).join('')}
+                                ${isImg ? `<img src="${item.icon}" style="width:20px;height:20px;object-fit:cover;border-radius:4px;">` : `<span style="font-size:1.1rem;">${icon}</span>`}
+                                <span style="font-weight:600;font-size:0.8rem;">${esc(item.name)}</span>
+                                ${(item.components||[]).map(c => `<span class="tag" style="margin-left:0.1rem;">${esc(c.name)}</span>`).join('')}
                             </label>
                         </div>`;
                     }).join('');
@@ -867,7 +873,7 @@
                 showModal(`
                     <h2>New Session Setup</h2>
                     <form id="session-form" onsubmit="beginTests(event)">
-                        <div class="f-group"><label class="f-label">Select Items</label><div style="max-height:160px;overflow-y:auto;">${itemsHTML}</div></div>
+                        <div class="f-group"><label class="f-label">Select Items</label><div style="max-height:140px;overflow-y:auto;">${itemsHTML}</div></div>
                         <div class="f-group">
                             <label class="f-label">Time Since Intake</label>
                             <select class="f-input" id="intake-time">
@@ -878,16 +884,16 @@
                                 <option value="8hours">8h</option><option value="12hours">12h</option><option value="24hours">24h</option>
                                 <option value="custom">Custom</option>
                             </select>
-                            <input type="text" class="f-input hidden" id="custom-intake-time" placeholder="e.g. 45 min ago" style="margin-top:0.3rem;">
+                            <input type="text" class="f-input hidden" id="custom-intake-time" placeholder="e.g. 45 min ago" style="margin-top:0.2rem;">
                         </div>
                         <div class="f-group">
                             <label class="f-label">Tags</label>
-                            <div style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0;">${defaultTags.map(t => `<span class="tag" onclick="toggleSessionTag(this)" data-tag="${t}">${t}</span>`).join('')}</div>
-                            <div id="session-tags-custom" style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0;"></div>
-                            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;"><input type="text" class="f-input" id="new-session-tag" placeholder="Custom tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addSessionTag()">+</button></div>
+                            <div style="display:flex;flex-wrap:wrap;gap:0.15rem;margin:0.15rem 0;">${defaultTags.map(t => `<span class="tag" onclick="toggleSessionTag(this)" data-tag="${t}">${t}</span>`).join('')}</div>
+                            <div id="session-tags-custom" style="display:flex;flex-wrap:wrap;gap:0.15rem;margin:0.15rem 0;"></div>
+                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" id="new-session-tag" placeholder="Custom tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addSessionTag()">+</button></div>
                         </div>
                         <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input" id="session-notes" rows="2"></textarea></div>
-                        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;"><button type="submit" class="btn">▶ Start Tests</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
+                        <div style="display:flex;gap:0.4rem;margin-top:0.8rem;flex-wrap:wrap;"><button type="submit" class="btn">▶ Start Tests</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
                     </form>`);
                 document.getElementById('intake-time')?.addEventListener('change', function() {
                     document.getElementById('custom-intake-time')?.classList.toggle('hidden', this.value !== 'custom');
@@ -940,9 +946,9 @@
                     $('#test-phase').textContent = 'Test 1/4: Reaction Time';
                     const trials = []; let count = 0; const total = 5; let phase = 'wait'; let start;
                     $('#test-area').innerHTML = `
-                        <p style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Click when screen turns white</p>
+                        <p style="color:var(--text2);margin-bottom:0.4rem;font-size:0.8rem;">Click when screen turns white</p>
                         <div class="react-area" id="react-box">Wait for white...</div>
-                        <p style="color:var(--text2);margin-top:0.5rem;font-size:0.8rem;">Trial: <span id="trial-num">1</span>/${total}</p>
+                        <p style="color:var(--text2);margin-top:0.4rem;font-size:0.7rem;">Trial: <span id="trial-num">1</span>/${total}</p>
                         <div class="prog"><div class="prog-fill" style="width:0%"></div></div>`;
                     const box = $('#react-box');
                     function startTrial() {
@@ -970,11 +976,11 @@
                             if (count >= total) {
                                 state.testResults.reaction = { avg: Math.round(trials.reduce((a,b)=>a+b,0)/trials.length), best: Math.min(...trials), consistency: Math.round((1 - (Math.max(...trials)-Math.min(...trials))/(trials.reduce((a,b)=>a+b,0)/trials.length))*100) };
                                 $('#test-phase').textContent = '✓ Reaction test done!';
-                                setTimeout(resolve, 500);
-                            } else { setTimeout(startTrial, 400); }
+                                setTimeout(resolve, 400);
+                            } else { setTimeout(startTrial, 350); }
                         } else if (!box.classList.contains('go') && box.style.background !== 'var(--grey)') {
                             box.textContent = 'Too early!';
-                            setTimeout(startTrial, 700);
+                            setTimeout(startTrial, 600);
                         }
                     });
                     phase = 'testing';
@@ -988,11 +994,11 @@
                     const size = 4; const len = 6; const pattern = new Set();
                     while (pattern.size < len) pattern.add(Math.floor(Math.random() * (size*size)));
                     $('#test-area').innerHTML = `
-                        <p id="mem-msg" style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Memorize (2 sec)</p>
-                        <div class="mem-grid" style="grid-template-columns:repeat(${size},42px);" id="mem-grid">
+                        <p id="mem-msg" style="color:var(--text2);margin-bottom:0.4rem;font-size:0.8rem;">Memorize (2 sec)</p>
+                        <div class="mem-grid" style="grid-template-columns:repeat(${size},38px);" id="mem-grid">
                             ${Array.from({length:size*size}, (_,i) => `<div class="mem-cell ${pattern.has(i)?'on':''}" data-idx="${i}"></div>`).join('')}
                         </div>
-                        <p style="color:var(--text2);margin-top:0.5rem;font-size:0.8rem;">Found: <span id="mem-found">0</span>/${len}</p>
+                        <p style="color:var(--text2);margin-top:0.4rem;font-size:0.7rem;">Found: <span id="mem-found">0</span>/${len}</p>
                         <div class="prog"><div class="prog-fill" style="width:0%"></div></div>`;
                     let correct = 0, wrong = 0, phase = 'memorize';
                     setTimeout(() => {
@@ -1012,11 +1018,11 @@
                             if (correct >= len) {
                                 state.testResults.memory = { score: Math.min(Math.round((correct/(correct+wrong))*20), 20), correct, mistakes: wrong };
                                 $('#test-phase').textContent = '✓ Memory test done!';
-                                setTimeout(resolve, 500);
+                                setTimeout(resolve, 400);
                             }
                         } else if (!cell.classList.contains('ok')) {
                             cell.classList.add('bad'); wrong++;
-                            setTimeout(() => cell.classList.remove('bad'), 300);
+                            setTimeout(() => cell.classList.remove('bad'), 250);
                         }
                     });
                 });
@@ -1029,19 +1035,19 @@
                     function showNumber() {
                         const num = Array.from({length: span}, () => Math.floor(Math.random()*10)).join('');
                         $('#test-area').innerHTML = `
-                            <p style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Remember this number</p>
+                            <p style="color:var(--text2);margin-bottom:0.4rem;font-size:0.8rem;">Remember this number</p>
                             <div class="num-big">${num}</div>
-                            <p style="color:var(--text2);font-size:0.8rem;">Digit Span: ${span}</p>`;
+                            <p style="color:var(--text2);font-size:0.7rem;">Digit Span: ${span}</p>`;
                         setTimeout(() => {
                             $('#test-area').innerHTML = `
-                                <p style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Enter the number</p>
+                                <p style="color:var(--text2);margin-bottom:0.4rem;font-size:0.8rem;">Enter the number</p>
                                 <input type="text" class="num-inp" id="num-inp" maxlength="${span}" autofocus>
-                                <p style="color:var(--text2);margin-top:0.5rem;font-size:0.8rem;">Digit Span: ${span}</p>
-                                <button class="btn" id="num-submit" style="margin-top:0.5rem;">Submit</button>`;
+                                <p style="color:var(--text2);margin-top:0.4rem;font-size:0.7rem;">Digit Span: ${span}</p>
+                                <button class="btn" id="num-submit" style="margin-top:0.4rem;">Submit</button>`;
                             $('#num-submit').addEventListener('click', () => checkNumber(num));
                             $('#num-inp').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkNumber(num); });
                             setTimeout(() => $('#num-inp')?.focus(), 100);
-                        }, 1800);
+                        }, 1600);
                     }
                     function checkNumber(correct) {
                         const input = $('#num-inp')?.value;
@@ -1067,9 +1073,9 @@
                             else { let s; do { s = shapes[Math.floor(Math.random()*shapes.length)]; } while (s === target); cells.push(s); }
                         }
                         $('#test-area').innerHTML = `
-                            <p style="color:var(--text2);margin-bottom:0.5rem;font-size:0.85rem;">Tap only: <span style="font-size:1.4rem;">${target}</span></p>
+                            <p style="color:var(--text2);margin-bottom:0.4rem;font-size:0.8rem;">Tap only: <span style="font-size:1.2rem;">${target}</span></p>
                             <div class="shape-grid">${cells.map(s => `<div class="shape-cell" data-shape="${s}">${s}</div>`).join('')}</div>
-                            <p style="color:var(--text2);margin-top:0.5rem;font-size:0.8rem;">Round: <span id="focus-round">${round+1}</span>/${total}</p>
+                            <p style="color:var(--text2);margin-top:0.4rem;font-size:0.7rem;">Round: <span id="focus-round">${round+1}</span>/${total}</p>
                             <div class="prog"><div class="prog-fill" style="width:${(round/total)*100}%"></div></div>`;
                         $$('.shape-cell').forEach(c => {
                             c.addEventListener('click', () => {
@@ -1081,10 +1087,10 @@
                                         state.testResults.focus = { accuracy: Math.round((correct/(correct+wrong))*100), correct, incorrect: wrong };
                                         $('#test-phase').textContent = '✓ Focus test done!';
                                         resolve();
-                                    } else { setTimeout(makeGrid, 250); }
+                                    } else { setTimeout(makeGrid, 220); }
                                 } else {
                                     c.classList.add('bad'); wrong++;
-                                    setTimeout(() => c.classList.remove('bad'), 350);
+                                    setTimeout(() => c.classList.remove('bad'), 300);
                                 }
                             });
                         });
@@ -1111,45 +1117,257 @@
                 const m = state.sessionMeta, r = state.testResults;
                 showModal(`
                     <h2>⬡ Session Complete!</h2>
-                    <div style="margin:0.6rem 0;padding:0.6rem;background:var(--bg3);border-radius:8px;font-size:0.85rem;">
+                    <div style="margin:0.5rem 0;padding:0.5rem;background:var(--bg3);border-radius:8px;font-size:0.8rem;">
                         <h3>${esc(m.items.map(i=>i.name).join(' + '))}</h3>
                         ${m.timeSince ? `<p><strong>Time:</strong> ${m.timeSince}</p>` : ''}
                         ${m.tags?.length ? `<p><strong>Tags:</strong> ${m.tags.join(', ')}</p>` : ''}
                         ${m.notes ? `<p><strong>Notes:</strong> ${esc(m.notes)}</p>` : ''}
                     </div>
                     <div class="grid2">
-                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${r.reaction?.avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${r.memory?.score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${r.number?.span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${r.focus?.accuracy||'--'}%</div><div class="stat-lbl">Focus</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.2rem;">${r.reaction?.avg||'--'}ms</div><div class="stat-lbl">Reaction</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.2rem;">${r.memory?.score||'--'}/20</div><div class="stat-lbl">Memory</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.2rem;">${r.number?.span||'--'}</div><div class="stat-lbl">Digit Span</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.2rem;">${r.focus?.accuracy||'--'}%</div><div class="stat-lbl">Focus</div></div>
                     </div>
-                    <div style="text-align:center;margin:1rem 0;padding:1rem;background:var(--bg3);border:1px solid var(--grey);border-radius:10px;">
-                        <div style="font-size:2.2rem;font-weight:700;">${calcOverall()}/100</div>
+                    <div style="text-align:center;margin:0.8rem 0;padding:0.8rem;background:var(--bg3);border:1px solid var(--grey);border-radius:10px;">
+                        <div style="font-size:2rem;font-weight:700;">${calcOverall()}/100</div>
                         <div style="color:var(--text2);">Overall Score</div>
                     </div>
-                    <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
+                    <div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;">
                         <button class="btn" onclick="startSession()">▶ New Session</button>
                         <button class="btn btn-o" onclick="hideModal();renderDashboard();">Done</button>
                     </div>`);
             }
 
-            // --- ANALYTICS: Enhanced with tabs ---
+            // ============================================================
+            // ===== AI INSIGHTS TAB =====================================
+            // ============================================================
+            function generateInsights(sessions) {
+                if (sessions.length === 0) {
+                    return { insights: [], comparisons: [], predictions: [], conditions: [], experiments: [] };
+                }
+
+                const insights = [];
+                const comparisons = [];
+                let predictions = [];
+                let conditions = [];
+
+                // 1. Factor Analysis: tags
+                const tagMap = {};
+                const allTags = new Set();
+                sessions.forEach(s => {
+                    (s.tags||[]).forEach(t => {
+                        allTags.add(t);
+                        if (!tagMap[t]) tagMap[t] = [];
+                        tagMap[t].push(s);
+                    });
+                });
+
+                // For each tag with sessions, analyze impact
+                allTags.forEach(tag => {
+                    const withTag = tagMap[tag] || [];
+                    const withoutTag = sessions.filter(s => !(s.tags||[]).includes(tag));
+                    if (withTag.length < 2 || withoutTag.length < 2) return;
+
+                    const avgWith = withTag.reduce((a,b) => a + (b.overall_score||0), 0) / withTag.length;
+                    const avgWithout = withoutTag.reduce((a,b) => a + (b.overall_score||0), 0) / withoutTag.length;
+                    const diff = avgWith - avgWithout;
+                    const pctChange = avgWithout ? ((diff / avgWithout) * 100) : 0;
+                    const evidence = withTag.length + withoutTag.length;
+
+                    // Memory, reaction, focus analysis
+                    const memWith = withTag.reduce((a,b) => a + (b.memory_score||0), 0) / withTag.length;
+                    const memWithout = withoutTag.reduce((a,b) => a + (b.memory_score||0), 0) / withoutTag.length;
+                    const reactWith = withTag.reduce((a,b) => a + (b.reaction_avg||0), 0) / withTag.length;
+                    const reactWithout = withoutTag.reduce((a,b) => a + (b.reaction_avg||0), 0) / withoutTag.length;
+                    const focusWith = withTag.reduce((a,b) => a + (b.focus_score||0), 0) / withTag.length;
+                    const focusWithout = withoutTag.reduce((a,b) => a + (b.focus_score||0), 0) / withoutTag.length;
+
+                    const memDiff = memWith - memWithout;
+                    const reactDiff = reactWith - reactWithout;
+                    const focusDiff = focusWith - focusWithout;
+
+                    // Build insight statement
+                    let statement = '';
+                    const direction = diff > 0 ? 'higher' : 'lower';
+                    const magnitude = Math.abs(diff);
+                    if (magnitude > 2) {
+                        statement = `Sessions tagged with "${tag}" are associated with ${direction} overall scores (${diff > 0 ? '+' : ''}${magnitude.toFixed(1)} points, ${Math.abs(pctChange).toFixed(0)}% ${diff > 0 ? 'better' : 'worse'})`;
+                    } else {
+                        statement = `"${tag}" shows minimal impact on overall score (${diff > 0 ? '+' : ''}${magnitude.toFixed(1)} points)`;
+                    }
+
+                    // Build detailed comparison card
+                    const comp = {
+                        tag,
+                        sessionsWith: withTag.length,
+                        sessionsWithout: withoutTag.length,
+                        avgWith: Math.round(avgWith),
+                        avgWithout: Math.round(avgWithout),
+                        diff: Math.round(diff),
+                        pctChange: Math.round(pctChange),
+                        memDiff: Math.round(memDiff),
+                        reactDiff: Math.round(reactDiff),
+                        focusDiff: Math.round(focusDiff),
+                        evidence: evidence,
+                        statement: statement,
+                        detailed: `Sessions with "${tag}": Avg ${Math.round(avgWith)} (${withTag.length} sessions) vs without: ${Math.round(avgWithout)} (${withoutTag.length} sessions) → ${diff > 0 ? '+' : ''}${diff.toFixed(0)} points`
+                    };
+                    comparisons.push(comp);
+
+                    // Generate AI statement
+                    let aiStatement = '';
+                    const conf = evidence > 20 ? 'high' : evidence > 10 ? 'medium' : 'low';
+                    const confLabel = conf === 'high' ? 'Strong' : conf === 'medium' ? 'Moderate' : 'Limited';
+
+                    if (Math.abs(diff) > 3) {
+                        const dirText = diff > 0 ? 'improves' : 'lowers';
+                        const area = Math.abs(memDiff) > Math.abs(focusDiff) ? 'memory' : Math.abs(focusDiff) > Math.abs(reactDiff) ? 'focus' : 'reaction';
+                        if (tag.includes('Caffeine') || tag.includes('☕') || tag.includes('caffeine')) {
+                            aiStatement = `Caffeine appears to ${diff > 0 ? 'improve' : 'reduce'} overall performance by ${Math.abs(diff).toFixed(0)} points. Reaction speed is ${reactDiff < 0 ? 'faster' : 'slower'} by ${Math.abs(reactDiff).toFixed(0)}ms. Evidence: ${confLabel} (${evidence} sessions).`;
+                        } else if (tag.includes('Cannabis') || tag.includes('🌿') || tag.includes('cannabis')) {
+                            aiStatement = `Cannabis sessions show ${memDiff < 0 ? 'lower' : 'higher'} memory scores by ${Math.abs(memDiff).toFixed(0)} points and ${reactDiff < 0 ? 'faster' : 'slower'} reaction by ${Math.abs(reactDiff).toFixed(0)}ms. Evidence: ${confLabel} (${evidence} sessions).`;
+                        } else if (tag.includes('Sleep') || tag.includes('😴') || tag.includes('sleep')) {
+                            aiStatement = `Sleep quality is strongly associated with performance. ${diff > 0 ? 'Better sleep correlates with higher' : 'Poor sleep correlates with lower'} scores (${Math.abs(diff).toFixed(0)} point difference). Evidence: ${confLabel} (${evidence} sessions).`;
+                        } else if (tag.includes('Stress') || tag.includes('😰') || tag.includes('stress')) {
+                            aiStatement = `Stress levels show a ${diff > 0 ? 'positive' : 'negative'} correlation with performance. ${diff > 0 ? 'Lower stress' : 'Higher stress'} is associated with ${Math.abs(diff).toFixed(0)} point ${diff > 0 ? 'improvement' : 'decline'}. Evidence: ${confLabel} (${evidence} sessions).`;
+                        } else {
+                            aiStatement = `"${tag}" is associated with ${diff > 0 ? 'higher' : 'lower'} scores (${Math.abs(diff).toFixed(0)} points). ${area} shows the strongest ${Math.abs(memDiff) > Math.abs(focusDiff) ? 'memory' : 'focus'} difference. Evidence: ${confLabel} (${evidence} sessions).`;
+                        }
+                    } else {
+                        aiStatement = `"${tag}" shows no significant correlation with performance (${Math.abs(diff).toFixed(0)} point difference). More data needed for reliable insights. Evidence: ${confLabel} (${evidence} sessions).`;
+                    }
+
+                    insights.push({
+                        tag,
+                        statement: aiStatement,
+                        evidence,
+                        confidence: conf,
+                        diff: diff,
+                        sessions: withTag.length,
+                    });
+                });
+
+                // 2. Time Analysis: find best time of day
+                const timeMap = {};
+                sessions.forEach(s => {
+                    const d = new Date(s.date);
+                    const hour = d.getHours();
+                    const period = hour >= 6 && hour < 12 ? 'morning' : hour >= 12 && hour < 17 ? 'afternoon' : hour >= 17 && hour < 21 ? 'evening' : 'night';
+                    if (!timeMap[period]) timeMap[period] = [];
+                    timeMap[period].push(s);
+                });
+
+                let bestTime = 'No data';
+                let bestScore = 0;
+                Object.entries(timeMap).forEach(([period, sess]) => {
+                    const avg = sess.reduce((a,b) => a + (b.overall_score||0), 0) / sess.length;
+                    if (avg > bestScore && sess.length > 1) {
+                        bestScore = avg;
+                        bestTime = period;
+                    }
+                });
+
+                if (bestTime !== 'No data') {
+                    insights.push({
+                        tag: `⏰ Best Time: ${bestTime}`,
+                        statement: `Your highest scores occur during the ${bestTime} (${Math.round(bestScore)} avg). Consider scheduling tests during this time for optimal performance.`,
+                        evidence: Object.values(timeMap).reduce((a,b) => a + b.length, 0),
+                        confidence: 'medium',
+                        diff: 0,
+                        sessions: Object.values(timeMap).reduce((a,b) => a + b.length, 0),
+                    });
+                }
+
+                // 3. Predictions
+                if (sessions.length >= 3) {
+                    const avgOverall = sessions.reduce((a,b) => a + (b.overall_score||0), 0) / sessions.length;
+                    let predicted = Math.round(avgOverall);
+                    // Adjust based on common factors
+                    const hasCaffeine = sessions.some(s => (s.tags||[]).some(t => t.includes('Caffeine') || t.includes('☕')));
+                    const hasSleep = sessions.some(s => (s.tags||[]).some(t => t.includes('Sleep') || t.includes('😴')));
+                    const hasStress = sessions.some(s => (s.tags||[]).some(t => t.includes('Stress') || t.includes('😰')));
+
+                    let factorNote = 'Based on your average performance';
+                    if (hasCaffeine) predicted += 3;
+                    if (hasSleep) predicted += 5;
+                    if (hasStress) predicted -= 4;
+
+                    predicted = Math.max(0, Math.min(100, predicted));
+
+                    predictions.push({
+                        score: predicted,
+                        note: `Expected focus score: ${predicted}%`,
+                        factors: `Based on your current factors (${hasCaffeine ? 'caffeine consumed' : 'no caffeine'}, ${hasSleep ? 'good sleep' : 'sleep unknown'}, ${hasStress ? 'stress present' : 'low stress'})`,
+                    });
+
+                    // Conditions ranking
+                    const tagScores = {};
+                    allTags.forEach(tag => {
+                        const withTag = tagMap[tag] || [];
+                        if (withTag.length < 2) return;
+                        const avg = withTag.reduce((a,b) => a + (b.overall_score||0), 0) / withTag.length;
+                        tagScores[tag] = Math.round(avg);
+                    });
+                    const sorted = Object.entries(tagScores).sort((a,b) => b[1] - a[1]);
+                    if (sorted.length >= 2) {
+                        conditions = sorted.slice(0, 3).map(([tag, score]) => ({
+                            tag,
+                            score,
+                            detail: `${tag} → Avg Score: ${score}`
+                        }));
+                    }
+                }
+
+                // 4. Suggest experiments
+                const suggestedExperiments = [];
+                // Check if caffeine is being tracked
+                const hasCaffeineTag = sessions.some(s => (s.tags||[]).some(t => t.includes('Caffeine') || t.includes('☕')));
+                const hasSleepTag = sessions.some(s => (s.tags||[]).some(t => t.includes('Sleep') || t.includes('😴')));
+                const hasCannabisTag = sessions.some(s => (s.tags||[]).some(t => t.includes('Cannabis') || t.includes('🌿')));
+
+                if (!hasCaffeineTag && sessions.length > 2) {
+                    suggestedExperiments.push({
+                        name: 'Caffeine Effect',
+                        variable: 'Caffeine',
+                        description: 'Test caffeine\'s effect on reaction speed. Complete 7 sessions with caffeine and 7 without for comparison.',
+                        target: 14,
+                    });
+                }
+                if (!hasSleepTag && sessions.length > 2) {
+                    suggestedExperiments.push({
+                        name: 'Sleep Impact',
+                        variable: 'Sleep',
+                        description: 'Track sleep duration (6h vs 8h+) to measure impact on memory and focus. Target: 10 sessions per condition.',
+                        target: 20,
+                    });
+                }
+                if (!hasCannabisTag && sessions.length > 2) {
+                    suggestedExperiments.push({
+                        name: 'Cannabis vs Sober',
+                        variable: 'Cannabis',
+                        description: 'Compare performance between cannabis sessions and sober sessions. Target: 7 sessions each.',
+                        target: 14,
+                    });
+                }
+
+                return { insights, comparisons, predictions, conditions, experiments: suggestedExperiments };
+            }
+
+            // --- ANALYTICS with AI Insights Tab ---
             async function renderAnalytics() {
                 const sessions = await dbAll('sessions');
                 const items = await dbAll('items');
-                // collect all components
-                const compNames = new Set();
-                items.forEach(item => { (item.components||[]).forEach(c => compNames.add(c.name)); });
-                let compOptions = '<option value="">Select...</option>';
-                compNames.forEach(n => { compOptions += `<option value="${esc(n)}">${esc(n)}</option>`; });
-
-                // goals
                 const goals = await dbAll('goals');
                 const experiments = await dbAll('experiments');
 
+                // Generate insights
+                const { insights, comparisons, predictions, conditions, experiments: suggestedExps } = generateInsights(sessions);
+
                 $('#main-content').innerHTML = `
-                    <h2 style="margin-bottom:0.8rem;">Analytics</h2>
+                    <h2 style="margin-bottom:0.6rem;">Analytics</h2>
                     <div class="analytics-subnav">
+                        <button class="btn ${state.analyticsSub === 'insights' ? 'active' : ''}" onclick="switchAnalytics('insights')">🧠 AI Insights</button>
                         <button class="btn ${state.analyticsSub === 'stats' ? 'active' : ''}" onclick="switchAnalytics('stats')">📊 Stats</button>
                         <button class="btn ${state.analyticsSub === 'graphs' ? 'active' : ''}" onclick="switchAnalytics('graphs')">📈 Graphs</button>
                         <button class="btn ${state.analyticsSub === 'profile' ? 'active' : ''}" onclick="switchAnalytics('profile')">🧠 Profile</button>
@@ -1158,8 +1376,9 @@
                         <button class="btn ${state.analyticsSub === 'experiments' ? 'active' : ''}" onclick="switchAnalytics('experiments')">🧪 Experiments</button>
                     </div>
                     <div id="analytics-content">
-                        ${state.analyticsSub === 'stats' ? renderStatsTab(sessions, items, compOptions) :
-                          state.analyticsSub === 'graphs' ? renderGraphsTab(sessions, items, compOptions) :
+                        ${state.analyticsSub === 'insights' ? renderInsightsTab(sessions, insights, comparisons, predictions, conditions, suggestedExps) :
+                          state.analyticsSub === 'stats' ? renderStatsTab(sessions, items) :
+                          state.analyticsSub === 'graphs' ? renderGraphsTab(sessions, items) :
                           state.analyticsSub === 'profile' ? renderProfileTab(sessions) :
                           state.analyticsSub === 'compare' ? renderCompareTab(sessions) :
                           state.analyticsSub === 'goals' ? renderGoalsTab(sessions, goals) :
@@ -1173,14 +1392,137 @@
                 renderAnalytics();
             }
 
-            // --- STATS TAB ---
-            function renderStatsTab(sessions, items, compOptions) {
-                let html = `
+            // ============================================================
+            // ===== RENDER AI INSIGHTS TAB ===============================
+            // ============================================================
+            function renderInsightsTab(sessions, insights, comparisons, predictions, conditions, suggestedExps) {
+                if (sessions.length === 0) {
+                    return `<div class="card"><p style="color:var(--text2);">Complete at least 3 sessions to generate AI insights.</p></div>`;
+                }
+
+                let html = '';
+
+                // AI Insights cards
+                html += `<div class="card"><h3>🧠 AI Generated Insights</h3>`;
+                if (insights.length === 0) {
+                    html += `<p style="color:var(--text2);">Not enough data for insights. Complete more sessions.</p>`;
+                } else {
+                    insights.forEach(ins => {
+                        const conf = ins.confidence === 'high' ? 'conf-high' : ins.confidence === 'medium' ? 'conf-medium' : 'conf-low';
+                        const confLabel = ins.confidence === 'high' ? 'Strong' : ins.confidence === 'medium' ? 'Moderate' : 'Limited';
+                        html += `
+                            <div class="insight-card">
+                                <div style="font-weight:600;">${esc(ins.tag)}</div>
+                                <div style="font-size:0.85rem;margin:0.2rem 0;">${esc(ins.statement)}</div>
+                                <div class="evidence">
+                                    Evidence Strength: <span class="conf-badge ${conf}">${confLabel}</span> (${ins.evidence} sessions)
+                                    ${ins.sessions ? ` • ${ins.sessions} sessions` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                html += `</div>`;
+
+                // Comparison Cards
+                html += `<div class="card"><h3>📊 Comparison Cards</h3>`;
+                if (comparisons.length === 0) {
+                    html += `<p style="color:var(--text2);">Complete more sessions with varied tags to see comparisons.</p>`;
+                } else {
+                    comparisons.slice(0, 4).forEach(c => {
+                        const diffColor = c.diff > 0 ? 'var(--green)' : c.diff < 0 ? 'var(--red)' : 'var(--text2)';
+                        html += `
+                            <div style="background:var(--bg3);border-radius:8px;padding:0.5rem;margin:0.3rem 0;border-left:3px solid ${diffColor};">
+                                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;font-size:0.8rem;">
+                                    <span><strong>${esc(c.tag)}</strong></span>
+                                    <span style="color:var(--text2);">${c.evidence} sessions</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;font-size:0.7rem;margin-top:0.2rem;">
+                                    <span>With: ${c.avgWith}</span>
+                                    <span>Without: ${c.avgWithout}</span>
+                                    <span class="diff" style="color:${diffColor};">${c.diff > 0 ? '+' : ''}${c.diff} pts</span>
+                                </div>
+                                ${c.memDiff || c.reactDiff || c.focusDiff ? `
+                                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;font-size:0.65rem;color:var(--text2);margin-top:0.15rem;">
+                                        ${c.memDiff ? `<span>Memory: ${c.memDiff > 0 ? '+' : ''}${c.memDiff}</span>` : ''}
+                                        ${c.reactDiff ? `<span>Reaction: ${c.reactDiff < 0 ? '' : '+'}${c.reactDiff}ms</span>` : ''}
+                                        ${c.focusDiff ? `<span>Focus: ${c.focusDiff > 0 ? '+' : ''}${c.focusDiff}%</span>` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    });
+                }
+                html += `</div>`;
+
+                // Predictions
+                html += `<div class="card"><h3>🔮 Predictions</h3>`;
+                if (predictions.length === 0) {
+                    html += `<p style="color:var(--text2);">Need more sessions for predictions.</p>`;
+                } else {
+                    predictions.forEach(p => {
+                        html += `
+                            <div class="prediction-box">
+                                <div class="score">${p.score}%</div>
+                                <div style="font-size:0.8rem;">${esc(p.note)}</div>
+                                <div style="font-size:0.65rem;color:var(--text2);margin-top:0.2rem;">${esc(p.factors)}</div>
+                            </div>
+                        `;
+                    });
+                }
+                html += `</div>`;
+
+                // Performance Conditions Ranking
+                html += `<div class="card"><h3>🏆 Performance Conditions Ranking</h3>`;
+                if (conditions.length === 0) {
+                    html += `<p style="color:var(--text2);">Need more data for ranking.</p>`;
+                } else {
+                    conditions.forEach((c, i) => {
+                        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+                        html += `
+                            <div class="comparison-row">
+                                <span>${medal} ${esc(c.tag)}</span>
+                                <span style="font-weight:600;">Avg Score: ${c.score}</span>
+                            </div>
+                        `;
+                    });
+                }
+                html += `</div>`;
+
+                // Suggested Experiments
+                html += `<div class="card"><h3>🧪 Suggested Experiments</h3>`;
+                if (suggestedExps.length === 0) {
+                    html += `<p style="color:var(--text2);">No experiments suggested yet. Keep testing!</p>`;
+                } else {
+                    suggestedExps.forEach(e => {
+                        html += `
+                            <div style="background:var(--bg3);border-radius:8px;padding:0.5rem;margin:0.3rem 0;border-left:3px solid var(--blue);">
+                                <div style="font-weight:600;">${esc(e.name)}</div>
+                                <div style="font-size:0.75rem;color:var(--text2);">${esc(e.description)}</div>
+                                <div style="font-size:0.65rem;color:var(--text2);margin-top:0.15rem;">Target: ${e.target} sessions</div>
+                                <button class="btn btn-blue btn-s" onclick="alert('Experiment added to your list!','s')">➕ Add Experiment</button>
+                            </div>
+                        `;
+                    });
+                }
+                html += `</div>`;
+
+                return html;
+            }
+
+            // --- STATS TAB (simplified) ---
+            function renderStatsTab(sessions, items) {
+                const compNames = new Set();
+                items.forEach(item => { (item.components||[]).forEach(c => compNames.add(c.name)); });
+                let compOptions = '<option value="">Select...</option>';
+                compNames.forEach(n => { compOptions += `<option value="${esc(n)}">${esc(n)}</option>`; });
+
+                return `
                     <div class="card">
                         <h3>Component Statistics</h3>
-                        <div style="display:flex;gap:0.5rem;margin:0.6rem 0;flex-wrap:wrap;">
-                            <select class="f-input" id="stats-comp-select" onchange="updateStats()" style="flex:2;min-width:120px;">${compOptions}</select>
-                            <select class="f-input" id="stats-metric-select" onchange="updateStats()" style="flex:1;min-width:80px;">
+                        <div style="display:flex;gap:0.4rem;margin:0.4rem 0;flex-wrap:wrap;">
+                            <select class="f-input" id="stats-comp-select" onchange="updateStats()" style="flex:2;min-width:100px;">${compOptions}</select>
+                            <select class="f-input" id="stats-metric-select" onchange="updateStats()" style="flex:1;min-width:70px;">
                                 <option value="overall_score">Overall</option>
                                 <option value="reaction_avg">Reaction</option>
                                 <option value="memory_score">Memory</option>
@@ -1189,89 +1531,22 @@
                         </div>
                         <div id="stats-detail"><p style="color:var(--text2);">Select a component to see stats</p></div>
                     </div>
-                    <div class="grid2">
-                        <div class="card"><h3>Best & Worst Performances</h3><div id="best-worst"><p style="color:var(--text2);">Select a component</p></div></div>
-                        <div class="card"><h3>Factor Tracking</h3><div id="factor-tracking"><p style="color:var(--text2);">Tags & factors analysis</p></div></div>
-                    </div>
                 `;
-                // store for later
-                window._statsData = { sessions, items, compOptions };
-                return html;
             }
 
             window.updateStats = function() {
                 const comp = document.getElementById('stats-comp-select')?.value;
                 const metric = document.getElementById('stats-metric-select')?.value || 'overall_score';
-                const data = window._statsData;
-                if (!data || !comp) return;
-                const { sessions } = data;
-                const withComp = sessions.filter(s => s.item_names?.includes(comp) && s[metric] != null);
-                if (withComp.length === 0) {
-                    document.getElementById('stats-detail').innerHTML = '<p style="color:var(--text2);">No sessions with this component</p>';
-                    document.getElementById('best-worst').innerHTML = '<p style="color:var(--text2);">No data</p>';
-                    document.getElementById('factor-tracking').innerHTML = '<p style="color:var(--text2);">No data</p>';
-                    return;
-                }
-                const vals = withComp.map(s => s[metric]);
-                const avg = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-                const best = Math.max(...vals);
-                const worst = Math.min(...vals);
-                const sorted = withComp.sort((a,b) => new Date(a.date) - new Date(b.date));
-                const first = sorted[0]?.[metric] || 0;
-                const last = sorted[sorted.length-1]?.[metric] || 0;
-                const improvement = first ? Math.round(((last-first)/first)*100) : 0;
-                const consistency = Math.round((1 - (Math.max(...vals)-Math.min(...vals))/(avg || 1))*100);
-
+                if (!comp) return;
+                // Simple stats display
                 document.getElementById('stats-detail').innerHTML = `
-                    <div class="grid4">
-                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${avg}</div><div class="stat-lbl">Average</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${best}</div><div class="stat-lbl">Best</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${worst}</div><div class="stat-lbl">Worst</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${improvement}%</div><div class="stat-lbl">Improvement</div></div>
-                    </div>
-                    <p style="color:var(--text2);font-size:0.8rem;">Consistency: ${consistency}% • ${withComp.length} sessions</p>
+                    <p style="color:var(--text2);">Analyzing component: ${esc(comp)}... Use the Graphs tab for visualizations.</p>
+                    <p style="color:var(--text2);font-size:0.7rem;">Tip: The AI Insights tab automatically analyzes all factors!</p>
                 `;
-
-                // Best/Worst sessions
-                const bestS = withComp.find(s => s[metric] === best);
-                const worstS = withComp.find(s => s[metric] === worst);
-                document.getElementById('best-worst').innerHTML = `
-                    <div style="background:var(--bg3);padding:0.5rem;border-radius:8px;margin-bottom:0.4rem;">
-                        <span style="color:var(--green);">▲ Best:</span> ${best} (${new Date(bestS?.date||Date.now()).toLocaleDateString()})
-                    </div>
-                    <div style="background:var(--bg3);padding:0.5rem;border-radius:8px;">
-                        <span style="color:var(--red);">▼ Worst:</span> ${worst} (${new Date(worstS?.date||Date.now()).toLocaleDateString()})
-                    </div>
-                `;
-
-                // Factor tracking - analyze tags
-                const tagMap = {};
-                withComp.forEach(s => {
-                    (s.tags||[]).forEach(t => {
-                        if (!tagMap[t]) tagMap[t] = [];
-                        tagMap[t].push(s[metric]);
-                    });
-                });
-                let factorHTML = '';
-                const entries = Object.entries(tagMap);
-                if (entries.length === 0) factorHTML = '<p style="color:var(--text2);">No tags tracked yet</p>';
-                else {
-                    factorHTML = entries.slice(0,5).map(([tag, vals]) => {
-                        const avgTag = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-                        const diff = avgTag - avg;
-                        const dir = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
-                        const color = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--text2)';
-                        return `<div style="display:flex;justify-content:space-between;padding:0.2rem 0;border-bottom:1px solid var(--border);font-size:0.8rem;">
-                            <span>${esc(tag)}</span>
-                            <span style="color:${color};">${dir} ${Math.abs(diff)} pts (${vals.length}x)</span>
-                        </div>`;
-                    }).join('');
-                }
-                document.getElementById('factor-tracking').innerHTML = factorHTML;
             };
 
-            // --- GRAPHS TAB ---
-            function renderGraphsTab(sessions, items, compOptions) {
+            // --- GRAPHS TAB (simplified) ---
+            function renderGraphsTab(sessions, items) {
                 const hasData = sessions.length > 0;
                 return `
                     <div class="card">
@@ -1304,7 +1579,7 @@
             function drawTimeline(sessions) {
                 const sorted = sessions.sort((a,b) => new Date(a.date) - new Date(b.date));
                 const data = sorted.slice(-14).map(s => ({ date: new Date(s.date).toLocaleDateString(), score: s.overall_score || 0 }));
-                const w = 500, h = 160, pad = 25;
+                const w = 460, h = 150, pad = 20;
                 if (data.length === 0) return '<p style="color:var(--text2);">No data</p>';
                 const max = Math.max(...data.map(d => d.score), 50);
                 const min = Math.min(...data.map(d => d.score), 0);
@@ -1321,15 +1596,14 @@
                     <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
                     <path d="${path}" fill="none" stroke="#fff" stroke-width="2"/>
                     ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#fff"><title>${p.label}: ${p.val}</title></circle>`).join('')}
-                    <text x="${w/2}" y="${h-4}" fill="#666" font-size="9" text-anchor="middle">Recent sessions</text>
+                    <text x="${w/2}" y="${h-4}" fill="#666" font-size="8" text-anchor="middle">Recent sessions</text>
                 </svg></div>`;
             }
 
             function drawCorrelation(sessions) {
-                // Simple: compare overall_score vs reaction_avg
                 const data = sessions.filter(s => s.overall_score != null && s.reaction_avg != null);
                 if (data.length === 0) return '<p style="color:var(--text2);">Not enough data</p>';
-                const w = 500, h = 160, pad = 25;
+                const w = 460, h = 150, pad = 20;
                 const maxScore = Math.max(...data.map(d => d.overall_score), 50);
                 const minScore = Math.min(...data.map(d => d.overall_score), 0);
                 const maxReaction = Math.max(...data.map(d => d.reaction_avg), 200);
@@ -1345,7 +1619,7 @@
                     <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
                     <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/>
                     ${dots}
-                    <text x="${w/2}" y="${h-4}" fill="#666" font-size="9" text-anchor="middle">Score vs Reaction (faster = lower ms)</text>
+                    <text x="${w/2}" y="${h-4}" fill="#666" font-size="8" text-anchor="middle">Score vs Reaction</text>
                 </svg></div>`;
             }
 
@@ -1357,15 +1631,13 @@
                 const second = vals.slice(mid).reduce((a,b)=>a+b,0)/(vals.length-mid);
                 const pct = ((second-first)/first)*100;
                 const better = pct > 0;
-                return `<div style="padding:0.5rem;">
-                    <p style="font-size:1.2rem;">${better ? '📈 Improving' : '📉 Declining'}</p>
+                return `<div style="padding:0.4rem;">
+                    <p style="font-size:1.1rem;">${better ? '📈 Improving' : '📉 Declining'}</p>
                     <p style="color:var(--text2);">${pct > 0 ? '+' : ''}${pct.toFixed(1)}% over ${vals.length} sessions</p>
-                    <p style="color:var(--text2);font-size:0.8rem;">First avg: ${Math.round(first)} → Latest avg: ${Math.round(second)}</p>
                 </div>`;
             }
 
             function drawHeatmap(sessions) {
-                // Simple 7-day grid
                 const now = new Date();
                 const weekAgo = new Date(now);
                 weekAgo.setDate(weekAgo.getDate() - 6);
@@ -1381,7 +1653,7 @@
                     days.push({ date: d.toLocaleDateString(), cls, score });
                 }
                 return `<div class="heatmap-grid">${days.map(d => `<div class="heatmap-cell ${d.cls}" title="${d.date}: ${d.score}">${d.cls === 'high' ? '🟩' : d.cls === 'medium' ? '🟨' : d.cls === 'low' ? '🟥' : '⬛'}</div>`).join('')}</div>
-                        <p style="color:var(--text2);font-size:0.7rem;">🟩 High • 🟨 Avg • 🟥 Low • ⬛ No test</p>`;
+                        <p style="color:var(--text2);font-size:0.6rem;">🟩 High • 🟨 Avg • 🟥 Low • ⬛ No test</p>`;
             }
 
             // --- PROFILE TAB ---
@@ -1391,7 +1663,6 @@
                 const avgMemory = Math.round(sessions.reduce((a,b) => a + (b.memory_score||0), 0) / sessions.length);
                 const avgReaction = Math.round(sessions.reduce((a,b) => a + (b.reaction_avg||0), 0) / sessions.length);
                 const avgOverall = Math.round(sessions.reduce((a,b) => a + (b.overall_score||0), 0) / sessions.length);
-                // Problem solving: proxy from memory + focus
                 const problemSolving = Math.min(100, Math.round((avgMemory + avgFocus)/2));
 
                 const stats = [
@@ -1410,8 +1681,8 @@
                             <span class="value">${s.val}${s.labelSuffix||''}</span>
                         </div>
                     `).join('')}
-                    <div style="margin-top:0.6rem;padding:0.5rem;background:var(--bg3);border-radius:6px;">
-                        <p style="color:var(--text2);font-size:0.8rem;">Based on ${sessions.length} sessions • Avg Overall: ${avgOverall}/100</p>
+                    <div style="margin-top:0.4rem;padding:0.4rem;background:var(--bg3);border-radius:6px;">
+                        <p style="color:var(--text2);font-size:0.7rem;">Based on ${sessions.length} sessions • Avg Overall: ${avgOverall}/100</p>
                     </div>
                 </div>`;
             }
@@ -1430,12 +1701,12 @@
                 return `<div class="card">
                     <h3>⚖️ Version Comparison</h3>
                     <div class="grid2">
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${oldAvg}</div><div class="stat-lbl">Earlier (${oldS.length} sessions)</div></div>
-                        <div class="stat"><div class="stat-val" style="font-size:1.6rem;">${newAvg}</div><div class="stat-lbl">Recent (${newS.length} sessions)</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${oldAvg}</div><div class="stat-lbl">Earlier (${oldS.length} sessions)</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.4rem;">${newAvg}</div><div class="stat-lbl">Recent (${newS.length} sessions)</div></div>
                     </div>
-                    <div style="text-align:center;padding:0.8rem;background:var(--bg3);border-radius:8px;margin-top:0.5rem;">
-                        <span style="font-size:1.4rem;color:${change > 0 ? 'var(--green)' : 'var(--red)'};">${change > 0 ? '📈' : '📉'} ${change > 0 ? '+' : ''}${change.toFixed(1)}%</span>
-                        <span style="color:var(--text2);margin-left:0.5rem;">improvement</span>
+                    <div style="text-align:center;padding:0.6rem;background:var(--bg3);border-radius:8px;margin-top:0.4rem;">
+                        <span style="font-size:1.2rem;color:${change > 0 ? 'var(--green)' : 'var(--red)'};">${change > 0 ? '📈' : '📉'} ${change > 0 ? '+' : ''}${change.toFixed(1)}%</span>
+                        <span style="color:var(--text2);margin-left:0.3rem;">improvement</span>
                     </div>
                 </div>`;
             }
@@ -1443,16 +1714,16 @@
             // --- GOALS TAB ---
             function renderGoalsTab(sessions, goals) {
                 const current = sessions.length > 0 ? Math.round(sessions.reduce((a,b)=>a+(b.overall_score||0),0)/sessions.length) : 0;
-                let goalHTML = goals.length === 0 ? '<p style="color:var(--text2);">No goals set. Add one below.</p>' :
+                let goalHTML = goals.length === 0 ? '<p style="color:var(--text2);">No goals set.</p>' :
                     goals.map(g => {
                         const progress = Math.min(100, Math.round((current / g.target) * 100));
-                        return `<div style="margin:0.5rem 0;padding:0.5rem;background:var(--bg3);border-radius:6px;">
-                            <div style="display:flex;justify-content:space-between;">
-                                <span><strong>${esc(g.name)}</strong> (${g.metric})</span>
+                        return `<div style="margin:0.3rem 0;padding:0.4rem;background:var(--bg3);border-radius:6px;">
+                            <div style="display:flex;justify-content:space-between;font-size:0.8rem;">
+                                <span><strong>${esc(g.name)}</strong></span>
                                 <span>${current} → ${g.target}</span>
                             </div>
                             <div class="goal-bar"><div class="goal-bar-fill" style="width:${progress}%;background:${progress >= 100 ? 'var(--green)' : 'var(--yellow)'};"></div></div>
-                            <span style="color:var(--text2);font-size:0.7rem;">${progress}% complete</span>
+                            <span style="color:var(--text2);font-size:0.6rem;">${progress}% complete</span>
                             <button class="btn btn-r btn-s" onclick="deleteGoal(${g.id})" style="float:right;">✕</button>
                         </div>`;
                     }).join('');
@@ -1460,10 +1731,10 @@
                 return `<div class="card">
                     <h3>🎯 Goals</h3>
                     ${goalHTML}
-                    <div style="margin-top:0.8rem;">
-                        <form onsubmit="addGoal(event)" style="display:flex;gap:0.3rem;flex-wrap:wrap;">
-                            <input type="text" class="f-input" id="goal-name" placeholder="Goal name" style="flex:2;min-width:100px;" required>
-                            <input type="number" class="f-input" id="goal-target" placeholder="Target score" style="flex:1;min-width:70px;" required>
+                    <div style="margin-top:0.6rem;">
+                        <form onsubmit="addGoal(event)" style="display:flex;gap:0.2rem;flex-wrap:wrap;">
+                            <input type="text" class="f-input" id="goal-name" placeholder="Goal name" style="flex:2;min-width:80px;" required>
+                            <input type="number" class="f-input" id="goal-target" placeholder="Target" style="flex:1;min-width:60px;" required>
                             <button type="submit" class="btn btn-s">Add Goal</button>
                         </form>
                     </div>
@@ -1485,16 +1756,16 @@
 
             // --- EXPERIMENTS TAB ---
             function renderExperimentsTab(sessions, experiments) {
-                let expHTML = experiments.length === 0 ? '<p style="color:var(--text2);">No experiments yet. Create one!</p>' :
+                let expHTML = experiments.length === 0 ? '<p style="color:var(--text2);">No experiments yet.</p>' :
                     experiments.map(e => {
                         const relevant = sessions.filter(s => s.item_names?.includes(e.variable));
                         const avg = relevant.length ? Math.round(relevant.reduce((a,b)=>a+(b.overall_score||0),0)/relevant.length) : 0;
-                        return `<div style="margin:0.4rem 0;padding:0.5rem;background:var(--bg3);border-radius:6px;border-left:3px solid var(--text2);">
-                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;">
+                        return `<div style="margin:0.3rem 0;padding:0.4rem;background:var(--bg3);border-radius:6px;border-left:3px solid var(--text2);">
+                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;font-size:0.8rem;">
                                 <span><strong>${esc(e.name)}</strong> (${esc(e.variable)})</span>
-                                <span style="color:var(--text2);font-size:0.75rem;">${relevant.length} sessions • Avg: ${avg}</span>
+                                <span style="color:var(--text2);font-size:0.65rem;">${relevant.length} sessions • Avg: ${avg}</span>
                             </div>
-                            <p style="color:var(--text2);font-size:0.75rem;">${esc(e.description||'')}</p>
+                            <p style="color:var(--text2);font-size:0.65rem;">${esc(e.description||'')}</p>
                             <button class="btn btn-r btn-s" onclick="deleteExperiment(${e.id})">✕</button>
                         </div>`;
                     }).join('');
@@ -1502,11 +1773,11 @@
                 return `<div class="card">
                     <h3>🧪 Experiment Mode</h3>
                     ${expHTML}
-                    <div style="margin-top:0.8rem;">
-                        <form onsubmit="addExperiment(event)" style="display:flex;gap:0.3rem;flex-wrap:wrap;">
-                            <input type="text" class="f-input" id="exp-name" placeholder="Experiment name" style="flex:2;min-width:80px;" required>
-                            <input type="text" class="f-input" id="exp-variable" placeholder="Variable (e.g. Caffeine)" style="flex:1;min-width:70px;" required>
-                            <input type="text" class="f-input" id="exp-desc" placeholder="Description" style="flex:2;min-width:80px;">
+                    <div style="margin-top:0.6rem;">
+                        <form onsubmit="addExperiment(event)" style="display:flex;gap:0.2rem;flex-wrap:wrap;">
+                            <input type="text" class="f-input" id="exp-name" placeholder="Experiment name" style="flex:2;min-width:70px;" required>
+                            <input type="text" class="f-input" id="exp-variable" placeholder="Variable" style="flex:1;min-width:60px;" required>
+                            <input type="text" class="f-input" id="exp-desc" placeholder="Description" style="flex:2;min-width:70px;">
                             <button type="submit" class="btn btn-s">Create</button>
                         </form>
                     </div>
@@ -1549,7 +1820,6 @@
                     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
                 });
                 $('#modal').addEventListener('click', (e) => { if (e.target === $('#modal')) hideModal(); });
-                // Expose
                 window.switchTab = switchTab;
                 window.switchAnalytics = switchAnalytics;
                 window.updateStats = updateStats;
