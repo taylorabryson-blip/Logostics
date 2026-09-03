@@ -313,6 +313,20 @@
             border-color: var(--text2);
             background: var(--bg2);
         }
+        /* Bug fix: long text in inputs/textareas was getting visually clipped on mobile.
+           Inputs now scroll their content properly; textareas grow with autoGrow() JS. */
+        input.f-input, input.f-input-sm {
+            text-overflow: clip;
+            overflow-x: auto;
+        }
+        textarea.f-input, textarea.f-textarea {
+            resize: vertical;
+            min-height: 4.5em;
+            max-height: 260px;
+            line-height: 1.4;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
         select.f-input {
             cursor: pointer;
             appearance: none;
@@ -1064,6 +1078,7 @@
             <button class="nav-tab" data-tab="analytics">Analytics</button>
             <button class="nav-tab" data-tab="finance">💲 Finance</button>
             <button id="sfx-toggle-btn" onclick="toggleSFX()" title="Toggle sound effects" style="background:transparent;border:1px solid var(--grey);color:var(--text2);padding:0.25rem 0.5rem;border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:0.7rem;white-space:nowrap;">🔊</button>
+            <button id="audio-settings-btn" onclick="showAudioSettings()" title="Audio settings (music + SFX)" style="background:transparent;border:1px solid var(--grey);color:var(--text2);padding:0.25rem 0.5rem;border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:0.7rem;white-space:nowrap;">⚙</button>
         </div>
     </nav>
 
@@ -1173,7 +1188,7 @@
         // ============================================================
         (function() {
             const DB_NAME = 'LogosticsDB';
-            const DB_VER = 6;
+            const DB_VER = 7;
             let db;
 
             function openDB() {
@@ -1200,11 +1215,96 @@
                             s.createIndex('type', 'type', { unique: false });
                             s.createIndex('date', 'date', { unique: false });
                         }
+                        // --- V2: persistent reusable tag library (fixes tags behaving like one-time instances) ---
+                        if (!d.objectStoreNames.contains('tags')) {
+                            const s = d.createObjectStore('tags', { keyPath: 'id', autoIncrement: true });
+                            s.createIndex('name', 'name', { unique: true });
+                        }
+                        // --- V2: unified event/data log — everything meaningful gets a timestamped event ---
+                        if (!d.objectStoreNames.contains('events')) {
+                            const s = d.createObjectStore('events', { keyPath: 'id', autoIncrement: true });
+                            s.createIndex('type', 'type', { unique: false });
+                            s.createIndex('timestamp', 'timestamp', { unique: false });
+                        }
                     };
                     req.onsuccess = (e) => { db = e.target.result;
                         resolve(); };
                     req.onerror = (e) => reject(e.target.error);
                 });
+            }
+
+            // Generic query-by-index helper (used by the tag library and event log)
+            function dbGetByIndex(store, indexName, value) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(store, 'readonly');
+                    const req = tx.objectStore(store).index(indexName).get(value);
+                    req.onsuccess = () => resolve(req.result || null);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            // ============================================================
+            //  UNIFIED EVENT LOG — "track everything" (spec section 1-2)
+            //  Every meaningful action gets a timestamped, queryable event.
+            //  This does NOT replace the existing per-feature stores
+            //  (sessions/items/finance still work exactly as before) —
+            //  it's an additional lightweight record of what happened when,
+            //  using the device's local clock (never network time).
+            // ============================================================
+            function nowISO() {
+                return new Date().toISOString();
+            }
+
+            async function logEvent(type, data, tags) {
+                try {
+                    await dbAdd('events', {
+                        type,
+                        timestamp: nowISO(),
+                        tz: -new Date().getTimezoneOffset(),
+                        data: data || {},
+                        tags: tags || []
+                    });
+                } catch (e) { /* event logging must never break the primary action */ }
+            }
+
+            // ============================================================
+            //  PERSISTENT TAG LIBRARY (spec section 3 — fixes the bug where
+            //  custom tags behaved like one-time instances instead of
+            //  reusable objects). Tags are stored once, reused everywhere,
+            //  and track a usage count.
+            // ============================================================
+            async function getOrCreateTag(rawName) {
+                const name = (rawName || '').trim();
+                if (!name) return null;
+                const existing = await dbGetByIndex('tags', 'name', name);
+                if (existing) {
+                    existing.usageCount = (existing.usageCount || 0) + 1;
+                    existing.lastUsed = nowISO();
+                    await dbPut('tags', existing);
+                    return existing;
+                }
+                const tag = { name, description: '', category: '', created: nowISO(), lastUsed: nowISO(),
+                    usageCount: 1 };
+                const id = await dbAdd('tags', tag);
+                tag.id = id;
+                logEvent('custom_tag_created', { name });
+                return tag;
+            }
+
+            async function listTags() {
+                const tags = await dbAll('tags');
+                return tags.sort((a, b) => (b.usageCount || 0) - (a.usageCount || 0));
+            }
+
+            async function searchTags(query) {
+                const tags = await listTags();
+                const q = (query || '').toLowerCase();
+                if (!q) return tags;
+                return tags.filter(t => t.name.toLowerCase().includes(q));
+            }
+
+            async function deleteTag(id) {
+                await dbDel('tags', id);
             }
 
             function dbAdd(store, data) {
@@ -1383,6 +1483,131 @@
                 if (btn) btn.textContent = state.sfxMuted ? '🔇' : '🔊';
                 if (!state.sfxMuted) SFX.play('click');
             };
+
+            // ============================================================
+            //  AUDIO MANAGER — centralized audio, wraps SFX + adds
+            //  subtle ambient background music. Nothing plays until the
+            //  user interacts with the page (browser autoplay policy).
+            // ============================================================
+            const AudioManager = {
+                musicOn: false,
+                musicVolume: 0.12,
+                musicNodes: null,
+                unlocked: false,
+
+                unlock() {
+                    // Must be called from a real user gesture (click/tap) per browser autoplay rules.
+                    if (this.unlocked) return;
+                    this.unlocked = true;
+                    SFX.getCtx();
+                    if (this.musicOn) this.startMusic();
+                },
+
+                playMusic() { this.musicOn = true;
+                    if (this.unlocked) this.startMusic(); },
+                stopMusic() {
+                    this.musicOn = false;
+                    if (this.musicNodes) {
+                        try {
+                            this.musicNodes.gain.gain.exponentialRampToValueAtTime(0.0001, SFX.ctx.currentTime + 0.6);
+                            const nodes = this.musicNodes;
+                            setTimeout(() => { try { nodes.osc1.stop();
+                                nodes.osc2.stop(); } catch (e) {} }, 700);
+                        } catch (e) {}
+                        this.musicNodes = null;
+                    }
+                },
+                setMusicVolume(v) {
+                    this.musicVolume = Math.max(0, Math.min(1, v));
+                    if (this.musicNodes) this.musicNodes.gain.gain.setTargetAtTime(this.musicVolume * 0.5, SFX.ctx
+                        .currentTime, 0.3);
+                },
+                startMusic() {
+                    const ctx = SFX.getCtx();
+                    if (!ctx || this.musicNodes) return;
+                    // Two slow, detuned sine pads + a slow filter sweep = ambient, non-arcade, low-key loop.
+                    const gain = ctx.createGain();
+                    gain.gain.value = 0.0001;
+                    gain.connect(ctx.destination);
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 800;
+                    filter.connect(gain);
+                    const osc1 = ctx.createOscillator();
+                    osc1.type = 'sine';
+                    osc1.frequency.value = 110; // A2
+                    const osc2 = ctx.createOscillator();
+                    osc2.type = 'sine';
+                    osc2.frequency.value = 110 * 1.5; // perfect fifth, slightly detuned pad feel
+                    osc2.detune.value = 4;
+                    const lfo = ctx.createOscillator();
+                    lfo.frequency.value = 0.05; // very slow filter sweep
+                    const lfoGain = ctx.createGain();
+                    lfoGain.gain.value = 300;
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(filter.frequency);
+                    osc1.connect(filter);
+                    osc2.connect(filter);
+                    osc1.start();
+                    osc2.start();
+                    lfo.start();
+                    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, this.musicVolume * 0.5), ctx.currentTime +
+                    2);
+                    this.musicNodes = { osc1, osc2, lfo, gain, filter };
+                },
+
+                // pass-throughs so other code can use one namespace per the spec's AudioManager sketch
+                playSFX(type) { SFX.play(type); },
+                setSFXVolume() { /* SFX peak levels are fixed per-sound; exposed for API completeness */ }
+            };
+            window.AudioManager = AudioManager;
+
+            window.toggleMusic = function() {
+                AudioManager.unlock();
+                if (AudioManager.musicOn) { AudioManager.stopMusic(); } else { AudioManager.playMusic(); }
+                const btn = document.getElementById('music-toggle-btn');
+                if (btn) btn.textContent = AudioManager.musicOn ? '🎵' : '🎵̶';
+                saveAudioPrefs();
+            };
+            window.setMusicVolumeUI = function(v) {
+                AudioManager.setMusicVolume(parseFloat(v) / 100);
+                saveAudioPrefs();
+            };
+            function saveAudioPrefs() {
+                try {
+                    dbAll('finance').then(async all => {
+                        const existing = all.find(f => f.type === 'audioPrefs');
+                        const prefs = { type: 'audioPrefs', musicOn: AudioManager.musicOn, musicVolume: AudioManager
+                                .musicVolume, sfxMuted: state.sfxMuted };
+                        if (existing) { Object.assign(existing, prefs);
+                            await dbPut('finance', existing); } else { await dbAdd('finance', prefs); }
+                    });
+                } catch (e) {}
+            }
+            window.showAudioSettings = function() {
+                showModal(`
+                    <h2>🔊 Audio Settings</h2>
+                    <div class="f-group">
+                        <label style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+                            <span>Background music</span>
+                            <input type="checkbox" id="music-checkbox" ${AudioManager.musicOn ? 'checked' : ''} onchange="AudioManager.unlock(); this.checked ? AudioManager.playMusic() : AudioManager.stopMusic(); saveAudioPrefsFromUI();">
+                        </label>
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label">Music volume</label>
+                        <input type="range" min="0" max="100" value="${Math.round(AudioManager.musicVolume*100)}" oninput="setMusicVolumeUI(this.value)" style="width:100%;">
+                    </div>
+                    <div class="f-group">
+                        <label style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+                            <span>Sound effects</span>
+                            <input type="checkbox" id="sfx-checkbox" ${!state.sfxMuted ? 'checked' : ''} onchange="toggleSFX(); saveAudioPrefsFromUI();">
+                        </label>
+                    </div>
+                    <p style="color:var(--text2);font-size:0.6rem;margin-top:0.3rem;">Music is muted by default and only starts after you interact with the app, per browser autoplay rules.</p>
+                    <div style="text-align:center;margin-top:0.6rem;"><button class="btn btn-o" onclick="hideModal()">Close</button></div>
+                `);
+            };
+            window.saveAudioPrefsFromUI = saveAudioPrefs;
 
             function switchTab(tab) {
                 state.currentTab = tab;
@@ -1744,9 +1969,13 @@
                         <div class="f-group">
                             <label class="f-label">Tags</label>
                             <div id="item-tags-display" style="display:flex;flex-wrap:wrap;gap:0.15rem;margin:0.15rem 0;"></div>
-                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" id="new-item-tag" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addItemTag()">+</button></div>
+                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;position:relative;">
+                                <input type="text" class="f-input" id="new-item-tag" placeholder="Search or create tag..." style="flex:1;" oninput="showTagSuggestions('new-item-tag','item-tag-suggest')" onfocus="showTagSuggestions('new-item-tag','item-tag-suggest')">
+                                <button type="button" class="btn btn-o btn-s" onclick="addItemTag()">+</button>
+                                <div id="item-tag-suggest" class="emoji-grid hidden" style="grid-template-columns:1fr;max-height:110px;"></div>
+                            </div>
                         </div>
-                        <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input" id="item-notes" rows="2"></textarea></div>
+                        <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input f-textarea" id="item-notes" rows="3" oninput="autoGrow(this)"></textarea></div>
                         <div style="display:flex;gap:0.3rem;margin-top:0.6rem;flex-wrap:wrap;"><button type="submit" class="btn">Save</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
                     </form>`);
                 renderEmojiPicker('emoji-picker-box');
@@ -1786,9 +2015,13 @@
                         <div class="f-group">
                             <label class="f-label">Tags</label>
                             <div id="edit-tags-display" style="display:flex;flex-wrap:wrap;gap:0.15rem;margin:0.15rem 0;"></div>
-                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" id="edit-new-tag" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addEditTag()">+</button></div>
+                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;position:relative;">
+                                <input type="text" class="f-input" id="edit-new-tag" placeholder="Search or create tag..." style="flex:1;" oninput="showTagSuggestions('edit-new-tag','edit-tag-suggest')" onfocus="showTagSuggestions('edit-new-tag','edit-tag-suggest')">
+                                <button type="button" class="btn btn-o btn-s" onclick="addEditTag()">+</button>
+                                <div id="edit-tag-suggest" class="emoji-grid hidden" style="grid-template-columns:1fr;max-height:110px;"></div>
+                            </div>
                         </div>
-                        <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input" id="edit-item-notes" rows="2">${esc(item.notes||'')}</textarea></div>
+                        <div class="f-group"><label class="f-label">Notes</label><textarea class="f-input f-textarea" id="edit-item-notes" rows="3" oninput="autoGrow(this)">${esc(item.notes||'')}</textarea></div>
                         <div style="display:flex;gap:0.3rem;margin-top:0.6rem;flex-wrap:wrap;"><button type="submit" class="btn">Update</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
                     </form>`);
                 renderEmojiPicker('edit-emoji-picker-box', true);
@@ -1815,7 +2048,8 @@
                 }).filter(Boolean);
                 const item = { name, type, components, notes, emoji: state.itemEmoji, icon: state.itemImage || null,
                     tags: [...state.itemTags], created: new Date().toISOString() };
-                await dbAdd('items', item);
+                const id = await dbAdd('items', item);
+                logEvent('item_logged', { itemId: id, name }, item.tags);
                 hideModal();
                 renderItems();
                 alert('Item created!', 's');
@@ -1890,13 +2124,16 @@
                     img.style.display = 'block'; };
                 reader.readAsDataURL(file);
             };
-            window.addItemTag = function() {
+            window.addItemTag = async function() {
                 const input = document.getElementById('new-item-tag');
                 if (!input) return;
-                const tag = input.value.trim();
-                if (tag && !state.itemTags.includes(tag)) { state.itemTags.push(tag);
+                const raw = input.value.trim();
+                if (!raw) return;
+                const tag = await getOrCreateTag(raw); // reuse-if-exists, persists usage count (fixes one-off tag bug)
+                if (tag && !state.itemTags.includes(tag.name)) { state.itemTags.push(tag.name);
                     renderItemTags(); }
                 input.value = '';
+                document.getElementById('item-tag-suggest')?.classList.add('hidden');
                 input.focus();
             };
 
@@ -1908,14 +2145,45 @@
             }
             window.removeItemTag = function(tag) { state.itemTags = state.itemTags.filter(t => t !== tag);
                 renderItemTags(); };
-            window.addEditTag = function() {
+            window.addEditTag = async function() {
                 const input = document.getElementById('edit-new-tag');
                 if (!input) return;
-                const tag = input.value.trim();
-                if (tag && !state.editTags.includes(tag)) { state.editTags.push(tag);
+                const raw = input.value.trim();
+                if (!raw) return;
+                const tag = await getOrCreateTag(raw);
+                if (tag && !state.editTags.includes(tag.name)) { state.editTags.push(tag.name);
                     renderEditTags(); }
                 input.value = '';
+                document.getElementById('edit-tag-suggest')?.classList.add('hidden');
                 input.focus();
+            };
+
+            // --- Tag library autocomplete (used by item + session tag inputs) ---
+            window.showTagSuggestions = async function(inputId, boxId) {
+                const input = document.getElementById(inputId);
+                const box = document.getElementById(boxId);
+                if (!input || !box) return;
+                const q = input.value.trim();
+                const matches = await searchTags(q);
+                if (matches.length === 0) { box.classList.add('hidden'); return; }
+                box.innerHTML = matches.slice(0, 8).map(t =>
+                    `<div class="emoji-opt" style="width:auto;justify-content:flex-start;padding:0.25rem 0.4rem;font-size:0.7rem;" onclick="pickTagSuggestion('${inputId}','${boxId}','${esc(t.name).replace(/'/g,"\\'")}')">${esc(t.name)} <span style="color:var(--text2);margin-left:0.3rem;font-size:0.55rem;">used ${t.usageCount||1}×</span></div>`
+                ).join('');
+                box.classList.remove('hidden');
+            };
+            window.pickTagSuggestion = function(inputId, boxId, name) {
+                const input = document.getElementById(inputId);
+                if (input) input.value = name;
+                document.getElementById(boxId)?.classList.add('hidden');
+                if (inputId === 'new-item-tag') addItemTag();
+                else if (inputId === 'edit-new-tag') addEditTag();
+                else if (inputId === 'new-session-tag') addSessionTag();
+            };
+
+            // Auto-growing textarea so long notes are never clipped to a tiny box (mobile text-input bug fix)
+            window.autoGrow = function(el) {
+                el.style.height = 'auto';
+                el.style.height = Math.min(el.scrollHeight, 260) + 'px';
             };
 
             function renderEditTags() {
@@ -1995,11 +2263,15 @@
                             <label class="f-label">Tags</label>
                             <div style="display:flex;flex-wrap:wrap;gap:0.15rem;margin:0.15rem 0;">${defaultTags.map(t => `<span class="tag" onclick="toggleSessionTag(this)" data-tag="${t}">${t}</span>`).join('')}</div>
                             <div id="session-tags-custom" style="display:flex;flex-wrap:wrap;gap:0.15rem;margin:0.15rem 0;"></div>
-                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" id="new-session-tag" placeholder="Custom tag..." style="flex:1;"><button type="button" class="btn btn-o btn-s" onclick="addSessionTag()">+</button></div>
+                            <div style="display:flex;gap:0.2rem;flex-wrap:wrap;position:relative;">
+                                <input type="text" class="f-input" id="new-session-tag" placeholder="Search or create tag..." style="flex:1;" oninput="showTagSuggestions('new-session-tag','session-tag-suggest')" onfocus="showTagSuggestions('new-session-tag','session-tag-suggest')">
+                                <button type="button" class="btn btn-o btn-s" onclick="addSessionTag()">+</button>
+                                <div id="session-tag-suggest" class="emoji-grid hidden" style="grid-template-columns:1fr;max-height:110px;"></div>
+                            </div>
                         </div>
                         <div class="f-group">
                             <label class="f-label">Notes (optional)</label>
-                            <textarea class="f-input" id="session-notes" rows="2" placeholder="How are you feeling? Any observations?"></textarea>
+                            <textarea class="f-input f-textarea" id="session-notes" rows="3" placeholder="How are you feeling? Any observations?" oninput="autoGrow(this)"></textarea>
                         </div>
                         <div class="f-group">
                             <label class="f-label">Voice Note (optional)</label>
@@ -2058,16 +2330,20 @@
             window.toggleSessionTag = function(el) {
                 el.classList.toggle('sel');
                 const tag = el.dataset.tag;
-                if (el.classList.contains('sel')) { if (!state.sessionTags.includes(tag)) state.sessionTags.push(tag); } else
+                if (el.classList.contains('sel')) { if (!state.sessionTags.includes(tag)) state.sessionTags.push(tag);
+                    getOrCreateTag(tag); } else
                 { state.sessionTags = state.sessionTags.filter(t => t !== tag); }
             };
-            window.addSessionTag = function() {
+            window.addSessionTag = async function() {
                 const input = document.getElementById('new-session-tag');
                 if (!input) return;
-                const tag = input.value.trim();
-                if (tag && !state.sessionTags.includes(tag)) { state.sessionTags.push(tag);
+                const raw = input.value.trim();
+                if (!raw) return;
+                const tag = await getOrCreateTag(raw);
+                if (tag && !state.sessionTags.includes(tag.name)) { state.sessionTags.push(tag.name);
                     renderSessionCustomTags(); }
                 input.value = '';
+                document.getElementById('session-tag-suggest')?.classList.add('hidden');
                 input.focus();
             };
 
@@ -2323,7 +2599,15 @@
                     item_names: items.map(i => i.name).join(' + '),
                     item_ids: items.map(i => i.id)
                 };
-                await dbAdd('sessions', session);
+                const id = await dbAdd('sessions', session);
+                logEvent('cognitive_test', {
+                    sessionId: id,
+                    reaction_avg: session.reaction_avg,
+                    memory_score: session.memory_score,
+                    number_span: session.number_span,
+                    focus_score: session.focus_score,
+                    overall_score: session.overall_score
+                }, session.tags);
             }
 
             function showResults() {
@@ -2918,9 +3202,8 @@
                                 <div class="val" style="font-size:2.2rem;font-weight:700;color:var(--green);">$${state.savingsBalance.toFixed(2)}</div>
                             </div>
                             <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
-                                <button class="btn-fin btn-fin-o" onclick="showAddIncome()">+ Income</button>
+                                <button class="btn-fin btn-fin-o" onclick="showBalanceModal()">+ / Update Balance</button>
                                 <button class="btn-fin" onclick="showAddSpending()">+ Spending</button>
-                                <button class="btn-fin btn-fin-o" onclick="showUpdateSavings()">💾 Update Savings</button>
                             </div>
                         </div>
                         <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.3rem;font-size:0.65rem;color:var(--text2);">
@@ -3069,57 +3352,99 @@
             }
 
             // --- Finance Actions ---
-            window.showAddIncome = function() {
-                const amount = prompt('Enter income amount ($):');
-                if (amount === null || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) return;
-                const source = prompt('Source (e.g. Job, Gift, etc.):') || 'Income';
-                dbAdd('finance', {
-                    type: 'income',
-                    amount: parseFloat(amount),
-                    name: 'Income',
-                    source: source,
-                    date: new Date().toISOString()
-                }).then(() => {
+            // Merged "+ / Update Balance" action (addendum #2): one financial interaction
+            // instead of separate Income / Update Savings buttons doing nearly the same thing.
+            window.showBalanceModal = function() {
+                showModal(`
+                    <h2>+ / Update Balance</h2>
+                    <form id="balance-form" onsubmit="submitBalanceModal(event)">
+                        <div class="f-group">
+                            <label class="f-label">Amount</label>
+                            <input type="number" class="f-input" id="balance-amount" placeholder="$25.00" step="0.01" min="0" required autofocus>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">What is this?</label>
+                            <div style="display:flex;flex-direction:column;gap:0.3rem;margin-top:0.2rem;">
+                                <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;cursor:pointer;">
+                                    <input type="radio" name="balance-mode" value="add" checked> Add money (income / quick add)
+                                </label>
+                                <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;cursor:pointer;">
+                                    <input type="radio" name="balance-mode" value="correct"> Correct balance (set actual total)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Source / note (optional)</label>
+                            <input type="text" class="f-input" id="balance-source" placeholder="Job, gift, cash found...">
+                        </div>
+                        <div style="display:flex;gap:0.3rem;margin-top:0.6rem;flex-wrap:wrap;">
+                            <button type="submit" class="btn">Save</button>
+                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
+                        </div>
+                    </form>`);
+            };
+
+            window.submitBalanceModal = async function(e) {
+                e.preventDefault();
+                const amount = parseFloat(document.getElementById('balance-amount')?.value);
+                if (isNaN(amount) || amount < 0) return;
+                const mode = document.querySelector('input[name="balance-mode"]:checked')?.value || 'add';
+                const source = document.getElementById('balance-source')?.value || '';
+                if (mode === 'add') {
+                    await dbAdd('finance', { type: 'income', amount, name: source || 'Income', source: source || 'Manual',
+                        date: nowISO() });
+                    logEvent('financial_event', { kind: 'income_added', amount, source });
                     SFX.play('income');
-                    alert('Income added!', 's');
-                    renderFinance();
-                });
+                    alert(`+$${amount.toFixed(2)} added!`, 's');
+                } else {
+                    const diff = amount - state.savingsBalance;
+                    if (diff !== 0) {
+                        await dbAdd('finance', { type: 'savings', amount: diff, name: source || 'Balance adjustment',
+                            date: nowISO() });
+                        logEvent('financial_event', { kind: 'balance_corrected', newBalance: amount, diff });
+                    }
+                    SFX.play('savings');
+                    alert(`Balance set to $${amount.toFixed(2)}`, 's');
+                }
+                hideModal();
+                renderFinance();
             };
 
             window.showAddSpending = function() {
-                const amount = prompt('Enter spending amount ($):');
-                if (amount === null || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) return;
-                const name = prompt('Item name:') || 'Purchase';
-                const category = prompt('Category (food, drink, etc.):') || 'other';
-                dbAdd('finance', {
-                    type: 'spending',
-                    amount: parseFloat(amount),
-                    name: name,
-                    category: category,
-                    date: new Date().toISOString()
-                }).then(() => {
-                    SFX.play('spending');
-                    alert('Spending added!', 's');
-                    renderFinance();
-                });
+                showModal(`
+                    <h2>+ Spending</h2>
+                    <form id="spending-form" onsubmit="submitSpendingModal(event)">
+                        <div class="f-group">
+                            <label class="f-label">Amount</label>
+                            <input type="number" class="f-input" id="spend-amount" placeholder="$12.50" step="0.01" min="0" required autofocus>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">What was it?</label>
+                            <input type="text" class="f-input" id="spend-name" placeholder="Coffee, groceries, gas...">
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label">Category</label>
+                            <input type="text" class="f-input" id="spend-category" placeholder="food, drink, transport...">
+                        </div>
+                        <div style="display:flex;gap:0.3rem;margin-top:0.6rem;flex-wrap:wrap;">
+                            <button type="submit" class="btn">Save</button>
+                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
+                        </div>
+                    </form>`);
             };
 
-            window.showUpdateSavings = function() {
-                const amount = prompt('Enter current savings balance ($):');
-                if (amount === null || isNaN(parseFloat(amount)) || parseFloat(amount) < 0) return;
-                const currentBalance = state.savingsBalance;
-                const diff = parseFloat(amount) - currentBalance;
-                if (diff === 0) { alert('No change.', 'i'); return; }
-                dbAdd('finance', {
-                    type: 'savings',
-                    amount: diff,
-                    name: 'Balance adjustment',
-                    date: new Date().toISOString()
-                }).then(() => {
-                    SFX.play('savings');
-                    alert(`Balance updated to $${parseFloat(amount).toFixed(2)}`, 's');
-                    renderFinance();
-                });
+            window.submitSpendingModal = async function(e) {
+                e.preventDefault();
+                const amount = parseFloat(document.getElementById('spend-amount')?.value);
+                if (isNaN(amount) || amount <= 0) return;
+                const name = document.getElementById('spend-name')?.value || 'Purchase';
+                const category = document.getElementById('spend-category')?.value || 'other';
+                await dbAdd('finance', { type: 'spending', amount, name, category, date: nowISO() });
+                logEvent('financial_event', { kind: 'spending_added', amount, name, category });
+                SFX.play('spending');
+                hideModal();
+                alert('Spending added!', 's');
+                renderFinance();
             };
 
             window.quickAddMoney = function(amount) {
@@ -3130,6 +3455,7 @@
                     source: 'Quick Add',
                     date: new Date().toISOString()
                 }).then(() => {
+                    logEvent('financial_event', { kind: 'income_added', amount, source: 'Quick Add' });
                     SFX.play('income');
                     alert(`+$${amount} added!`, 's');
                     renderFinance();
@@ -3148,13 +3474,29 @@
             window.editFinSpending = async function(id) {
                 const entry = await dbGet('finance', id);
                 if (!entry) return;
-                const newAmount = prompt('New amount ($):', entry.amount);
-                if (newAmount === null || isNaN(parseFloat(newAmount)) || parseFloat(newAmount) < 0) return;
-                const newName = prompt('New name:', entry.name) || entry.name;
-                entry.amount = parseFloat(newAmount);
-                entry.name = newName;
+                showModal(`
+                    <h2>Edit Spending</h2>
+                    <form id="edit-spend-form" onsubmit="submitEditSpending(event, ${id})">
+                        <div class="f-group"><label class="f-label">Amount</label><input type="number" class="f-input" id="edit-spend-amount" value="${entry.amount}" step="0.01" min="0" required autofocus></div>
+                        <div class="f-group"><label class="f-label">What was it?</label><input type="text" class="f-input" id="edit-spend-name" value="${esc(entry.name||'')}"></div>
+                        <div style="display:flex;gap:0.3rem;margin-top:0.6rem;flex-wrap:wrap;">
+                            <button type="submit" class="btn">Save</button>
+                            <button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button>
+                        </div>
+                    </form>`);
+            };
+
+            window.submitEditSpending = async function(e, id) {
+                e.preventDefault();
+                const entry = await dbGet('finance', id);
+                if (!entry) return;
+                const newAmount = parseFloat(document.getElementById('edit-spend-amount')?.value);
+                if (isNaN(newAmount) || newAmount < 0) return;
+                entry.amount = newAmount;
+                entry.name = document.getElementById('edit-spend-name')?.value || entry.name;
                 await dbPut('finance', entry);
                 SFX.play('success');
+                hideModal();
                 renderFinance();
                 alert('Entry updated.', 's');
             };
@@ -3561,6 +3903,24 @@
                     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
                 });
                 $('#modal').addEventListener('click', (e) => { if (e.target === $('#modal')) hideModal(); });
+
+                // Restore audio preferences (music defaults OFF until the user opts in)
+                try {
+                    const financeAll = await dbAll('finance');
+                    const prefs = financeAll.find(f => f.type === 'audioPrefs');
+                    if (prefs) {
+                        AudioManager.musicOn = !!prefs.musicOn;
+                        AudioManager.musicVolume = typeof prefs.musicVolume === 'number' ? prefs.musicVolume :
+                        0.12;
+                        state.sfxMuted = !!prefs.sfxMuted;
+                        const sfxBtn = document.getElementById('sfx-toggle-btn');
+                        if (sfxBtn) sfxBtn.textContent = state.sfxMuted ? '🔇' : '🔊';
+                    }
+                } catch (e) {}
+                // Browser autoplay policy: audio can only start after a real user gesture.
+                const unlockOnce = () => { AudioManager.unlock();
+                    document.removeEventListener('click', unlockOnce); };
+                document.addEventListener('click', unlockOnce, { once: true });
                 window.switchTab = switchTab;
                 window.switchAnalytics = switchAnalytics;
                 window.updateStats = updateStats;
