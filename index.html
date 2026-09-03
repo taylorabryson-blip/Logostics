@@ -180,6 +180,14 @@
             margin: 0 auto;
             padding: 0.8rem 0.6rem;
         }
+        /* Tab-switch animation: content fades + slides in on every nav change */
+        @keyframes tabIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #main-content.tab-anim {
+            animation: tabIn 0.28s ease;
+        }
         /* --- Cards --- */
         .card {
             background: rgba(20, 20, 30, 0.7);
@@ -1354,7 +1362,8 @@
 
             const state = {
                 currentTab: 'dashboard',
-                analyticsSub: 'insights',
+                analyticsSub: 'chat',
+                chatMessages: [],
                 testResults: {},
                 sessionMeta: null,
                 itemEmoji: '📦',
@@ -1562,6 +1571,84 @@
             };
             window.AudioManager = AudioManager;
 
+            // ============================================================
+            //  NOTIFICATION MANAGER — real device/browser notifications,
+            //  not just in-app toasts. Honors an actual master ON/OFF plus
+            //  per-category toggles (spec section 12-13), and never claims
+            //  a notification was sent if permission wasn't granted.
+            //
+            //  Honesty note: this uses the standard Notification API and a
+            //  same-origin service worker, which shows real notifications
+            //  in the OS tray while the browser/app process is running
+            //  (foreground or backgrounded tab). Delivering notifications
+            //  while the app is fully closed requires server-sent Web Push
+            //  (VAPID keys + a push server) — out of scope for a
+            //  file-only, backend-less app, so it isn't claimed here.
+            // ============================================================
+            const NotificationManager = {
+                swRegistration: null,
+                async init() {
+                    if (!('serviceWorker' in navigator)) return;
+                    try {
+                        const swCode = `
+                            self.addEventListener('notificationclick', function(e) {
+                                e.notification.close();
+                                e.waitUntil(self.clients.matchAll({ type: 'window' }).then(list => {
+                                    if (list.length) return list[0].focus();
+                                }));
+                            });
+                        `;
+                        const blob = new Blob([swCode], { type: 'application/javascript' });
+                        const swUrl = URL.createObjectURL(blob);
+                        this.swRegistration = await navigator.serviceWorker.register(swUrl);
+                    } catch (e) { this.swRegistration = null; }
+                },
+                async getPrefs() {
+                    const all = await dbAll('finance');
+                    const rec = all.find(f => f.type === 'globalNotifPrefs');
+                    const defaults = { enabled: false, categories: { finance: true, goals: true, paydays: true,
+                        tests: true, reminders: true } };
+                    if (!rec) return { type: 'globalNotifPrefs', ...defaults };
+                    return { ...defaults, ...rec, categories: { ...defaults.categories, ...(rec.categories || {}) } };
+                },
+                async savePrefs(prefs) {
+                    const all = await dbAll('finance');
+                    const existing = all.find(f => f.type === 'globalNotifPrefs');
+                    if (existing) { Object.assign(existing, prefs);
+                        await dbPut('finance', existing); } else { await dbAdd('finance', { type: 'globalNotifPrefs',
+                            ...prefs }); }
+                },
+                async requestPermission() {
+                    if (!('Notification' in window)) return 'unsupported';
+                    try { return await Notification.requestPermission(); } catch (e) { return Notification
+                        .permission; }
+                },
+                // Returns true only if a real OS-level notification was actually shown.
+                async notify(category, title, body) {
+                    logEvent('notification_event', { category, title, body });
+                    const prefs = await this.getPrefs();
+                    if (!prefs.enabled || prefs.categories[category] === false) return false;
+                    if (!('Notification' in window) || Notification.permission !== 'granted') {
+                        // Never pretend it was delivered — fall back to the visible in-app toast instead.
+                        alert(`${title} — ${body}`, 'i');
+                        return false;
+                    }
+                    try {
+                        if (this.swRegistration && this.swRegistration.showNotification) {
+                            await this.swRegistration.showNotification(title, { body, tag: category });
+                        } else {
+                            new Notification(title, { body });
+                        }
+                        SFX.play('notify');
+                        return true;
+                    } catch (e) {
+                        alert(`${title} — ${body}`, 'i');
+                        return false;
+                    }
+                }
+            };
+            window.NotificationManager = NotificationManager;
+
             window.toggleMusic = function() {
                 AudioManager.unlock();
                 if (AudioManager.musicOn) { AudioManager.stopMusic(); } else { AudioManager.playMusic(); }
@@ -1584,9 +1671,21 @@
                     });
                 } catch (e) {}
             }
-            window.showAudioSettings = function() {
+            window.showAudioSettings = async function() {
+                const prefs = await NotificationManager.getPrefs();
+                const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+                const permLabel = perm === 'granted' ? '<span style="color:var(--green);">Granted</span>' :
+                    perm === 'denied' ? '<span style="color:var(--red);">Blocked — enable in browser site settings</span>' :
+                    perm === 'unsupported' ? '<span style="color:var(--text2);">Not supported on this browser</span>' :
+                    '<span style="color:var(--yellow);">Not yet requested</span>';
+                const categories = [
+                    ['finance', 'Finance'], ['goals', 'Goals'], ['paydays', 'Paydays'],
+                    ['tests', 'Cognitive tests'], ['reminders', 'Reminders']
+                ];
                 showModal(`
-                    <h2>🔊 Audio Settings</h2>
+                    <h2>⚙ Settings</h2>
+
+                    <h3 style="font-size:0.8rem;margin:0.4rem 0 0.3rem;">🔊 Audio</h3>
                     <div class="f-group">
                         <label style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
                             <span>Background music</span>
@@ -1603,18 +1702,82 @@
                             <input type="checkbox" id="sfx-checkbox" ${!state.sfxMuted ? 'checked' : ''} onchange="toggleSFX(); saveAudioPrefsFromUI();">
                         </label>
                     </div>
-                    <p style="color:var(--text2);font-size:0.6rem;margin-top:0.3rem;">Music is muted by default and only starts after you interact with the app, per browser autoplay rules.</p>
-                    <div style="text-align:center;margin-top:0.6rem;"><button class="btn btn-o" onclick="hideModal()">Close</button></div>
+                    <p style="color:var(--text2);font-size:0.6rem;margin-top:0.2rem;">Music is muted by default and only starts after you interact with the app, per browser autoplay rules.</p>
+
+                    <h3 style="font-size:0.8rem;margin:0.7rem 0 0.3rem;border-top:1px solid var(--border);padding-top:0.5rem;">🔔 Notifications</h3>
+                    <div class="f-group">
+                        <label style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+                            <span>Enable notifications</span>
+                            <input type="checkbox" id="notif-master-checkbox" ${prefs.enabled ? 'checked' : ''} onchange="toggleGlobalNotif(this.checked)">
+                        </label>
+                    </div>
+                    <p style="color:var(--text2);font-size:0.6rem;">Browser permission: ${permLabel}</p>
+                    ${perm !== 'granted' && perm !== 'unsupported' ? `<button type="button" class="btn btn-o btn-s" onclick="requestNotifPermission()" style="margin-bottom:0.4rem;">Allow notifications on this device</button>` : ''}
+                    <div id="notif-categories" style="${prefs.enabled ? '' : 'opacity:0.4;pointer-events:none;'}">
+                        ${categories.map(([key,label]) => `
+                            <label style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;font-size:0.75rem;margin:0.2rem 0;">
+                                <span>${label}</span>
+                                <input type="checkbox" class="notif-cat-checkbox" data-cat="${key}" ${prefs.categories[key] !== false ? 'checked' : ''} onchange="saveNotifCategoryPrefs()">
+                            </label>
+                        `).join('')}
+                    </div>
+                    <button type="button" class="btn btn-o btn-s" onclick="testNotification()" style="margin-top:0.3rem;">🧪 Send test notification</button>
+
+                    <div style="text-align:center;margin-top:0.7rem;"><button class="btn btn-o" onclick="hideModal()">Close</button></div>
                 `);
             };
             window.saveAudioPrefsFromUI = saveAudioPrefs;
+
+            // --- Global notification settings (spec: one centralized Settings > Notifications area) ---
+            window.toggleGlobalNotif = async function(enabled) {
+                const prefs = await NotificationManager.getPrefs();
+                prefs.enabled = enabled;
+                await NotificationManager.savePrefs(prefs);
+                const box = document.getElementById('notif-categories');
+                if (box) box.style.cssText = enabled ? '' : 'opacity:0.4;pointer-events:none;';
+                if (enabled && 'Notification' in window && Notification.permission === 'default') {
+                    // Explain, then ask — never silently spam a permission prompt.
+                    alert('Logositcs will ask permission to send you goal, payday, and reminder alerts.', 'i');
+                    await NotificationManager.requestPermission();
+                    showAudioSettings();
+                }
+            };
+            window.saveNotifCategoryPrefs = async function() {
+                const prefs = await NotificationManager.getPrefs();
+                document.querySelectorAll('.notif-cat-checkbox').forEach(cb => {
+                    prefs.categories[cb.dataset.cat] = cb.checked;
+                });
+                await NotificationManager.savePrefs(prefs);
+            };
+            window.requestNotifPermission = async function() {
+                const perm = await NotificationManager.requestPermission();
+                SFX.play(perm === 'granted' ? 'success' : 'click');
+                showAudioSettings();
+            };
+            window.testNotification = async function() {
+                await NotificationManager.notify('reminders', '🔔 Test notification', "This is what Logositcs alerts look like.");
+            };
 
             function switchTab(tab) {
                 state.currentTab = tab;
                 $$('.nav-tab').forEach(t => t.classList.remove('active'));
                 $(`.nav-tab[data-tab="${tab}"]`).classList.add('active');
+                logEvent('screen_opened', { screen: tab });
                 renderTab();
                 updateTheme();
+                playTabAnimation();
+            }
+
+            // Small, non-distracting fade+slide whenever the visible screen changes —
+            // re-triggered on every render call so it also plays after modal-driven
+            // re-renders (session complete -> dashboard, etc).
+            function playTabAnimation() {
+                const el = document.getElementById('main-content');
+                if (!el) return;
+                el.classList.remove('tab-anim');
+                // force reflow so the animation restarts even if the class never left
+                void el.offsetWidth;
+                el.classList.add('tab-anim');
             }
 
             function renderTab() {
@@ -1686,7 +1849,7 @@
                     recentHTML = recent.map(s => `
                         <div style="padding:0.35rem;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.2rem;">
                             <div>
-                                <div style="font-weight:600;font-size:0.8rem;">${new Date(s.date).toLocaleDateString()}</div>
+                                <div style="font-weight:600;font-size:0.8rem;">${fmtDate(s.date)}</div>
                                 <div style="color:var(--text2);font-size:0.6rem;">${s.item_names||'Unknown'} • Score: ${s.overall_score||'--'}</div>
                             </div>
                             <div style="display:flex;gap:0.2rem;">
@@ -1785,7 +1948,7 @@
                 if (sessions.length > 0) {
                     rows = sessions.sort((a, b) => new Date(b.date) - new Date(a.date)).map(s => `
                         <tr>
-                            <td>${new Date(s.date).toLocaleDateString()}</td>
+                            <td>${fmtDate(s.date)}</td>
                             <td>${esc(s.item_names||'Unknown')}</td>
                             <td>${s.reaction_avg||'--'}ms</td>
                             <td>${s.memory_score||'--'}/20</td>
@@ -1877,7 +2040,7 @@
                 showModal(`
                     <h2>Session Results</h2>
                     <div style="margin:0.4rem 0;padding:0.4rem;background:var(--bg3);border-radius:8px;font-size:0.75rem;">
-                        <p><strong>Date:</strong> ${new Date(s.date).toLocaleString()}</p>
+                        <p><strong>Date:</strong> ${fmtDate(s.date)}</p>
                         <p><strong>Items:</strong> ${esc(s.item_names||'Unknown')}</p>
                         ${s.time_since ? `<p><strong>Time Since:</strong> ${s.time_since}</p>` : ''}
                         ${s.tags?.length ? `<p><strong>Tags:</strong> ${s.tags.join(', ')}</p>` : ''}
@@ -2370,6 +2533,7 @@
                 const notes = document.getElementById('session-notes')?.value || '';
                 state.sessionNotes = notes;
                 hideModal();
+                logEvent('test_started', { items: items.map(i => i.name) }, state.sessionTags);
                 $('#test-overlay').classList.add('on');
                 await runReactionTest();
                 await runMemoryTest();
@@ -2826,6 +2990,7 @@
                 $('#main-content').innerHTML = `
                     <h2 style="margin-bottom:0.5rem;">Analytics</h2>
                     <div class="analytics-subnav">
+                        <button class="btn ${state.analyticsSub === 'chat' ? 'active' : ''}" onclick="switchAnalytics('chat')">💬 Ask AI</button>
                         <button class="btn ${state.analyticsSub === 'insights' ? 'active' : ''}" onclick="switchAnalytics('insights')">🧠 AI Insights</button>
                         <button class="btn ${state.analyticsSub === 'stats' ? 'active' : ''}" onclick="switchAnalytics('stats')">📊 Stats</button>
                         <button class="btn ${state.analyticsSub === 'graphs' ? 'active' : ''}" onclick="switchAnalytics('graphs')">📈 Graphs</button>
@@ -2835,7 +3000,8 @@
                         <button class="btn ${state.analyticsSub === 'experiments' ? 'active' : ''}" onclick="switchAnalytics('experiments')">🧪 Experiments</button>
                     </div>
                     <div id="analytics-content">
-                        ${state.analyticsSub === 'insights' ? renderInsightsTab(sessions, insights, comparisons, predictions, conditions, suggestedExps) :
+                        ${state.analyticsSub === 'chat' ? renderChatTab() :
+                          state.analyticsSub === 'insights' ? renderInsightsTab(sessions, insights, comparisons, predictions, conditions, suggestedExps) :
                           state.analyticsSub === 'stats' ? renderStatsTab(sessions, items) :
                           state.analyticsSub === 'graphs' ? renderGraphsTab(sessions) :
                           state.analyticsSub === 'profile' ? renderProfileTab(sessions) :
@@ -2845,6 +3011,237 @@
                     </div>
                 `;
                 updateTheme();
+                if (state.analyticsSub === 'chat') scrollChatToBottom();
+            }
+
+            // ============================================================
+            //  BASELINE SYSTEM (spec section 18) — learns the user's own
+            //  historical normal range per metric, purely from stats.
+            // ============================================================
+            function computeBaseline(sessions, metric) {
+                const vals = sessions.map(s => s[metric]).filter(v => typeof v === 'number' && !isNaN(v));
+                if (vals.length < 3) return null;
+                const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+                const variance = vals.reduce((a, b) => a + (b - mean) ** 2, 0) / vals.length;
+                const stdev = Math.sqrt(variance);
+                return { mean, stdev, n: vals.length };
+            }
+
+            function classifyAgainstBaseline(value, baseline, higherIsBetter) {
+                if (!baseline || baseline.n < 3) return { label: 'Not enough history yet', z: null };
+                const z = baseline.stdev > 0 ? (value - baseline.mean) / baseline.stdev : 0;
+                const signedZ = higherIsBetter ? z : -z;
+                let label;
+                if (Math.abs(z) < 0.5) label = 'Near your baseline';
+                else if (signedZ >= 1.5) label = 'Well above your usual range';
+                else if (signedZ >= 0.5) label = 'Above your usual range';
+                else if (signedZ <= -1.5) label = 'Well below your usual range';
+                else label = 'Below your usual range';
+                return { label, z };
+            }
+
+            // ============================================================
+            //  "WHAT CHANGED?" (spec section 19) — recent vs historical,
+            //  computed from real numbers, never invented.
+            // ============================================================
+            function whatChanged(sessions, days) {
+                days = days || 14;
+                if (sessions.length < 4) return { text: 'Not enough sessions yet to detect a meaningful change (need at least 4).', n: sessions.length };
+                const sorted = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+                const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+                const recent = sorted.filter(s => new Date(s.date).getTime() >= cutoff);
+                const older = sorted.filter(s => new Date(s.date).getTime() < cutoff);
+                if (recent.length < 2 || older.length < 2) {
+                    // fall back to a straight first-half vs second-half split
+                    const mid = Math.floor(sorted.length / 2);
+                    return summarizeChange(sorted.slice(0, mid), sorted.slice(mid), 'earlier sessions', 'more recent sessions');
+                }
+                return summarizeChange(older, recent, `the ${days} days before that`, `the last ${days} days`);
+            }
+
+            function summarizeChange(groupA, groupB, labelA, labelB) {
+                const metrics = [
+                    ['overall_score', 'overall score', true],
+                    ['reaction_avg', 'reaction time', false],
+                    ['memory_score', 'memory score', true],
+                    ['focus_score', 'focus accuracy', true]
+                ];
+                const lines = [];
+                metrics.forEach(([key, label, higherIsBetter]) => {
+                    const a = groupA.map(s => s[key]).filter(v => typeof v === 'number');
+                    const b = groupB.map(s => s[key]).filter(v => typeof v === 'number');
+                    if (a.length < 2 || b.length < 2) return;
+                    const avgA = a.reduce((x, y) => x + y, 0) / a.length;
+                    const avgB = b.reduce((x, y) => x + y, 0) / b.length;
+                    const diff = avgB - avgA;
+                    const pct = avgA !== 0 ? (diff / Math.abs(avgA)) * 100 : 0;
+                    if (Math.abs(pct) < 3) return; // not meaningful
+                    const improved = higherIsBetter ? diff > 0 : diff < 0;
+                    lines.push(`${label} ${improved ? 'improved' : 'declined'} ${Math.abs(pct).toFixed(0)}% (${avgA
+                        .toFixed(0)} → ${avgB.toFixed(0)})`);
+                });
+                const n = groupA.length + groupB.length;
+                if (lines.length === 0) return { text: `No meaningful change detected between ${labelA} and ${labelB} (${n} sessions compared).`, n };
+                return { text: `Comparing ${labelA} to ${labelB}: ${lines.join('; ')}. (${n} sessions compared)`, n };
+            }
+
+            // ============================================================
+            //  AI CHAT ENGINE — answers questions using only data actually
+            //  stored in Logositcs. No external API, no fabricated stats.
+            //  Rule-based keyword routing over real aggregation functions.
+            // ============================================================
+            async function answerAIQuestion(rawQuery) {
+                const q = rawQuery.toLowerCase().trim();
+                const sessions = await dbAll('sessions');
+                const finance = await dbAll('finance');
+
+                // --- financial questions ---
+                if (/earn|income|paid|paycheck/.test(q)) {
+                    const income = finance.filter(f => f.type === 'income');
+                    if (!income.length) return "You haven't logged any confirmed income yet.";
+                    const total = income.reduce((a, f) => a + (f.amount || 0), 0);
+                    return `You've logged $${total.toFixed(2)} in confirmed income across ${income.length} entr${income.length === 1 ? 'y' : 'ies'}.`;
+                }
+                if (/spend|spent|spending/.test(q)) {
+                    const spending = finance.filter(f => f.type === 'spending');
+                    if (!spending.length) return "You haven't logged any spending yet.";
+                    const total = spending.reduce((a, f) => a + (f.amount || 0), 0);
+                    const topLine = topSpendingCategoryLine(spending);
+                    return `You've logged $${total.toFixed(2)} in spending across ${spending.length} entries. ${topLine}.`;
+                }
+                if (/goal/.test(q)) {
+                    const goals = finance.filter(f => f.type === 'goal');
+                    if (!goals.length) return "You don't have any savings goals set yet.";
+                    let balance = 0;
+                    finance.forEach(f => { if (f.type === 'income') balance += f.amount || 0;
+                        if (f.type === 'spending') balance -= f.amount || 0;
+                        if (f.type === 'savings') balance += f.amount || 0; });
+                    balance = Math.max(0, balance);
+                    return goals.map(g => {
+                        const pct = g.target > 0 ? Math.min(100, Math.round((balance / g.target) * 100)) : 0;
+                        return `"${g.name}": ${pct}% complete ($${balance.toFixed(2)} of $${g.target.toFixed(2)})`;
+                    }).join('. ');
+                }
+                if (/hours? worked|hourly|wage/.test(q)) {
+                    const settings = finance.find(f => f.type === 'incomeSettings');
+                    if (!settings) return "You haven't set up your hourly wage or work hours yet — that's in the Finance tab.";
+                    return `Your configured rate is $${settings.hourlyRate}/hr at ${settings.hoursPerWeek} hrs/week (~$${settings.weeklyPay}/week estimated).`;
+                }
+
+                // --- cognitive test questions ---
+                if (sessions.length === 0 && /(reaction|memory|typing|focus|test|score|perform)/.test(q)) {
+                    return "You haven't completed any cognitive test sessions yet, so I don't have anything to analyze.";
+                }
+                if (/typing/.test(q)) {
+                    return "Logositcs doesn't currently include a typing test — it tracks reaction time, memory, digit span, and focus. I can't answer typing questions until that test exists.";
+                }
+                if (/best (day|result|session|score)/.test(q)) {
+                    if (!sessions.length) return "No sessions recorded yet.";
+                    const best = sessions.reduce((a, b) => (b.overall_score || 0) > (a.overall_score || 0) ? b : a);
+                    return `Your best session was ${fmtDate(best.date)} with an overall score of ${best.overall_score}/100${best.tags?.length ? ` (tags: ${best.tags.join(', ')})` : ''}.`;
+                }
+                if (/worst|decline|bad (day|result)/.test(q)) {
+                    if (!sessions.length) return "No sessions recorded yet.";
+                    const worst = sessions.reduce((a, b) => (b.overall_score ?? 999) < (a.overall_score ?? 999) ? b : a);
+                    return `Your lowest-scoring session was ${fmtDate(worst.date)} with an overall score of ${worst.overall_score}/100${worst.tags?.length ? ` (tags: ${worst.tags.join(', ')})` : ''}.`;
+                }
+                if (/reaction/.test(q)) {
+                    const baseline = computeBaseline(sessions, 'reaction_avg');
+                    if (!baseline) return "Not enough reaction-time data yet (need at least 3 sessions).";
+                    const recent = [...sessions].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                    const cls = classifyAgainstBaseline(recent.reaction_avg, baseline, false);
+                    const change = whatChanged(sessions);
+                    return `Your reaction-time baseline is ${baseline.mean.toFixed(0)}ms (±${baseline.stdev.toFixed(0)}ms, n=${baseline.n}). Your most recent result (${recent.reaction_avg}ms) is: ${cls.label}. ${change.text}`;
+                }
+                if (/what changed|this month|recently|change/.test(q)) {
+                    return whatChanged(sessions).text;
+                }
+                if (/compare/.test(q)) {
+                    if (sessions.length < 4) return "I need at least 4 sessions to make a meaningful comparison.";
+                    return whatChanged(sessions, 30).text;
+                }
+                if (/pattern|correlat|associat/.test(q)) {
+                    const { insights } = generateInsights(sessions);
+                    if (!insights.length) return "Not enough tagged sessions yet to detect any patterns.";
+                    return insights.slice(0, 3).map(i => i.statement).join(' ');
+                }
+                if (/tag/.test(q)) {
+                    const { comparisons } = generateInsights(sessions);
+                    if (!comparisons.length) return "Not enough tagged sessions yet to compare by tag.";
+                    return comparisons.slice(0, 3).map(c =>
+                        `"${c.tag}": with = ${c.avgWith} avg (${c.sessionsWith} sessions), without = ${c.avgWithout} avg (${c.sessionsWithout} sessions), difference ${c.diff > 0 ? '+' : ''}${c.diff} pts`
+                    ).join('. ');
+                }
+                if (/how am i doing|overview|summary/.test(q)) {
+                    if (!sessions.length) return "No sessions yet — run a test from the Dashboard to get started.";
+                    const avg = Math.round(sessions.reduce((a, b) => a + (b.overall_score || 0), 0) / sessions.length);
+                    return `You've completed ${sessions.length} sessions, averaging ${avg}/100 overall. ${whatChanged(sessions).text}`;
+                }
+
+                // --- date-specific query: "what happened on 7/23" ---
+                const dateMatch = q.match(/(\d{1,2})\/(\d{1,2})/);
+                if (dateMatch) {
+                    const [, mo, day] = dateMatch;
+                    const matches = sessions.filter(s => {
+                        const d = new Date(s.date);
+                        return (d.getMonth() + 1) === parseInt(mo) && d.getDate() === parseInt(day);
+                    });
+                    if (!matches.length) return `I don't have any sessions logged on ${mo}/${day}.`;
+                    return matches.map(s => `${mo}/${day}: overall score ${s.overall_score}/100${s.tags?.length ? `, tags: ${s.tags.join(', ')}` : ''}`).join('. ');
+                }
+
+                return "I can answer questions about your test performance, reaction time, best/worst sessions, tags, patterns, income, spending, and goals — based only on what's actually stored in Logositcs. Try asking something like \"what was my best day\" or \"how much have I spent\".";
+            }
+
+            function renderChatTab() {
+                const history = state.chatMessages.map(m => `
+                    <div style="display:flex;${m.role === 'user' ? 'justify-content:flex-end;' : ''}margin:0.3rem 0;">
+                        <div style="max-width:85%;padding:0.5rem 0.7rem;border-radius:12px;font-size:0.75rem;line-height:1.4;${m.role === 'user' ? 'background:var(--text);color:var(--bg);' : 'background:var(--bg3);border:1px solid var(--grey);'}">${esc(m.text)}</div>
+                    </div>
+                `).join('');
+                return `
+                    <div class="card">
+                        <h3 style="margin-bottom:0.3rem;">💬 Ask Logositcs AI</h3>
+                        <p style="color:var(--text2);font-size:0.6rem;margin-bottom:0.4rem;">Answers come only from your stored data — no external AI, no invented numbers.</p>
+                        <div id="chat-history" style="max-height:320px;overflow-y:auto;padding:0.2rem;">
+                            ${history || '<p style="color:var(--text2);font-size:0.7rem;">Ask about your performance, tags, income, spending, or goals.</p>'}
+                        </div>
+                        <form onsubmit="sendChatMessage(event)" style="display:flex;gap:0.3rem;margin-top:0.4rem;">
+                            <input type="text" class="f-input" id="chat-input" placeholder="What was my best day?" autocomplete="off">
+                            <button type="submit" class="btn btn-s">Ask</button>
+                        </form>
+                    </div>`;
+            }
+
+            window.sendChatMessage = async function(e) {
+                e.preventDefault();
+                const input = document.getElementById('chat-input');
+                const q = input.value.trim();
+                if (!q) return;
+                state.chatMessages.push({ role: 'user', text: q });
+                input.value = '';
+                const historyEl = document.getElementById('chat-history');
+                if (historyEl) { historyEl.innerHTML = renderChatHistoryOnly();
+                    scrollChatToBottom(); }
+                logEvent('ai_chat_question', { question: q });
+                const answer = await answerAIQuestion(q);
+                state.chatMessages.push({ role: 'ai', text: answer });
+                if (historyEl) { historyEl.innerHTML = renderChatHistoryOnly();
+                    scrollChatToBottom(); }
+                logEvent('ai_observation', { question: q, answer });
+            };
+
+            function renderChatHistoryOnly() {
+                return state.chatMessages.map(m => `
+                    <div style="display:flex;${m.role === 'user' ? 'justify-content:flex-end;' : ''}margin:0.3rem 0;">
+                        <div style="max-width:85%;padding:0.5rem 0.7rem;border-radius:12px;font-size:0.75rem;line-height:1.4;${m.role === 'user' ? 'background:var(--text);color:var(--bg);' : 'background:var(--bg3);border:1px solid var(--grey);'}">${esc(m.text)}</div>
+                    </div>
+                `).join('') || '<p style="color:var(--text2);font-size:0.7rem;">Ask about your performance, tags, income, spending, or goals.</p>';
+            }
+
+            function scrollChatToBottom() {
+                const el = document.getElementById('chat-history');
+                if (el) el.scrollTop = el.scrollHeight;
             }
 
             function switchAnalytics(sub) {
@@ -3005,7 +3402,7 @@
 
             function drawTimeline(sessions) {
                 const sorted = sessions.sort((a, b) => new Date(a.date) - new Date(b.date));
-                const data = sorted.slice(-14).map(s => ({ date: new Date(s.date).toLocaleDateString(), score: s
+                const data = sorted.slice(-14).map(s => ({ date: fmtDate(s.date), score: s
                         .overall_score || 0 }));
                 const w = 420,
                     h = 130,
@@ -3068,7 +3465,7 @@
                     if (score >= 80) cls = 'high';
                     else if (score >= 50) cls = 'medium';
                     else if (score > 0) cls = 'low';
-                    days.push({ date: d.toLocaleDateString(), cls, score });
+                    days.push({ date: fmtDate(d), cls, score });
                 }
                 return `<div class="heatmap-grid">${days.map(d => `<div class="heatmap-cell ${d.cls}" title="${d.date}: ${d.score}">${d.cls === 'high' ? '🟩' : d.cls === 'medium' ? '🟨' : d.cls === 'low' ? '🟥' : '⬛'}</div>`).join('')}</div>
                         <p style="color:var(--text2);font-size:0.55rem;">🟩 High • 🟨 Avg • 🟥 Low • ⬛ No test</p>`;
@@ -3240,11 +3637,12 @@
                     <!-- Spending History -->
                     <div class="finance-card">
                         <h3 style="font-size:0.9rem;margin-bottom:0.3rem;">📋 Spending History</h3>
+                        ${spendingEntries.length > 0 ? `<p style="color:var(--text2);font-size:0.6rem;margin-bottom:0.3rem;">${topSpendingCategoryLine(spendingEntries)}</p>` : ''}
                         <div style="max-height:150px;overflow-y:auto;">
                             ${spendingEntries.length === 0 ? '<p style="color:var(--text2);font-size:0.7rem;">No spending entries yet.</p>' :
                             spendingEntries.sort((a,b) => new Date(b.date) - new Date(a.date)).map(s => `
                                 <div class="spend-item">
-                                    <span>${esc(s.name || 'Unnamed')} <span class="tag-sm">${esc(s.category || 'other')}</span></span>
+                                    <span><span class="tag-sm" style="margin-right:0.2rem;">${fmtDate(s.date)}</span>${esc(s.name || 'Unnamed')} <span class="tag-sm">${esc(s.category || 'other')}</span></span>
                                     <span class="amount">-$${s.amount.toFixed(2)}</span>
                                     <div style="display:flex;gap:0.2rem;">
                                         <button class="btn-fin btn-fin-o" style="font-size:0.5rem;padding:0.1rem 0.3rem;" onclick="editFinSpending(${s.id})">✎</button>
@@ -3262,7 +3660,7 @@
                             ${incomeEntries.length === 0 ? '<p style="color:var(--text2);font-size:0.7rem;">No income entries yet.</p>' :
                             incomeEntries.sort((a,b) => new Date(b.date) - new Date(a.date)).map(s => `
                                 <div class="income-item">
-                                    <span>${esc(s.name || 'Income')} ${s.source ? `<span class="tag-sm">${esc(s.source)}</span>` : ''}</span>
+                                    <span><span class="tag-sm" style="margin-right:0.2rem;">${fmtDate(s.date)}</span>${esc(s.name || 'Income')} ${s.source ? `<span class="tag-sm">${esc(s.source)}</span>` : ''}</span>
                                     <span class="amount">+$${s.amount.toFixed(2)}</span>
                                     <button class="btn-fin btn-fin-r" style="font-size:0.5rem;padding:0.1rem 0.3rem;" onclick="deleteFinIncome(${s.id})">✕</button>
                                 </div>
@@ -3304,13 +3702,10 @@
                         </div>
                     </div>
 
-                    <!-- Notifications -->
-                    <div class="finance-card" style="border-color:var(--purple);" id="notif-card">
-                        <h3 style="font-size:0.9rem;margin-bottom:0.3rem;">🔔 Savings Notifications</h3>
-                        <div id="notif-settings-box">
-                            <p style="color:var(--text2);font-size:0.7rem;">Loading settings...</p>
-                        </div>
-                    </div>
+                    <!-- Notifications now live in Settings (⚙), not on the main Finance screen -->
+                    <p style="color:var(--text2);font-size:0.6rem;margin:0.2rem 0 0.6rem;text-align:center;">
+                        🔔 Goal &amp; payday alerts are managed in <a href="#" onclick="showAudioSettings();return false;" style="color:var(--text2);text-decoration:underline;">Settings</a>.
+                    </p>
 
                     <!-- AI Financial Estimation -->
                     <div class="finance-card" style="border-color:var(--blue);">
@@ -3346,12 +3741,22 @@
                     runAIEstimate();
                 }
 
-                await renderNotifSettingsBox(goalEntries);
                 checkAndSendNotifications(false).catch(() => {});
                 updateTheme();
             }
 
             // --- Finance Actions ---
+            function topSpendingCategoryLine(spendingEntries) {
+                const byCat = {};
+                spendingEntries.forEach(s => { byCat[s.category || 'other'] = (byCat[s.category || 'other'] || 0) + (
+                    s.amount || 0); });
+                const sorted = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+                if (!sorted.length) return '';
+                const [topCat, topAmt] = sorted[0];
+                const total = spendingEntries.reduce((a, s) => a + (s.amount || 0), 0);
+                const pct = total > 0 ? Math.round((topAmt / total) * 100) : 0;
+                return `Most spending: ${esc(topCat)} ($${topAmt.toFixed(2)}, ${pct}% of total)`;
+            }
             // Merged "+ / Update Balance" action (addendum #2): one financial interaction
             // instead of separate Income / Update Savings buttons doing nearly the same thing.
             window.showBalanceModal = function() {
@@ -3717,11 +4122,7 @@
             }
 
             function sendNotification(title, body) {
-                SFX.play('notify');
-                if ('Notification' in window && Notification.permission === 'granted') {
-                    try { new Notification(title, { body }); } catch (e) { /* ignore */ }
-                }
-                alert(`${title} ${body}`, 's');
+                NotificationManager.notify('goals', title, body);
             }
 
             function calcSavingsStreak(entries) {
@@ -3778,97 +4179,6 @@
                 if (changed) await saveNotifSettings(settings);
             }
 
-            window.requestNotifPermission = async function() {
-                if (!('Notification' in window)) { alert('Browser notifications are not supported here.', 'w'); return; }
-                const perm = await Notification.requestPermission();
-                SFX.play(perm === 'granted' ? 'success' : 'click');
-                if (perm === 'granted') alert('Push notifications enabled!', 's');
-                else alert('Notification permission was not granted.', 'w');
-                renderFinance();
-            };
-
-            window.testNotification = async function() {
-                const goals = state.savingsGoals.length ? state.savingsGoals : (await dbAll('finance')).filter(f => f
-                    .type === 'goal');
-                if (!goals.length) { alert('Add a savings goal first to test notifications.', 'w'); return; }
-                const settings = await loadNotifSettings();
-                const pred = computeFinancialPrediction(goals[0]);
-                const { title, body } = buildNotificationMessage(goals[0], pred, settings.style);
-                sendNotification(title, body);
-            };
-
-            window.updateNotifSettings = async function() {
-                const enabled = document.getElementById('notif-enabled')?.checked ?? true;
-                const frequency = document.getElementById('notif-frequency')?.value || 'daily';
-                const style = document.getElementById('notif-style')?.value || 'motivational';
-                const goalChecks = document.querySelectorAll('.notif-goal-check:checked');
-                const trackedGoals = Array.from(goalChecks).map(c => parseInt(c.value));
-                const settings = await loadNotifSettings();
-                settings.enabled = enabled;
-                settings.frequency = frequency;
-                settings.style = style;
-                settings.trackedGoals = trackedGoals;
-                await saveNotifSettings(settings);
-                SFX.play('success');
-                alert('Notification settings saved!', 's');
-            };
-
-            async function renderNotifSettingsBox(goalEntries) {
-                const box = document.getElementById('notif-settings-box');
-                if (!box) return;
-                const settings = await loadNotifSettings();
-                const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
-                const streak = calcSavingsStreak(state.financeData);
-
-                const goalChecks = goalEntries.length === 0 ?
-                    '<p style="color:var(--text2);font-size:0.65rem;">Add a savings goal to enable tracked notifications.</p>' :
-                    goalEntries.map(g => `
-                        <label style="display:flex;align-items:center;gap:0.25rem;font-size:0.65rem;margin:0.1rem 0;cursor:pointer;">
-                            <input type="checkbox" class="notif-goal-check" value="${g.id}" ${(!settings.trackedGoals.length || settings.trackedGoals.includes(g.id)) ? 'checked' : ''}>
-                            ${esc(g.name)}
-                        </label>
-                    `).join('');
-
-                box.innerHTML = `
-                    <div style="display:flex;gap:1rem;flex-wrap:wrap;font-size:0.65rem;color:var(--text2);margin-bottom:0.3rem;">
-                        <span>🔥 Saving streak: <strong style="color:var(--text);">${streak} day${streak===1?'':'s'}</strong></span>
-                        <span>Browser push: <strong style="color:${perm === 'granted' ? 'var(--green)' : 'var(--yellow)'};">${perm === 'granted' ? 'Enabled' : perm === 'denied' ? 'Blocked' : 'Not enabled'}</strong></span>
-                    </div>
-                    <div class="flex-row" style="gap:0.5rem;margin-bottom:0.3rem;">
-                        <label style="display:flex;align-items:center;gap:0.25rem;font-size:0.7rem;">
-                            <input type="checkbox" id="notif-enabled" ${settings.enabled ? 'checked' : ''}> Enable finance notifications
-                        </label>
-                    </div>
-                    <div class="flex-row" style="gap:0.4rem;">
-                        <div style="flex:1;min-width:100px;">
-                            <label class="f-label" style="font-size:0.6rem;color:var(--text2);">Frequency</label>
-                            <select class="f-input-sm" id="notif-frequency">
-                                <option value="daily" ${settings.frequency === 'daily' ? 'selected' : ''}>Daily</option>
-                                <option value="weekly" ${settings.frequency === 'weekly' ? 'selected' : ''}>Weekly</option>
-                                <option value="monthly" ${settings.frequency === 'monthly' ? 'selected' : ''}>Monthly</option>
-                            </select>
-                        </div>
-                        <div style="flex:1;min-width:100px;">
-                            <label class="f-label" style="font-size:0.6rem;color:var(--text2);">Style</label>
-                            <select class="f-input-sm" id="notif-style">
-                                <option value="motivational" ${settings.style === 'motivational' ? 'selected' : ''}>Motivational</option>
-                                <option value="simple" ${settings.style === 'simple' ? 'selected' : ''}>Simple</option>
-                                <option value="detailed" ${settings.style === 'detailed' ? 'selected' : ''}>Detailed AI analysis</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div style="margin-top:0.3rem;">
-                        <label class="f-label" style="font-size:0.6rem;color:var(--text2);">Goals to track</label>
-                        ${goalChecks}
-                    </div>
-                    <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.4rem;">
-                        <button class="btn-fin btn-fin-o" onclick="updateNotifSettings()">💾 Save Settings</button>
-                        ${perm !== 'granted' ? '<button class="btn-fin btn-fin-o" onclick="requestNotifPermission()">🔔 Enable Push</button>' : ''}
-                        <button class="btn-fin btn-fin-o" onclick="testNotification()">🧪 Test Notification</button>
-                    </div>
-                `;
-            }
-
             // ============================================================
             //  EXPORT
             // ============================================================
@@ -3893,6 +4203,15 @@
 
             function esc(str) { if (!str) return ''; const div = document.createElement('div');
                 div.textContent = str; return div.innerHTML; }
+
+            // Spec: normal history UI shows dates like "7/23", never clock times.
+            // The underlying event still keeps a full ISO timestamp for analytics/ordering.
+            function fmtDate(dateStr) {
+                if (!dateStr) return '--';
+                const d = new Date(dateStr);
+                if (isNaN(d)) return '--';
+                return `${d.getMonth() + 1}/${d.getDate()}`;
+            }
 
             // ============================================================
             //  INIT
@@ -3921,6 +4240,7 @@
                 const unlockOnce = () => { AudioManager.unlock();
                     document.removeEventListener('click', unlockOnce); };
                 document.addEventListener('click', unlockOnce, { once: true });
+                NotificationManager.init().catch(() => {});
                 window.switchTab = switchTab;
                 window.switchAnalytics = switchAnalytics;
                 window.updateStats = updateStats;
@@ -3938,6 +4258,7 @@
                 window.deleteExperiment = deleteExperiment;
                 window.checkAndSendNotifications = checkAndSendNotifications;
                 renderDashboard();
+                playTabAnimation();
                 // Initial theme
                 setTimeout(() => updateTheme(), 1500);
             }
