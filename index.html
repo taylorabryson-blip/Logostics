@@ -43,6 +43,7 @@
             background: var(--theme-bg);
             color: var(--text);
             min-height: 100vh;
+            min-height: 100dvh;
             padding-top: var(--safe-top);
             padding-bottom: var(--safe-bottom);
             padding-left: var(--safe-left);
@@ -1134,7 +1135,20 @@
         // ============================================================
         (function startupAnimation() {
             const canvas = document.getElementById('startupCanvas');
-            const ctx = canvas.getContext('2d');
+            const startupEl = document.getElementById('startup');
+
+            // HARD SAFETY NET: no matter what happens to the canvas animation below,
+            // the startup overlay is guaranteed to disappear. This is what actually
+            // prevents the "stuck on a black screen on mobile" failure mode — previously
+            // the overlay only hid itself from inside the animation loop, so any canvas
+            // error (missing 2d context, low-memory mobile browser, etc.) left it stuck.
+            const forceHideStartup = () => { if (startupEl) startupEl.classList.add('hidden'); };
+            setTimeout(forceHideStartup, 3500);
+
+            let ctx;
+            try { ctx = canvas.getContext('2d'); } catch (e) { ctx = null; }
+            if (!ctx) { forceHideStartup(); return; }
+
             let w, h;
             const nodes = [];
             const NUM_NODES = 28;
@@ -1161,10 +1175,11 @@
             let startTime = Date.now();
 
             function draw() {
+              try {
                 const elapsed = (Date.now() - startTime) / 1000;
                 if (elapsed > 3.2) {
                     // fade out and hide
-                    document.getElementById('startup').classList.add('hidden');
+                    forceHideStartup();
                     return;
                 }
 
@@ -1210,6 +1225,10 @@
                 }
 
                 requestAnimationFrame(draw);
+              } catch (e) {
+                  // Any canvas failure mid-animation must never leave the user staring at a black screen.
+                  forceHideStartup();
+              }
             }
             draw();
         })();
@@ -1805,23 +1824,48 @@
                 el.classList.add('tab-anim');
             }
 
+            // If any screen fails to render, never leave the user staring at blank/black —
+            // show a small recoverable card instead, and log what happened.
+            function showRenderError(tabName, err) {
+                console.error('Logositcs render error on', tabName, err);
+                try { logEvent('error_occurred', { tab: tabName, message: String(err && err.message || err) }); } catch (e) {}
+                const el = document.getElementById('main-content');
+                if (!el) return;
+                el.innerHTML = `
+                    <div class="card" style="text-align:center;">
+                        <h3>⚠ Something went wrong loading this screen</h3>
+                        <p style="color:var(--text2);font-size:0.75rem;margin:0.4rem 0;">Your data is safe — this was just a display error. Try again, or go back to the Dashboard.</p>
+                        <div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;margin-top:0.4rem;">
+                            <button class="btn btn-o" onclick="switchTab('${tabName}')">Try Again</button>
+                            <button class="btn" onclick="switchTab('dashboard')">Dashboard</button>
+                        </div>
+                    </div>`;
+            }
+
             function renderTab() {
-                switch (state.currentTab) {
-                    case 'dashboard':
-                        renderDashboard();
-                        break;
-                    case 'items':
-                        renderItems();
-                        break;
-                    case 'sessions':
-                        renderSessions();
-                        break;
-                    case 'analytics':
-                        renderAnalytics();
-                        break;
-                    case 'finance':
-                        renderFinance();
-                        break;
+                const tab = state.currentTab;
+                try {
+                    let p;
+                    switch (tab) {
+                        case 'dashboard':
+                            p = renderDashboard();
+                            break;
+                        case 'items':
+                            p = renderItems();
+                            break;
+                        case 'sessions':
+                            p = renderSessions();
+                            break;
+                        case 'analytics':
+                            p = renderAnalytics();
+                            break;
+                        case 'finance':
+                            p = renderFinance();
+                            break;
+                    }
+                    if (p && typeof p.catch === 'function') p.catch(err => showRenderError(tab, err));
+                } catch (err) {
+                    showRenderError(tab, err);
                 }
             }
 
@@ -4515,7 +4559,24 @@
             //  INIT
             // ============================================================
             async function init() {
-                await openDB();
+                try {
+                    await openDB();
+                } catch (err) {
+                    // Some mobile browsers (private/incognito mode, storage disabled) block IndexedDB entirely.
+                    // Without this, that failure would leave a permanently blank/black app with no explanation.
+                    console.error('IndexedDB failed to open:', err);
+                    document.getElementById('startup')?.classList.add('hidden');
+                    document.getElementById('main-content').innerHTML = `
+                        <div class="card" style="text-align:center;margin-top:2rem;">
+                            <h3>⚠ Local storage isn't available</h3>
+                            <p style="color:var(--text2);font-size:0.8rem;margin-top:0.4rem;">
+                                Logositcs stores everything on your device using IndexedDB, and this browser is blocking it right now —
+                                this is common in private/incognito mode or with storage disabled in browser settings.
+                            </p>
+                            <p style="color:var(--text2);font-size:0.8rem;margin-top:0.4rem;">Try opening this in a normal (non-private) browser tab.</p>
+                        </div>`;
+                    return;
+                }
                 $$('.nav-tab').forEach(tab => {
                     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
                 });
@@ -4586,7 +4647,53 @@
                 setTimeout(() => updateTheme(), 1500);
             }
 
-            init().catch(console.error);
+            // ============================================================
+            //  GLOBAL SAFETY NET — the last line of defense against a
+            //  blank/black screen on mobile. Any error we didn't already
+            //  catch closer to the source ends up here instead of just
+            //  silently killing the page.
+            // ============================================================
+            window.addEventListener('error', (e) => {
+                console.error('Uncaught error:', e.error || e.message);
+                document.getElementById('startup')?.classList.add('hidden');
+                if (!document.getElementById('main-content')?.innerHTML.trim()) {
+                    showRenderError(state.currentTab || 'dashboard', e.error || e.message);
+                }
+            });
+            window.addEventListener('unhandledrejection', (e) => {
+                console.error('Unhandled promise rejection:', e.reason);
+            });
+
+            // ============================================================
+            //  OFFLINE / ONLINE — Logositcs has no external AI API and no
+            //  network dependency for its core features (everything reads
+            //  and writes to local IndexedDB), so "offline" only needs a
+            //  quiet status indicator, never a broken/blocked UI.
+            // ============================================================
+            function showConnectivityBanner(isOffline) {
+                let banner = document.getElementById('offline-banner');
+                if (isOffline) {
+                    if (!banner) {
+                        banner = document.createElement('div');
+                        banner.id = 'offline-banner';
+                        banner.style.cssText =
+                            'position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--grey);color:var(--text2);font-size:0.65rem;text-align:center;padding:0.3rem;z-index:9998;';
+                        banner.textContent = '📴 Offline — everything still works, your data is stored on this device.';
+                        document.body.appendChild(banner);
+                    }
+                } else if (banner) {
+                    banner.remove();
+                }
+            }
+            window.addEventListener('online', () => showConnectivityBanner(false));
+            window.addEventListener('offline', () => showConnectivityBanner(true));
+
+            init().catch((err) => {
+                console.error(err);
+                document.getElementById('startup')?.classList.add('hidden');
+                showRenderError('dashboard', err);
+            });
+            if (!navigator.onLine) showConnectivityBanner(true);
         })();
     </script>
 </body>
