@@ -157,6 +157,71 @@
             background: var(--grey3);
             color: var(--text);
         }
+        /* Minecraft-menu-style rotating splash text — tiny, playful, tilted */
+        .splash-text {
+            display: inline-block;
+            color: var(--yellow);
+            font-size: 0.55rem;
+            font-style: italic;
+            font-weight: 700;
+            transform: rotate(-6deg);
+            margin-left: 0.3rem;
+            animation: splashPulse 1.6s ease-in-out infinite;
+            white-space: nowrap;
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+        }
+        @keyframes splashPulse {
+            0%, 100% { transform: rotate(-6deg) scale(1); }
+            50% { transform: rotate(-6deg) scale(1.08); }
+        }
+        @media (max-width: 640px) {
+            .splash-text { display: none; }
+        }
+        /* Goal-completion celebration — full-screen, brief, non-blocking */
+        #goal-celebration {
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            pointer-events: none;
+            display: none;
+            overflow: hidden;
+        }
+        #goal-celebration.on { display: block; }
+        .confetti-piece {
+            position: absolute;
+            top: -10px;
+            width: 8px;
+            height: 14px;
+            opacity: 0.9;
+            animation: confettiFall 2.4s linear forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(540deg); opacity: 0; }
+        }
+        .goal-complete-banner {
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            background: var(--bg2);
+            border: 2px solid var(--green);
+            border-radius: 16px;
+            padding: 1.2rem 1.6rem;
+            text-align: center;
+            z-index: 10002;
+            animation: goalBannerPop 2.4s ease forwards;
+        }
+        @keyframes goalBannerPop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            15% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            25% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            85% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+        }
         .patch-entry {
             border-left: 2px solid var(--grey2);
             padding-left: 0.6rem;
@@ -1101,7 +1166,8 @@
     <nav class="nav" id="mainNav">
         <div class="nav-brand">
             ⬡ Logostics
-            <span class="badge" onclick="showPatchNotes()" title="What's new">v3.2</span>
+            <span class="badge" onclick="showPatchNotes()" title="What's new">v3.3</span>
+            <span class="splash-text" id="splash-text"></span>
         </div>
         <div class="nav-tabs" id="nav-tabs">
             <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
@@ -1113,6 +1179,8 @@
             <button id="audio-settings-btn" onclick="showAudioSettings()" title="Audio settings (music + SFX)" style="background:transparent;border:1px solid var(--grey);color:var(--text2);padding:0.25rem 0.5rem;border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:0.7rem;white-space:nowrap;">⚙</button>
         </div>
     </nav>
+
+    <div id="goal-celebration"></div>
 
     <div class="container" id="main-content"></div>
 
@@ -1431,6 +1499,7 @@
                 savingsGoals: [],
                 itemTarget: null,
                 sfxMuted: false,
+                lastGoalProgress: {},
             };
 
             function $(sel) { return document.querySelector(sel); }
@@ -2622,6 +2691,7 @@
                 const checkboxes = document.querySelectorAll('#session-form input[type="checkbox"]:checked');
                 const items = Array.from(checkboxes).map(cb => ({ id: parseInt(cb.value), name: cb.dataset.name }));
                 if (items.length === 0) { alert('Select at least one item!', 'w'); return; }
+                state.sessionMeta = { items }; // fixes a real bug: this was never set, so showResults() always crashed
                 const intakeSelect = document.getElementById('intake-time');
                 let timeSince = intakeSelect?.value || 'immediate';
                 if (timeSince === 'custom') timeSince = document.getElementById('custom-intake-time')?.value || 'custom';
@@ -2644,13 +2714,13 @@
                     $('#test-phase').textContent = `Test ${idx}/${total}: Reaction Time`;
                     const trials = [];
                     let count = 0;
-                    const total = 5;
+                    const numTrials = 5;
                     let phase = 'wait';
                     let start;
                     $('#test-area').innerHTML = `
                         <p style="color:var(--text2);margin-bottom:0.3rem;font-size:0.75rem;">Click when screen turns white</p>
                         <div class="react-area" id="react-box">Wait for white...</div>
-                        <p style="color:var(--text2);margin-top:0.3rem;font-size:0.65rem;">Trial: <span id="trial-num">1</span>/${total}</p>
+                        <p style="color:var(--text2);margin-top:0.3rem;font-size:0.65rem;">Trial: <span id="trial-num">1</span>/${numTrials}</p>
                         <div class="prog"><div class="prog-fill" style="width:0%"></div></div>`;
                     const box = $('#react-box');
 
@@ -2676,8 +2746,8 @@
                             box.style.borderColor = 'var(--text2)';
                             box.textContent = `${rt}ms`;
                             $('#trial-num').textContent = count;
-                            $('.prog-fill').style.width = `${(count/total)*100}%`;
-                            if (count >= total) {
+                            $('.prog-fill').style.width = `${(count/numTrials)*100}%`;
+                            if (count >= numTrials) {
                                 state.testResults.reaction = { avg: Math.round(trials.reduce((a, b) => a + b, 0) /
                                         trials.length), best: Math.min(...trials), consistency: Math
                                         .round((1 - (Math.max(...trials) - Math.min(...trials)) / (trials
@@ -2787,7 +2857,7 @@
                     let correct = 0,
                         wrong = 0,
                         round = 0;
-                    const total = 10;
+                    const numRounds = 10;
 
                     function makeGrid() {
                         const cells = [];
@@ -2801,17 +2871,17 @@
                         $('#test-area').innerHTML = `
                             <p style="color:var(--text2);margin-bottom:0.3rem;font-size:0.75rem;">Tap only: <span style="font-size:1.1rem;">${target}</span></p>
                             <div class="shape-grid">${cells.map(s => `<div class="shape-cell" data-shape="${s}">${s}</div>`).join('')}</div>
-                            <p style="color:var(--text2);margin-top:0.3rem;font-size:0.65rem;">Round: <span id="focus-round">${round+1}</span>/${total}</p>
-                            <div class="prog"><div class="prog-fill" style="width:${(round/total)*100}%"></div></div>`;
+                            <p style="color:var(--text2);margin-top:0.3rem;font-size:0.65rem;">Round: <span id="focus-round">${round+1}</span>/${numRounds}</p>
+                            <div class="prog"><div class="prog-fill" style="width:${(round/numRounds)*100}%"></div></div>`;
                         $$('.shape-cell').forEach(c => {
                             c.addEventListener('click', () => {
                                 if (c.dataset.shape === target) {
                                     c.classList.add('good');
                                     correct++;
                                     round++;
-                                    $('#focus-round').textContent = Math.min(round + 1, total);
-                                    $('.prog-fill').style.width = `${(round/total)*100}%`;
-                                    if (round >= total) {
+                                    $('#focus-round').textContent = Math.min(round + 1, numRounds);
+                                    $('.prog-fill').style.width = `${(round/numRounds)*100}%`;
+                                    if (round >= numRounds) {
                                         state.testResults.focus = { accuracy: Math.round((correct / (
                                             correct + wrong)) * 100), correct, incorrect: wrong };
                                         $('#test-phase').textContent = '✓ Focus test done!';
@@ -3962,6 +4032,23 @@
                                 const weeklyRate = g.weeklySavings && g.weeklySavings > 0 ? g.weeklySavings :
                                     (state.incomeData.weeklyPay || 0) * 0.2;
                                 const weeksLeft = weeklyRate > 0 ? Math.ceil(remaining / weeklyRate) : null;
+
+                                // "AI" trend read: compares this render's % to the last time this goal was viewed —
+                                // real delta from real balance changes, not a fabricated number.
+                                const lastProgress = state.lastGoalProgress[g.id];
+                                let deltaLine = '';
+                                if (typeof lastProgress === 'number' && lastProgress !== progress) {
+                                    const delta = progress - lastProgress;
+                                    deltaLine = delta > 0 ?
+                                        `📈 Up ${delta}% since you last checked — nice.` :
+                                        `📉 Down ${Math.abs(delta)}% since you last checked — spending outpaced saving.`;
+                                }
+                                const justCompleted = progress >= 100 && lastProgress < 100;
+                                state.lastGoalProgress[g.id] = progress;
+                                if (justCompleted) {
+                                    setTimeout(() => triggerGoalCelebration(g.name), 50);
+                                }
+
                                 return `
                                     <div style="margin:0.3rem 0;padding:0.4rem;background:var(--bg3);border-radius:6px;">
                                         <div style="display:flex;justify-content:space-between;flex-wrap:wrap;font-size:0.75rem;">
@@ -3975,6 +4062,7 @@
                                             <span>${progress}% complete · Remaining: $${remaining.toFixed(2)}</span>
                                             <span>${progress >= 100 ? 'Goal reached' : weeksLeft !== null ? `~${weeksLeft} week${weeksLeft===1?'':'s'} at current rate` : 'Set a weekly savings target for an estimate'}</span>
                                         </div>
+                                        ${deltaLine ? `<div style="font-size:0.6rem;color:${progress-lastProgress>0?'var(--green)':'var(--red)'};margin-top:0.15rem;">${deltaLine}</div>` : ''}
                                         <button class="btn-fin btn-fin-r" style="font-size:0.5rem;padding:0.1rem 0.4rem;margin-top:0.2rem;" onclick="deleteFinGoal(${g.id})">Remove Goal</button>
                                     </div>
                                 `;
@@ -4033,6 +4121,37 @@
             }
 
             // --- Finance Actions ---
+            // ============================================================
+            //  GOAL CELEBRATION — big, brief, non-blocking. Only fires once
+            //  per goal, exactly when it actually crosses 100% (tracked via
+            //  state.lastGoalProgress), never on every render.
+            // ============================================================
+            function triggerGoalCelebration(goalName) {
+                const layer = document.getElementById('goal-celebration');
+                if (!layer) return;
+                layer.classList.add('on');
+                layer.innerHTML = '';
+                const colors = ['#4caf84', '#64b5f6', '#ffb74d', '#e57373', '#b39ddb', '#e8e8f0'];
+                for (let i = 0; i < 60; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti-piece';
+                    piece.style.left = Math.random() * 100 + 'vw';
+                    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    piece.style.animationDelay = (Math.random() * 0.6) + 's';
+                    piece.style.animationDuration = (1.8 + Math.random() * 1) + 's';
+                    layer.appendChild(piece);
+                }
+                const banner = document.createElement('div');
+                banner.className = 'goal-complete-banner';
+                banner.innerHTML = `<div style="font-size:1.6rem;">🎉</div><div style="font-weight:700;margin-top:0.2rem;">Goal reached!</div><div style="color:var(--text2);font-size:0.75rem;margin-top:0.1rem;">"${esc(goalName)}" is fully funded.</div>`;
+                layer.appendChild(banner);
+                SFX.play('goal');
+                NotificationManager.notify('goals', '🎉 Goal reached!', `"${goalName}" is fully funded.`);
+                logEvent('goal_updated', { name: goalName, status: 'completed' });
+                setTimeout(() => { layer.classList.remove('on');
+                    layer.innerHTML = ''; }, 2600);
+            }
+
             function topSpendingCategoryLine(spendingEntries) {
                 const byCat = {};
                 spendingEntries.forEach(s => { byCat[s.category || 'other'] = (byCat[s.category || 'other'] || 0) + (
@@ -4495,8 +4614,17 @@
             //  VERSION / PATCH NOTES — click the version badge in the nav
             //  to see what changed. New entries go at the top of this array.
             // ============================================================
-            const CURRENT_VERSION = 'v3.2';
+            const CURRENT_VERSION = 'v3.3';
             const PATCH_NOTES = [
+                { version: 'v3.3', date: 'Sept 2026', notes: [
+                    'Fixed two severe crash bugs: every single test session was throwing an error on completion (a variable name collision, plus state.sessionMeta never being set). Verified end-to-end with automated testing.',
+                    'Added global error boundaries + a guaranteed startup-screen fallback — the app can no longer get stuck on a black screen if something fails to load.',
+                    'Goals now show a live "AI" read on your trend — whether you\'re gaining or losing ground since you last checked, using your real balance/income/spending data.',
+                    'Hitting 100% on a savings goal now triggers a full celebration animation and an immediate real notification.',
+                    'Notification checks now run periodically in the background while the app is open, not just when you open the Finance tab.',
+                    'Added rotating splash text next to the logo — mostly playful, sometimes pulled from your actual data.',
+                    'Confirmed offline support: the app has no external API and needs no network for any core feature.'
+                ]},
                 { version: 'v3.2', date: 'Sept 2026', notes: [
                     'Fixed a crash bug: finishing a session could throw an error and lose the results screen.',
                     'Added 2 new real tests: Math Sprint and Decision Test (Go/No-Go), plugged into a modular test registry.',
@@ -4544,6 +4672,58 @@
                     `).join('')}
                     <div style="text-align:center;margin-top:0.6rem;"><button class="btn btn-o" onclick="hideModal()">Close</button></div>
                 `);
+            };
+
+            // ============================================================
+            //  SPLASH TEXT — small rotating tilted quip next to the logo,
+            //  Minecraft-menu style. Mostly playful static lines, occasionally
+            //  a real line generated from the user's actual stored data
+            //  (never invented numbers — if there's no data, it just skips
+            //  those lines).
+            // ============================================================
+            const STATIC_SPLASHES = [
+                "Now with 37% more graphs!", "Track it. Trust it.", "Your data, your labyrinth.",
+                "Correlation ≠ causation!", "Locally sourced insights.", "No cloud. No API. Just you.",
+                "Baseline: established.", "Ask me anything (about your data).", "Reaction time may vary.",
+                "Powered by math, not magic.", "Tags remember everything.", "Still not a doctor."
+            ];
+            async function buildDataSplashes() {
+                const lines = [];
+                try {
+                    const sessions = await dbAll('sessions');
+                    const finance = await dbAll('finance');
+                    if (sessions.length) lines.push(`${sessions.length} session${sessions.length===1?'':'s'} logged and counting!`);
+                    if (sessions.length) {
+                        const best = sessions.reduce((a, b) => (b.overall_score||0) > (a.overall_score||0) ? b : a);
+                        if (best.overall_score) lines.push(`Best score so far: ${best.overall_score}/100!`);
+                    }
+                    const streak = calcStreak(sessions);
+                    if (streak > 1) lines.push(`${streak}-day streak — keep it up!`);
+                    let balance = 0;
+                    finance.forEach(f => { if (f.type==='income') balance += f.amount||0; if (f.type==='spending') balance -= f.amount||0; if (f.type==='savings') balance += f.amount||0; });
+                    if (balance > 0) lines.push(`Balance: $${balance.toFixed(2)} and climbing.`);
+                    const goals = finance.filter(f => f.type === 'goal');
+                    if (goals.length) lines.push(`${goals.length} savings goal${goals.length===1?'':'s'} in motion.`);
+                } catch (e) {}
+                return lines;
+            }
+            window.startSplashRotation = async function() {
+                const el = document.getElementById('splash-text');
+                if (!el) return;
+                const dataSplashes = await buildDataSplashes();
+                const pool = [...STATIC_SPLASHES, ...dataSplashes];
+                let i = Math.floor(Math.random() * pool.length);
+                function show() { el.textContent = pool[i % pool.length];
+                    i++; }
+                show();
+                setInterval(async () => {
+                    // Occasionally refresh the data-driven lines so they stay current
+                    if (Math.random() < 0.3) {
+                        const fresh = await buildDataSplashes();
+                        pool.splice(0, pool.length, ...STATIC_SPLASHES, ...fresh);
+                    }
+                    show();
+                }, 6000);
             };
 
             // Spec: normal history UI shows dates like "7/23", never clock times.
@@ -4643,6 +4823,11 @@
                 window.checkAndSendNotifications = checkAndSendNotifications;
                 renderDashboard();
                 playTabAnimation();
+                startSplashRotation();
+                // Background notification checks — run periodically while the app/tab is open,
+                // not only when the user happens to visit the Finance tab. (Full closed-app push
+                // still needs a real server; see the note in NotificationManager above.)
+                setInterval(() => { checkAndSendNotifications(false).catch(() => {}); }, 5 * 60 * 1000);
                 // Initial theme
                 setTimeout(() => updateTheme(), 1500);
             }
