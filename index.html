@@ -160,7 +160,7 @@
         /* Minecraft-menu-style rotating splash text — tiny, playful, tilted */
         .splash-text {
             display: inline-block;
-            color: var(--yellow);
+            color: var(--text);
             font-size: 0.55rem;
             font-style: italic;
             font-weight: 700;
@@ -178,7 +178,7 @@
             50% { transform: rotate(-6deg) scale(1.08); }
         }
         @media (max-width: 640px) {
-            .splash-text { display: none; }
+            .splash-text { max-width: 90px; font-size: 0.48rem; }
         }
         /* Goal-completion celebration — full-screen, brief, non-blocking */
         #goal-celebration {
@@ -1309,9 +1309,63 @@
             const DB_VER = 7;
             let db;
 
+            // ============================================================
+            //  STORAGE LAYER — auto-falls back so the app always works.
+            //
+            //  Unlike camera/notifications, IndexedDB access isn't something
+            //  a website can pop a "grant permission" dialog for — it's
+            //  either allowed or blocked by the browser itself (private/
+            //  incognito mode, some restricted in-app webviews, storage
+            //  disabled in settings). There's no prompt to show.
+            //
+            //  So instead of stopping when IndexedDB is blocked, this falls
+            //  back automatically:
+            //    1. IndexedDB (full persistence, the normal case)
+            //    2. localStorage-backed emulation (persists across reloads,
+            //       used when only IndexedDB specifically is blocked)
+            //    3. In-memory only (works for the current session even if
+            //       both storage APIs are blocked — the app still functions,
+            //       it just won't remember data after the tab fully closes)
+            // ============================================================
+            let storageMode = 'indexeddb'; // 'indexeddb' | 'localstorage' | 'memory'
+            const memoryStores = { items: [], sessions: [], goals: [], experiments: [], finance: [], tags: [],
+                events: [] };
+            const memoryNextId = { items: 1, sessions: 1, goals: 1, experiments: 1, finance: 1, tags: 1, events: 1 };
+            const LS_KEY = 'logostics_fallback_store_v1';
+
+            function loadFallbackFromLocalStorage() {
+                try {
+                    const raw = localStorage.getItem(LS_KEY);
+                    if (!raw) return;
+                    const parsed = JSON.parse(raw);
+                    Object.keys(memoryStores).forEach(k => { if (Array.isArray(parsed.stores?.[k])) memoryStores[k] =
+                        parsed.stores[k]; });
+                    if (parsed.nextId) Object.assign(memoryNextId, parsed.nextId);
+                } catch (e) { /* corrupt or unavailable — start fresh in memory */ }
+            }
+
+            function persistFallbackToLocalStorage() {
+                if (storageMode === 'indexeddb') return;
+                try {
+                    localStorage.setItem(LS_KEY, JSON.stringify({ stores: memoryStores, nextId: memoryNextId }));
+                } catch (e) { /* localStorage may also be blocked/full — memory-only for this session, that's fine */ }
+            }
+
             function openDB() {
-                return new Promise((resolve, reject) => {
-                    const req = indexedDB.open(DB_NAME, DB_VER);
+                return new Promise((resolve) => {
+                    if (!('indexedDB' in window) || !window.indexedDB) {
+                        storageMode = 'localstorage';
+                        loadFallbackFromLocalStorage();
+                        resolve();
+                        return;
+                    }
+                    let req;
+                    try { req = indexedDB.open(DB_NAME, DB_VER); } catch (e) {
+                        storageMode = 'localstorage';
+                        loadFallbackFromLocalStorage();
+                        resolve();
+                        return;
+                    }
                     req.onupgradeneeded = (e) => {
                         const d = e.target.result;
                         if (!d.objectStoreNames.contains('items')) {
@@ -1346,13 +1400,30 @@
                         }
                     };
                     req.onsuccess = (e) => { db = e.target.result;
+                        storageMode = 'indexeddb';
                         resolve(); };
-                    req.onerror = (e) => reject(e.target.error);
+                    req.onerror = () => {
+                        storageMode = 'localstorage';
+                        loadFallbackFromLocalStorage();
+                        resolve();
+                    };
+                    // Some restricted mobile webviews hang forever instead of firing onerror.
+                    setTimeout(() => {
+                        if (storageMode === 'indexeddb' && !db) {
+                            storageMode = 'localstorage';
+                            loadFallbackFromLocalStorage();
+                            resolve();
+                        }
+                    }, 2500);
                 });
             }
 
             // Generic query-by-index helper (used by the tag library and event log)
             function dbGetByIndex(store, indexName, value) {
+                if (storageMode !== 'indexeddb') {
+                    const match = memoryStores[store].find(r => r[indexName] === value);
+                    return Promise.resolve(match || null);
+                }
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readonly');
                     const req = tx.objectStore(store).index(indexName).get(value);
@@ -1426,6 +1497,13 @@
             }
 
             function dbAdd(store, data) {
+                if (storageMode !== 'indexeddb') {
+                    const id = memoryNextId[store]++;
+                    const record = { ...data, id };
+                    memoryStores[store].push(record);
+                    persistFallbackToLocalStorage();
+                    return Promise.resolve(id);
+                }
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readwrite');
                     const req = tx.objectStore(store).add(data);
@@ -1435,6 +1513,15 @@
             }
 
             function dbPut(store, data) {
+                if (storageMode !== 'indexeddb') {
+                    const arr = memoryStores[store];
+                    const idx = arr.findIndex(r => r.id === data.id);
+                    if (idx >= 0) arr[idx] = data;
+                    else { data.id = data.id ?? memoryNextId[store]++;
+                        arr.push(data); }
+                    persistFallbackToLocalStorage();
+                    return Promise.resolve(data.id);
+                }
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readwrite');
                     const req = tx.objectStore(store).put(data);
@@ -1444,6 +1531,9 @@
             }
 
             function dbGet(store, id) {
+                if (storageMode !== 'indexeddb') {
+                    return Promise.resolve(memoryStores[store].find(r => r.id === id) || undefined);
+                }
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readonly');
                     const req = tx.objectStore(store).get(id);
@@ -1453,6 +1543,9 @@
             }
 
             function dbAll(store) {
+                if (storageMode !== 'indexeddb') {
+                    return Promise.resolve([...memoryStores[store]]);
+                }
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readonly');
                     const req = tx.objectStore(store).getAll();
@@ -1462,6 +1555,11 @@
             }
 
             function dbDel(store, id) {
+                if (storageMode !== 'indexeddb') {
+                    memoryStores[store] = memoryStores[store].filter(r => r.id !== id);
+                    persistFallbackToLocalStorage();
+                    return Promise.resolve();
+                }
                 return new Promise((resolve, reject) => {
                     const tx = db.transaction(store, 'readwrite');
                     const req = tx.objectStore(store).delete(id);
@@ -1895,6 +1993,17 @@
 
             // If any screen fails to render, never leave the user staring at blank/black —
             // show a small recoverable card instead, and log what happened.
+            function showStorageFallbackNotice() {
+                const banner = document.createElement('div');
+                banner.style.cssText =
+                    'position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--yellow);color:var(--text2);font-size:0.65rem;text-align:center;padding:0.4rem 0.6rem;z-index:9997;';
+                const label = storageMode === 'localstorage' ?
+                    "Using backup storage — this browser is blocking IndexedDB (common in private/incognito mode), but your data will still be saved on this device." :
+                    "Running in temporary mode — this browser is blocking all local storage, so the app works fully this session but won't remember data after you close it. Try your regular browser (not private mode) to save permanently.";
+                banner.innerHTML = `⚠ ${label} <span style="text-decoration:underline;cursor:pointer;margin-left:0.3rem;" onclick="this.parentElement.remove()">Dismiss</span>`;
+                document.body.appendChild(banner);
+            }
+
             function showRenderError(tabName, err) {
                 console.error('Logositcs render error on', tabName, err);
                 try { logEvent('error_occurred', { tab: tabName, message: String(err && err.message || err) }); } catch (e) {}
@@ -4710,20 +4819,28 @@
             window.startSplashRotation = async function() {
                 const el = document.getElementById('splash-text');
                 if (!el) return;
-                const dataSplashes = await buildDataSplashes();
-                const pool = [...STATIC_SPLASHES, ...dataSplashes];
-                let i = Math.floor(Math.random() * pool.length);
-                function show() { el.textContent = pool[i % pool.length];
-                    i++; }
+                let dataSplashes = await buildDataSplashes();
+                let staticIdx = Math.floor(Math.random() * STATIC_SPLASHES.length);
+                let useData = dataSplashes.length > 0; // if there's real data, lead with a real line
+                let dataIdx = 0;
+
+                function show() {
+                    if (useData && dataSplashes.length) {
+                        el.textContent = dataSplashes[dataIdx % dataSplashes.length];
+                        dataIdx++;
+                    } else {
+                        el.textContent = STATIC_SPLASHES[staticIdx % STATIC_SPLASHES.length];
+                        staticIdx++;
+                    }
+                    // Alternate data/static each cycle whenever real data exists, so the
+                    // data-driven lines show up reliably instead of getting drowned out.
+                    if (dataSplashes.length) useData = !useData;
+                }
                 show();
                 setInterval(async () => {
-                    // Occasionally refresh the data-driven lines so they stay current
-                    if (Math.random() < 0.3) {
-                        const fresh = await buildDataSplashes();
-                        pool.splice(0, pool.length, ...STATIC_SPLASHES, ...fresh);
-                    }
+                    dataSplashes = await buildDataSplashes(); // always fresh — reflects the latest real data
                     show();
-                }, 6000);
+                }, 12000); // stays up longer per line
             };
 
             // Spec: normal history UI shows dates like "7/23", never clock times.
@@ -4739,23 +4856,18 @@
             //  INIT
             // ============================================================
             async function init() {
+                // openDB() always resolves now — it auto-falls back to localStorage or
+                // in-memory storage internally if IndexedDB is blocked. This try/catch is
+                // just a last-resort guard against something truly unexpected.
                 try {
                     await openDB();
                 } catch (err) {
-                    // Some mobile browsers (private/incognito mode, storage disabled) block IndexedDB entirely.
-                    // Without this, that failure would leave a permanently blank/black app with no explanation.
-                    console.error('IndexedDB failed to open:', err);
-                    document.getElementById('startup')?.classList.add('hidden');
-                    document.getElementById('main-content').innerHTML = `
-                        <div class="card" style="text-align:center;margin-top:2rem;">
-                            <h3>⚠ Local storage isn't available</h3>
-                            <p style="color:var(--text2);font-size:0.8rem;margin-top:0.4rem;">
-                                Logositcs stores everything on your device using IndexedDB, and this browser is blocking it right now —
-                                this is common in private/incognito mode or with storage disabled in browser settings.
-                            </p>
-                            <p style="color:var(--text2);font-size:0.8rem;margin-top:0.4rem;">Try opening this in a normal (non-private) browser tab.</p>
-                        </div>`;
-                    return;
+                    console.error('Storage init failed unexpectedly:', err);
+                    storageMode = 'memory';
+                }
+                if (storageMode !== 'indexeddb') {
+                    console.warn('Logositcs is running in fallback storage mode:', storageMode);
+                    showStorageFallbackNotice();
                 }
                 $$('.nav-tab').forEach(tab => {
                     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
