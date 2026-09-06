@@ -1306,7 +1306,7 @@
         // ============================================================
         (function() {
             const DB_NAME = 'LogosticsDB';
-            const DB_VER = 7;
+            const DB_VER = 8;
             let db;
 
             // ============================================================
@@ -1329,8 +1329,8 @@
             // ============================================================
             let storageMode = 'indexeddb'; // 'indexeddb' | 'localstorage' | 'memory'
             const memoryStores = { items: [], sessions: [], goals: [], experiments: [], finance: [], tags: [],
-                events: [] };
-            const memoryNextId = { items: 1, sessions: 1, goals: 1, experiments: 1, finance: 1, tags: 1, events: 1 };
+                events: [], shares: [] };
+            const memoryNextId = { items: 1, sessions: 1, goals: 1, experiments: 1, finance: 1, tags: 1, events: 1, shares: 1 };
             const LS_KEY = 'logostics_fallback_store_v1';
 
             function loadFallbackFromLocalStorage() {
@@ -1397,6 +1397,11 @@
                             const s = d.createObjectStore('events', { keyPath: 'id', autoIncrement: true });
                             s.createIndex('type', 'type', { unique: false });
                             s.createIndex('timestamp', 'timestamp', { unique: false });
+                        }
+                        // --- Share tab: locally-generated/imported session share codes ---
+                        if (!d.objectStoreNames.contains('shares')) {
+                            const s = d.createObjectStore('shares', { keyPath: 'id', autoIncrement: true });
+                            s.createIndex('kind', 'kind', { unique: false });
                         }
                     };
                     req.onsuccess = (e) => { db = e.target.result;
@@ -1934,8 +1939,33 @@
                     </div>
                     <button type="button" class="btn btn-o btn-s" onclick="testNotification()" style="margin-top:0.3rem;">🧪 Send test notification</button>
 
+                    <h3 style="font-size:0.8rem;margin:0.7rem 0 0.3rem;border-top:1px solid var(--border);padding-top:0.5rem;">🔐 Permissions</h3>
+                    <p style="color:var(--text2);font-size:0.6rem;margin-bottom:0.3rem;">Only shown for permissions Logositcs actually uses. Nothing here asks for camera or location — the app has no feature that needs them.</p>
+                    <div style="font-size:0.75rem;">
+                        <div style="display:flex;justify-content:space-between;padding:0.2rem 0;"><span>🔔 Notifications</span><span>${permLabel}</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:0.2rem 0;"><span>🎤 Microphone (voice notes)</span><span id="mic-perm-status">${state.micPermStatus || 'Not yet requested'}</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:0.2rem 0;"><span>💾 Storage mode</span><span>${storageMode === 'indexeddb' ? '<span style="color:var(--green);">Full (IndexedDB)</span>' : storageMode === 'localstorage' ? '<span style="color:var(--yellow);">Backup (localStorage)</span>' : '<span style="color:var(--red);">Temporary (memory only)</span>'}</span></div>
+                    </div>
+                    <button type="button" class="btn btn-o btn-s" onclick="checkMicPermission()" style="margin-top:0.3rem;">Check microphone access</button>
+
                     <div style="text-align:center;margin-top:0.7rem;"><button class="btn btn-o" onclick="hideModal()">Close</button></div>
                 `);
+            };
+            window.checkMicPermission = async function() {
+                if (!navigator.mediaDevices?.getUserMedia) {
+                    state.micPermStatus = 'Not supported on this browser';
+                    document.getElementById('mic-perm-status').textContent = state.micPermStatus;
+                    return;
+                }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(t => t.stop()); // release the mic immediately, we only needed to check
+                    state.micPermStatus = 'Granted';
+                } catch (e) {
+                    state.micPermStatus = e.name === 'NotAllowedError' ? 'Denied' : 'Unavailable';
+                }
+                const el = document.getElementById('mic-perm-status');
+                if (el) el.textContent = state.micPermStatus;
             };
             window.saveAudioPrefsFromUI = saveAudioPrefs;
 
@@ -2382,7 +2412,13 @@
                             <img id="modal-img-preview" style="display:none;width:30px;height:30px;object-fit:cover;border-radius:6px;margin-top:0.2rem;border:1px solid var(--grey);" onerror="this.style.display='none';alert('Image failed to load — try a different file.','w');">
                         </div>
                         <div class="f-group"><label class="f-label">Name</label><input type="text" class="f-input" id="item-name" required></div>
-                        <div class="f-group"><label class="f-label">Type</label><input type="text" class="f-input" id="item-type"></div>
+                        <div class="f-group">
+                            <label class="f-label">Type</label>
+                            <input type="text" class="f-input" id="item-type">
+                            <div style="display:flex;gap:0.15rem;flex-wrap:wrap;margin-top:0.2rem;">
+                                ${['Drink','Food','Supplement','Substances','Activity','Other'].map(t => `<span class="tag" onclick="document.getElementById('item-type').value='${t}'">${t}</span>`).join('')}
+                            </div>
+                        </div>
                         <div class="f-group">
                             <label class="f-label">Components</label>
                             <div id="components-list"><div style="display:flex;gap:0.2rem;margin-bottom:0.2rem;flex-wrap:wrap;"><input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:50px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:35px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:35px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button></div></div>
@@ -3395,26 +3431,23 @@
                     <div class="analytics-subnav">
                         <button class="btn ${state.analyticsSub === 'chat' ? 'active' : ''}" onclick="switchAnalytics('chat')">💬 Ask AI</button>
                         <button class="btn ${state.analyticsSub === 'insights' ? 'active' : ''}" onclick="switchAnalytics('insights')">🧠 AI Insights</button>
-                        <button class="btn ${state.analyticsSub === 'stats' ? 'active' : ''}" onclick="switchAnalytics('stats')">📊 Stats</button>
                         <button class="btn ${state.analyticsSub === 'graphs' ? 'active' : ''}" onclick="switchAnalytics('graphs')">📈 Graphs</button>
                         <button class="btn ${state.analyticsSub === 'profile' ? 'active' : ''}" onclick="switchAnalytics('profile')">🧠 Profile</button>
                         <button class="btn ${state.analyticsSub === 'compare' ? 'active' : ''}" onclick="switchAnalytics('compare')">⚖️ Compare</button>
-                        <button class="btn ${state.analyticsSub === 'goals' ? 'active' : ''}" onclick="switchAnalytics('goals')">🎯 Goals</button>
-                        <button class="btn ${state.analyticsSub === 'experiments' ? 'active' : ''}" onclick="switchAnalytics('experiments')">🧪 Experiments</button>
+                        <button class="btn ${state.analyticsSub === 'share' ? 'active' : ''}" onclick="switchAnalytics('share')">🔗 Share</button>
                     </div>
                     <div id="analytics-content">
                         ${state.analyticsSub === 'chat' ? renderChatTab() :
                           state.analyticsSub === 'insights' ? renderInsightsTab(sessions, insights, comparisons, predictions, conditions, suggestedExps) :
-                          state.analyticsSub === 'stats' ? renderStatsTab(sessions, items) :
                           state.analyticsSub === 'graphs' ? renderGraphsTab(sessions) :
-                          state.analyticsSub === 'profile' ? renderProfileTab(sessions) :
+                          state.analyticsSub === 'profile' ? renderProfileTab(sessions, items) :
                           state.analyticsSub === 'compare' ? renderCompareTab(sessions) :
-                          state.analyticsSub === 'goals' ? renderGoalsTab(sessions, goals) :
-                          renderExperimentsTab(sessions, experiments)}
+                          renderShareTabWrapper()}
                     </div>
                 `;
                 updateTheme();
                 if (state.analyticsSub === 'chat') scrollChatToBottom();
+                if (state.analyticsSub === 'share') renderShareTab();
             }
 
             // ============================================================
@@ -3534,12 +3567,21 @@
                 const sessions = await dbAll('sessions');
                 const finance = await dbAll('finance');
 
+                // Conversational greetings — feels like an assistant, not just a button handler
+                if (/^(yo|hi|hey|hello|sup|what'?s up|good (morning|afternoon|evening))\b/.test(q)) {
+                    const greetings = ["Hey. What do you want to know about your data?",
+                        "Hi — ask me about your tests, tags, or finances anytime.",
+                        "Hey there. Reaction time, goals, spending — whatever you want to dig into."
+                    ];
+                    return { text: pick(greetings, state.chatMessages.length), triggerGraph: false };
+                }
+
                 // Simple follow-up context: short/ambiguous queries reuse the last topic asked about.
                 const isFollowUp = q.split(' ').length <= 3 && state.chatLastTopic &&
                     /^(and|what about|yesterday|today|this week|really|why|how come|ok but)/.test(q);
                 const effectiveQ = isFollowUp ? `${state.chatLastTopic} ${q}` : q;
 
-                let result = null; // { text, category, triggerGraph }
+                let result = null; // { text, category, triggerGraph, bar: {pct,label} }
 
                 if (/earn|income|paid|paycheck/.test(effectiveQ)) {
                     const income = finance.filter(f => f.type === 'income');
@@ -3557,9 +3599,13 @@
                             if (f.type === 'spending') balance -= f.amount || 0;
                             if (f.type === 'savings') balance += f.amount || 0; });
                         balance = Math.max(0, balance);
+                        const firstGoal = goals[0];
+                        const firstPct = firstGoal.target > 0 ? Math.min(100, Math.round((balance / firstGoal
+                            .target) * 100)) : 0;
                         result = { text: goals.map(g => { const pct = g.target > 0 ? Math.min(100, Math.round((balance /
                             g.target) * 100)) : 0;
-                            return `"${g.name}": ${pct}% complete ($${balance.toFixed(2)} of $${g.target.toFixed(2)}, $${Math.max(0,g.target-balance).toFixed(2)} remaining)`; }).join('. '), category: 'finance' };
+                            return `"${g.name}": ${pct}% complete ($${balance.toFixed(2)} of $${g.target.toFixed(2)}, $${Math.max(0,g.target-balance).toFixed(2)} remaining)`; }).join('. '), category: 'finance',
+                            bar: { pct: firstPct, label: `${firstGoal.name}: $${balance.toFixed(2)} / $${firstGoal.target.toFixed(2)}` } };
                     }
                 } else if (/hours? worked|hourly|wage/.test(effectiveQ)) {
                     const settings = finance.find(f => f.type === 'incomeSettings');
@@ -3641,12 +3687,16 @@
                 let finalText = result.category ? varyPhrasing(result.text, result.category) : result.text;
                 const tone = toneModifier();
                 if (tone) finalText = tone + finalText;
-                return { text: finalText, triggerGraph: !!result.triggerGraph };
+                return { text: finalText, triggerGraph: !!result.triggerGraph, bar: result.bar || null };
             }
 
             function chatBubbleHTML(m) {
                 return `<div style="display:flex;${m.role === 'user' ? 'justify-content:flex-end;' : ''}margin:0.3rem 0;">
-                        <div style="max-width:85%;padding:0.5rem 0.7rem;border-radius:12px;font-size:0.75rem;line-height:1.4;${m.role === 'user' ? 'background:var(--text);color:var(--bg);' : 'background:var(--bg3);border:1px solid var(--grey);'}">${esc(m.text)}</div>
+                        <div style="max-width:85%;padding:0.5rem 0.7rem;border-radius:12px;font-size:0.75rem;line-height:1.4;${m.role === 'user' ? 'background:var(--text);color:var(--bg);' : 'background:var(--bg3);border:1px solid var(--grey);'}">${esc(m.text)}${m.bar ? `
+                            <div style="margin-top:0.4rem;">
+                                <div class="goal-bar" style="height:8px;"><div class="goal-bar-fill" style="width:${m.bar.pct}%;background:${m.bar.pct>=100?'var(--green)':'var(--yellow)'};height:100%;"></div></div>
+                                <div style="font-size:0.6rem;color:var(--text2);margin-top:0.15rem;">${esc(m.bar.label)} — ${m.bar.pct}%</div>
+                            </div>` : ''}</div>
                     </div>`;
             }
 
@@ -3657,7 +3707,7 @@
                         <h3 style="margin-bottom:0.3rem;">💬 Ask Logositcs AI</h3>
                         <p style="color:var(--text2);font-size:0.6rem;margin-bottom:0.4rem;">Answers come only from your stored data — no external AI, no invented numbers.</p>
                         <div id="chat-history" style="max-height:320px;overflow-y:auto;padding:0.2rem;">
-                            ${history || '<p style="color:var(--text2);font-size:0.7rem;">Ask about your performance, tags, income, spending, or goals.</p>'}
+                            ${history || '<p style="color:var(--text2);font-size:0.7rem;">Ask about your performance, tags, income, spending, or goals. Say hi anytime.</p>'}
                         </div>
                         <form onsubmit="sendChatMessage(event)" style="display:flex;gap:0.3rem;margin-top:0.4rem;">
                             <input type="text" class="f-input" id="chat-input" placeholder="What was my best day?" autocomplete="off">
@@ -3684,9 +3734,9 @@
                     scrollChatToBottom(); }
                 logEvent('ai_chat_question', { question: q });
 
-                const { text, triggerGraph } = await answerAIQuestion(q);
+                const { text, triggerGraph, bar } = await answerAIQuestion(q);
                 const finalText = isRepeat ? `You've asked that one before — same data, same answer: ${text}` : text;
-                state.chatMessages.push({ role: 'ai', text: finalText });
+                state.chatMessages.push({ role: 'ai', text: finalText, bar });
 
                 // Bound history so 40+ message conversations stay fast (keeps most recent context).
                 if (state.chatMessages.length > 60) state.chatMessages = state.chatMessages.slice(-60);
@@ -3850,7 +3900,13 @@
             function renderGraphsTab(sessions) {
                 const hasData = sessions.length > 0;
                 return `
-                    <div class="card"><h3>Performance Timeline</h3><div id="timeline-graph">${hasData ? drawTimeline(sessions) : '<p style="color:var(--text2);">Complete tests to generate graphs.</p>'}</div></div>
+                    <div class="card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.3rem;">
+                            <h3>Performance Timeline</h3>
+                            ${sessions.length >= 2 ? `<button class="btn btn-o btn-s" onclick="openTimelapse()">▶ Play Timeline</button>` : ''}
+                        </div>
+                        <div id="timeline-graph">${hasData ? drawTimeline(sessions) : '<p style="color:var(--text2);">Complete tests to generate graphs.</p>'}</div>
+                    </div>
                     <div class="grid2">
                         <div class="card"><h3>Correlation</h3><div id="correlation-graph">${hasData ? drawCorrelation(sessions) : '<p style="color:var(--text2);">Need 1+ session</p>'}</div></div>
                         <div class="card"><h3>Trend</h3><div id="trend-detection">${sessions.length >= 2 ? drawTrend(sessions) : '<p style="color:var(--text2);">Need 2+ sessions</p>'}</div></div>
@@ -3859,9 +3915,81 @@
                 `;
             }
 
-            function drawTimeline(sessions) {
-                const sorted = sessions.sort((a, b) => new Date(a.date) - new Date(b.date));
-                const data = sorted.slice(-14).map(s => ({ date: fmtDate(s.date), score: s.overall_score || 0,
+            // ============================================================
+            //  PLAY TIMELINE — watch your session history unfold instead of
+            //  seeing a static line. Real playback (play/pause/scrub/speed),
+            //  not a decorative animation — each step reveals the actual
+            //  next session chronologically.
+            // ============================================================
+            let timelapseTimer = null;
+            window.openTimelapse = async function() {
+                const sessions = await dbAll('sessions');
+                const sorted = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+                if (sorted.length < 2) return;
+                state.timelapseSessions = sorted;
+                state.timelapseIndex = 1;
+                state.timelapsePlaying = false;
+                showModal(`
+                    <h2>▶ Data Timelapse</h2>
+                    <div id="timelapse-graph">${drawTimeline(sorted.slice(0, 1), true)}</div>
+                    <div id="timelapse-date" style="text-align:center;font-size:0.75rem;color:var(--text2);margin-top:0.3rem;">${fmtDate(sorted[0].date)}</div>
+                    <input type="range" id="timelapse-scrub" min="1" max="${sorted.length}" value="1" style="width:100%;margin-top:0.4rem;" oninput="scrubTimelapse(this.value)">
+                    <div style="display:flex;gap:0.4rem;align-items:center;justify-content:center;margin-top:0.4rem;flex-wrap:wrap;">
+                        <button class="btn btn-s" id="timelapse-play-btn" onclick="toggleTimelapsePlay()">▶ Play</button>
+                        <button class="btn btn-o btn-s" onclick="restartTimelapse()">⟲ Restart</button>
+                        <select class="f-input-sm" id="timelapse-speed" style="width:auto;">
+                            <option value="900">1x</option>
+                            <option value="450">2x</option>
+                            <option value="200">4x</option>
+                        </select>
+                    </div>
+                    <div style="text-align:center;margin-top:0.6rem;"><button class="btn btn-o" onclick="stopTimelapse();hideModal()">Close</button></div>
+                `);
+            };
+            function renderTimelapseStep() {
+                const sorted = state.timelapseSessions;
+                const idx = state.timelapseIndex;
+                const el = document.getElementById('timelapse-graph');
+                if (el) el.innerHTML = drawTimeline(sorted.slice(0, idx), true);
+                const dateEl = document.getElementById('timelapse-date');
+                if (dateEl) dateEl.textContent = `${fmtDate(sorted[idx-1].date)} — session ${idx}/${sorted.length}`;
+                const scrub = document.getElementById('timelapse-scrub');
+                if (scrub) scrub.value = idx;
+            }
+            window.scrubTimelapse = function(val) {
+                state.timelapseIndex = parseInt(val);
+                renderTimelapseStep();
+            };
+            window.toggleTimelapsePlay = function() {
+                state.timelapsePlaying = !state.timelapsePlaying;
+                const btn = document.getElementById('timelapse-play-btn');
+                if (btn) btn.textContent = state.timelapsePlaying ? '⏸ Pause' : '▶ Play';
+                if (state.timelapsePlaying) {
+                    const speed = parseInt(document.getElementById('timelapse-speed')?.value || 900);
+                    timelapseTimer = setInterval(() => {
+                        if (state.timelapseIndex >= state.timelapseSessions.length) { window.toggleTimelapsePlay();
+                            return; }
+                        state.timelapseIndex++;
+                        renderTimelapseStep();
+                    }, speed);
+                } else {
+                    clearInterval(timelapseTimer);
+                }
+            };
+            window.restartTimelapse = function() {
+                clearInterval(timelapseTimer);
+                state.timelapsePlaying = false;
+                state.timelapseIndex = 1;
+                const btn = document.getElementById('timelapse-play-btn');
+                if (btn) btn.textContent = '▶ Play';
+                renderTimelapseStep();
+            };
+            window.stopTimelapse = function() { clearInterval(timelapseTimer); };
+
+            function drawTimeline(sessions, isTimelapse) {
+                const sorted = isTimelapse ? sessions : sessions.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const source = isTimelapse ? sorted : sorted.slice(-14);
+                const data = source.map(s => ({ date: fmtDate(s.date), score: s.overall_score || 0,
                     id: s.id, emojis: (s.tagEmojis?.length ? s.tagEmojis : extractTagEmojis(s.tags)).slice(0, 2)
                         .join('') }));
                 const w = 420,
@@ -3933,7 +4061,7 @@
                         <p style="color:var(--text2);font-size:0.55rem;">🟩 High • 🟨 Avg • 🟥 Low • ⬛ No test</p>`;
             }
 
-            function renderProfileTab(sessions) {
+            function renderProfileTab(sessions, items) {
                 if (sessions.length === 0) return `<div class="card"><p style="color:var(--text2);">Complete tests to build your profile.</p></div>`;
                 const avgFocus = Math.round(sessions.reduce((a, b) => a + (b.focus_score || 0), 0) / sessions.length);
                 const avgMemory = Math.round(sessions.reduce((a, b) => a + (b.memory_score || 0), 0) / sessions.length);
@@ -3947,7 +4075,19 @@
                     labelSuffix: 'ms' },
                     { label: 'Problem Solving', val: problemSolving, max: 100 },
                 ];
-                return `<div class="card"><h3>🧠 Personal Performance Profile</h3>${stats.map(s => `<div class="profile-stat"><span class="label">${s.label}</span><div class="bar"><div class="bar-fill" style="width:${Math.min(100, (s.val/s.max)*100)}%;background:${s.val > s.max/2 ? 'var(--green)' : 'var(--yellow)'};"></div></div><span class="value">${s.val}${s.labelSuffix||''}</span></div>`).join('')}<div style="margin-top:0.3rem;padding:0.3rem;background:var(--bg3);border-radius:6px;"><p style="color:var(--text2);font-size:0.65rem;">Based on ${sessions.length} sessions • Avg Overall: ${avgOverall}/100</p></div></div>`;
+                // Component Statistics — moved here from the old standalone Stats tab (removed for clutter,
+                // not deleted — the underlying data/analytics still work, just live where they're useful).
+                const compNames = new Set();
+                (items || []).forEach(item => { (item.components || []).forEach(c => compNames.add(c.name)); });
+                let compOptions = '<option value="">Select a component...</option>';
+                compNames.forEach(n => { compOptions += `<option value="${esc(n)}">${esc(n)}</option>`; });
+                const compBlock = compNames.size ? `
+                    <div class="card">
+                        <h3 style="font-size:0.85rem;">Component Statistics</h3>
+                        <select class="f-input" id="stats-comp-select" onchange="updateStats()" style="margin-top:0.3rem;">${compOptions}</select>
+                        <div id="stats-detail" style="margin-top:0.3rem;"><p style="color:var(--text2);font-size:0.7rem;">Select a component to see its comparison in AI Insights.</p></div>
+                    </div>` : '';
+                return `<div class="card"><h3>🧠 Personal Performance Profile</h3>${stats.map(s => `<div class="profile-stat"><span class="label">${s.label}</span><div class="bar"><div class="bar-fill" style="width:${Math.min(100, (s.val/s.max)*100)}%;background:${s.val > s.max/2 ? 'var(--green)' : 'var(--yellow)'};"></div></div><span class="value">${s.val}${s.labelSuffix||''}</span></div>`).join('')}<div style="margin-top:0.3rem;padding:0.3rem;background:var(--bg3);border-radius:6px;"><p style="color:var(--text2);font-size:0.65rem;">Based on ${sessions.length} sessions • Avg Overall: ${avgOverall}/100</p></div></div>${compBlock}`;
             }
 
             function renderCompareTab(sessions) {
@@ -3961,6 +4101,228 @@
                 const change = ((newAvg - oldAvg) / oldAvg) * 100;
                 return `<div class="card"><h3>⚖️ Version Comparison</h3><div class="grid2"><div class="stat"><div class="stat-val" style="font-size:1.3rem;">${oldAvg}</div><div class="stat-lbl">Earlier (${oldS.length} sessions)</div></div><div class="stat"><div class="stat-val" style="font-size:1.3rem;">${newAvg}</div><div class="stat-lbl">Recent (${newS.length} sessions)</div></div></div><div style="text-align:center;padding:0.4rem;background:var(--bg3);border-radius:8px;margin-top:0.3rem;"><span style="font-size:1.1rem;color:${change > 0 ? 'var(--green)' : 'var(--red)'};">${change > 0 ? '📈' : '📉'} ${change > 0 ? '+' : ''}${change.toFixed(1)}%</span><span style="color:var(--text2);margin-left:0.2rem;">change</span></div></div>`;
             }
+
+            // ============================================================
+            //  SHARE TAB — replaces Experiments. Honest architecture note:
+            //  this is a single offline file with no server, so there is no
+            //  real "Public/discoverable" tier — that would require a
+            //  backend to host and search other people's data. What IS real
+            //  here: session data can be encoded into a self-contained code
+            //  (the data lives IN the code, not on a server) that another
+            //  person can paste into their own copy of Logositcs to import
+            //  and compare against. Nothing is ever shared automatically.
+            // ============================================================
+            function renderShareTabWrapper() {
+                return `<div id="share-tab-root"><p style="color:var(--text2);font-size:0.75rem;">Loading…</p></div>`;
+            }
+
+            async function getShareConsent() {
+                const all = await dbAll('finance');
+                return all.find(f => f.type === 'shareConsent') || null;
+            }
+
+            window.grantShareConsent = async function() {
+                await dbAdd('finance', { type: 'shareConsent', agreed: true, date: nowISO() });
+                logEvent('setting_changed', { setting: 'shareConsent', value: true });
+                renderShareTab();
+            };
+
+            async function renderShareTab() {
+                const root = document.getElementById('share-tab-root');
+                if (!root) return;
+                const consent = await getShareConsent();
+                if (!consent) {
+                    root.innerHTML = `
+                        <div class="card">
+                            <h3>🔗 Share your data with someone?</h3>
+                            <p style="color:var(--text2);font-size:0.75rem;margin:0.4rem 0;">
+                                Nothing gets shared automatically. You choose individual sessions to turn into a code,
+                                and only people you give that code to can see that session's data.
+                            </p>
+                            <p style="color:var(--text2);font-size:0.7rem;margin-bottom:0.4rem;">
+                                Honest limitation: this app has no server, so there's no public/discoverable community feed —
+                                sharing works by generating a code that contains the session data directly, which you send
+                                to someone who pastes it into their own copy of Logositcs.
+                            </p>
+                            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                                <button class="btn" onclick="grantShareConsent()">Allow Sharing</button>
+                                <button class="btn btn-o" onclick="switchAnalytics('chat')">Not Now</button>
+                            </div>
+                        </div>`;
+                    return;
+                }
+
+                const sessions = await dbAll('sessions');
+                const imported = (await dbAll('shares')).filter(s => s.kind === 'imported');
+
+                const sessionRows = sessions.length === 0 ? '<p style="color:var(--text2);font-size:0.75rem;">No sessions yet to share.</p>' :
+                    [...sessions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 20).map(s => `
+                        <div style="padding:0.4rem;border-bottom:1px solid var(--border);font-size:0.75rem;">
+                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;">
+                                <span>${fmtDate(s.date)} — ${esc(s.item_names||'Unknown')} — ${s.overall_score}/100</span>
+                                <span style="color:var(--text2);font-size:0.6rem;">${s.shareCode ? '🔗 Shared' : '🔒 Private'}</span>
+                            </div>
+                            <div style="display:flex;gap:0.3rem;margin-top:0.2rem;flex-wrap:wrap;">
+                                ${s.shareCode ?
+                                    `<button class="btn btn-o btn-s" onclick="showShareCode(${s.id})">View Code</button>
+                                     <button class="btn btn-r btn-s" onclick="stopSharingSession(${s.id})">Stop Sharing</button>` :
+                                    `<button class="btn btn-o btn-s" onclick="previewShareSession(${s.id})">Share This Session</button>`}
+                            </div>
+                        </div>
+                    `).join('');
+
+                const importedRows = imported.length === 0 ? '<p style="color:var(--text2);font-size:0.7rem;">No imported sessions yet.</p>' :
+                    imported.map(imp => `
+                        <div style="padding:0.4rem;border-bottom:1px solid var(--border);font-size:0.75rem;">
+                            <span>${fmtDate(imp.payload.date)} — ${imp.payload.overall_score}/100 (imported)</span>
+                            <div style="display:flex;gap:0.3rem;margin-top:0.2rem;flex-wrap:wrap;">
+                                <button class="btn btn-o btn-s" onclick="compareWithImported(${imp.id})">Compare to Mine</button>
+                                <button class="btn btn-r btn-s" onclick="deleteImportedShare(${imp.id})">Remove</button>
+                            </div>
+                        </div>
+                    `).join('');
+
+                root.innerHTML = `
+                    <div class="card">
+                        <h3 style="font-size:0.9rem;">🔒 Your Sessions</h3>
+                        <p style="color:var(--text2);font-size:0.6rem;margin-bottom:0.3rem;">Private by default. Only sessions you explicitly generate a code for can be seen by anyone else.</p>
+                        <div style="max-height:220px;overflow-y:auto;">${sessionRows}</div>
+                    </div>
+                    <div class="card">
+                        <h3 style="font-size:0.9rem;">📥 Import a Share Code</h3>
+                        <textarea class="f-input f-textarea" id="import-code-input" rows="2" placeholder="Paste an LGX- code here..."></textarea>
+                        <button class="btn btn-o btn-s" style="margin-top:0.3rem;" onclick="previewImportCode()">Preview Import</button>
+                    </div>
+                    <div class="card">
+                        <h3 style="font-size:0.9rem;">📚 Imported Sessions</h3>
+                        ${importedRows}
+                    </div>
+                `;
+            }
+
+            window.previewShareSession = async function(id) {
+                const s = await dbGet('sessions', id);
+                if (!s) return;
+                showModal(`
+                    <h2>Preview: What Will Be Shared</h2>
+                    <p style="color:var(--text2);font-size:0.7rem;margin-bottom:0.4rem;">This is exactly what anyone with the code will see — nothing more.</p>
+                    <div style="background:var(--bg3);border-radius:8px;padding:0.6rem;font-size:0.75rem;">
+                        <p>📅 ${fmtDate(s.date)}</p>
+                        <p>Overall Score: ${s.overall_score}/100</p>
+                        <p>Reaction: ${s.reaction_avg||'--'}ms · Memory: ${s.memory_score||'--'}/20 · Focus: ${s.focus_score??'--'}%</p>
+                        ${s.tags?.length ? `<p>Tags: ${s.tags.join(', ')}</p>` : ''}
+                    </div>
+                    <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.7rem;margin-top:0.5rem;">
+                        <input type="checkbox" id="share-include-notes"> Also include my notes
+                    </label>
+                    <div style="display:flex;gap:0.4rem;margin-top:0.6rem;">
+                        <button class="btn" onclick="generateShareCode(${id})">Publish Session</button>
+                        <button class="btn btn-o" onclick="hideModal()">Cancel</button>
+                    </div>
+                `);
+            };
+
+            window.generateShareCode = async function(id) {
+                const s = await dbGet('sessions', id);
+                if (!s) return;
+                const includeNotes = document.getElementById('share-include-notes')?.checked;
+                const payload = {
+                    v: 1, type: 'session', date: s.date, overall_score: s.overall_score,
+                    reaction_avg: s.reaction_avg, memory_score: s.memory_score, focus_score: s.focus_score,
+                    math_accuracy: s.math_accuracy, decision_accuracy: s.decision_accuracy,
+                    tags: s.tags || [], notes: includeNotes ? (s.notes || '') : undefined
+                };
+                const code = 'LGX-' + btoa(unescape(encodeURIComponent(JSON.stringify(payload)))).replace(/=+$/, '');
+                s.shareCode = code;
+                s.shareStatus = 'code';
+                await dbPut('sessions', s);
+                logEvent('setting_changed', { setting: 'session_shared', sessionId: id });
+                hideModal();
+                SFX.play('success');
+                switchAnalytics('share');
+            };
+
+            window.showShareCode = async function(id) {
+                const s = await dbGet('sessions', id);
+                if (!s || !s.shareCode) return;
+                showModal(`
+                    <h2>Share Code</h2>
+                    <p style="color:var(--text2);font-size:0.7rem;margin-bottom:0.4rem;">This code contains the session data directly (no server involved) — send it to whoever you want to see it.</p>
+                    <textarea class="f-input f-textarea" readonly rows="4" style="font-size:0.65rem;" onclick="this.select()">${s.shareCode}</textarea>
+                    <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">
+                        <button class="btn btn-o" onclick="navigator.clipboard?.writeText('${s.shareCode}').then(()=>alert('Copied!','s')).catch(()=>alert('Copy failed — select and copy manually.','w'))">Copy Code</button>
+                        <button class="btn btn-o" onclick="hideModal()">Close</button>
+                    </div>
+                `);
+            };
+
+            window.stopSharingSession = async function(id) {
+                const s = await dbGet('sessions', id);
+                if (!s) return;
+                delete s.shareCode;
+                s.shareStatus = 'private';
+                await dbPut('sessions', s);
+                logEvent('setting_changed', { setting: 'session_unshared', sessionId: id });
+                switchAnalytics('share');
+            };
+
+            window.previewImportCode = async function() {
+                const raw = document.getElementById('import-code-input')?.value.trim();
+                if (!raw || !raw.startsWith('LGX-')) { alert('That doesn\'t look like a Logositcs share code.', 'w'); return; }
+                try {
+                    const payload = JSON.parse(decodeURIComponent(escape(atob(raw.slice(4)))));
+                    showModal(`
+                        <h2>Import Preview</h2>
+                        <div style="background:var(--bg3);border-radius:8px;padding:0.6rem;font-size:0.75rem;">
+                            <p>📅 ${fmtDate(payload.date)}</p>
+                            <p>Overall Score: ${payload.overall_score}/100</p>
+                            <p>Reaction: ${payload.reaction_avg||'--'}ms · Memory: ${payload.memory_score||'--'}/20</p>
+                            ${payload.tags?.length ? `<p>Tags: ${payload.tags.join(', ')}</p>` : ''}
+                            ${payload.notes ? `<p>Notes: ${esc(payload.notes)}</p>` : ''}
+                        </div>
+                        <p style="color:var(--text2);font-size:0.65rem;margin-top:0.4rem;">This will be kept separate from your own sessions and clearly labeled as imported.</p>
+                        <div style="display:flex;gap:0.4rem;margin-top:0.5rem;">
+                            <button class="btn" onclick='confirmImportShare(${JSON.stringify(JSON.stringify(payload))})'>Import</button>
+                            <button class="btn btn-o" onclick="hideModal()">Cancel</button>
+                        </div>
+                    `);
+                } catch (e) { alert('Could not read that code — it may be corrupted or incomplete.', 'w'); }
+            };
+
+            window.confirmImportShare = async function(payloadJSON) {
+                const payload = JSON.parse(payloadJSON);
+                await dbAdd('shares', { kind: 'imported', payload, importedAt: nowISO() });
+                logEvent('setting_changed', { setting: 'share_imported' });
+                hideModal();
+                SFX.play('success');
+                switchAnalytics('share');
+            };
+
+            window.deleteImportedShare = async function(id) {
+                await dbDel('shares', id);
+                switchAnalytics('share');
+            };
+
+            window.compareWithImported = async function(shareId) {
+                const share = await dbGet('shares', shareId);
+                if (!share) return;
+                const mySessions = await dbAll('sessions');
+                if (!mySessions.length) { alert('You need at least one of your own sessions to compare.', 'w'); return; }
+                const myAvg = Math.round(mySessions.reduce((a, s) => a + (s.overall_score || 0), 0) / mySessions
+                    .length);
+                const theirScore = share.payload.overall_score;
+                const diff = theirScore - myAvg;
+                showModal(`
+                    <h2>Comparison</h2>
+                    <div class="grid2">
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${myAvg}</div><div class="stat-lbl">Your Average</div></div>
+                        <div class="stat"><div class="stat-val" style="font-size:1.3rem;">${theirScore}</div><div class="stat-lbl">Shared Session</div></div>
+                    </div>
+                    <p style="text-align:center;color:${diff>=0?'var(--green)':'var(--red)'};font-size:0.75rem;margin-top:0.4rem;">${diff>=0?'+':''}${diff} points ${diff>=0?'higher':'lower'} than your average.</p>
+                    <p style="color:var(--text2);font-size:0.6rem;margin-top:0.3rem;">One shared session vs. your average — not a statistically meaningful sample. This is a single data point, not a trend.</p>
+                    <div style="text-align:center;margin-top:0.5rem;"><button class="btn btn-o" onclick="hideModal()">Close</button></div>
+                `);
+            };
 
             function renderGoalsTab(sessions, goals) {
                 const current = sessions.length > 0 ? Math.round(sessions.reduce((a, b) => a + (b.overall_score || 0), 0) /
@@ -4984,6 +5346,24 @@
             }
             window.addEventListener('online', () => showConnectivityBanner(false));
             window.addEventListener('offline', () => showConnectivityBanner(true));
+
+            // ============================================================
+            //  DIAGNOSTIC: "leaving so soon?" notification test.
+            //  TEMPORARY — flip DIAGNOSTIC_LEAVE_NOTIFICATION to false (or
+            //  delete this block) once you've confirmed real notifications
+            //  fire when the tab is backgrounded. This only proves the
+            //  Notification/service-worker pipeline actually works while
+            //  the browser process is alive — it can't prove anything about
+            //  fully closed apps, since that needs a real push server.
+            // ============================================================
+            const DIAGNOSTIC_LEAVE_NOTIFICATION = true;
+            if (DIAGNOSTIC_LEAVE_NOTIFICATION) {
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'hidden') {
+                        NotificationManager.notify('reminders', '👋 Oh, leaving so soon?', 'This is a test notification — Logositcs can reach you even when you\'re not looking at the tab.');
+                    }
+                });
+            }
 
             init().catch((err) => {
                 console.error(err);
