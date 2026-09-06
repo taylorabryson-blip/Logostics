@@ -1175,6 +1175,7 @@
             <button class="nav-tab" data-tab="sessions">Sessions</button>
             <button class="nav-tab" data-tab="analytics">Analytics</button>
             <button class="nav-tab" data-tab="finance">💲 Finance</button>
+            <button class="nav-tab" data-tab="notes">📝 Notes</button>
             <button id="sfx-toggle-btn" onclick="toggleSFX()" title="Toggle sound effects" style="background:transparent;border:1px solid var(--grey);color:var(--text2);padding:0.25rem 0.5rem;border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:0.7rem;white-space:nowrap;">🔊</button>
             <button id="audio-settings-btn" onclick="showAudioSettings()" title="Audio settings (music + SFX)" style="background:transparent;border:1px solid var(--grey);color:var(--text2);padding:0.25rem 0.5rem;border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:0.7rem;white-space:nowrap;">⚙</button>
         </div>
@@ -1306,7 +1307,7 @@
         // ============================================================
         (function() {
             const DB_NAME = 'LogosticsDB';
-            const DB_VER = 8;
+            const DB_VER = 9;
             let db;
 
             // ============================================================
@@ -1329,8 +1330,8 @@
             // ============================================================
             let storageMode = 'indexeddb'; // 'indexeddb' | 'localstorage' | 'memory'
             const memoryStores = { items: [], sessions: [], goals: [], experiments: [], finance: [], tags: [],
-                events: [], shares: [] };
-            const memoryNextId = { items: 1, sessions: 1, goals: 1, experiments: 1, finance: 1, tags: 1, events: 1, shares: 1 };
+                events: [], shares: [], notes: [] };
+            const memoryNextId = { items: 1, sessions: 1, goals: 1, experiments: 1, finance: 1, tags: 1, events: 1, shares: 1, notes: 1 };
             const LS_KEY = 'logostics_fallback_store_v1';
 
             function loadFallbackFromLocalStorage() {
@@ -1402,6 +1403,11 @@
                         if (!d.objectStoreNames.contains('shares')) {
                             const s = d.createObjectStore('shares', { keyPath: 'id', autoIncrement: true });
                             s.createIndex('kind', 'kind', { unique: false });
+                        }
+                        // --- Notes tab: free-form notes, each with its own AI-access toggle ---
+                        if (!d.objectStoreNames.contains('notes')) {
+                            const s = d.createObjectStore('notes', { keyPath: 'id', autoIncrement: true });
+                            s.createIndex('date', 'date', { unique: false });
                         }
                     };
                     req.onsuccess = (e) => { db = e.target.result;
@@ -1823,7 +1829,8 @@
                     const all = await dbAll('finance');
                     const rec = all.find(f => f.type === 'globalNotifPrefs');
                     const defaults = { enabled: false, categories: { finance: true, goals: true, paydays: true,
-                        tests: true, reminders: true } };
+                        tests: true, reminders: true, sessionReminders: true, noteReminders: true,
+                        weeklySummary: true, leavingApp: true, aiSuggestions: true } };
                     if (!rec) return { type: 'globalNotifPrefs', ...defaults };
                     return { ...defaults, ...rec, categories: { ...defaults.categories, ...(rec.categories || {}) } };
                 },
@@ -1895,8 +1902,10 @@
                     perm === 'unsupported' ? '<span style="color:var(--text2);">Not supported on this browser</span>' :
                     '<span style="color:var(--yellow);">Not yet requested</span>';
                 const categories = [
-                    ['finance', 'Finance'], ['goals', 'Goals'], ['paydays', 'Paydays'],
-                    ['tests', 'Cognitive tests'], ['reminders', 'Reminders']
+                    ['finance', 'Finance alerts'], ['goals', 'Goals'], ['paydays', 'Paydays'],
+                    ['sessionReminders', 'Session reminders'], ['noteReminders', 'Note reminders'],
+                    ['weeklySummary', 'Weekly summaries'], ['leavingApp', 'Leaving-app reminder'],
+                    ['aiSuggestions', 'AI proactive suggestions']
                 ];
                 showModal(`
                     <h2>⚙ Settings</h2>
@@ -2070,6 +2079,9 @@
                         case 'finance':
                             p = renderFinance();
                             break;
+                        case 'notes':
+                            p = renderNotes();
+                            break;
                     }
                     if (p && typeof p.catch === 'function') p.catch(err => showRenderError(tab, err));
                 } catch (err) {
@@ -2111,6 +2123,44 @@
             // ============================================================
             //  DASHBOARD
             // ============================================================
+            async function buildDailyIntelligence(sessions) {
+                const lines = [];
+                if (sessions.length >= 3) {
+                    const hourCounts = {};
+                    sessions.forEach(s => { const h = new Date(s.date).getHours();
+                        hourCounts[h] = (hourCounts[h] || 0) + 1; });
+                    const typicalHour = Object.entries(hourCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
+                    const loggedToday = sessions.some(s => new Date(s.date).toDateString() === new Date()
+                        .toDateString());
+                    if (typicalHour !== undefined) {
+                        const label = parseInt(typicalHour) < 12 ? `${typicalHour || 12}AM` : `${parseInt(typicalHour) -
+                            12 || 12}PM`;
+                        lines.push(loggedToday ? `You've already logged a session today — nice.` :
+                            `You normally do a session around ${label}. ${loggedToday ? '' : "Haven't logged one yet today."}`);
+                    }
+                }
+                try {
+                    const finance = await dbAll('finance');
+                    const goals = finance.filter(f => f.type === 'goal');
+                    if (goals.length) {
+                        let balance = 0;
+                        finance.forEach(f => { if (f.type === 'income') balance += f.amount || 0;
+                            if (f.type === 'spending') balance -= f.amount || 0;
+                            if (f.type === 'savings') balance += f.amount || 0; });
+                        balance = Math.max(0, balance);
+                        const g = goals[0];
+                        const pct = g.target > 0 ? Math.round((balance / g.target) * 100) : 0;
+                        lines.push(`Savings goal "${g.name}" is ${pct}% funded.`);
+                    }
+                } catch (e) {}
+                try {
+                    const notes = await dbAll('notes');
+                    const allowed = notes.filter(n => n.aiAllowed).sort((a, b) => new Date(b.date) - new Date(a.date));
+                    if (allowed[0]) lines.push(`From a recent note you allowed AI to use: "${allowed[0].text.slice(0, 90)}${allowed[0].text.length > 90 ? '…' : ''}"`);
+                } catch (e) {}
+                return lines;
+            }
+
             async function renderDashboard() {
                 const sessions = await dbAll('sessions');
                 const total = sessions.length;
@@ -2119,6 +2169,7 @@
                 const avgM = total > 0 ? Math.round(sessions.reduce((a, b) => a + (b.memory_score || 0), 0) / total) :
                 '--';
                 const streak = calcStreak(sessions);
+                const dailyIntel = await buildDailyIntelligence(sessions);
 
                 let recentHTML = '<p style="color:var(--text2);">No sessions yet</p>';
                 if (total > 0) {
@@ -2139,6 +2190,11 @@
 
                 $('#main-content').innerHTML = `
                     <h2 style="margin-bottom:0.6rem;">Cognitive Dashboard</h2>
+                    ${dailyIntel.length ? `
+                    <div class="card" style="border-color:var(--blue);">
+                        <h3 style="font-size:0.85rem;">🧠 Today's Intelligence</h3>
+                        ${dailyIntel.map(l => `<p style="color:var(--text2);font-size:0.75rem;margin-top:0.25rem;">${esc(l)}</p>`).join('')}
+                    </div>` : ''}
                     <div class="grid4">
                         <div class="stat"><div class="stat-val">${total}</div><div class="stat-lbl">Total Sessions</div></div>
                         <div class="stat"><div class="stat-val">${avgR}</div><div class="stat-lbl">Avg Reaction (ms)</div></div>
@@ -2150,6 +2206,7 @@
                             <h3>Quick Start</h3>
                             <p style="color:var(--text2);margin:0.3rem 0;font-size:0.75rem;">Run a new experimental session</p>
                             <button class="btn" onclick="startSession()">▶ New Session</button>
+                            <button class="btn btn-o" onclick="showQuickLog()" style="margin-left:0.3rem;">📝 Quick Log</button>
                         </div>
                         <div class="card">
                             <h3>Recent Sessions</h3>
@@ -2669,6 +2726,154 @@
                 div.innerHTML =
                     `<input type="text" class="f-input" placeholder="Name" style="flex:2;min-width:50px;"><input type="number" class="f-input" placeholder="Dose" style="flex:1;min-width:35px;" step="any"><input type="text" class="f-input" placeholder="Unit" style="flex:1;min-width:35px;"><button type="button" class="btn btn-r btn-s" onclick="this.parentElement.remove()">×</button>`;
                 list.appendChild(div);
+            };
+
+            // ============================================================
+            //  NOTES TAB — free-form notes. Each note has its own
+            //  "Allow AI to use this note" toggle (default OFF — private
+            //  unless explicitly opted in), so the AI chat only ever reads
+            //  notes the user has actually said it can read.
+            // ============================================================
+            async function renderNotes() {
+                const notes = await dbAll('notes');
+                const query = (state.notesSearch || '').toLowerCase();
+                const filtered = query ? notes.filter(n => (n.text || '').toLowerCase().includes(query)) : notes;
+                const sorted = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
+                const rows = sorted.length === 0 ? `<div class="card"><p style="color:var(--text2);">No notes yet.</p></div>` :
+                    sorted.map(n => `
+                        <div class="card">
+                            <div style="display:flex;justify-content:space-between;align-items:start;gap:0.3rem;">
+                                <div style="flex:1;">
+                                    <p style="font-size:0.8rem;white-space:pre-wrap;">${esc(n.text)}</p>
+                                    ${n.photo ? `<img src="${n.photo}" alt="" style="max-width:100px;max-height:100px;border-radius:6px;margin-top:0.3rem;border:1px solid var(--grey);" onerror="this.replaceWith(Object.assign(document.createElement('div'),{textContent:'⚠ Image failed to load',style:'color:var(--red);font-size:0.6rem;'}))">` : ''}
+                                    ${n.tags?.length ? `<div style="margin-top:0.2rem;">${n.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+                                    <p style="color:var(--text2);font-size:0.6rem;margin-top:0.3rem;">${fmtDate(n.date)} · ${n.aiAllowed ? '🤖 AI can use this' : '🔒 Private from AI'}</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:0.2rem;margin-top:0.3rem;flex-wrap:wrap;">
+                                <button class="btn btn-o btn-s" onclick="toggleNoteAI(${n.id})">${n.aiAllowed ? 'Revoke AI access' : 'Allow AI access'}</button>
+                                <button class="btn btn-r btn-s" onclick="deleteNote(${n.id})">Delete</button>
+                            </div>
+                        </div>`).join('');
+                $('#main-content').innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;flex-wrap:wrap;gap:0.3rem;">
+                        <h2>Notes</h2>
+                        <button class="btn" onclick="showAddNote()">+ New Note</button>
+                    </div>
+                    <div class="card">
+                        <input type="text" class="f-input" placeholder="Search notes..." value="${esc(state.notesSearch||'')}" oninput="searchNotes(this.value)">
+                    </div>
+                    ${rows}
+                `;
+            }
+            window.searchNotes = function(v) { state.notesSearch = v;
+                renderNotes(); };
+
+            window.showAddNote = function() {
+                state.noteImage = null;
+                showModal(`
+                    <h2>New Note</h2>
+                    <form id="add-note-form" onsubmit="submitNote(event)">
+                        <div class="f-group"><textarea class="f-input f-textarea" id="note-text" rows="4" placeholder="Write anything..." oninput="autoGrow(this)" required></textarea></div>
+                        <div class="f-group">
+                            <label class="btn btn-o btn-s" style="cursor:pointer;">📷 Add Photo<input type="file" accept="image/*" style="display:none;" onchange="handleNoteImage(event)"></label>
+                            <img id="note-img-preview" style="display:none;width:60px;height:60px;object-fit:cover;border-radius:6px;margin-top:0.3rem;border:1px solid var(--grey);" onerror="this.style.display='none';alert('Image failed to load — try a different file.','w');">
+                        </div>
+                        <div class="f-group">
+                            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;">
+                                <input type="checkbox" id="note-ai-allowed"> Allow AI to use this note
+                            </label>
+                            <p style="color:var(--text2);font-size:0.6rem;margin-top:0.15rem;">Off by default. If on, Logositcs AI can reference this note's content when answering your questions.</p>
+                        </div>
+                        <div style="display:flex;gap:0.3rem;margin-top:0.5rem;"><button type="submit" class="btn">Save</button><button type="button" class="btn btn-o" onclick="hideModal()">Cancel</button></div>
+                    </form>`);
+            };
+            window.handleNoteImage = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => { state.noteImage = ev.target.result;
+                    const img = document.getElementById('note-img-preview');
+                    img.src = ev.target.result;
+                    img.style.display = 'block'; };
+                reader.onerror = () => alert('Could not read that image file.', 'w');
+                reader.readAsDataURL(file);
+            };
+            window.submitNote = async function(e) {
+                e.preventDefault();
+                const text = document.getElementById('note-text')?.value.trim();
+                if (!text) return;
+                const aiAllowed = document.getElementById('note-ai-allowed')?.checked || false;
+                const note = { text, photo: state.noteImage || null, aiAllowed, date: nowISO(), tags: [] };
+                const id = await dbAdd('notes', note);
+                logEvent('note_created', { noteId: id, aiAllowed });
+                hideModal();
+                renderNotes();
+                alert('Note saved!', 's');
+            };
+            window.toggleNoteAI = async function(id) {
+                const n = await dbGet('notes', id);
+                if (!n) return;
+                n.aiAllowed = !n.aiAllowed;
+                await dbPut('notes', n);
+                renderNotes();
+            };
+            window.deleteNote = async function(id) {
+                if (confirm('Delete this note?')) { await dbDel('notes', id);
+                    renderNotes();
+                    alert('Note deleted.', 'i'); }
+            };
+
+            // ============================================================
+            //  IDEA 1 — QUICK LOG. A lot of moments worth recording don't
+            //  need a full cognitive test — just "here's the context right
+            //  now" (a tag or two, maybe a line of text). This is a single
+            //  frictionless shortcut for that, reusing the same tag library
+            //  and Notes storage already in place rather than inventing a
+            //  new, untested code path.
+            // ============================================================
+            window.showQuickLog = function() {
+                state.quickLogTags = [];
+                showModal(`
+                    <h2>📝 Quick Log</h2>
+                    <p style="color:var(--text2);font-size:0.7rem;margin-bottom:0.4rem;">Just capture the moment — no test required.</p>
+                    <div class="f-group">
+                        <div id="quicklog-tags-display" style="display:flex;flex-wrap:wrap;gap:0.15rem;margin:0.15rem 0;"></div>
+                        <div style="display:flex;gap:0.2rem;flex-wrap:wrap;position:relative;">
+                            <input type="text" class="f-input" id="quicklog-tag-input" placeholder="Search or create tag..." style="flex:1;" oninput="showTagSuggestions('quicklog-tag-input','quicklog-tag-suggest')" onfocus="showTagSuggestions('quicklog-tag-input','quicklog-tag-suggest')">
+                            <button type="button" class="btn btn-o btn-s" onclick="addQuickLogTag()">+</button>
+                            <div id="quicklog-tag-suggest" class="emoji-grid hidden" style="grid-template-columns:1fr;max-height:110px;"></div>
+                        </div>
+                    </div>
+                    <div class="f-group"><textarea class="f-input f-textarea" id="quicklog-text" rows="2" placeholder="Optional note..." oninput="autoGrow(this)"></textarea></div>
+                    <div style="display:flex;gap:0.3rem;"><button class="btn" onclick="submitQuickLog()">Log It</button><button class="btn btn-o" onclick="hideModal()">Cancel</button></div>
+                `);
+            };
+            window.addQuickLogTag = async function() {
+                const input = document.getElementById('quicklog-tag-input');
+                const raw = input?.value.trim();
+                if (!raw) return;
+                const tag = await getOrCreateTag(raw);
+                if (tag && !state.quickLogTags.includes(tag.name)) state.quickLogTags.push(tag.name);
+                document.getElementById('quicklog-tags-display').innerHTML = state.quickLogTags.map(t =>
+                    `<span class="tag del" onclick="removeQuickLogTag('${esc(t)}')">${esc(t)} ×</span>`).join('');
+                input.value = '';
+                document.getElementById('quicklog-tag-suggest')?.classList.add('hidden');
+            };
+            window.removeQuickLogTag = function(t) {
+                state.quickLogTags = state.quickLogTags.filter(x => x !== t);
+                document.getElementById('quicklog-tags-display').innerHTML = state.quickLogTags.map(x =>
+                    `<span class="tag del" onclick="removeQuickLogTag('${esc(x)}')">${esc(x)} ×</span>`).join('');
+            };
+            window.submitQuickLog = async function() {
+                const text = document.getElementById('quicklog-text')?.value.trim() || '(no note — tags only)';
+                const tags = [...state.quickLogTags];
+                if (!tags.length && text === '(no note — tags only)') { alert('Add a tag or a note first.', 'w'); return; }
+                await dbAdd('notes', { text, photo: null, aiAllowed: false, date: nowISO(), tags, quick: true });
+                logEvent('activity_event', { kind: 'quick_log' }, tags);
+                hideModal();
+                SFX.play('click');
+                alert('Logged!', 's');
             };
 
             // ============================================================
@@ -3607,6 +3812,35 @@
                             return `"${g.name}": ${pct}% complete ($${balance.toFixed(2)} of $${g.target.toFixed(2)}, $${Math.max(0,g.target-balance).toFixed(2)} remaining)`; }).join('. '), category: 'finance',
                             bar: { pct: firstPct, label: `${firstGoal.name}: $${balance.toFixed(2)} / $${firstGoal.target.toFixed(2)}` } };
                     }
+                } else if (/can i (afford|spend)|should i (spend|buy)|spend \$?\d/.test(effectiveQ)) {
+                    const amtMatch = effectiveQ.match(/\$?(\d+(\.\d+)?)/);
+                    const amount = amtMatch ? parseFloat(amtMatch[1]) : null;
+                    if (!amount) { result = { text: "Tell me a dollar amount and I'll check it against your balance and goals — e.g. \"can I spend $20?\"", category: null }; } else {
+                        let balance = 0;
+                        finance.forEach(f => { if (f.type === 'income') balance += f.amount || 0;
+                            if (f.type === 'spending') balance -= f.amount || 0;
+                            if (f.type === 'savings') balance += f.amount || 0; });
+                        balance = Math.max(0, balance);
+                        const goals = finance.filter(f => f.type === 'goal');
+                        const paycheck = computePaycheckEstimate();
+                        let text = `Current balance: $${balance.toFixed(2)}. `;
+                        if (amount > balance) {
+                            text += `You don't have $${amount.toFixed(2)} available right now — that's $${(amount-balance).toFixed(2)} more than your balance.`;
+                        } else {
+                            const afterSpend = balance - amount;
+                            text += `You can cover $${amount.toFixed(2)} — that leaves $${afterSpend.toFixed(2)}.`;
+                            if (goals.length) {
+                                const g = goals[0];
+                                const remainingBefore = Math.max(0, g.target - balance);
+                                const remainingAfter = Math.max(0, g.target - afterSpend);
+                                text += ` For "${g.name}", that pushes what's left from $${remainingBefore.toFixed(2)} to $${remainingAfter.toFixed(2)}.`;
+                            }
+                            if (paycheck.takeHome > 0) {
+                                text += ` Your next estimated paycheck is about $${paycheck.takeHome.toFixed(2)} take-home, which would offset this.`;
+                            }
+                        }
+                        result = { text, category: 'finance' };
+                    }
                 } else if (/hours? worked|hourly|wage/.test(effectiveQ)) {
                     const settings = finance.find(f => f.type === 'incomeSettings');
                     result = !settings ? { text: "You haven't set up your hourly wage or work hours yet — that's in the Finance tab.", category: 'finance' } :
@@ -3680,6 +3914,18 @@
                             { text: matches.map(s => `${mo}/${day}: overall score ${s.overall_score}/100${s.tags?.length ? `, tags: ${s.tags.join(', ')}` : ''}`).join('. '), category: null };
                     } else {
                         result = { text: "I can answer questions about your test performance, reaction time, best/worst sessions, tags, patterns, income, spending, and goals — based only on what's actually stored in Logositcs. Try \"what was my best day\" or \"how much have I spent\".", category: null };
+                    }
+                }
+
+                // Notes integration — ONLY notes the user explicitly marked "Allow AI to use this note".
+                // Off by default; never included unless the user opted that specific note in.
+                if (/note/.test(q) || result.category === null) {
+                    const allNotes = await dbAll('notes');
+                    const allowedNotes = allNotes.filter(n => n.aiAllowed);
+                    const queryWords = q.split(/\s+/).filter(w => w.length > 3);
+                    const match = allowedNotes.find(n => queryWords.some(w => (n.text || '').toLowerCase().includes(w)));
+                    if (match) {
+                        result.text += ` (Related note from ${fmtDate(match.date)}, which you allowed AI to use: "${match.text.slice(0, 120)}${match.text.length > 120 ? '…' : ''}")`;
                     }
                 }
 
@@ -4406,6 +4652,7 @@
                         .incomeData.hoursPerWeek);
                     state.incomeData.monthlyEstimate = incomeSettings.monthlyEstimate || (state.incomeData.weeklyPay *
                     4);
+                    state.incomeData.taxPct = incomeSettings.taxPct ?? 20;
                 }
 
                 state.savingsGoals = goalEntries;
@@ -4566,10 +4813,30 @@
                         </div>
                     </div>
 
+                    <!-- Paycheck Predictor — feeds the Finance AI, not just a standalone calculator -->
+                    <div class="finance-card" style="border-color:var(--blue);">
+                        <h3 style="font-size:0.9rem;margin-bottom:0.3rem;">💵 Paycheck Predictor</h3>
+                        <div class="flex-row" style="gap:0.4rem;">
+                            <div style="flex:1;min-width:70px;">
+                                <label class="f-label" style="font-size:0.6rem;color:var(--text2);">This week's hours</label>
+                                <input type="number" class="f-input-sm" id="paycheck-hours" value="${state.incomeData.hoursPerWeek}" step="0.5" min="0">
+                            </div>
+                            <div style="flex:1;min-width:70px;">
+                                <label class="f-label" style="font-size:0.6rem;color:var(--text2);">Est. tax/deductions %</label>
+                                <input type="number" class="f-input-sm" id="paycheck-tax-pct" value="${state.incomeData.taxPct ?? 20}" step="1" min="0" max="80">
+                            </div>
+                            <button class="btn-fin btn-fin-o" onclick="recalcPaycheck()" style="margin-top:0.5rem;">Calculate</button>
+                        </div>
+                        <div id="paycheck-result" style="margin-top:0.4rem;">${renderPaycheckEstimate()}</div>
+                    </div>
+
                     <!-- Quick Add Money -->
                     <div class="finance-card" style="background:rgba(20,40,30,0.2);">
-                        <h3 style="font-size:0.9rem;margin-bottom:0.2rem;">⚡ Quick Actions</h3>
-                        <div class="flex-row" style="gap:0.3rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                            <h3 style="font-size:0.9rem;margin-bottom:0.2rem;">⚡ Quick Actions</h3>
+                            <button class="btn-fin btn-fin-o" onclick="openFinanceTimelapse()">▶ Play Finance Timeline</button>
+                        </div>
+                        <div class="flex-row" style="gap:0.3rem;margin-top:0.3rem;">
                             <button class="btn-fin" onclick="quickAddMoney(10)">+$10</button>
                             <button class="btn-fin" onclick="quickAddMoney(25)">+$25</button>
                             <button class="btn-fin" onclick="quickAddMoney(50)">+$50</button>
@@ -4819,6 +5086,138 @@
                 renderFinance();
             };
 
+            // ============================================================
+            //  PAYCHECK PREDICTOR — basic on purpose (spec: keep it simple
+            //  for now, but make it real usable data for the Finance AI,
+            //  not an isolated calculator). Gross = hours × wage.
+            //  Take-home = gross − a flat estimated tax/deduction %.
+            // ============================================================
+            function computePaycheckEstimate() {
+                const hours = state.incomeData.hoursPerWeek || 0;
+                const rate = state.incomeData.hourlyRate || 0;
+                const taxPct = state.incomeData.taxPct ?? 20;
+                const gross = hours * rate;
+                const taxes = gross * (taxPct / 100);
+                const takeHome = gross - taxes;
+                return { hours, rate, taxPct, gross, taxes, takeHome };
+            }
+            function renderPaycheckEstimate() {
+                const p = computePaycheckEstimate();
+                if (!p.hours || !p.rate) return '<p style="color:var(--text2);font-size:0.7rem;">Set your hourly wage and hours to see an estimate.</p>';
+                return `
+                    <div class="ai-prediction">
+                        <div style="font-weight:600;">Next paycheck estimate: $${p.takeHome.toFixed(2)}</div>
+                        <div style="font-size:0.7rem;color:var(--text2);margin-top:0.15rem;">
+                            Gross: $${p.gross.toFixed(2)} (${p.hours}h × $${p.rate}/hr)<br>
+                            Estimated taxes/deductions: −$${p.taxes.toFixed(2)} (${p.taxPct}%)<br>
+                            Estimated take-home: $${p.takeHome.toFixed(2)}
+                        </div>
+                    </div>`;
+            }
+            window.recalcPaycheck = function() {
+                const hours = parseFloat(document.getElementById('paycheck-hours')?.value) || 0;
+                const taxPct = parseFloat(document.getElementById('paycheck-tax-pct')?.value) || 0;
+                state.incomeData.hoursPerWeek = hours;
+                state.incomeData.taxPct = taxPct;
+                dbAll('finance').then(all => {
+                    const existing = all.find(f => f.type === 'incomeSettings');
+                    if (existing) { existing.hoursPerWeek = hours;
+                        existing.taxPct = taxPct;
+                        dbPut('finance', existing); } else { dbAdd('finance', { type: 'incomeSettings', hourlyRate:
+                            state.incomeData.hourlyRate, hoursPerWeek: hours, taxPct, date: nowISO() }); }
+                }).then(() => {
+                    document.getElementById('paycheck-result').innerHTML = renderPaycheckEstimate();
+                    logEvent('financial_event', { kind: 'paycheck_recalculated', takeHome: computePaycheckEstimate()
+                        .takeHome });
+                });
+            };
+
+            // ============================================================
+            //  FINANCE TIMELINE — same "play your data over time" concept
+            //  as the test-performance timelapse, applied to the running
+            //  balance. Real events (income/spending/savings) reconstructed
+            //  in chronological order, not a decorative animation.
+            // ============================================================
+            let financeTimelapseTimer = null;
+            window.openFinanceTimelapse = async function() {
+                const finance = await dbAll('finance');
+                const events = finance.filter(f => ['income', 'spending', 'savings'].includes(f.type) && f.date)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+                if (events.length < 2) { alert('Need at least 2 financial events to play a timeline.', 'w'); return; }
+                let running = 0;
+                state.financeTimelapseEvents = events.map(e => {
+                    if (e.type === 'income' || e.type === 'savings') running += e.amount || 0;
+                    if (e.type === 'spending') running -= e.amount || 0;
+                    return { ...e, runningBalance: Math.max(0, running) };
+                });
+                state.financeTimelapseIndex = 1;
+                state.financeTimelapsePlaying = false;
+                showModal(`
+                    <h2>▶ Finance Timeline</h2>
+                    <div id="finance-timelapse-graph">${drawFinanceTimelapseFrame(1)}</div>
+                    <div id="finance-timelapse-label" style="text-align:center;font-size:0.75rem;color:var(--text2);margin-top:0.3rem;"></div>
+                    <input type="range" id="finance-timelapse-scrub" min="1" max="${state.financeTimelapseEvents.length}" value="1" style="width:100%;margin-top:0.4rem;" oninput="scrubFinanceTimelapse(this.value)">
+                    <div style="display:flex;gap:0.4rem;align-items:center;justify-content:center;margin-top:0.4rem;flex-wrap:wrap;">
+                        <button class="btn btn-s" id="finance-timelapse-play-btn" onclick="toggleFinanceTimelapsePlay()">▶ Play</button>
+                        <button class="btn btn-o btn-s" onclick="restartFinanceTimelapse()">⟲ Restart</button>
+                    </div>
+                    <div style="text-align:center;margin-top:0.6rem;"><button class="btn btn-o" onclick="stopFinanceTimelapse();hideModal()">Close</button></div>
+                `);
+                updateFinanceTimelapseLabel();
+            };
+            function drawFinanceTimelapseFrame(count) {
+                const events = state.financeTimelapseEvents.slice(0, count);
+                const w = 380,
+                    h = 130,
+                    pad = 18;
+                const max = Math.max(...events.map(e => e.runningBalance), 10);
+                const pts = events.map((e, i) => ({
+                    x: pad + (i / (Math.max(events.length, 2) - 1)) * (w - 2 * pad),
+                    y: h - pad - (e.runningBalance / max) * (h - 2 * pad)
+                }));
+                const path = pts.map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.y}`).join(' ');
+                const color = events[events.length - 1]?.type === 'spending' ? '#e57373' : '#4caf84';
+                return `<div class="graph-box"><svg viewBox="0 0 ${w} ${h}"><line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#333" stroke-width="1"/><path d="${path}" fill="none" stroke="${color}" stroke-width="2"/>${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="${color}"/>`).join('')}</svg></div>`;
+            }
+            function updateFinanceTimelapseLabel() {
+                const idx = state.financeTimelapseIndex;
+                const e = state.financeTimelapseEvents[idx - 1];
+                const label = document.getElementById('finance-timelapse-label');
+                if (label && e) {
+                    const verb = e.type === 'income' ? 'Income' : e.type === 'spending' ? 'Spending' : 'Adjustment';
+                    label.innerHTML = `${fmtDate(e.date)} — ${verb}: ${e.type==='spending'?'-':'+'}$${(e.amount||0).toFixed(2)} → Balance: $${e.runningBalance.toFixed(2)}`;
+                }
+            }
+            window.scrubFinanceTimelapse = function(val) {
+                state.financeTimelapseIndex = parseInt(val);
+                document.getElementById('finance-timelapse-graph').innerHTML = drawFinanceTimelapseFrame(state
+                    .financeTimelapseIndex);
+                document.getElementById('finance-timelapse-scrub').value = state.financeTimelapseIndex;
+                updateFinanceTimelapseLabel();
+            };
+            window.toggleFinanceTimelapsePlay = function() {
+                state.financeTimelapsePlaying = !state.financeTimelapsePlaying;
+                const btn = document.getElementById('finance-timelapse-play-btn');
+                if (btn) btn.textContent = state.financeTimelapsePlaying ? '⏸ Pause' : '▶ Play';
+                if (state.financeTimelapsePlaying) {
+                    financeTimelapseTimer = setInterval(() => {
+                        if (state.financeTimelapseIndex >= state.financeTimelapseEvents.length) {
+                            window.toggleFinanceTimelapsePlay();
+                            return;
+                        }
+                        state.financeTimelapseIndex++;
+                        window.scrubFinanceTimelapse(state.financeTimelapseIndex);
+                    }, 700);
+                } else { clearInterval(financeTimelapseTimer); }
+            };
+            window.restartFinanceTimelapse = function() {
+                clearInterval(financeTimelapseTimer);
+                state.financeTimelapsePlaying = false;
+                document.getElementById('finance-timelapse-play-btn').textContent = '▶ Play';
+                window.scrubFinanceTimelapse(1);
+            };
+            window.stopFinanceTimelapse = function() { clearInterval(financeTimelapseTimer); };
+
             window.updateIncomeSettings = function() {
                 const hourly = parseFloat(document.getElementById('hourly-rate')?.value) || 0;
                 const hours = parseFloat(document.getElementById('hours-week')?.value) || 0;
@@ -5017,6 +5416,55 @@
                         cur = dates[i]; } else break;
                 }
                 return streak;
+            }
+
+            // ============================================================
+            //  PROACTIVE REMINDERS — behavior-based, not scheduled blindly.
+            //  "Your usual session time is coming up" uses the actual mode
+            //  of the user's historical session hours; "haven't logged
+            //  today" only fires if there's real history to compare against.
+            // ============================================================
+            async function getProactivePrefs() {
+                const all = await dbAll('finance');
+                return all.find(f => f.type === 'proactivePrefs') || { type: 'proactivePrefs', lastSessionNudge: null,
+                    lastNoLogNudge: null };
+            }
+            async function saveProactivePrefs(p) {
+                const all = await dbAll('finance');
+                const existing = all.find(f => f.type === 'proactivePrefs');
+                if (existing) { Object.assign(existing, p);
+                    await dbPut('finance', existing); } else { await dbAdd('finance', { type: 'proactivePrefs',
+                        ...p }); }
+            }
+            async function checkProactiveReminders() {
+                const globalPrefs = await NotificationManager.getPrefs();
+                if (!globalPrefs.enabled) return;
+                const sessions = await dbAll('sessions');
+                if (sessions.length < 3) return; // not enough history to know a "usual" time yet
+                const today = new Date().toDateString();
+                const prox = await getProactivePrefs();
+
+                // Typical session hour = the most common hour sessions have historically started in.
+                const hourCounts = {};
+                sessions.forEach(s => { const h = new Date(s.date).getHours();
+                    hourCounts[h] = (hourCounts[h] || 0) + 1; });
+                const typicalHour = Object.entries(hourCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
+                const nowHour = new Date().getHours();
+                const loggedToday = sessions.some(s => new Date(s.date).toDateString() === today);
+
+                if (globalPrefs.categories.sessionReminders !== false && typicalHour !== undefined &&
+                    Math.abs(nowHour - parseInt(typicalHour)) <= 1 && !loggedToday && prox.lastSessionNudge !== today) {
+                    NotificationManager.notify('sessionReminders', '🧠 Your usual session time is coming up',
+                        "You normally do a session around this time. Want to keep your streak going?");
+                    prox.lastSessionNudge = today;
+                    await saveProactivePrefs(prox);
+                } else if (globalPrefs.categories.aiSuggestions !== false && nowHour >= 20 && !loggedToday && prox
+                    .lastNoLogNudge !== today) {
+                    NotificationManager.notify('aiSuggestions', "📝 You haven't logged today yet",
+                        "No pressure — just a nudge in case you wanted to.");
+                    prox.lastNoLogNudge = today;
+                    await saveProactivePrefs(prox);
+                }
             }
 
             async function checkAndSendNotifications(force) {
@@ -5302,6 +5750,7 @@
                 // not only when the user happens to visit the Finance tab. (Full closed-app push
                 // still needs a real server; see the note in NotificationManager above.)
                 setInterval(() => { checkAndSendNotifications(false).catch(() => {}); }, 5 * 60 * 1000);
+                setInterval(() => { checkProactiveReminders().catch(() => {}); }, 15 * 60 * 1000);
                 // Initial theme
                 setTimeout(() => updateTheme(), 1500);
             }
@@ -5360,7 +5809,7 @@
             if (DIAGNOSTIC_LEAVE_NOTIFICATION) {
                 document.addEventListener('visibilitychange', () => {
                     if (document.visibilityState === 'hidden') {
-                        NotificationManager.notify('reminders', '👋 Oh, leaving so soon?', 'This is a test notification — Logositcs can reach you even when you\'re not looking at the tab.');
+                        NotificationManager.notify('leavingApp', '👋 Oh, leaving so soon?', 'This is a test notification — Logositcs can reach you even when you\'re not looking at the tab.');
                     }
                 });
             }
