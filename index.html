@@ -15,6 +15,7 @@
     /* ═══════════════════════════════════════════════════════════
        LOGOSTICS FINANCE — iPhone-first, capability-honest web app
        Palette: black, white, gray, green ONLY
+       No fake iOS chrome anywhere
        ═══════════════════════════════════════════════════════════ */
 
     *, *::before, *::after {
@@ -52,6 +53,8 @@
       --ease: cubic-bezier(0.32, 0.72, 0, 1);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --nav-h: 76px;
+      --radius: 22px;
+      --radius-lg: 28px;
     }
 
     html {
@@ -76,7 +79,6 @@
       user-select: none;
       letter-spacing: -0.01em;
       position: relative;
-      /* Leave room for fixed bottom nav + home indicator */
       padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 8px);
       -webkit-user-select: none;
       -webkit-overflow-scrolling: touch;
@@ -91,11 +93,6 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
-    }
-
-    /* ── LIGHT MODE (opt-in, respects system preference) ── */
-    @media (prefers-color-scheme: light) {
-      /* Kept dark by design — financial app prefers dark, but honours reduced motion */
     }
 
     /* ── SCROLLBAR ── */
@@ -209,8 +206,18 @@
       display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 18px;
       margin-bottom: 6px; background: var(--gray-900); border: 1px solid var(--gray-800);
       transition: all 0.2s var(--ease); cursor: pointer;
+      position: relative; overflow: hidden;
+      touch-action: pan-y;
     }
     .activity-item:active { transform: scale(0.98); background: var(--gray-850); }
+    .activity-item.swiping { transition: none; }
+    .activity-item .swipe-hint {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      font-size: 11px; color: var(--gray-600); font-weight: 600;
+      pointer-events: none; opacity: 0.5;
+      animation: swipe-pulse 2s ease-in-out infinite;
+    }
+    @keyframes swipe-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
     .activity-ico {
       width: 40px; height: 40px; border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
@@ -258,7 +265,6 @@
       display: flex; justify-content: space-around; align-items: center;
       padding: 8px 0 calc(8px + var(--safe-bottom));
       z-index: 100; border-top: 1px solid var(--gray-800);
-      /* Prevent nav from being pushed off by keyboard */
       transform: translateZ(0);
     }
     .nav-item {
@@ -293,6 +299,7 @@
       border-top: 1px solid var(--gray-800);
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
+      position: relative;
     }
     @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .sheet-grip { width: 36px; height: 4px; background: var(--gray-600); border-radius: 2px; margin: 0 auto 20px; }
@@ -397,6 +404,27 @@
     .privacy-btn:active { transform: scale(0.88); }
     .privacy-btn.active { background: var(--green); color: var(--black); border-color: var(--green); }
 
+    /* ── AI FLOATING BUTTON ── */
+    .ai-fab {
+      position: fixed;
+      bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+      right: 74px;
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; cursor: pointer; z-index: 90;
+      transition: all 0.25s var(--ease);
+      background: linear-gradient(135deg, var(--gray-850), var(--gray-900));
+      border: 1px solid var(--gray-700);
+      color: var(--white); font-family: inherit;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+    .ai-fab:active { transform: scale(0.9); }
+    .ai-fab.pulse { animation: ai-pulse 3s ease-in-out infinite; }
+    @keyframes ai-pulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 0 0 rgba(48,209,88,0.4); }
+      50% { box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 0 12px rgba(48,209,88,0); }
+    }
+
     /* ── PRIVACY BLUR ── */
     .privacy-blur { filter: blur(14px); transition: filter 0.35s var(--ease); pointer-events: none; user-select: none; }
 
@@ -476,6 +504,69 @@
     .cap-badge.no { background: var(--gray-850); color: var(--gray-500); border: 1px solid var(--gray-700); }
     .cap-badge.warn { background: rgba(255, 159, 10, 0.12); color: #ff9f0a; border: 1px solid rgba(255,159,10,0.25); }
 
+    /* ── AI CHAT ── */
+    .ai-chat-bubble {
+      max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 15px;
+      line-height: 1.45; margin-bottom: 10px; word-break: break-word;
+      animation: bubble-in 0.3s var(--ease-out);
+    }
+    @keyframes bubble-in {
+      from { opacity: 0; transform: translateY(6px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .ai-bubble-user {
+      background: var(--white); color: var(--black);
+      margin-left: auto; border-bottom-right-radius: 6px;
+      font-weight: 500;
+    }
+    .ai-bubble-assistant {
+      background: var(--gray-900); border: 1px solid var(--gray-800);
+      color: var(--white); margin-right: auto; border-bottom-left-radius: 6px;
+    }
+    .ai-bubble-system {
+      background: transparent; border: 1px dashed var(--gray-700);
+      color: var(--gray-500); font-size: 12px; text-align: center;
+      margin: 12px auto; max-width: 90%;
+    }
+    .ai-action-row {
+      display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+    }
+    .ai-action-btn {
+      padding: 8px 14px; border-radius: 10px; background: var(--gray-850);
+      border: 1px solid var(--gray-700); color: var(--white);
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s var(--ease);
+    }
+    .ai-action-btn:active { transform: scale(0.95); }
+    .ai-action-btn.primary { background: var(--green); color: var(--black); border-color: var(--green); }
+
+    /* ── TYPING INDICATOR ── */
+    .typing-indicator {
+      display: inline-flex; gap: 4px; padding: 12px 16px;
+      background: var(--gray-900); border: 1px solid var(--gray-800);
+      border-radius: 18px; border-bottom-left-radius: 6px;
+      margin-right: auto; margin-bottom: 10px;
+    }
+    .typing-indicator span {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--gray-500);
+      animation: typing 1.4s ease-in-out infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* ── DRAG HANDLE ── */
+    .drag-handle {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 8px;
+      cursor: grab; color: var(--gray-600); font-size: 18px;
+      touch-action: none; user-select: none;
+    }
+    .drag-handle:active { cursor: grabbing; color: var(--gray-400); }
+
     /* ── LANDSCAPE ── */
     @media (orientation: landscape) and (max-height: 500px) {
       :root { --nav-h: 60px; }
@@ -496,9 +587,8 @@
       .quick-btn .lbl { font-size: 9px; }
     }
 
-    /* ── PWA STANDALONE TUNING ── */
+    /* ── PWA STANDALONE ── */
     @media (display-mode: standalone) {
-      /* Already handled naturally; explicit hook in case we want tweaks */
       body { overscroll-behavior-y: none; }
     }
   </style>
@@ -521,6 +611,9 @@
 
   <!-- PRIVACY TOGGLE -->
   <button class="privacy-btn" id="privacy-btn" onclick="togglePrivacy()" title="Toggle privacy mode">👁</button>
+
+  <!-- AI FAB -->
+  <button class="ai-fab pulse" id="ai-fab" onclick="openAI()" title="Ask Logostics AI">◈</button>
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav glass-deep" id="bottom-nav">
@@ -548,19 +641,14 @@
 
   <script>
     /* ═══════════════════════════════════════════════════════════
-       LOGOSTICS FINANCE — FULL IMPLEMENTATION
-       - Honest platform capability detection
-       - Real PWA (service worker, cache, offline)
-       - IndexedDB persistence with migrations
-       - Real WebAuthn / Notification / Share / etc.
-       - No fake native features anywhere
+       LOGOSTICS FINANCE — COMPLETE IMPLEMENTATION
+       Honest platform detection · Real APIs · No fake iOS chrome
        ═══════════════════════════════════════════════════════════ */
 
     'use strict';
 
     // ═══════════════════════════════════════════════════════════
     //  1. PLATFORM CAPABILITY ENGINE
-    //  Feature-detect every capability. Return honest status.
     // ═══════════════════════════════════════════════════════════
 
     const PlatformCapabilities = (function() {
@@ -586,20 +674,6 @@
 
       const env = detectEnvironment();
 
-      // ── Generic feature test ──
-      function test(path) {
-        try {
-          const parts = path.split('.');
-          let obj = window;
-          for (const p of parts) {
-            if (obj == null) return false;
-            obj = obj[p];
-          }
-          return obj !== undefined;
-        } catch (e) { return false; }
-      }
-
-      // ── WebAuthn / platform authenticator ──
       async function checkWebAuthn() {
         if (!window.PublicKeyCredential) {
           return { available: false, reason: 'WebAuthn not supported in this browser' };
@@ -620,14 +694,12 @@
         }
       }
 
-      // ── Notifications ──
       function checkNotifications() {
         if (!('Notification' in window)) {
           return { supported: false, permission: 'unsupported',
                    reason: 'Notification API not available in this browser' };
         }
         const perm = Notification.permission;
-        // iOS Safari: notifications ONLY work in installed PWA (iOS 16.4+)
         const iosSafariNeedsPWA = env.isIOS && !env.isStandalone;
         if (iosSafariNeedsPWA && perm === 'default') {
           return {
@@ -646,12 +718,10 @@
         };
       }
 
-      // ── Service Worker ──
       function checkServiceWorker() {
         return { supported: 'serviceWorker' in navigator && window.isSecureContext };
       }
 
-      // ── Haptics (Vibration API — not available on iOS Safari) ──
       function checkHaptics() {
         const supported = typeof navigator.vibrate === 'function';
         return {
@@ -662,7 +732,6 @@
         };
       }
 
-      // ── Share ──
       function checkShare() {
         return {
           supported: typeof navigator.share === 'function',
@@ -670,74 +739,29 @@
         };
       }
 
-      // ── Clipboard ──
-      function checkClipboard() {
-        return {
-          write: !!(navigator.clipboard && navigator.clipboard.writeText),
-          read: !!(navigator.clipboard && navigator.clipboard.readText)
+      function checkStorage() {
+        const result = {
+          indexedDB: !!window.indexedDB,
+          localStorage: (() => { try { localStorage.setItem('__t__', '1'); localStorage.removeItem('__t__'); return true; } catch (e) { return false; } })(),
+          cacheAPI: 'caches' in window
         };
-      }
-
-      // ── Camera / Microphone / Geolocation ──
-      function checkMedia() {
-        return {
-          getUserMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
-          camera: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
-          geolocation: 'geolocation' in navigator
-        };
-      }
-
-      // ── Motion / Orientation (requires permission on iOS) ──
-      function checkMotion() {
-        return {
-          deviceMotion: 'DeviceMotionEvent' in window,
-          deviceOrientation: 'DeviceOrientationEvent' in window,
-          requiresPermission: typeof DeviceMotionEvent !== 'undefined' &&
-                              typeof DeviceMotionEvent.requestPermission === 'function'
-        };
-      }
-
-      // ── File picker ──
-      function checkFilePicker() {
-        return { supported: 'FileReader' in window && 'File' in window };
-      }
-
-      // ── Storage ──
-      async function checkStorage() {
-        const result = { indexedDB: false, localStorage: false, cacheAPI: false, persistent: false, estimate: null };
-        try {
-          const k = '__logostics_test__';
-          localStorage.setItem(k, '1');
-          localStorage.removeItem(k);
-          result.localStorage = true;
-        } catch (e) {}
-        try {
-          result.indexedDB = !!window.indexedDB;
-          if (result.indexedDB) {
-            await new Promise((resolve, reject) => {
-              const req = indexedDB.open('__logostics_test__', 1);
-              req.onsuccess = () => { req.result.close(); indexedDB.deleteDatabase('__logostics_test__'); resolve(); };
-              req.onerror = () => reject(req.error);
-              setTimeout(() => reject(new Error('timeout')), 1500);
-            });
-          }
-        } catch (e) { result.indexedDB = false; }
-        try {
-          result.cacheAPI = 'caches' in window;
-        } catch (e) {}
-        try {
-          if (navigator.storage && navigator.storage.persisted) {
-            result.persistent = await navigator.storage.persisted();
-          }
-          if (navigator.storage && navigator.storage.estimate) {
-            const est = await navigator.storage.estimate();
-            result.estimate = { usage: est.usage, quota: est.quota };
-          }
-        } catch (e) {}
         return result;
       }
 
-      // ── Network info ──
+      async function checkStorageDetail() {
+        const base = checkStorage();
+        try {
+          if (navigator.storage && navigator.storage.persisted) {
+            base.persistent = await navigator.storage.persisted();
+          }
+          if (navigator.storage && navigator.storage.estimate) {
+            const est = await navigator.storage.estimate();
+            base.estimate = { usage: est.usage, quota: est.quota };
+          }
+        } catch (e) {}
+        return base;
+      }
+
       function checkNetwork() {
         return {
           online: navigator.onLine,
@@ -749,135 +773,27 @@
         };
       }
 
-      // ── Screen info ──
-      function checkScreen() {
-        return {
-          width: window.screen.width,
-          height: window.screen.height,
-          availWidth: window.screen.availWidth,
-          availHeight: window.screen.availHeight,
-          pixelRatio: window.devicePixelRatio,
-          colorDepth: window.screen.colorDepth,
-          orientation: window.screen.orientation ? window.screen.orientation.type : 'unknown'
-        };
-      }
-
-      // ── Standalone / PWA ──
-      function checkPWA() {
-        return {
-          standalone: env.isStandalone,
-          canInstall: 'BeforeInstallPromptEvent' in window || env.isIOS,
-          displayMode: env.isStandalone ? 'standalone' : 'browser'
-        };
-      }
-
-      // ── Badge API ──
-      function checkBadge() {
-        return { supported: 'setAppBadge' in navigator };
-      }
-
-      // ── Wake Lock ──
-      function checkWakeLock() {
-        return { supported: 'wakeLock' in navigator };
-      }
-
-      // ── Media Session ──
-      function checkMediaSession() {
-        return { supported: 'mediaSession' in navigator };
-      }
-
-      // ── Web Audio ──
-      function checkWebAudio() {
-        return { supported: !!(window.AudioContext || window.webkitAudioContext) };
-      }
-
-      // ── Fullscreen ──
-      function checkFullscreen() {
-        return { supported: !!(document.documentElement.requestFullscreen ||
-                               document.documentElement.webkitRequestFullscreen) };
-      }
-
-      // ── Speech Recognition (voice input) ──
-      function checkSpeech() {
-        return {
-          recognition: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
-          synthesis: 'speechSynthesis' in window
-        };
-      }
-
-      // ── Payment Request ──
-      function checkPayment() {
-        return { supported: 'PaymentRequest' in window };
-      }
-
-      // ── Contact Picker ──
-      function checkContactPicker() {
-        return { supported: 'contacts' in navigator };
-      }
-
-      // ── Battery ──
-      async function checkBattery() {
-        if (!navigator.getBattery) return { available: false, reason: 'Battery API not available' };
-        try {
-          const b = await navigator.getBattery();
-          return { available: true, level: Math.round(b.level * 100), charging: b.charging };
-        } catch (e) {
-          return { available: false, reason: 'Battery API access denied' };
-        }
-      }
-
-      // ── Bluetooth ──
-      function checkBluetooth() {
-        return { supported: 'bluetooth' in navigator };
-      }
-
-      // ── NFC ──
-      function checkNFC() {
-        return { supported: 'NDEFReader' in window };
-      }
-
       return {
         env,
-        test,
         checkWebAuthn,
         checkNotifications,
         checkServiceWorker,
         checkHaptics,
         checkShare,
-        checkClipboard,
-        checkMedia,
-        checkMotion,
-        checkFilePicker,
         checkStorage,
-        checkNetwork,
-        checkScreen,
-        checkPWA,
-        checkBadge,
-        checkWakeLock,
-        checkMediaSession,
-        checkWebAudio,
-        checkFullscreen,
-        checkSpeech,
-        checkPayment,
-        checkContactPicker,
-        checkBattery,
-        checkBluetooth,
-        checkNFC
+        checkStorageDetail,
+        checkNetwork
       };
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  2. HAPTICS ABSTRACTION (honest — no-op if unsupported)
+    //  2. HAPTICS ABSTRACTION
     // ═══════════════════════════════════════════════════════════
     const Haptics = (function() {
       const supported = typeof navigator.vibrate === 'function';
       const patterns = {
-        light: 8,
-        medium: 14,
-        heavy: 22,
-        success: [10, 40, 10],
-        warning: [20, 30, 20],
-        error: [20, 30, 20, 30, 20]
+        light: 8, medium: 14, heavy: 22,
+        success: [10, 40, 10], warning: [20, 30, 20], error: [20, 30, 20, 30, 20]
       };
       function trigger(style) {
         if (!supported) return false;
@@ -896,14 +812,13 @@
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  3. NOTIFICATION MANAGER (real Notification API only)
+    //  3. NOTIFICATION MANAGER
     // ═══════════════════════════════════════════════════════════
     const NotificationManager = (function() {
       async function requestPermission() {
         if (!('Notification' in window)) {
           return { granted: false, reason: 'Notification API not supported in this browser' };
         }
-        // iOS Safari: requires PWA install
         if (PlatformCapabilities.env.isIOS && !PlatformCapabilities.env.isStandalone) {
           return {
             granted: false,
@@ -919,7 +834,6 @@
         }
       }
 
-      // Returns { sent: bool, reason: string, via: 'sw' | 'constructor' | 'none' }
       async function send(title, body, options) {
         options = options || {};
         if (!('Notification' in window)) {
@@ -928,30 +842,21 @@
         if (Notification.permission !== 'granted') {
           return { sent: false, reason: 'Permission not granted (currently: ' + Notification.permission + ')', via: 'none' };
         }
-        // Prefer service worker notifications (required on Android Chrome, works on iOS PWA)
         if ('serviceWorker' in navigator) {
           try {
             const reg = await navigator.serviceWorker.ready;
             if (reg && reg.showNotification) {
               await reg.showNotification(title, {
-                body,
-                tag: options.tag || 'logostics',
-                icon: options.icon,
-                badge: options.badge,
-                silent: options.silent || false,
-                data: options.data || {}
+                body, tag: options.tag || 'logostics',
+                silent: options.silent || false, data: options.data || {}
               });
               return { sent: true, reason: 'Delivered via service worker', via: 'sw' };
             }
-          } catch (e) {
-            // fall through to constructor
-          }
+          } catch (e) {}
         }
         try {
           const n = new Notification(title, {
-            body,
-            tag: options.tag || 'logostics',
-            silent: options.silent || false
+            body, tag: options.tag || 'logostics', silent: options.silent || false
           });
           setTimeout(() => { try { n.close(); } catch (e) {} }, 6000);
           return { sent: true, reason: 'Delivered via Notification constructor', via: 'constructor' };
@@ -967,7 +872,7 @@
     //  4. AUTH MANAGER (real WebAuthn only)
     // ═══════════════════════════════════════════════════════════
     const AuthManager = (function() {
-      let credentialIdB64 = null; // stored as base64url string; NEVER biometric data
+      let credentialIdB64 = null;
 
       function bufToB64(buf) {
         const bytes = new Uint8Array(buf);
@@ -990,7 +895,7 @@
           return { success: false, supported: false, reason: cap.reason };
         }
         if (!credentialIdB64) {
-          return { success: false, supported: true, reason: 'No credential registered on this device. Enable App Lock to register.' };
+          return { success: false, supported: true, reason: 'No credential registered. Enable App Lock in Settings first.' };
         }
         try {
           const challenge = new Uint8Array(32);
@@ -1008,14 +913,12 @@
               }]
             }
           });
-          if (assertion) {
-            return { success: true, supported: true, reason: 'Verified via platform authenticator' };
-          }
+          if (assertion) return { success: true, supported: true, reason: 'Verified via platform authenticator' };
           return { success: false, supported: true, reason: 'No credential returned' };
         } catch (e) {
           const reasons = {
             NotAllowedError: 'Authentication was cancelled or timed out',
-            SecurityError: 'WebAuthn security error — ensure the page is served over HTTPS',
+            SecurityError: 'WebAuthn security error — ensure HTTPS',
             InvalidStateError: 'Stored credential is no longer valid — disable and re-enable App Lock',
             AbortError: 'Authentication aborted'
           };
@@ -1025,15 +928,12 @@
 
       async function register() {
         const cap = await PlatformCapabilities.checkWebAuthn();
-        if (!cap.available) {
-          return { success: false, supported: false, reason: cap.reason };
-        }
+        if (!cap.available) return { success: false, supported: false, reason: cap.reason };
         try {
           const challenge = new Uint8Array(32);
           crypto.getRandomValues(challenge);
           const userId = new Uint8Array(16);
           crypto.getRandomValues(userId);
-
           const credential = await navigator.credentials.create({
             publicKey: {
               challenge,
@@ -1052,7 +952,6 @@
               attestation: 'none'
             }
           });
-
           if (credential && credential.rawId) {
             credentialIdB64 = bufToB64(credential.rawId);
             return { success: true, supported: true, reason: 'Platform authenticator registered' };
@@ -1069,8 +968,7 @@
       }
 
       return {
-        authenticate,
-        register,
+        authenticate, register,
         hasCredential: () => !!credentialIdB64,
         setCredential: (b64) => { credentialIdB64 = b64; },
         getCredential: () => credentialIdB64
@@ -1078,18 +976,15 @@
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  5. STORE — IndexedDB primary, localStorage for prefs only
-    //  Versioned migrations, real persistence.
+    //  5. STORE — IndexedDB with localStorage prefs + migrations
     // ═══════════════════════════════════════════════════════════
     const Store = (function() {
       const DB_NAME = 'LogosticsFinanceDB';
       const DB_VERSION = 1;
-      const PREFS_KEY = 'logostics_finance_prefs_v1';
+      const PREFS_KEY = 'logostics_finance_prefs_v2';
 
       let db = null;
       let useIndexedDB = false;
-
-      // Fallback in-memory store when IndexedDB is blocked (private mode)
       const memory = { transactions: [], goals: [], paychecks: [] };
 
       let state = {
@@ -1105,24 +1000,35 @@
           notificationsEnabled: false,
           hapticsEnabled: true,
           privacyMode: false,
-          webAuthnCredential: null
+          webAuthnCredential: null,
+          authTimeout: 'session',
+          protectedPages: { home: false, activity: false, goals: false, analytics: false, settings: false },
+          appearance: {
+            theme: 'dark',
+            accent: 'green',
+            density: 'comfortable',
+            animationIntensity: 'normal',
+            typographyScale: 1.0,
+            cornerRadius: 22,
+            glassIntensity: 'normal'
+          },
+          aiEnabled: true,
+          aiPersonality: 'concise',
+          aiHistory: []
         },
         lastUpdated: Date.now(),
         _nextId: 1,
         _listeners: []
       };
 
-      // ── Migrations go here as versions increase ──
       function openDB() {
         return new Promise((resolve) => {
           if (!window.indexedDB || !window.isSecureContext) { resolve(null); return; }
           let req;
           try { req = indexedDB.open(DB_NAME, DB_VERSION); }
           catch (e) { resolve(null); return; }
-
           req.onupgradeneeded = (e) => {
             const d = e.target.result;
-            const oldVersion = e.oldVersion;
             if (!d.objectStoreNames.contains('transactions')) {
               const s = d.createObjectStore('transactions', { keyPath: 'id', autoIncrement: true });
               s.createIndex('date', 'date');
@@ -1138,12 +1044,9 @@
             if (!d.objectStoreNames.contains('meta')) {
               d.createObjectStore('meta', { keyPath: 'key' });
             }
-            // Future migrations go here, e.g.:
-            // if (oldVersion < 2) { /* migrate */ }
           };
           req.onsuccess = (e) => { db = e.target.result; useIndexedDB = true; resolve(db); };
           req.onerror = () => { db = null; resolve(null); };
-          // Safari sometimes hangs — safe timeout
           setTimeout(() => { if (!db) resolve(null); }, 2500);
         });
       }
@@ -1199,7 +1102,6 @@
         });
       }
 
-      // ── Prefs in localStorage (small values only) ──
       function loadPrefs() {
         try {
           const raw = localStorage.getItem(PREFS_KEY);
@@ -1221,7 +1123,6 @@
 
       async function init() {
         loadPrefs();
-        // Restore stored credential ID if present
         if (state.preferences.webAuthnCredential) {
           AuthManager.setCredential(state.preferences.webAuthnCredential);
         }
@@ -1234,12 +1135,10 @@
           state.goals = goals;
           state.paychecks = pcs.sort((a, b) => new Date(b.date) - new Date(a.date));
         } else {
-          // In-memory fallback — same shape, honest limitation
           state.transactions = [...memory.transactions];
           state.goals = [...memory.goals];
           state.paychecks = [...memory.paychecks];
         }
-        // Recompute balance from real data
         state.balance = state.transactions.reduce((sum, t) => {
           return t.type === 'income' ? sum + t.amount : sum - t.amount;
         }, 0);
@@ -1271,7 +1170,6 @@
         };
       }
 
-      // ── TRANSACTIONS ──
       async function addTransaction(tx) {
         const t = {
           id: state._nextId++,
@@ -1334,7 +1232,6 @@
         return list.sort((a, b) => new Date(b.date) - new Date(a.date));
       }
 
-      // ── GOALS ──
       async function addGoal(g) {
         const goal = {
           id: state._nextId++,
@@ -1374,7 +1271,6 @@
       }
       function getGoals() { return [...state.goals]; }
 
-      // ── PAYCHECKS ──
       async function addPaycheck(p) {
         const pc = {
           id: state._nextId++,
@@ -1390,12 +1286,9 @@
           state.balance += pc.takeHome;
           const t = {
             id: state._nextId++,
-            type: 'income',
-            amount: pc.takeHome,
-            category: 'paycheck',
-            description: 'Paycheck',
-            date: pc.date,
-            account: 'cash',
+            type: 'income', amount: pc.takeHome,
+            category: 'paycheck', description: 'Paycheck',
+            date: pc.date, account: 'cash',
             createdAt: new Date().toISOString()
           };
           state.transactions.unshift(t);
@@ -1409,7 +1302,6 @@
       }
       function getPaychecks() { return [...state.paychecks]; }
 
-      // ── SETTINGS ──
       function updateIncomeSettings(s) {
         state.incomeSettings = { ...state.incomeSettings, ...s };
         notify();
@@ -1421,18 +1313,11 @@
         return { ...state.preferences };
       }
 
-      // ── COMPUTED ──
       function computePaycheckEstimate() {
         const { hourlyRate, hoursPerWeek, withholdingPct } = state.incomeSettings;
         const gross = hourlyRate * hoursPerWeek;
         const withholding = gross * (withholdingPct / 100);
         return { gross, withholding, takeHome: gross - withholding, hourlyRate, hoursPerWeek, withholdingPct };
-      }
-      function computeMonthlyIncome() {
-        const { hourlyRate, hoursPerWeek, payFrequency } = state.incomeSettings;
-        const weekly = hourlyRate * hoursPerWeek;
-        const mult = payFrequency === 'weekly' ? 4.33 : payFrequency === 'biweekly' ? 2.17 : payFrequency === 'semimonthly' ? 2 : payFrequency === 'monthly' ? 1 : 4.33;
-        return weekly * mult;
       }
       function computeGoalProgress(g) {
         const pct = g.target > 0 ? Math.min(100, Math.round((g.current / g.target) * 100)) : 0;
@@ -1528,8 +1413,7 @@
         addGoal, updateGoal, deleteGoal, getGoals,
         addPaycheck, getPaychecks,
         updateIncomeSettings, updatePreferences,
-        computePaycheckEstimate, computeMonthlyIncome,
-        computeGoalProgress, computeProjectedBalance,
+        computePaycheckEstimate, computeGoalProgress, computeProjectedBalance,
         computeSpendingByCategory, computeTotalSpending, computeTotalIncome,
         computeSavingsRate, computeAverageTransaction, computeLargestCategory,
         generateInsights,
@@ -1543,48 +1427,228 @@
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  SHARE MANAGER (real Web Share API)
+    //  6. AI AGENT — Local, tool-based, no fake responses
     // ═══════════════════════════════════════════════════════════
-    const ShareManager = (function() {
-      async function shareText(title, text, url) {
-        if (typeof navigator.share !== 'function') {
-          return { shared: false, reason: 'Web Share API not supported on this browser' };
+    const AIAgent = (function() {
+      // ── Tools the AI can call. Each returns REAL data from the app. ──
+      const tools = {
+        getBalance() {
+          const snap = Store.getSnapshot();
+          return { balance: snap.balance, currency: snap.preferences.currency };
+        },
+        getRecentTransactions(limit) {
+          const snap = Store.getSnapshot();
+          return snap.transactions.slice(0, limit || 5).map(t => ({
+            type: t.type, amount: t.amount, category: t.category,
+            description: t.description, date: t.date
+          }));
+        },
+        getSpendingByCategory(days) {
+          return Store.computeSpendingByCategory(days || 7);
+        },
+        getTotalSpending(days) { return Store.computeTotalSpending(days || 7); },
+        getTotalIncome(days) { return Store.computeTotalIncome(days || 7); },
+        getSavingsRate() { return Store.computeSavingsRate(); },
+        getGoals() {
+          return Store.getGoals().map(g => {
+            const p = Store.computeGoalProgress(g);
+            return { name: g.name, current: g.current, target: g.target, pct: p.pct, remaining: p.remaining };
+          });
+        },
+        getPaycheckEstimate() { return Store.computePaycheckEstimate(); },
+        getProjectedBalance() { return Store.computeProjectedBalance(); },
+        getLargestCategory() { return Store.computeLargestCategory(); },
+        getAverageTransaction() { return Store.computeAverageTransaction(); },
+        getInsights() { return Store.generateInsights(); },
+        getCapabilities() {
+          return {
+            env: PlatformCapabilities.env.type,
+            notifications: PlatformCapabilities.checkNotifications(),
+            webauthn: 'check deferred',
+            haptics: PlatformCapabilities.checkHaptics(),
+            share: PlatformCapabilities.checkShare()
+          };
         }
-        try {
-          await navigator.share({ title, text, url });
-          return { shared: true };
-        } catch (e) {
-          if (e.name === 'AbortError') return { shared: false, reason: 'Share cancelled' };
-          return { shared: false, reason: 'Share failed: ' + e.message };
+      };
+
+      // ── Intent matcher: maps user input → tool calls + response phrasing. ──
+      function matchIntent(q) {
+        const lower = q.toLowerCase().trim();
+
+        // Navigation intents
+        if (/^(take me|go|open|show me|navigate to|jump to)/.test(lower)) {
+          if (/savings|goal/.test(lower)) return { action: 'navigate', target: 'goals', reply: 'Opening Goals.' };
+          if (/analytics|charts|graphs|spending pattern/.test(lower)) return { action: 'navigate', target: 'analytics', reply: 'Opening Analytics.' };
+          if (/activity|transactions|history/.test(lower)) return { action: 'navigate', target: 'activity', reply: 'Opening Activity.' };
+          if (/home|dashboard|balance/.test(lower)) return { action: 'navigate', target: 'home', reply: 'Opening Home.' };
+          if (/settings|preferences|config/.test(lower)) return { action: 'navigate', target: 'settings', reply: 'Opening Settings.' };
         }
-      }
-      async function shareFile(file, title, text) {
-        if (typeof navigator.share !== 'function' || typeof navigator.canShare !== 'function') {
-          return { shared: false, reason: 'Web Share API with files not supported' };
-        }
-        try {
-          if (!navigator.canShare({ files: [file] })) {
-            return { shared: false, reason: 'This browser cannot share files via Web Share' };
+        if (/^(add|log|record)\s+\$?\d/.test(lower)) {
+          const amtMatch = lower.match(/\$?(\d+(\.\d+)?)/);
+          if (amtMatch) {
+            const amt = parseFloat(amtMatch[1]);
+            const isIncome = /income|paycheck|received|got paid/.test(lower);
+            return { action: 'confirm-add', amount: amt, type: isIncome ? 'income' : 'expense',
+              reply: `I can log a ${isIncome ? 'income' : 'expense'} of ${fmt(amt)}. Confirm?` };
           }
-          await navigator.share({ files: [file], title, text });
-          return { shared: true };
-        } catch (e) {
-          if (e.name === 'AbortError') return { shared: false, reason: 'Share cancelled' };
-          return { shared: false, reason: 'Share failed: ' + e.message };
+        }
+
+        // Question intents
+        if (/(how much|what'?s|what is).*(cash|balance|have|money)/.test(lower)) {
+          return { action: 'answer', tool: 'getBalance' };
+        }
+        if (/(how much|what).*(spend|spent|spending)/.test(lower)) {
+          return { action: 'answer', tool: 'getTotalSpending', args: [7], template: 'spending7' };
+        }
+        if (/(how much|what).*(income|earn|earned|made)/.test(lower)) {
+          return { action: 'answer', tool: 'getTotalIncome', args: [30], template: 'income30' };
+        }
+        if (/(savings rate|saving rate)/.test(lower)) {
+          return { action: 'answer', tool: 'getSavingsRate', template: 'savingsRate' };
+        }
+        if (/goal/.test(lower)) {
+          return { action: 'answer', tool: 'getGoals', template: 'goals' };
+        }
+        if (/(projected|projection|after.*paycheck|next paycheck)/.test(lower)) {
+          return { action: 'answer', tool: 'getProjectedBalance', template: 'projected' };
+        }
+        if (/(top|largest|biggest).*(categor|spend)/.test(lower)) {
+          return { action: 'answer', tool: 'getLargestCategory', template: 'largestCat' };
+        }
+        if (/(average|avg).*(transaction|purchase)/.test(lower)) {
+          return { action: 'answer', tool: 'getAverageTransaction', template: 'avgTx' };
+        }
+        if (/(insight|summary|overview|how am i doing)/.test(lower)) {
+          return { action: 'answer', tool: 'getInsights', template: 'insights' };
+        }
+        if (/(what|which).*(category|categories)/.test(lower)) {
+          return { action: 'answer', tool: 'getSpendingByCategory', args: [30], template: 'byCategory' };
+        }
+        if (/(paycheck|pay|wage|hourly)/.test(lower)) {
+          return { action: 'answer', tool: 'getPaycheckEstimate', template: 'paycheck' };
+        }
+        if (/(capabilit|what can you|device|platform)/.test(lower)) {
+          return { action: 'answer', tool: 'getCapabilities', template: 'capabilities' };
+        }
+        if (/^(hi|hey|hello|yo|sup|what'?s up)/.test(lower)) {
+          return { action: 'greeting' };
+        }
+        if (/(help|what can you do)/.test(lower)) {
+          return { action: 'help' };
+        }
+
+        return { action: 'unknown' };
+      }
+
+      function formatToolResult(template, result) {
+        switch (template) {
+          case 'spending7':
+            return `You've spent ${fmt(result)} in the last 7 days.`;
+          case 'income30':
+            return `You've earned ${fmt(result)} in the last 30 days.`;
+          case 'savingsRate':
+            return `Your current savings rate is ${result}% over the last 30 days.`;
+          case 'goals':
+            if (!result.length) return "You don't have any savings goals set yet.";
+            return result.map(g =>
+              `"${g.name}": ${fmt(g.current)} of ${fmt(g.target)} — ${g.pct}% complete, ${fmt(g.remaining)} remaining.`
+            ).join('\n');
+          case 'projected':
+            return `Your projected balance after your next paycheck is ${fmt(result)}.`;
+          case 'largestCat':
+            if (result.amount === 0) return 'No spending data yet.';
+            return `Your largest spending category is "${result.category}" at ${fmt(result.amount)}.`;
+          case 'avgTx':
+            return `Your average transaction is ${fmt(result)}.`;
+          case 'insights':
+            if (!result.length) return 'No insights yet — add some transactions.';
+            return result.map(i => i.txt.replace(/<[^>]*>/g, '')).join('\n');
+          case 'byCategory':
+            const entries = Object.entries(result);
+            if (!entries.length) return 'No spending to break down.';
+            return entries.sort((a, b) => b[1] - a[1])
+              .map(([cat, amt]) => `${cat}: ${fmt(amt)}`)
+              .join('\n');
+          case 'paycheck':
+            return `Estimated paycheck: gross ${fmt(result.gross)}, withholding ${fmt(result.withholding)}, take-home ${fmt(result.takeHome)}.`;
+          case 'capabilities':
+            const parts = [`Running as: ${result.env}`];
+            parts.push(`Notifications: ${result.notifications.supported ? result.notifications.permission : 'unsupported'}`);
+            parts.push(`Haptics: ${result.haptics.supported ? 'available' : 'unavailable'}`);
+            parts.push(`Share: ${result.share.supported ? 'available' : 'unavailable'}`);
+            return parts.join('\n');
+          default:
+            return typeof result === 'string' ? result : JSON.stringify(result, null, 2);
         }
       }
-      return { shareText, shareFile };
+
+      async function answer(question) {
+        const intent = matchIntent(question);
+
+        if (intent.action === 'greeting') {
+          return { reply: "Hey. Ask me about your balance, spending, goals, or say 'take me to analytics'." };
+        }
+        if (intent.action === 'help') {
+          return { reply: "I can:\n• Answer questions about your balance, spending, income, goals\n• Navigate between screens\n• Log transactions (with your confirmation)\n• Explain your data patterns\n\nTry: \"How much have I spent this week?\"" };
+        }
+        if (intent.action === 'navigate') {
+          setTimeout(() => {
+            if (intent.target === 'settings') openSettings();
+            else switchTab(intent.target);
+          }, 200);
+          return { reply: intent.reply };
+        }
+        if (intent.action === 'confirm-add') {
+          return {
+            reply: intent.reply,
+            confirmAction: {
+              label: `Log ${fmt(intent.amount)} ${intent.type}`,
+              execute: async () => {
+                await Store.addTransaction({
+                  type: intent.type,
+                  amount: intent.amount,
+                  description: 'Logged via AI',
+                  category: intent.type === 'income' ? 'other' : 'other'
+                });
+                haptic('success');
+                toast(`${intent.type === 'income' ? 'Income' : 'Expense'} logged`);
+                render();
+                return `Logged ${fmt(intent.amount)} as ${intent.type}.`;
+              }
+            }
+          };
+        }
+        if (intent.action === 'answer') {
+          try {
+            const tool = tools[intent.tool];
+            if (!tool) return { reply: "I don't have a tool for that yet." };
+            const args = intent.args || [];
+            const result = await tool(...args);
+            const formatted = intent.template ? formatToolResult(intent.template, result) : JSON.stringify(result);
+            return { reply: formatted };
+          } catch (e) {
+            return { reply: "I ran into an error reading that data." };
+          }
+        }
+        return {
+          reply: "I'm not sure I understood that. Try asking about your balance, spending, goals, or say 'take me to analytics'."
+        };
+      }
+
+      return { answer, tools };
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  6. UI LAYER
+    //  7. UI LAYER
     // ═══════════════════════════════════════════════════════════
 
     let currentTab = 'home';
     let privacyMode = false;
     let authenticated = false;
     let sheetReturnFocus = null;
-    let notifStatusCache = null;
+    let aiChat = []; // { role, text, confirmAction }
+    let aiThinking = false;
+    let unlockedPages = {}; // { pageName: expiryTimestamp }
 
     /* ── HELPERS ── */
     function fmt(n) {
@@ -1648,22 +1712,24 @@
     /* ── AUTH ── */
     async function checkAppLock() {
       if (!Store.preferences.appLockEnabled) { authenticated = true; return; }
-      await showAuthGate();
+      await showAuthGate('Logostics is Locked', 'Authenticating…');
     }
-    async function showAuthGate() {
+    async function showAuthGate(title, subtitle, onSuccess) {
       const gate = document.getElementById('auth-gate');
       const icon = document.getElementById('auth-icon');
-      const title = document.getElementById('auth-title');
-      const sub = document.getElementById('auth-sub');
+      const titleEl = document.getElementById('auth-title');
+      const subEl = document.getElementById('auth-sub');
       const actions = document.getElementById('auth-actions');
       gate.classList.add('on');
+      titleEl.textContent = title;
+      subEl.textContent = subtitle;
 
       const cap = await PlatformCapabilities.checkWebAuthn();
       if (!cap.available) {
         icon.textContent = '⚠';
         icon.classList.remove('available');
-        title.textContent = 'App Lock Unavailable';
-        sub.textContent = cap.reason + ' You can still use Logostics, or disable app lock in Settings.';
+        titleEl.textContent = 'Authentication Unavailable';
+        subEl.textContent = cap.reason + ' You can continue without lock, or disable it in Settings.';
         actions.innerHTML = `
           <button class="btn btn-primary" onclick="skipLock()">Continue Without Lock</button>
           <button class="btn btn-secondary" onclick="disableLockAndContinue()">Disable App Lock</button>
@@ -1672,15 +1738,15 @@
       }
       icon.textContent = '🔒';
       icon.classList.add('available');
-      title.textContent = 'Logostics is Locked';
-      sub.textContent = 'Use your device passcode or biometric to unlock.';
       actions.innerHTML = `
-        <button class="btn btn-primary" id="auth-btn" onclick="doAuthenticate()">Unlock</button>
+        <button class="btn btn-primary" id="auth-btn" onclick="doAuthenticate(${onSuccess ? 'true' : 'false'})">Unlock</button>
         <button class="btn btn-secondary" onclick="skipLock()">Cancel</button>
       `;
-      setTimeout(() => doAuthenticate(), 400);
+      // Auto-trigger
+      setTimeout(() => doAuthenticate(!!onSuccess), 400);
     }
-    async function doAuthenticate() {
+    let pendingAuthSuccess = null;
+    async function doAuthenticate(isPageUnlock) {
       const sub = document.getElementById('auth-sub');
       const btn = document.getElementById('auth-btn');
       if (btn) btn.disabled = true;
@@ -1692,8 +1758,13 @@
         haptic('success');
         setTimeout(() => {
           document.getElementById('auth-gate').classList.remove('on');
-          authenticated = true;
-          render();
+          if (isPageUnlock) {
+            if (pendingAuthSuccess) pendingAuthSuccess();
+            pendingAuthSuccess = null;
+          } else {
+            authenticated = true;
+            render();
+          }
         }, 250);
       } else {
         sub.textContent = result.reason;
@@ -1715,6 +1786,30 @@
       toast('App lock disabled');
     }
 
+    // ── Per-page protection ──
+    function isPageProtected(tab) {
+      const prefs = Store.preferences.protectedPages || {};
+      return !!(Store.preferences.appLockEnabled && prefs[tab]);
+    }
+    function isPageUnlocked(tab) {
+      const exp = unlockedPages[tab];
+      if (!exp) return false;
+      if (exp === 'session') return true;
+      return Date.now() < exp;
+    }
+    function unlockPage(tab) {
+      const timeout = Store.preferences.authTimeout || 'session';
+      if (timeout === 'session') unlockedPages[tab] = 'session';
+      else if (timeout === '30s') unlockedPages[tab] = Date.now() + 30000;
+      else if (timeout === '1m') unlockedPages[tab] = Date.now() + 60000;
+      else if (timeout === '5m') unlockedPages[tab] = Date.now() + 300000;
+      else if (timeout === 'always') unlockedPages[tab] = Date.now() + 1000;
+      else unlockedPages[tab] = 'session';
+    }
+    function clearUnlockedPages() {
+      unlockedPages = {};
+    }
+
     /* ── PRIVACY ── */
     function togglePrivacy() {
       privacyMode = !privacyMode;
@@ -1726,7 +1821,174 @@
       toast(privacyMode ? 'Privacy mode on' : 'Privacy mode off');
     }
 
-    /* ── RENDER: HOME ── */
+    // Auto-clear unlocked pages on backgrounding
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        const timeout = Store.preferences.authTimeout || 'session';
+        if (timeout === 'background' || timeout === 'always') {
+          clearUnlockedPages();
+        }
+      }
+    });
+
+    /* ── AI CHAT ── */
+    function openAI() {
+      haptic('medium');
+      aiChat = aiChat.slice(-40); // bound history
+      openSheet(`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div class="sheet-title" style="margin:0;text-align:left;">Ask Logostics</div>
+          <button onclick="clearAIChat()" style="background:var(--gray-850);border:1px solid var(--gray-700);color:var(--gray-400);padding:6px 10px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Clear</button>
+        </div>
+        <div id="ai-chat-log" style="max-height:55vh;overflow-y:auto;margin-bottom:12px;padding-right:4px;">
+          ${aiChat.length === 0 ? `
+            <div class="ai-chat-bubble ai-bubble-system">Ask about your money, goals, or say "take me to analytics".</div>
+            <div class="ai-chat-bubble ai-bubble-assistant">
+              Try:<br>
+              • "How much cash do I have?"<br>
+              • "How much have I spent this week?"<br>
+              • "Show my goals"<br>
+              • "Add $12 expense"
+            </div>
+          ` : aiChat.map(m => renderAIBubble(m)).join('')}
+        </div>
+        <form onsubmit="submitAI(event)" style="display:flex;gap:8px;">
+          <input class="field-input" id="ai-input" placeholder="Ask anything…" autocomplete="off" style="flex:1;">
+          <button type="submit" class="btn btn-green" style="width:auto;padding:14px 22px;">↑</button>
+        </form>
+      `);
+      setTimeout(() => {
+        const log = document.getElementById('ai-chat-log');
+        if (log) log.scrollTop = log.scrollHeight;
+        document.getElementById('ai-input')?.focus();
+      }, 100);
+    }
+
+    function renderAIBubble(m) {
+      if (m.role === 'user') {
+        return `<div class="ai-chat-bubble ai-bubble-user">${escapeHtml(m.text)}</div>`;
+      }
+      if (m.role === 'system') {
+        return `<div class="ai-chat-bubble ai-bubble-system">${escapeHtml(m.text)}</div>`;
+      }
+      let confirmHtml = '';
+      if (m.confirmAction) {
+        confirmHtml = `
+          <div class="ai-action-row">
+            <button class="ai-action-btn primary" onclick="executeAIConfirm(${m.id})">${escapeHtml(m.confirmAction.label)}</button>
+            <button class="ai-action-btn" onclick="dismissAIConfirm(${m.id})">Cancel</button>
+          </div>
+        `;
+      }
+      return `<div class="ai-chat-bubble ai-bubble-assistant">${escapeHtml(m.text).replace(/\n/g, '<br>')}${confirmHtml}</div>`;
+    }
+
+    async function submitAI(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('ai-input');
+      const q = input.value.trim();
+      if (!q || aiThinking) return;
+      input.value = '';
+
+      aiChat.push({ role: 'user', text: q });
+      refreshAIChatLog();
+
+      aiThinking = true;
+      // Typing indicator
+      const log = document.getElementById('ai-chat-log');
+      if (log) {
+        const typing = document.createElement('div');
+        typing.id = 'ai-typing';
+        typing.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+        log.appendChild(typing);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      try {
+        const response = await AIAgent.answer(q);
+        const msg = {
+          role: 'assistant',
+          text: response.reply,
+          id: Date.now() + Math.random(),
+          confirmAction: response.confirmAction || null
+        };
+        aiChat.push(msg);
+      } catch (err) {
+        aiChat.push({ role: 'assistant', text: 'Sorry, something went wrong.' });
+      } finally {
+        aiThinking = false;
+        document.getElementById('ai-typing')?.remove();
+        refreshAIChatLog();
+      }
+    }
+
+    function refreshAIChatLog() {
+      const log = document.getElementById('ai-chat-log');
+      if (!log) return;
+      log.innerHTML = aiChat.map(m => renderAIBubble(m)).join('');
+      log.scrollTop = log.scrollHeight;
+    }
+
+    async function executeAIConfirm(id) {
+      const m = aiChat.find(x => x.id === id);
+      if (!m || !m.confirmAction) return;
+      const action = m.confirmAction;
+      m.confirmAction = null;
+      refreshAIChatLog();
+      try {
+        const result = await action.execute();
+        aiChat.push({ role: 'assistant', text: result || 'Done.' });
+      } catch (e) {
+        aiChat.push({ role: 'assistant', text: 'Action failed.' });
+      }
+      refreshAIChatLog();
+    }
+    function dismissAIConfirm(id) {
+      const m = aiChat.find(x => x.id === id);
+      if (m) m.confirmAction = null;
+      aiChat.push({ role: 'system', text: 'Action cancelled.' });
+      refreshAIChatLog();
+    }
+    function clearAIChat() {
+      aiChat = [];
+      openAI();
+    }
+
+    /* ── NAV WITH PAGE PROTECTION ── */
+    async function switchTab(tab) {
+      // Check per-page protection
+      if (isPageProtected(tab) && !isPageUnlocked(tab)) {
+        pendingAuthSuccess = () => {
+          unlockPage(tab);
+          currentTab = tab;
+          document.querySelectorAll('.nav-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.tab === tab);
+          });
+          haptic('light');
+          render();
+        };
+        await showAuthGate('Protected Area', `"${tab}" requires authentication.`);
+        return;
+      }
+      currentTab = tab;
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.tab === tab);
+      });
+      haptic('light');
+      render();
+    }
+
+    /* ── RENDER ── */
+    function render() {
+      if (!authenticated) return;
+      const app = document.getElementById('app');
+      const views = { home: renderHome, activity: renderActivity, goals: renderGoals, analytics: renderAnalytics };
+      app.innerHTML = views[currentTab] ? views[currentTab]() : renderHome();
+      app.classList.toggle('privacy-blur', privacyMode);
+      try { sessionStorage.setItem('logostics_tab', currentTab); } catch (e) {}
+    }
+
+    /* ── HOME ── */
     function renderHome() {
       const snap = Store.getSnapshot();
       const bal = snap.balance;
@@ -1735,7 +1997,6 @@
       const planned = snap.recurringExpenses.filter(e => e.active !== false).reduce((s, e) => s + e.amount, 0);
       const recent = snap.transactions.slice(0, 5);
       const insights = Store.generateInsights();
-      const env = PlatformCapabilities.env;
 
       return `
         <div class="container fade-in">
@@ -1765,14 +2026,8 @@
               <div class="cash-badge">+${fmt(est.takeHome)}</div>
             </div>
             <div class="cash-rows">
-              <div class="cash-row">
-                <span class="lbl">↑ Expected</span>
-                <span class="amt pos">+${fmt(est.takeHome)}</span>
-              </div>
-              <div class="cash-row">
-                <span class="lbl">↓ Planned</span>
-                <span class="amt neg">−${fmt(planned)}</span>
-              </div>
+              <div class="cash-row"><span class="lbl">↑ Expected</span><span class="amt pos">+${fmt(est.takeHome)}</span></div>
+              <div class="cash-row"><span class="lbl">↓ Planned</span><span class="amt neg">−${fmt(planned)}</span></div>
             </div>
             <div class="cash-proj">
               <span class="lbl">Projected</span>
@@ -1791,7 +2046,10 @@
             <div class="section-h"><span class="t-title">Insights</span></div>
             <div class="stagger">
               ${insights.slice(0, 3).map(i => `
-                <div class="insight"><span class="ico">${i.ico}</span><span class="txt">${i.txt}</span></div>
+                <div class="insight" onclick="askAIAbout('${escapeHtml(i.txt.replace(/<[^>]*>/g, ''))}')">
+                  <span class="ico">${i.ico}</span>
+                  <span class="txt">${i.txt}</span>
+                </div>
               `).join('')}
             </div>
           </div>
@@ -1813,10 +2071,21 @@
       `;
     }
 
+    function askAIAbout(text) {
+      openAI();
+      setTimeout(() => {
+        const input = document.getElementById('ai-input');
+        if (input) {
+          input.value = text;
+          input.focus();
+        }
+      }, 200);
+    }
+
     function renderTxItem(t) {
       const isInc = t.type === 'income';
       return `
-        <div class="activity-item" onclick="openTxDetail(${t.id})">
+        <div class="activity-item" onclick="openTxDetail(${t.id})" oncontextmenu="return longPressTx(event, ${t.id})">
           <div class="activity-ico ${isInc ? 'income' : ''}">${isInc ? '↓' : '↑'}</div>
           <div class="activity-body">
             <div class="activity-name">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div>
@@ -1827,6 +2096,23 @@
           <div class="activity-amt ${isInc ? 'pos' : 'neg'}">${isInc ? '+' : '−'}${fmt(t.amount)}</div>
         </div>
       `;
+    }
+
+    // Long press on a transaction → AI context menu
+    let longPressTimer = null;
+    function longPressTx(e, id) {
+      e.preventDefault();
+      const t = Store.getSnapshot().transactions.find(x => x.id === id);
+      if (!t) return false;
+      openAI();
+      setTimeout(() => {
+        const input = document.getElementById('ai-input');
+        if (input) {
+          input.value = `Explain my ${t.type === 'income' ? 'income' : 'expense'} of ${fmt(t.amount)} on ${fmtDate(t.date)} in category "${t.category}"`;
+          input.focus();
+        }
+      }, 200);
+      return false;
     }
 
     /* ── ACTIVITY ── */
@@ -1962,13 +2248,13 @@
         <div class="container fade-in">
           <div class="top-header"><div class="t-large">Analytics</div></div>
           <div class="stat-grid stagger">
-            <div class="stat"><div class="stat-val" style="color:var(--green);">${fmt(inc)}</div><div class="stat-lbl">Income · 30d</div></div>
-            <div class="stat"><div class="stat-val" style="color:var(--gray-200);">${fmt(sp)}</div><div class="stat-lbl">Spending · 30d</div></div>
-            <div class="stat"><div class="stat-val">${rate}%</div><div class="stat-lbl">Savings Rate</div></div>
-            <div class="stat"><div class="stat-val">${fmt(avg)}</div><div class="stat-lbl">Avg Transaction</div></div>
+            <div class="stat" onclick="askAIAbout('Explain my 30-day income')"><div class="stat-val" style="color:var(--green);">${fmt(inc)}</div><div class="stat-lbl">Income · 30d</div></div>
+            <div class="stat" onclick="askAIAbout('Explain my 30-day spending')"><div class="stat-val" style="color:var(--gray-200);">${fmt(sp)}</div><div class="stat-lbl">Spending · 30d</div></div>
+            <div class="stat" onclick="askAIAbout('What is my savings rate?')"><div class="stat-val">${rate}%</div><div class="stat-lbl">Savings Rate</div></div>
+            <div class="stat" onclick="askAIAbout('What is my average transaction?')"><div class="stat-val">${fmt(avg)}</div><div class="stat-lbl">Avg Transaction</div></div>
           </div>
-          <div class="chart-card">
-            <h3>Weekly Spending</h3>
+          <div class="chart-card" onclick="askAIAbout('Explain my weekly spending chart')" style="cursor:pointer;">
+            <h3>Weekly Spending · tap to ask AI</h3>
             <div style="display:flex;align-items:flex-end;justify-content:space-between;height:110px;gap:8px;">
               ${last7.map(d => `
                 <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
@@ -1978,8 +2264,8 @@
               `).join('')}
             </div>
           </div>
-          <div class="chart-card">
-            <h3>Top Category</h3>
+          <div class="chart-card" onclick="askAIAbout('What is my largest spending category?')" style="cursor:pointer;">
+            <h3>Top Category · tap to ask AI</h3>
             ${lc.amount > 0 ? `
               <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span style="font-size:15px;font-weight:600;">${escapeHtml(lc.category)}</span>
@@ -2008,59 +2294,13 @@
       `;
     }
 
-    /* ── NAV ── */
-    function switchTab(tab) {
-      currentTab = tab;
-      document.querySelectorAll('.nav-item').forEach(el => {
-        el.classList.toggle('active', el.dataset.tab === tab);
-      });
-      haptic('light');
-      render();
-    }
-
-    /* ── RENDER ── */
-    function render() {
-      if (!authenticated) return;
-      const app = document.getElementById('app');
-      const views = { home: renderHome, activity: renderActivity, goals: renderGoals, analytics: renderAnalytics };
-      app.innerHTML = views[currentTab] ? views[currentTab]() : renderHome();
-      app.classList.toggle('privacy-blur', privacyMode);
-      // Persist current tab for deep-link restore
-      try { sessionStorage.setItem('logostics_tab', currentTab); } catch (e) {}
-    }
-
-    /* ── NOTIFICATIONS ── */
-    async function enableNotifications() {
-      const result = await NotificationManager.requestPermission();
-      if (result.granted) {
-        await Store.updatePreferences({ notificationsEnabled: true });
-        toast('Notifications enabled');
-        const sent = await NotificationManager.send('Logostics', 'Notifications are now enabled.');
-        if (!sent.sent) toast('Permission granted but notification failed: ' + sent.reason);
-      } else {
-        toast(result.reason || 'Notifications not enabled');
-      }
-      render();
-    }
-    async function sendTestNotification() {
-      const sent = await NotificationManager.send('Logostics', 'Test notification — this is a real browser notification.');
-      toast(sent.sent ? 'Notification sent' : 'Not sent: ' + sent.reason);
-    }
-
     /* ── SHEETS ── */
     function openAddIncome() {
       openSheet(`
         <div class="sheet-title">Add Income</div>
-        <div class="field">
-          <label class="field-label">Amount</label>
-          <input class="field-input" id="in-amount" type="number" inputmode="decimal" placeholder="$0.00" autofocus>
-        </div>
-        <div class="field">
-          <label class="field-label">Source</label>
-          <input class="field-input" id="in-desc" placeholder="Paycheck, gift…">
-        </div>
-        <div class="field">
-          <label class="field-label">Category</label>
+        <div class="field"><label class="field-label">Amount</label><input class="field-input" id="in-amount" type="number" inputmode="decimal" placeholder="$0.00" autofocus></div>
+        <div class="field"><label class="field-label">Source</label><input class="field-input" id="in-desc" placeholder="Paycheck, gift…"></div>
+        <div class="field"><label class="field-label">Category</label>
           <div class="chips" id="in-cats">
             <button class="chip selected" onclick="pickChip(this)" data-cat="paycheck"><span class="emoji">💵</span>Paycheck</button>
             <button class="chip" onclick="pickChip(this)" data-cat="gift"><span class="emoji">🎁</span>Gift</button>
@@ -2077,28 +2317,17 @@
       const cat = document.querySelector('#in-cats .chip.selected')?.dataset.cat || 'other';
       if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
       await Store.addTransaction({ type: 'income', amount: amt, description: desc || 'Income', category: cat });
-      closeSheet();
-      haptic('success');
-      toast('Income added');
-      render();
+      closeSheet(); haptic('success'); toast('Income added'); render();
       if (Notification.permission === 'granted' && Store.preferences.notificationsEnabled) {
         NotificationManager.send('Income logged', `${fmt(amt)} added to your balance.`);
       }
     }
-
     function openAddExpense() {
       openSheet(`
         <div class="sheet-title">Add Expense</div>
-        <div class="field">
-          <label class="field-label">Amount</label>
-          <input class="field-input" id="ex-amount" type="number" inputmode="decimal" placeholder="$0.00" autofocus>
-        </div>
-        <div class="field">
-          <label class="field-label">Description</label>
-          <input class="field-input" id="ex-desc" placeholder="Coffee, groceries…">
-        </div>
-        <div class="field">
-          <label class="field-label">Category</label>
+        <div class="field"><label class="field-label">Amount</label><input class="field-input" id="ex-amount" type="number" inputmode="decimal" placeholder="$0.00" autofocus></div>
+        <div class="field"><label class="field-label">Description</label><input class="field-input" id="ex-desc" placeholder="Coffee, groceries…"></div>
+        <div class="field"><label class="field-label">Category</label>
           <div class="chips" id="ex-cats">
             <button class="chip selected" onclick="pickChip(this)" data-cat="food"><span class="emoji">🍔</span>Food</button>
             <button class="chip" onclick="pickChip(this)" data-cat="shopping"><span class="emoji">🛍</span>Shopping</button>
@@ -2117,33 +2346,16 @@
       const cat = document.querySelector('#ex-cats .chip.selected')?.dataset.cat || 'other';
       if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
       await Store.addTransaction({ type: 'expense', amount: amt, description: desc || 'Expense', category: cat });
-      closeSheet();
-      haptic('success');
-      toast('Expense added');
-      render();
+      closeSheet(); haptic('success'); toast('Expense added'); render();
     }
-
     function openAddGoal() {
       openSheet(`
         <div class="sheet-title">Create Goal</div>
-        <div class="field">
-          <label class="field-label">Goal Name</label>
-          <input class="field-input" id="g-name" placeholder="iPhone, Vacation…" autofocus>
-        </div>
-        <div class="field">
-          <label class="field-label">Target Amount</label>
-          <input class="field-input" id="g-target" type="number" inputmode="decimal" placeholder="$0.00">
-        </div>
-        <div class="field">
-          <label class="field-label">Current Amount</label>
-          <input class="field-input" id="g-current" type="number" inputmode="decimal" placeholder="$0.00" value="0">
-        </div>
-        <div class="field">
-          <label class="field-label">Weekly Savings (optional)</label>
-          <input class="field-input" id="g-weekly" type="number" inputmode="decimal" placeholder="$0.00">
-        </div>
-        <div class="field">
-          <label class="field-label">Icon</label>
+        <div class="field"><label class="field-label">Goal Name</label><input class="field-input" id="g-name" placeholder="iPhone, Vacation…" autofocus></div>
+        <div class="field"><label class="field-label">Target Amount</label><input class="field-input" id="g-target" type="number" inputmode="decimal" placeholder="$0.00"></div>
+        <div class="field"><label class="field-label">Current Amount</label><input class="field-input" id="g-current" type="number" inputmode="decimal" placeholder="$0.00" value="0"></div>
+        <div class="field"><label class="field-label">Weekly Savings (optional)</label><input class="field-input" id="g-weekly" type="number" inputmode="decimal" placeholder="$0.00"></div>
+        <div class="field"><label class="field-label">Icon</label>
           <div class="chips" id="g-emoji">
             <button class="chip selected" onclick="pickChip(this)" data-emoji="◈">◈</button>
             <button class="chip" onclick="pickChip(this)" data-emoji="▣">▣</button>
@@ -2165,21 +2377,15 @@
       if (!name) { toast('Enter a goal name'); return; }
       if (!target || target <= 0) { toast('Enter a valid target'); return; }
       await Store.addGoal({ name, target, current, weeklySavings: weekly, emoji });
-      closeSheet();
-      haptic('success');
-      toast('Goal created');
-      render();
+      closeSheet(); haptic('success'); toast('Goal created'); render();
     }
-
     function openTxDetail(id) {
       const t = Store.getSnapshot().transactions.find(x => x.id === id);
       if (!t) return;
       const isInc = t.type === 'income';
       openSheet(`
         <div style="text-align:center;margin-bottom:28px;">
-          <div style="font-size:44px;font-weight:700;letter-spacing:-0.04em;color:${isInc ? 'var(--green)' : 'var(--white)'};font-variant-numeric:tabular-nums;">
-            ${isInc ? '+' : '−'}${fmt(t.amount)}
-          </div>
+          <div style="font-size:44px;font-weight:700;letter-spacing:-0.04em;color:${isInc ? 'var(--green)' : 'var(--white)'};font-variant-numeric:tabular-nums;">${isInc ? '+' : '−'}${fmt(t.amount)}</div>
           <div style="font-size:14px;color:var(--gray-500);margin-top:6px;font-weight:500;">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div>
           <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">${escapeHtml(t.category)} · ${fmtDate(t.date)}</div>
         </div>
@@ -2187,7 +2393,7 @@
           <button class="btn btn-secondary" onclick="closeSheet();openEditTx(${t.id})">Edit</button>
           <button class="btn btn-danger" onclick="confirmDeleteTx(${t.id})">Delete</button>
         </div>
-        <button class="btn btn-secondary" style="margin-top:8px;" onclick="shareTx(${t.id})">Share</button>
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="askAIAbout('Explain my ${t.type} of ${fmt(t.amount)} in category ${t.category}')">Ask AI about this</button>
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
       `);
     }
@@ -2196,16 +2402,9 @@
       if (!t) return;
       openSheet(`
         <div class="sheet-title">Edit</div>
-        <div class="field">
-          <label class="field-label">Amount</label>
-          <input class="field-input" id="e-amount" type="number" inputmode="decimal" value="${t.amount}">
-        </div>
-        <div class="field">
-          <label class="field-label">Description</label>
-          <input class="field-input" id="e-desc" value="${escapeHtml(t.description)}">
-        </div>
-        <div class="field">
-          <label class="field-label">Type</label>
+        <div class="field"><label class="field-label">Amount</label><input class="field-input" id="e-amount" type="number" inputmode="decimal" value="${t.amount}"></div>
+        <div class="field"><label class="field-label">Description</label><input class="field-input" id="e-desc" value="${escapeHtml(t.description)}"></div>
+        <div class="field"><label class="field-label">Type</label>
           <div class="segmented" id="e-type">
             <button class="seg ${t.type === 'expense' ? 'active' : ''}" onclick="pickSeg(this)" data-t="expense">Expense</button>
             <button class="seg ${t.type === 'income' ? 'active' : ''}" onclick="pickSeg(this)" data-t="income">Income</button>
@@ -2221,30 +2420,14 @@
       const type = document.querySelector('#e-type .seg.active')?.dataset.t || 'expense';
       if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
       await Store.updateTransaction(id, { amount: amt, description: desc, type });
-      closeSheet();
-      haptic('success');
-      toast('Updated');
-      render();
+      closeSheet(); haptic('success'); toast('Updated'); render();
     }
     async function confirmDeleteTx(id) {
       if (confirm('Delete this transaction?')) {
         await Store.deleteTransaction(id);
-        closeSheet();
-        haptic('heavy');
-        toast('Deleted');
-        render();
+        closeSheet(); haptic('heavy'); toast('Deleted'); render();
       }
     }
-
-    async function shareTx(id) {
-      const t = Store.getSnapshot().transactions.find(x => x.id === id);
-      if (!t) return;
-      const text = `${t.type === 'income' ? '+' : '−'}${fmt(t.amount)} — ${t.description || t.category} (${fmtDate(t.date)})`;
-      const result = await ShareManager.shareText('Logostics Transaction', text);
-      if (result.shared) toast('Shared');
-      else toast(result.reason);
-    }
-
     function openGoalDetail(id) {
       const g = Store.getGoals().find(x => x.id === id);
       if (!g) return;
@@ -2275,7 +2458,7 @@
             <button class="btn btn-green" style="width:auto;padding:14px 22px;" onclick="addToGoal(${g.id})">Add</button>
           </div>
         </div>
-        <button class="btn btn-secondary" onclick="shareGoal(${g.id})">Share Progress</button>
+        <button class="btn btn-secondary" onclick="askAIAbout('How is my ${escapeHtml(g.name)} goal doing?')">Ask AI about this goal</button>
         <button class="btn btn-danger" style="margin-top:8px;" onclick="confirmDeleteGoal(${g.id})">Delete Goal</button>
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
       `);
@@ -2286,46 +2469,27 @@
       const g = Store.getGoals().find(x => x.id === id);
       if (!g) return;
       await Store.updateGoal(id, { current: g.current + amt });
-      closeSheet();
-      haptic('success');
-      toast('Added to goal');
-      render();
+      closeSheet(); haptic('success'); toast('Added to goal'); render();
     }
     async function confirmDeleteGoal(id) {
       if (confirm('Delete this goal?')) {
         await Store.deleteGoal(id);
-        closeSheet();
-        haptic('heavy');
-        toast('Goal deleted');
-        render();
+        closeSheet(); haptic('heavy'); toast('Goal deleted'); render();
       }
     }
-    async function shareGoal(id) {
-      const g = Store.getGoals().find(x => x.id === id);
-      if (!g) return;
-      const p = Store.computeGoalProgress(g);
-      const text = `${g.name}: ${fmt(g.current)} of ${fmt(g.target)} — ${p.pct}% complete, ${fmt(p.remaining)} remaining.`;
-      const result = await ShareManager.shareText('Logostics Goal', text);
-      toast(result.shared ? 'Shared' : result.reason);
-    }
-
     function openTransfer() {
       const goals = Store.getGoals();
       if (!goals.length) { toast('Create a goal first'); return; }
       openSheet(`
         <div class="sheet-title">Transfer to Goal</div>
-        <div class="field">
-          <label class="field-label">Select Goal</label>
+        <div class="field"><label class="field-label">Select Goal</label>
           <div class="chips" id="t-goal">
             ${goals.map((g, i) => `
               <button class="chip ${i === 0 ? 'selected' : ''}" onclick="pickChip(this)" data-goal="${g.id}">${g.emoji} ${escapeHtml(g.name)}</button>
             `).join('')}
           </div>
         </div>
-        <div class="field">
-          <label class="field-label">Amount</label>
-          <input class="field-input" id="t-amount" type="number" inputmode="decimal" placeholder="$0.00">
-        </div>
+        <div class="field"><label class="field-label">Amount</label><input class="field-input" id="t-amount" type="number" inputmode="decimal" placeholder="$0.00"></div>
         <button class="btn btn-primary" onclick="submitTransfer()">Transfer</button>
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
       `);
@@ -2337,10 +2501,7 @@
       const g = Store.getGoals().find(x => x.id === goalId);
       if (!g) return;
       await Store.updateGoal(goalId, { current: g.current + amt });
-      closeSheet();
-      haptic('success');
-      toast('Transferred');
-      render();
+      closeSheet(); haptic('success'); toast('Transferred'); render();
     }
 
     /* ── SETTINGS ── */
@@ -2354,25 +2515,16 @@
       const webauthn = await PlatformCapabilities.checkWebAuthn();
       const env = PlatformCapabilities.env;
       const share = PlatformCapabilities.checkShare();
-      const storage = await PlatformCapabilities.checkStorage();
+      const storage = await PlatformCapabilities.checkStorageDetail();
       const net = PlatformCapabilities.checkNetwork();
 
       openSheet(`
         <div class="sheet-title">Settings</div>
 
         <div class="t-label" style="margin-bottom:10px;padding-left:4px;">Income</div>
-        <div class="field">
-          <label class="field-label">Hourly Rate</label>
-          <input class="field-input" id="s-hourly" type="number" inputmode="decimal" value="${inc.hourlyRate}" placeholder="$0.00">
-        </div>
-        <div class="field">
-          <label class="field-label">Hours per Week</label>
-          <input class="field-input" id="s-hours" type="number" inputmode="decimal" value="${inc.hoursPerWeek}" placeholder="0">
-        </div>
-        <div class="field">
-          <label class="field-label">Withholding %</label>
-          <input class="field-input" id="s-withhold" type="number" inputmode="decimal" value="${inc.withholdingPct}" placeholder="20">
-        </div>
+        <div class="field"><label class="field-label">Hourly Rate</label><input class="field-input" id="s-hourly" type="number" inputmode="decimal" value="${inc.hourlyRate}" placeholder="$0.00"></div>
+        <div class="field"><label class="field-label">Hours per Week</label><input class="field-input" id="s-hours" type="number" inputmode="decimal" value="${inc.hoursPerWeek}" placeholder="0"></div>
+        <div class="field"><label class="field-label">Withholding %</label><input class="field-input" id="s-withhold" type="number" inputmode="decimal" value="${inc.withholdingPct}" placeholder="20"></div>
         <div class="insight" style="margin-bottom:24px;">
           <span class="ico">↑</span>
           <span class="txt">Estimated take-home: <strong>${fmt(est.takeHome)}</strong><br>
@@ -2380,7 +2532,7 @@
           </span>
         </div>
 
-        <div class="t-label" style="margin-bottom:10px;padding-left:4px;">Security & Privacy</div>
+        <div class="t-label" style="margin-bottom:10px;padding-left:4px;">Security</div>
         <div class="set-row" onclick="toggleAppLock()">
           <div class="set-left"><span class="ico">🔒</span> App Lock</div>
           <div class="toggle ${prefs.appLockEnabled ? 'on' : ''}"></div>
@@ -2390,9 +2542,37 @@
             ? 'Uses your device\'s real platform authenticator (Face ID, Touch ID, Windows Hello) via WebAuthn. Logostics never sees or stores biometric data.'
             : 'Not available on this device: ' + escapeHtml(webauthn.reason)}
         </p>
+        ${prefs.appLockEnabled ? `
+          <div class="t-label" style="margin:16px 0 10px;padding-left:4px;">Protected Areas</div>
+          ${['home', 'activity', 'goals', 'analytics'].map(page => `
+            <div class="set-row" onclick="toggleProtected('${page}')">
+              <div class="set-left"><span class="ico">◈</span> ${page.charAt(0).toUpperCase() + page.slice(1)}</div>
+              <div class="toggle ${(prefs.protectedPages || {})[page] ? 'on' : ''}"></div>
+            </div>
+          `).join('')}
+          <div class="set-row static">
+            <div class="set-left"><span class="ico">◷</span> Auth Timeout</div>
+            <div class="set-right">${escapeHtml(prefs.authTimeout || 'session')}</div>
+          </div>
+          <div class="chips" style="margin-bottom:16px;">
+            ${['session', '30s', '1m', '5m', 'always'].map(t => `
+              <button class="chip ${prefs.authTimeout === t ? 'selected' : ''}" onclick="setAuthTimeout('${t}')">${t === 'session' ? 'Page only' : t === 'always' ? 'Always' : t}</button>
+            `).join('')}
+          </div>
+        ` : ''}
         <div class="set-row" onclick="togglePrivacy();closeSheet();">
           <div class="set-left"><span class="ico">👁</span> Privacy Mode</div>
           <div class="set-right">${privacyMode ? 'On' : 'Off'}</div>
+        </div>
+
+        <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">AI Assistant</div>
+        <div class="set-row" onclick="togglePreference('aiEnabled')">
+          <div class="set-left"><span class="ico">◈</span> AI Enabled</div>
+          <div class="toggle ${prefs.aiEnabled ? 'on' : ''}"></div>
+        </div>
+        <div class="set-row" onclick="openAI()">
+          <div class="set-left"><span class="ico">💬</span> Open AI Chat</div>
+          <div class="set-right">›</div>
         </div>
 
         <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">Notifications</div>
@@ -2411,41 +2591,29 @@
           <button class="btn btn-secondary" style="margin-bottom:6px;" onclick="sendTestNotification()">Send Test Notification</button>
         ` : ''}
         ${notif.requiresInstall ? `
-          <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
-            ${escapeHtml(notif.reason)}
-          </p>
-        ` : ''}
-        ${notif.permission === 'denied' ? `
-          <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
-            Notifications blocked. Enable them in your browser's site settings for this page.
-          </p>
+          <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">${escapeHtml(notif.reason)}</p>
         ` : ''}
 
-        <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">Device Capabilities</div>
+        <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">Device</div>
         <div class="set-row static">
           <div class="set-left"><span class="ico">◈</span> Environment</div>
           <div class="set-right">${escapeHtml(env.type)}</div>
         </div>
         <div class="set-row static">
-          <div class="set-left"><span class="ico">🔐</span> Platform Authenticator (WebAuthn)</div>
-          <div class="set-right"><span class="cap-badge ${webauthn.available ? 'ok' : 'no'}">${webauthn.available ? 'available' : 'unavailable'}</span></div>
+          <div class="set-left"><span class="ico">🔐</span> Platform Authenticator</div>
+          <div class="set-right"><span class="cap-badge ${webauthn.available ? 'ok' : 'no'}">${webauthn.available ? 'available' : 'no'}</span></div>
         </div>
         <div class="set-row static">
-          <div class="set-left"><span class="ico">◉</span> Haptics (Vibration API)</div>
-          <div class="set-right"><span class="cap-badge ${hapt.supported ? 'ok' : 'no'}">${hapt.supported ? 'available' : 'unavailable'}</span></div>
-        </div>
-        <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
-          ${hapt.supported
-            ? 'Vibration is used for tactile feedback.'
-            : escapeHtml(hapt.reason) + '. Native iOS apps use UIImpactFeedbackGenerator.'}
-        </p>
-        <div class="set-row static">
-          <div class="set-left"><span class="ico">↗</span> Web Share API</div>
-          <div class="set-right"><span class="cap-badge ${share.supported ? 'ok' : 'no'}">${share.supported ? 'available' : 'unavailable'}</span></div>
+          <div class="set-left"><span class="ico">◉</span> Haptics</div>
+          <div class="set-right"><span class="cap-badge ${hapt.supported ? 'ok' : 'no'}">${hapt.supported ? 'available' : 'no'}</span></div>
         </div>
         <div class="set-row static">
-          <div class="set-left"><span class="ico">💾</span> IndexedDB Storage</div>
-          <div class="set-right"><span class="cap-badge ${storage.indexedDB ? 'ok' : 'no'}">${storage.indexedDB ? 'available' : 'unavailable'}</span></div>
+          <div class="set-left"><span class="ico">↗</span> Web Share</div>
+          <div class="set-right"><span class="cap-badge ${share.supported ? 'ok' : 'no'}">${share.supported ? 'available' : 'no'}</span></div>
+        </div>
+        <div class="set-row static">
+          <div class="set-left"><span class="ico">💾</span> IndexedDB</div>
+          <div class="set-right"><span class="cap-badge ${storage.indexedDB ? 'ok' : 'no'}">${storage.indexedDB ? 'available' : 'no'}</span></div>
         </div>
         <div class="set-row static">
           <div class="set-left"><span class="ico">◔</span> Network</div>
@@ -2457,10 +2625,6 @@
           <div class="set-left"><span class="ico">↑</span> Export Data</div>
           <div class="set-right">JSON ›</div>
         </div>
-        <div class="set-row" onclick="shareSummary()">
-          <div class="set-left"><span class="ico">↗</span> Share Summary</div>
-          <div class="set-right">Text ›</div>
-        </div>
         <div class="set-row" onclick="resetAllData()">
           <div class="set-left"><span class="ico">×</span> Reset All Data</div>
           <div class="set-right" style="color:var(--gray-300);">Delete ›</div>
@@ -2469,11 +2633,8 @@
         <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">About</div>
         <div class="set-row static">
           <div class="set-left"><span class="ico">◈</span> Logostics Finance</div>
-          <div class="set-right">v2.0 · Web</div>
+          <div class="set-right">v3.0 · Web</div>
         </div>
-        <p style="font-size:11.5px;color:var(--gray-500);padding:8px 4px 12px;line-height:1.5;">
-          Running as an honest web app. Native iOS builds plug into Apple's LocalAuthentication, UserNotifications, CoreHaptics, and WidgetKit through the same PlatformCapabilities layer — no fake native features.
-        </p>
 
         <button class="btn btn-primary" style="margin-top:8px;" onclick="saveSettings()">Save Settings</button>
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
@@ -2489,11 +2650,34 @@
         if (!reg.success) { toast('Registration failed: ' + reg.reason); return; }
         const cred = AuthManager.getCredential();
         await Store.updatePreferences({ appLockEnabled: true, webAuthnCredential: cred });
-        toast('App lock enabled with real platform authenticator');
+        toast('App lock enabled');
       } else {
         await Store.updatePreferences({ appLockEnabled: false, webAuthnCredential: null });
+        clearUnlockedPages();
         toast('App lock disabled');
       }
+      openSettings();
+    }
+
+    async function toggleProtected(page) {
+      const prefs = Store.preferences.protectedPages || {};
+      const newVal = !prefs[page];
+      await Store.updatePreferences({
+        protectedPages: { ...prefs, [page]: newVal }
+      });
+      openSettings();
+    }
+
+    async function setAuthTimeout(t) {
+      await Store.updatePreferences({ authTimeout: t });
+      clearUnlockedPages();
+      openSettings();
+    }
+
+    async function togglePreference(key) {
+      const cur = Store.preferences[key];
+      await Store.updatePreferences({ [key]: !cur });
+      haptic('light');
       openSettings();
     }
 
@@ -2502,10 +2686,7 @@
       const hs = parseFloat(document.getElementById('s-hours').value) || 0;
       const w = parseFloat(document.getElementById('s-withhold').value) || 20;
       await Store.updateIncomeSettings({ hourlyRate: h, hoursPerWeek: hs, withholdingPct: w });
-      closeSheet();
-      haptic('success');
-      toast('Settings saved');
-      render();
+      closeSheet(); haptic('success'); toast('Settings saved'); render();
     }
 
     function openSiri() {
@@ -2526,9 +2707,10 @@
         <div class="insight" style="margin-bottom:20px;"><span class="ico">◉</span><span class="txt">"What's my projected balance?"</span></div>
         <div class="insight" style="border-color:var(--gray-700);">
           <span class="ico">◔</span>
-          <span class="txt"><strong>On the web</strong>, Siri and App Intents are not available. iOS does not expose these Apple frameworks to websites.</span>
+          <span class="txt"><strong>On the web</strong>, Siri and App Intents are not available. Use the in-app AI assistant instead.</span>
         </div>
-        <button class="btn btn-primary" style="margin-top:20px;" onclick="closeSheet()">Got it</button>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="closeSheet();openAI();">Open AI Assistant</button>
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
       `);
     }
 
@@ -2543,6 +2725,23 @@
       haptic('light');
     }
 
+    async function enableNotifications() {
+      const result = await NotificationManager.requestPermission();
+      if (result.granted) {
+        await Store.updatePreferences({ notificationsEnabled: true });
+        toast('Notifications enabled');
+        const sent = await NotificationManager.send('Logostics', 'Notifications are now enabled.');
+        if (!sent.sent) toast('Granted but failed: ' + sent.reason);
+      } else {
+        toast(result.reason || 'Not enabled');
+      }
+      render();
+    }
+    async function sendTestNotification() {
+      const sent = await NotificationManager.send('Logostics', 'Test notification — this is a real browser notification.');
+      toast(sent.sent ? 'Notification sent' : 'Not sent: ' + sent.reason);
+    }
+
     function exportData() {
       const snap = Store.getSnapshot();
       const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
@@ -2555,60 +2754,36 @@
       toast('Exported');
     }
 
-    async function shareSummary() {
-      const snap = Store.getSnapshot();
-      const income = Store.computeTotalIncome(30);
-      const spending = Store.computeTotalSpending(30);
-      const rate = Store.computeSavingsRate();
-      const text = `Logostics Finance Summary\n` +
-                   `Available: ${fmt(snap.balance)}\n` +
-                   `Income (30d): ${fmt(income)}\n` +
-                   `Spending (30d): ${fmt(spending)}\n` +
-                   `Savings rate: ${rate}%\n` +
-                   `Goals: ${snap.goals.length}`;
-      const result = await ShareManager.shareText('Logostics Summary', text);
-      toast(result.shared ? 'Shared' : result.reason);
-    }
-
     async function resetAllData() {
       if (!confirm('Reset all data? This cannot be undone.')) return;
-      try { localStorage.removeItem('logostics_finance_prefs_v1'); } catch (e) {}
+      try { localStorage.removeItem('logostics_finance_prefs_v2'); } catch (e) {}
       try { indexedDB.deleteDatabase('LogosticsFinanceDB'); } catch (e) {}
       location.reload();
     }
 
     /* ═══════════════════════════════════════════════════════════
-       SERVICE WORKER REGISTRATION
-       Real offline-first via Cache API + Service Worker
+       SERVICE WORKER
        ═══════════════════════════════════════════════════════════ */
     async function registerServiceWorker() {
       if (!('serviceWorker' in navigator)) return null;
       if (!window.isSecureContext) return null;
       try {
-        // Inline service worker via Blob — kept self-contained, no external file required.
-        // For production deployment, serve /sw.js from your origin instead.
         const swCode = `
-          const CACHE = 'logostics-v2';
+          const CACHE = 'logostics-v3';
           const SHELL = ['./'];
-
           self.addEventListener('install', (e) => {
             e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {}));
             self.skipWaiting();
           });
-
           self.addEventListener('activate', (e) => {
-            e.waitUntil(
-              caches.keys().then(keys =>
-                Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-              )
-            );
+            e.waitUntil(caches.keys().then(keys =>
+              Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+            ));
             self.clients.claim();
           });
-
           self.addEventListener('fetch', (e) => {
             const req = e.request;
             if (req.method !== 'GET') return;
-            // Navigation: network-first, fall back to cached shell (offline support)
             if (req.mode === 'navigate') {
               e.respondWith(
                 fetch(req).then(res => {
@@ -2619,7 +2794,6 @@
               );
               return;
             }
-            // Other GET: cache-first
             e.respondWith(
               caches.match(req).then(cached => {
                 if (cached) return cached;
@@ -2633,7 +2807,6 @@
               })
             );
           });
-
           self.addEventListener('notificationclick', (e) => {
             e.notification.close();
             e.waitUntil(
@@ -2646,8 +2819,7 @@
         `;
         const blob = new Blob([swCode], { type: 'application/javascript' });
         const swUrl = URL.createObjectURL(blob);
-        const reg = await navigator.serviceWorker.register(swUrl);
-        return reg;
+        return await navigator.serviceWorker.register(swUrl);
       } catch (e) {
         console.warn('SW registration failed:', e);
         return null;
@@ -2660,10 +2832,8 @@
     async function init() {
       await Store.init();
       await registerServiceWorker();
-
       Store.subscribe(() => { if (authenticated) render(); });
 
-      // Restore last tab from session (soft deep-link)
       try {
         const savedTab = sessionStorage.getItem('logostics_tab');
         if (savedTab && ['home', 'activity', 'goals', 'analytics'].includes(savedTab)) {
@@ -2675,60 +2845,31 @@
       } catch (e) {}
 
       if (Store.preferences.appLockEnabled && AuthManager.hasCredential()) {
-        await showAuthGate();
+        await showAuthGate('Logostics is Locked', 'Authenticating…');
       } else {
         authenticated = true;
         render();
       }
 
-      // Expose handlers
       Object.assign(window, {
         switchTab, openAddIncome, openAddExpense, openAddGoal, openGoalDetail,
-        openTxDetail, openTransfer, openSettings, openSiri,
+        openTxDetail, openTransfer, openSettings, openSiri, openAI,
         submitIncome, submitExpense, submitGoal, submitTransfer,
         submitEditTx, openEditTx, confirmDeleteTx, confirmDeleteGoal,
-        addToGoal, shareGoal, shareTx, pickChip, pickSeg, closeSheet, saveSettings,
-        exportData, shareSummary, resetAllData, togglePrivacy, enableNotifications,
+        addToGoal, pickChip, pickSeg, closeSheet, saveSettings,
+        exportData, resetAllData, togglePrivacy, enableNotifications,
         doAuthenticate, skipLock, disableLockAndContinue, toggleAppLock,
-        sendTestNotification, onActivitySearch, setActivityCat
+        sendTestNotification, onActivitySearch, setActivityCat,
+        askAIAbout, submitAI, executeAIConfirm, dismissAIConfirm, clearAIChat,
+        longPressTx, toggleProtected, setAuthTimeout, togglePreference
       });
     }
 
     if (document.readyState !== 'loading') init();
     else document.addEventListener('DOMContentLoaded', init);
 
-    // ── Online/offline — honest connectivity indicator ──
     window.addEventListener('online', () => toast('Back online'));
     window.addEventListener('offline', () => toast('Offline — data still saves locally'));
-
-    // ── Deep-link support: /#/analytics, /#/goals, /#/paycheck, /#/add ──
-    function handleHashRoute() {
-      const hash = (location.hash || '').replace(/^#\/?/, '').toLowerCase();
-      if (!hash) return;
-      const routeMap = {
-        'home': 'home',
-        'activity': 'activity',
-        'goals': 'goals',
-        'savings': 'goals',
-        'analytics': 'analytics',
-        'paycheck': 'analytics',
-        'finance': 'analytics'
-      };
-      if (routeMap[hash]) {
-        switchTab(routeMap[hash]);
-      } else if (hash === 'add' || hash === 'add-expense') {
-        openAddExpense();
-      } else if (hash === 'add-income') {
-        openAddIncome();
-      }
-    }
-    window.addEventListener('hashchange', handleHashRoute);
-    // Apply on first load once authenticated
-    const origRender = render;
-    render = function() {
-      origRender();
-      handleHashRoute();
-    };
   </script>
 </body>
 </html>
