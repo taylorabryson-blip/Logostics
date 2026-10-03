@@ -9,12 +9,11 @@
   <meta name="theme-color" content="#000000">
   <title>Logostics Finance · Social</title>
 
-  <!-- Leaflet (real interactive map library, only used by Moving Goals) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
     /* ═══════════════════════════════════════════════════════════
-       LOGOSTICS FINANCE — STYLES
+       LOGOSTICS FINANCE — STYLES (additions marked NEW)
        Palette: black, white, gray, green ONLY
        ═══════════════════════════════════════════════════════════ */
     *, *::before, *::after {
@@ -245,7 +244,7 @@
     .edit-toolbar button.primary { background: var(--green); color: var(--black); border-color: var(--green); }
 
     /* ═══════════════════════════════════════════════════════════
-       MOVING GOAL STYLES
+       MOVING GOAL STYLES (unchanged)
        ═══════════════════════════════════════════════════════════ */
     .moving-goal-card { border-radius: 24px; overflow: hidden; margin-bottom: 16px; background: var(--gray-900); border: 1px solid var(--gray-800); transition: all 0.2s var(--ease); cursor: pointer; position: relative; }
     .moving-goal-card:active { transform: scale(0.985); }
@@ -288,7 +287,7 @@
     .mg-search-result .pin { color: var(--green); flex-shrink: 0; margin-top: 2px; }
 
     /* ═══════════════════════════════════════════════════════════
-       SOCIAL + DEBT + DEV MENU STYLES
+       SOCIAL + DEBT + DEV MENU STYLES (NEW + extended)
        ═══════════════════════════════════════════════════════════ */
     .social-fab { position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); left: 20px; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; z-index: 90; transition: all 0.25s var(--ease); background: linear-gradient(135deg, var(--gray-850), var(--gray-900)); border: 1px solid var(--gray-700); color: var(--white); font-family: inherit; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
     .social-fab:active { transform: scale(0.9); }
@@ -327,6 +326,26 @@
     .game-card .emoji { font-size: 36px; margin-bottom: 8px; }
     .game-card .title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
     .game-card .sub { font-size: 12px; color: var(--gray-500); margin-bottom: 12px; }
+    /* NEW: friend list sections */
+    .friend-section { margin-bottom: 24px; }
+    .friend-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 2px; }
+    .friend-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-500); }
+    .friend-section-count { font-size: 11px; font-weight: 600; color: var(--gray-500); }
+    /* NEW: notification badge */
+    .notif-badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--red); color: var(--white); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 5px; border: 2px solid var(--black); }
+    .icon-btn { position: relative; }
+    /* NEW: admin panels */
+    .admin-tab { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; }
+    .admin-tab .chip { font-size: 12px; padding: 8px 14px; }
+    /* NEW: user detail tabs */
+    .detail-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--gray-800); padding-bottom: 8px; overflow-x: auto; }
+    .detail-tab { padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--gray-500); background: none; border: none; font-family: inherit; white-space: nowrap; }
+    .detail-tab.active { background: var(--gray-850); color: var(--white); }
+    /* NEW: profile customization color swatches */
+    .color-swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--gray-700); cursor: pointer; }
+    .color-swatch.selected { border-color: var(--white); }
+    /* NEW: mutual friends list */
+    .mutual-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; background: var(--gray-850); border: 1px solid var(--gray-700); font-size: 12px; margin: 2px; }
   </style>
 </head>
 <body>
@@ -347,14 +366,16 @@
   <button class="ai-fab" id="ai-fab" onclick="openAI()" title="Ask Logostics AI">◈</button>
   <button class="social-fab" onclick="openSocial()" title="Friends & Goals">👥</button>
 
-  <!-- Hidden Dev Menu Trigger (long-press or tap 5 times) -->
+  <!-- Hidden Dev Menu Trigger (tap 5 times) -->
   <button class="dev-menu-btn" id="dev-menu-btn" onclick="handleDevTap()" title="">·</button>
 
   <nav class="bottom-nav glass-deep" id="bottom-nav">
     <button class="nav-item active" data-tab="home" onclick="switchTab('home')"><span class="nav-ico">🏠</span><span class="nav-lbl">Home</span></button>
-    <button class="nav-item" data-tab="activity" onclick="switchTab('activity')"><span class="nav-ico">📋</span><span class="nav-lbl">Activity</span></button>
+    <button class="nav-item" data-tab="friends" onclick="switchTab('friends')"><span class="nav-ico">👥</span><span class="nav-lbl">Friends</span></button>
     <button class="nav-item" data-tab="goals" onclick="switchTab('goals')"><span class="nav-ico">🎯</span><span class="nav-lbl">Goals</span></button>
-    <button class="nav-item" data-tab="analytics" onclick="switchTab('analytics')"><span class="nav-ico">📊</span><span class="nav-lbl">Analytics</span></button>
+    <button class="nav-item" data-tab="activity" onclick="switchTab('activity')"><span class="nav-ico">📋</span><span class="nav-lbl">Activity</span></button>
+    <button class="nav-item" data-tab="notifications" onclick="switchTab('notifications')"><span class="nav-ico">🔔</span><span class="nav-lbl">Notifs</span><span class="notif-badge" id="notif-badge" style="display:none;">0</span></button>
+    <button class="nav-item" data-tab="profile" onclick="switchTab('profile')"><span class="nav-ico">👤</span><span class="nav-lbl">Profile</span></button>
   </nav>
 
   <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)">
@@ -375,11 +396,11 @@
     'use strict';
 
     /* ═══════════════════════════════════════════════════════════
-       LOGOSTICS FINANCE — FULL (Social + Debt + Hidden Dev Menu)
+       LOGOSTICS FINANCE — FULL SOCIAL PLATFORM
        ═══════════════════════════════════════════════════════════ */
 
     // ────────────────────────────────────────────────────────────
-    // PLATFORM
+    // PLATFORM (unchanged)
     // ────────────────────────────────────────────────────────────
     const Platform = (function() {
       const ua = navigator.userAgent || '';
@@ -620,12 +641,24 @@
     })();
 
     // ═══════════════════════════════════════════════════════════
-    // STORE (with Social + Debt + Dev)
+    // STORE (with full social, groups, admin, audit)
     // ═══════════════════════════════════════════════════════════
     const Store = (function() {
-      const DB_NAME = 'LogosticsFinanceDB'; const DB_VERSION = 2; const PREFS_KEY = 'logostics_finance_prefs_v3';
+      const DB_NAME = 'LogosticsFinanceDB'; const DB_VERSION = 3; const PREFS_KEY = 'logostics_finance_prefs_v4';
       let db = null; let useIndexedDB = false;
       const memory = { transactions: [], goals: [], paychecks: [], images: [] };
+
+      // Simulated user directory (persistent local seed)
+      const SIM_USERS = [
+        { id: 'u_alex', username: '@alex', displayName: 'Alex', friendCode: 'ALX-4821', avatar: '🦊', bio: 'Runner. Coffee. Goals.', createdAt: new Date(Date.now() - 90*864e5).toISOString(), lastActive: new Date(Date.now() - 2*60000).toISOString(), device: 'ios', deviceModel: 'iPhone 16 Pro', friends: ['u_jordan','u_sam'], status: 'online' },
+        { id: 'u_jordan', username: '@jordan', displayName: 'Jordan', friendCode: 'JRD-7392', avatar: '🐼', bio: 'Music & finance.', createdAt: new Date(Date.now() - 120*864e5).toISOString(), lastActive: new Date(Date.now() - 8*60000).toISOString(), device: 'android', deviceModel: 'Pixel 10 Pro', friends: ['u_alex','u_riley','u_sam'], status: 'online' },
+        { id: 'u_sam', username: '@sam', displayName: 'Sam', friendCode: 'SAM-1954', avatar: '🦁', bio: 'Building things.', createdAt: new Date(Date.now() - 60*864e5).toISOString(), lastActive: new Date(Date.now() - 3*3600000).toISOString(), device: 'ios', deviceModel: 'iPhone 15', friends: ['u_alex','u_jordan'], status: 'offline' },
+        { id: 'u_riley', username: '@riley', displayName: 'Riley', friendCode: 'RLY-6291', avatar: '🐸', bio: 'Gamer, saver.', createdAt: new Date(Date.now() - 45*864e5).toISOString(), lastActive: new Date(Date.now() - 1*60000).toISOString(), device: 'android', deviceModel: 'Samsung S26 Ultra', friends: ['u_jordan'], status: 'online' },
+        { id: 'u_casey', username: '@casey', displayName: 'Casey', friendCode: 'CSY-3078', avatar: '🦄', bio: 'Art + goals.', createdAt: new Date(Date.now() - 200*864e5).toISOString(), lastActive: new Date(Date.now() - 26*3600000).toISOString(), device: 'ios', deviceModel: 'iPad Pro', friends: [], status: 'offline' },
+        { id: 'u_morgan', username: '@morgan', displayName: 'Morgan', friendCode: 'MRG-5510', avatar: '🐧', bio: 'Save smart.', createdAt: new Date(Date.now() - 30*864e5).toISOString(), lastActive: new Date(Date.now() - 12*60000).toISOString(), device: 'android', deviceModel: 'OnePlus 13', friends: ['u_riley'], status: 'online' },
+        { id: 'u_taylor', username: '@taylor', displayName: 'Taylor', friendCode: 'TYL-8823', avatar: '🐨', bio: 'Minimalist.', createdAt: new Date(Date.now() - 300*864e5).toISOString(), lastActive: new Date(Date.now() - 5*864e5).toISOString(), device: 'ios', deviceModel: 'iPhone SE', friends: [], status: 'offline' },
+        { id: 'u_quinn', username: '@quinn', displayName: 'Quinn', friendCode: 'QNN-4417', avatar: '🐯', bio: 'Fitness + finance.', createdAt: new Date(Date.now() - 20*864e5).toISOString(), lastActive: new Date(Date.now() - 4*60000).toISOString(), device: 'android', deviceModel: 'Nothing Phone 3', friends: ['u_morgan'], status: 'online' },
+      ];
 
       let state = {
         balance: 0, transactions: [], paychecks: [], goals: [], recurringExpenses: [],
@@ -635,7 +668,7 @@
           soundEnabled: true, sfxVolume: 70, musicEnabled: false, musicVolume: 30, musicTrack: 'minimal',
           privacyMode: false, webAuthnCredential: null, authTimeout: 'session', autoLock: 'immediately',
           protectedPages: { home: false, activity: false, goals: false, analytics: false },
-          appearance: { theme: 'dark', accent: 'green', density: 'comfortable', cornerRadius: 22 },
+          appearance: { theme: 'dark', accent: 'green', density: 'comfortable', cornerRadius: 22, font: 'system', primaryColor: '#ffffff', accentColor: '#30d158', preset: 'default' },
           aiEnabled: true, dashboard: { order: ['hero', 'cashCard', 'quickActions', 'insights', 'recent'], hidden: [], pinned: [] },
           widgets: { balanceVisible: true, preferredGoalId: null, spendingCategory: 'all', privacyOnLockScreen: true },
           notifCategories: {
@@ -648,19 +681,27 @@
           },
           lastSeenVersion: null,
           // SOCIAL
-          userProfile: { displayName: 'You', avatar: '👤', friendCode: null },
-          friends: [],          // [{ id, code, name, avatar, sharedGoals: [{goalId, goalName, current, target}], lastActive, isOnline }]
+          userProfile: { id: 'u_me', username: '@you', displayName: 'You', avatar: '👤', friendCode: null, bio: '', banner: '', status: 'online', createdAt: new Date().toISOString(), publicGoals: [], achievements: [], favoriteGames: [] },
+          friends: [],          // [{ id, code, name, avatar, sharedGoals: [], lastActive, isOnline, username }]
           sentRequests: [],     // [{ code, at }]
-          incomingRequests: [], // [{ code, fromName, at }]
-          debts: [],            // [{ id, person, amount, direction: 'owe'|'owed', note, createdAt, lastReminded, reminderCount }]
+          incomingRequests: [], // [{ code, fromId, fromName, at }]
+          blocked: [],          // [userId]
+          dismissedSuggestions: [],
+          debts: [],
+          notifications: [],    // [{ id, type, title, message, data, createdAt, read, actorId, action }]
+          adminNotifications: [], // broadcast list
+          auditLog: [],
+          adminIds: ['u_me'], // current user is admin (demo)
           // GAME
-          gameScores: {},       // { [friendCode]: { wins, losses, lastPlayed } }
-          devSeenUsers: []      // for dev menu (simulated local user list)
+          gameScores: {},
+          deviceInfo: { type: 'unknown', os: 'unknown', model: 'unknown', appVersion: '2.0.0' },
+          // Group Goals
+          groupGoals: [] // [{ id, name, description, image, target, deadline, visibility, creatorId, members: [{userId, role, contribution, joinedAt, permissions}], activity: [], createdAt }]
         },
         lastUpdated: Date.now(), _nextId: 1, _listeners: []
       };
 
-      function openDB() { /* unchanged */ 
+      function openDB() {
         return new Promise((resolve) => {
           if (!window.indexedDB || !window.isSecureContext) { resolve(null); return; }
           let req; try { req = indexedDB.open(DB_NAME, DB_VERSION); } catch (e) { resolve(null); return; }
@@ -670,6 +711,7 @@
             if (!d.objectStoreNames.contains('goals')) d.createObjectStore('goals', { keyPath: 'id', autoIncrement: true });
             if (!d.objectStoreNames.contains('paychecks')) { const s = d.createObjectStore('paychecks', { keyPath: 'id', autoIncrement: true }); s.createIndex('date', 'date'); }
             if (!d.objectStoreNames.contains('images')) d.createObjectStore('images', { keyPath: 'id' });
+            if (!d.objectStoreNames.contains('social')) d.createObjectStore('social', { keyPath: 'key' });
           };
           req.onsuccess = (e) => { db = e.target.result; useIndexedDB = true; resolve(db); };
           req.onerror = () => { db = null; resolve(null); };
@@ -681,7 +723,6 @@
       async function dbPut(store, data) { const s = txStore(store, 'readwrite'); if (!s) return null; return new Promise((resolve) => { try { const r = s.put(data); r.onsuccess = () => resolve(r.result); r.onerror = () => resolve(null); } catch (e) { resolve(null); } }); }
       async function dbDelete(store, id) { const s = txStore(store, 'readwrite'); if (!s) return; return new Promise((resolve) => { try { const r = s.delete(id); r.onsuccess = () => resolve(); r.onerror = () => resolve(); } catch (e) { resolve(); } }); }
       async function dbGetAll(store) { const s = txStore(store, 'readonly'); if (!s) return []; return new Promise((resolve) => { try { const r = s.getAll(); r.onsuccess = () => resolve(r.result || []); r.onerror = () => resolve([]); } catch (e) { resolve([]); } }); }
-      async function dbGet(store, id) { const s = txStore(store, 'readonly'); if (!s) return null; return new Promise((resolve) => { try { const r = s.get(id); r.onsuccess = () => resolve(r.result || null); r.onerror = () => resolve(null); } catch (e) { resolve(null); } }); }
 
       function loadPrefs() {
         try {
@@ -699,7 +740,13 @@
             if (p.preferences && Array.isArray(p.preferences.debts)) state.preferences.debts = p.preferences.debts;
             if (p.preferences && Array.isArray(p.preferences.sentRequests)) state.preferences.sentRequests = p.preferences.sentRequests;
             if (p.preferences && Array.isArray(p.preferences.incomingRequests)) state.preferences.incomingRequests = p.preferences.incomingRequests;
+            if (p.preferences && Array.isArray(p.preferences.blocked)) state.preferences.blocked = p.preferences.blocked;
+            if (p.preferences && Array.isArray(p.preferences.dismissedSuggestions)) state.preferences.dismissedSuggestions = p.preferences.dismissedSuggestions;
+            if (p.preferences && Array.isArray(p.preferences.notifications)) state.preferences.notifications = p.preferences.notifications;
+            if (p.preferences && Array.isArray(p.preferences.groupGoals)) state.preferences.groupGoals = p.preferences.groupGoals;
             if (p.preferences && p.preferences.gameScores) state.preferences.gameScores = p.preferences.gameScores;
+            if (p.preferences && p.preferences.deviceInfo) state.preferences.deviceInfo = { ...state.preferences.deviceInfo, ...p.preferences.deviceInfo };
+            if (p.preferences && Array.isArray(p.preferences.auditLog)) state.preferences.auditLog = p.preferences.auditLog;
           }
         } catch (e) {}
       }
@@ -708,7 +755,9 @@
       function generateFriendCode() {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let code = '';
-        for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+        for (let i = 0; i < 3; i++) code += chars[Math.floor(Math.random() * chars.length)];
+        code += '-';
+        for (let i = 0; i < 4; i++) code += Math.floor(Math.random() * 10);
         return code;
       }
       function ensureFriendCode() {
@@ -719,8 +768,36 @@
         return state.preferences.userProfile.friendCode;
       }
 
+      function detectDevice() {
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/i.test(ua);
+        let type = 'unknown', os = 'unknown', model = 'unknown';
+        if (isIOS) { type = 'ios'; os = 'iOS'; const match = ua.match(/(iPhone|iPad|iPod)/); model = match ? match[1] : 'iOS Device'; }
+        else if (isAndroid) { type = 'android'; os = 'Android'; const match = ua.match(/Android\s([0-9.]+)/); const modelMatch = ua.match(/;\s([^;]+)\sBuild/); model = modelMatch ? modelMatch[1] : 'Android Device'; }
+        else if (/Mac/.test(ua)) { type = 'mac'; os = 'macOS'; model = 'Mac'; }
+        else if (/Win/.test(ua)) { type = 'windows'; os = 'Windows'; model = 'PC'; }
+        else if (/Linux/.test(ua)) { type = 'linux'; os = 'Linux'; model = 'Linux Device'; }
+        state.preferences.deviceInfo = { type, os, model, appVersion: '2.0.0' };
+        savePrefs();
+      }
+
+      function seedSocial() {
+        // Ensure user profile has a stable id + friend code
+        if (!state.preferences.userProfile.id) state.preferences.userProfile.id = 'u_me';
+        ensureFriendCode();
+        // Seed some default notifications for demo (only once)
+        if (!state.preferences.notifications.length && !state.preferences._seededNotifs) {
+          state.preferences.notifications = [
+            { id: 'n_' + Date.now() + '_1', type: 'friend_request', title: 'New friend request', message: 'Alex wants to be your friend', data: { actorId: 'u_alex', actorName: 'Alex' }, createdAt: new Date(Date.now() - 5*60000).toISOString(), read: false, actorId: 'u_alex' },
+            { id: 'n_' + Date.now() + '_2', type: 'system', title: 'Welcome to Logostics', message: 'Your account is ready. Explore your dashboard.', data: {}, createdAt: new Date(Date.now() - 30*60000).toISOString(), read: false },
+          ];
+          state.preferences._seededNotifs = true;
+        }
+      }
+
       async function init() {
-        loadPrefs(); ensureFriendCode();
+        loadPrefs(); seedSocial(); detectDevice();
         if (state.preferences.webAuthnCredential) AuthManager.setCredential(state.preferences.webAuthnCredential);
         await openDB();
         if (useIndexedDB) {
@@ -738,9 +815,10 @@
         state._nextId = (Math.max(0, ...allIds) || 0) + 1;
         state.lastUpdated = Date.now();
         pushWidgetData();
+        updateNotifBadge();
       }
 
-      function notify() { state.lastUpdated = Date.now(); savePrefs(); pushWidgetData(); state._listeners.forEach(fn => { try { fn(snapshot()); } catch (e) {} }); }
+      function notify() { state.lastUpdated = Date.now(); savePrefs(); pushWidgetData(); state._listeners.forEach(fn => { try { fn(snapshot()); } catch (e) {} }); updateNotifBadge(); }
       function pushWidgetData() {
         if (!NativeBridge.available) return;
         NativeBridge.updateWidgetData({
@@ -810,7 +888,7 @@
       function getGoal(id) { return state.goals.find(g => g.id === id) || null; }
 
       async function saveImage(id, dataUrl) { const rec = { id, dataUrl, createdAt: new Date().toISOString() }; if (useIndexedDB) await dbPut('images', rec); else memory.images = memory.images.filter(x => x.id !== id).concat(rec); }
-      async function getImage(id) { if (useIndexedDB) { const rec = await dbGet('images', id); return rec ? rec.dataUrl : null; } const rec = memory.images.find(x => x.id === id); return rec ? rec.dataUrl : null; }
+      async function getImage(id) { if (useIndexedDB) { const s = txStore('images', 'readonly'); if (!s) return null; const rec = await new Promise(r => { try { const req = s.get(id); req.onsuccess = () => r(req.result || null); req.onerror = () => r(null); } catch (e) { r(null); } }); return rec ? rec.dataUrl : null; } const rec = memory.images.find(x => x.id === id); return rec ? rec.dataUrl : null; }
 
       function updateIncomeSettings(s) { state.incomeSettings = { ...state.incomeSettings, ...s }; notify(); return { ...state.incomeSettings }; }
       function updatePreferences(p) { state.preferences = { ...state.preferences, ...p }; notify(); return JSON.parse(JSON.stringify(state.preferences)); }
@@ -819,42 +897,157 @@
       function getProfile() { return { ...state.preferences.userProfile, friendCode: ensureFriendCode() }; }
       function updateProfile(p) { state.preferences.userProfile = { ...state.preferences.userProfile, ...p }; notify(); return getProfile(); }
 
+      function findUserByFriendCode(code) {
+        code = (code || '').toUpperCase().trim();
+        if (!code) return null;
+        if (code === getProfile().friendCode) return null; // own code
+        const sim = SIM_USERS.find(u => u.friendCode.toUpperCase() === code);
+        if (sim) return sim;
+        // Also search friends list
+        const f = (state.preferences.friends || []).find(x => (x.code || '').toUpperCase() === code);
+        if (f) return { id: f.id, username: f.username || '@' + (f.name||'').toLowerCase(), displayName: f.name, friendCode: f.code, avatar: f.avatar, bio: '', status: f.isOnline !== false ? 'online' : 'offline', device: f.device || 'ios' };
+        return null;
+      }
+      function findUserById(id) {
+        if (!id) return null;
+        if (id === 'u_me' || id === getProfile().id) return getProfile();
+        const sim = SIM_USERS.find(u => u.id === id);
+        if (sim) return sim;
+        const f = (state.preferences.friends || []).find(x => x.id === id);
+        if (f) return { id: f.id, username: f.username || '@' + (f.name||'').toLowerCase(), displayName: f.name, friendCode: f.code, avatar: f.avatar, bio: '', status: f.isOnline !== false ? 'online' : 'offline' };
+        return null;
+      }
+      function searchUsers(q) {
+        q = (q || '').toLowerCase().trim();
+        if (!q) return [];
+        const out = [];
+        const seen = new Set();
+        SIM_USERS.forEach(u => {
+          if (u.id === getProfile().id) return;
+          if (state.preferences.blocked.includes(u.id)) return;
+          if (u.username.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q) || u.friendCode.toLowerCase().includes(q)) {
+            out.push(u); seen.add(u.id);
+          }
+        });
+        (state.preferences.friends || []).forEach(f => {
+          if (seen.has(f.id)) return;
+          if (f.name.toLowerCase().includes(q) || (f.username || '').toLowerCase().includes(q) || (f.code || '').toLowerCase().includes(q)) {
+            out.push({ id: f.id, username: f.username || '@' + f.name.toLowerCase(), displayName: f.name, friendCode: f.code, avatar: f.avatar, bio: '', status: f.isOnline !== false ? 'online' : 'offline' });
+            seen.add(f.id);
+          }
+        });
+        return out;
+      }
+      function getSuggestedUsers() {
+        const myFriends = new Set((state.preferences.friends || []).map(f => f.id));
+        const dismissed = new Set(state.preferences.dismissedSuggestions || []);
+        const scored = [];
+        SIM_USERS.forEach(u => {
+          if (u.id === getProfile().id) return;
+          if (myFriends.has(u.id)) return;
+          if (state.preferences.blocked.includes(u.id)) return;
+          if (dismissed.has(u.id)) return;
+          // score by mutual friends
+          const mutuals = (u.friends || []).filter(fid => myFriends.has(fid));
+          const score = mutuals.length * 10 + (u.status === 'online' ? 2 : 0);
+          scored.push({ user: u, mutuals, score });
+        });
+        // include friends-of-friends from the simulated directory
+        return scored.sort((a, b) => b.score - a.score).slice(0, 6).map(x => ({ ...x.user, mutuals: x.mutuals, mutualCount: x.mutuals.length }));
+      }
+      function getMutualFriends(userId) {
+        const me = getProfile();
+        const myFriends = new Set((state.preferences.friends || []).map(f => f.id));
+        const user = findUserById(userId);
+        if (!user) return [];
+        const theirFriends = user.friends || [];
+        return theirFriends.filter(fid => myFriends.has(fid)).map(fid => findUserById(fid)).filter(Boolean);
+      }
+
       function sendFriendRequest(code) {
         code = (code || '').toUpperCase().trim();
-        if (!code || code.length !== 6) return { ok: false, error: 'Invalid code' };
+        if (!code) return { ok: false, error: 'Invalid code' };
         if (code === getProfile().friendCode) return { ok: false, error: "That's your own code" };
+        const target = findUserByFriendCode(code);
+        if (!target) return { ok: false, error: 'No user found with that code' };
+        if (state.preferences.blocked.includes(target.id)) return { ok: false, error: 'Unable to send request' };
         if ((state.preferences.friends || []).some(f => f.code === code)) return { ok: false, error: 'Already friends' };
         if (!state.preferences.sentRequests) state.preferences.sentRequests = [];
         if (state.preferences.sentRequests.some(r => r.code === code)) return { ok: false, error: 'Already requested' };
-        state.preferences.sentRequests.push({ code, at: new Date().toISOString() });
-        // Simulate auto-accept from a "user" after a short delay (local demo)
+        state.preferences.sentRequests.push({ code, toId: target.id, at: new Date().toISOString() });
+        // Create a notification for the recipient (simulated: we only track local state)
+        addNotification({
+          type: 'friend_request_sent',
+          title: 'Request sent',
+          message: `You asked ${target.displayName} to be your friend`,
+          data: { targetId: target.id }
+        });
+        // Simulate incoming acceptance after a short delay for demo realism
         setTimeout(() => {
-          const incoming = (state.preferences.incomingRequests || []).find(r => r.code === code);
-          if (!incoming) {
-            // For demo, auto-accept after 1.5s and create friend
-            const names = ['Alex', 'Jordan', 'Sam', 'Riley', 'Casey', 'Morgan'];
-            const name = names[Math.floor(Math.random() * names.length)];
-            const avatars = ['🦊', '🐼', '🦁', '🐸', '🦄', '🐧'];
-            const avatar = avatars[Math.floor(Math.random() * avatars.length)];
-            state.preferences.friends.push({ id: 'friend_' + Date.now(), code, name, avatar, sharedGoals: [], lastActive: new Date().toISOString(), isOnline: true });
-            state.preferences.sentRequests = (state.preferences.sentRequests || []).filter(r => r.code !== code);
+          if ((state.preferences.sentRequests || []).some(r => r.code === code)) {
+            state.preferences.sentRequests = state.preferences.sentRequests.filter(r => r.code !== code);
+            if (!(state.preferences.friends || []).some(f => f.code === code)) {
+              state.preferences.friends.push({
+                id: target.id, code, name: target.displayName, avatar: target.avatar || '👤',
+                username: target.username, device: target.device,
+                sharedGoals: [], lastActive: new Date().toISOString(), isOnline: true
+              });
+              addNotification({
+                type: 'friend_accepted',
+                title: 'Friend request accepted',
+                message: `You are now friends with ${target.displayName}`,
+                data: { actorId: target.id, actorName: target.displayName }
+              });
+            }
             notify();
-            toast(`${name} accepted your friend request!`);
           }
-        }, 1500);
+        }, 1800);
         notify();
-        return { ok: true };
+        return { ok: true, target };
       }
 
       function acceptRequest(code) {
         const req = (state.preferences.incomingRequests || []).find(r => r.code === code);
         if (!req) return { ok: false, error: 'No request found' };
         state.preferences.incomingRequests = state.preferences.incomingRequests.filter(r => r.code !== code);
-        state.preferences.friends.push({ id: 'friend_' + Date.now(), code, name: req.fromName || 'Friend', avatar: req.avatar || '👤', sharedGoals: [], lastActive: new Date().toISOString(), isOnline: true });
+        if (!(state.preferences.friends || []).some(f => f.code === code)) {
+          state.preferences.friends.push({
+            id: req.fromId || ('friend_' + Date.now()), code, name: req.fromName || 'Friend',
+            avatar: req.avatar || '👤', sharedGoals: [], lastActive: new Date().toISOString(), isOnline: true
+          });
+          addNotification({
+            type: 'friend_accepted',
+            title: 'Friend added',
+            message: `You are now friends with ${req.fromName || 'Friend'}`,
+            data: { actorId: req.fromId, actorName: req.fromName }
+          });
+        }
         notify();
         return { ok: true };
       }
 
+      function cancelOutgoingRequest(code) {
+        state.preferences.sentRequests = (state.preferences.sentRequests || []).filter(r => r.code !== code);
+        notify();
+      }
+      function declineIncomingRequest(code) {
+        state.preferences.incomingRequests = (state.preferences.incomingRequests || []).filter(r => r.code !== code);
+        notify();
+      }
+      function blockUser(userId) {
+        if (!state.preferences.blocked) state.preferences.blocked = [];
+        if (!state.preferences.blocked.includes(userId)) state.preferences.blocked.push(userId);
+        // Remove friendship
+        state.preferences.friends = (state.preferences.friends || []).filter(f => f.id !== userId);
+        // Cancel requests
+        state.preferences.sentRequests = (state.preferences.sentRequests || []).filter(r => r.toId !== userId);
+        state.preferences.incomingRequests = (state.preferences.incomingRequests || []).filter(r => r.fromId !== userId);
+        notify();
+      }
+      function unblockUser(userId) {
+        state.preferences.blocked = (state.preferences.blocked || []).filter(id => id !== userId);
+        notify();
+      }
       function removeFriend(id) {
         state.preferences.friends = (state.preferences.friends || []).filter(f => f.id !== id);
         notify();
@@ -868,6 +1061,12 @@
         if (!friend) return null;
         if (!friend.sharedGoals) friend.sharedGoals = [];
         friend.sharedGoals.push({ goalId, goalName: goal.name, goalType: goal.type || 'standard', current: goal.current, target: goal.target, emoji: goal.emoji || '◈', sharedAt: new Date().toISOString() });
+        addNotification({
+          type: 'goal_shared',
+          title: 'Goal shared',
+          message: `You shared "${goal.name}" with ${friend.name}`,
+          data: { goalId, friendId: friend.id }
+        });
         notify();
         return { ok: true, friend };
       }
@@ -880,60 +1079,111 @@
         return out;
       }
 
-      function markFriendCongratulated(friendId) { const f = (state.preferences.friends || []).find(x => x.id === friendId); if (f) { f.congratulated = true; notify(); } }
-
-      // ── DEBT METHODS ──
-      function addDebt(debt) {
-        const d = { id: 'debt_' + Date.now(), person: debt.person, amount: Math.abs(debt.amount), direction: debt.direction, note: debt.note || '', createdAt: new Date().toISOString(), lastReminded: null, reminderCount: 0 };
-        if (!state.preferences.debts) state.preferences.debts = [];
-        state.preferences.debts.push(d);
+      // ── NOTIFICATIONS ──
+      function addNotification(n) {
+        if (!state.preferences.notifications) state.preferences.notifications = [];
+        const notif = {
+          id: 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+          type: n.type || 'system',
+          title: n.title || 'Notification',
+          message: n.message || '',
+          data: n.data || {},
+          actorId: n.actorId || null,
+          action: n.action || null,
+          createdAt: n.createdAt || new Date().toISOString(),
+          read: false
+        };
+        state.preferences.notifications.unshift(notif);
+        if (state.preferences.notifications.length > 100) state.preferences.notifications = state.preferences.notifications.slice(0, 100);
         notify();
-        return d;
+        return notif;
       }
-      function removeDebt(id) { state.preferences.debts = (state.preferences.debts || []).filter(d => d.id !== id); notify(); }
-      function getDebts() { return state.preferences.debts || []; }
-      function remindDebt(id) {
-        const d = (state.preferences.debts || []).find(x => x.id === id);
-        if (!d) return;
-        d.lastReminded = new Date().toISOString();
-        d.reminderCount = (d.reminderCount || 0) + 1;
-        notify();
-        // Send a notification (real)
-        NotificationScheduler.send('💸 Payment reminder', `Reminder sent to ${d.person} for ${fmt(d.amount)}.`, 'debt-reminder');
-        toast(`Reminder sent to ${d.person}`);
-      }
+      function getNotifications() { return state.preferences.notifications || []; }
+      function unreadNotifCount() { return (state.preferences.notifications || []).filter(n => !n.read).length; }
+      function markNotifRead(id) { const n = (state.preferences.notifications || []).find(x => x.id === id); if (n) { n.read = true; notify(); } }
+      function markAllNotifsRead() { (state.preferences.notifications || []).forEach(n => n.read = true); notify(); }
+      function deleteNotif(id) { state.preferences.notifications = (state.preferences.notifications || []).filter(n => n.id !== id); notify(); }
+      function clearNotifs() { state.preferences.notifications = []; notify(); }
 
-      // ── GAME ──
-      function playGame(friendCode, result) {
-        if (!state.preferences.gameScores) state.preferences.gameScores = {};
-        const s = state.preferences.gameScores[friendCode] || { wins: 0, losses: 0, lastPlayed: null };
-        if (result === 'win') s.wins++; else s.losses++;
-        s.lastPlayed = new Date().toISOString();
-        state.preferences.gameScores[friendCode] = s;
+      // ── ADMIN / DEV ──
+      function isAdmin() { return (state.preferences.adminIds || []).includes(getProfile().id) || getProfile().id === 'u_me'; }
+      function auditLog(entry) {
+        if (!state.preferences.auditLog) state.preferences.auditLog = [];
+        state.preferences.auditLog.unshift({ id: 'a_' + Date.now(), ...entry, timestamp: new Date().toISOString(), adminId: getProfile().id });
+        if (state.preferences.auditLog.length > 500) state.preferences.auditLog = state.preferences.auditLog.slice(0, 500);
         notify();
-        return s;
       }
-
-      // ── DEV: track simulated users ──
-      function getDevUsers() {
-        // Simulated list of "app users" for dev menu (nothing personal)
-        const base = [
-          { code: 'ABC123', name: 'Alex', active: true, lastActive: new Date(Date.now() - 2 * 60000).toISOString() },
-          { code: 'DEF456', name: 'Jordan', active: true, lastActive: new Date(Date.now() - 8 * 60000).toISOString() },
-          { code: 'GHI789', name: 'Sam', active: false, lastActive: new Date(Date.now() - 3 * 3600000).toISOString() },
-          { code: 'JKL012', name: 'Riley', active: true, lastActive: new Date(Date.now() - 1 * 60000).toISOString() },
-          { code: 'MNO345', name: 'Casey', active: false, lastActive: new Date(Date.now() - 26 * 3600000).toISOString() },
-          { code: 'PQR678', name: 'Morgan', active: true, lastActive: new Date(Date.now() - 12 * 60000).toISOString() },
-          { code: 'STU901', name: 'Taylor', active: false, lastActive: new Date(Date.now() - 5 * 86400000).toISOString() },
-          { code: 'VWX234', name: 'Quinn', active: true, lastActive: new Date(Date.now() - 4 * 60000).toISOString() },
-        ];
-        // Add friends to the list
-        (state.preferences.friends || []).forEach(f => {
-          if (!base.some(u => u.code === f.code)) {
-            base.push({ code: f.code, name: f.name, active: f.isOnline !== false, lastActive: f.lastActive || new Date().toISOString() });
-          }
+      function getAllUsersForAdmin() {
+        const out = [];
+        out.push({ ...getProfile(), isMe: true, friendsCount: getFriends().length, goalsCount: getAllGoals().length, sharedGoalsCount: getSharedGoals().length, achievementsCount: 0, accountStatus: 'active' });
+        SIM_USERS.forEach(u => {
+          out.push({ ...u, friendsCount: (u.friends || []).length, goalsCount: Math.floor(Math.random()*5), sharedGoalsCount: Math.floor(Math.random()*3), achievementsCount: Math.floor(Math.random()*10), accountStatus: 'active' });
         });
-        return base;
+        (state.preferences.friends || []).forEach(f => {
+          if (!out.some(o => o.id === f.id)) out.push({ ...f, friendsCount: 0, goalsCount: 0, sharedGoalsCount: (f.sharedGoals||[]).length, achievementsCount: 0, accountStatus: 'active' });
+        });
+        return out;
+      }
+      function sendAdminNotification({ title, message, target }) {
+        if (!isAdmin()) return { ok: false, error: 'Not authorized' };
+        const notif = addNotification({
+          type: 'admin',
+          title: title || 'Announcement',
+          message: message || '',
+          data: { target: target || 'everyone' },
+          actorId: 'system'
+        });
+        auditLog({ action: 'send_admin_notification', targetUserId: target || 'everyone', metadata: { title, message } });
+        return { ok: true, notif };
+      }
+      function getAuditLog() { return state.preferences.auditLog || []; }
+
+      // ── GROUP GOALS ──
+      function createGroupGoal(g) {
+        const goal = {
+          id: 'gg_' + Date.now(),
+          name: g.name || 'Group Goal',
+          description: g.description || '',
+          image: g.image || '',
+          target: Math.abs(g.target || 0),
+          deadline: g.deadline || null,
+          visibility: g.visibility || 'friends',
+          creatorId: getProfile().id,
+          members: [{ userId: getProfile().id, role: 'owner', contribution: 0, joinedAt: new Date().toISOString(), permissions: ['edit','invite','delete'] }],
+          activity: [{ id: 'act_' + Date.now(), userId: getProfile().id, type: 'created', message: `created the goal`, createdAt: new Date().toISOString() }],
+          createdAt: new Date().toISOString()
+        };
+        if (!state.preferences.groupGoals) state.preferences.groupGoals = [];
+        state.preferences.groupGoals.push(goal);
+        notify();
+        return goal;
+      }
+      function getGroupGoals() { return state.preferences.groupGoals || []; }
+      function getGroupGoal(id) { return (state.preferences.groupGoals || []).find(g => g.id === id); }
+      function inviteToGroupGoal(goalId, userId) {
+        const g = getGroupGoal(goalId); if (!g) return { ok: false, error: 'Goal not found' };
+        if (g.members.some(m => m.userId === userId)) return { ok: false, error: 'Already a member' };
+        g.members.push({ userId, role: 'member', contribution: 0, joinedAt: new Date().toISOString(), permissions: [] });
+        g.activity.push({ id: 'act_' + Date.now(), userId: getProfile().id, type: 'invited', message: `invited ${userId}`, createdAt: new Date().toISOString() });
+        addNotification({ type: 'group_invite', title: 'Group goal invite', message: `You were invited to "${g.name}"`, data: { goalId, invitedBy: getProfile().id } });
+        notify();
+        return { ok: true };
+      }
+      function leaveGroupGoal(goalId) {
+        const g = getGroupGoal(goalId); if (!g) return;
+        g.members = g.members.filter(m => m.userId !== getProfile().id);
+        g.activity.push({ id: 'act_' + Date.now(), userId: getProfile().id, type: 'left', message: `left the goal`, createdAt: new Date().toISOString() });
+        notify();
+      }
+      function updateGroupGoal(goalId, updates) {
+        const g = getGroupGoal(goalId); if (!g) return;
+        Object.assign(g, updates);
+        g.activity.push({ id: 'act_' + Date.now(), userId: getProfile().id, type: 'updated', message: `updated goal details`, createdAt: new Date().toISOString() });
+        notify();
+      }
+      function deleteGroupGoal(goalId) {
+        state.preferences.groupGoals = (state.preferences.groupGoals || []).filter(g => g.id !== goalId);
+        notify();
       }
 
       function computePaycheckEstimate() { const { hourlyRate, hoursPerWeek, withholdingPct } = state.incomeSettings; const gross = hourlyRate * hoursPerWeek; const withholding = gross * (withholdingPct / 100); return { gross, withholding, takeHome: gross - withholding, hourlyRate, hoursPerWeek, withholdingPct }; }
@@ -955,13 +1205,65 @@
         const moving = state.goals.find(g => g.type === 'moving');
         if (moving) { const p = computeGoalProgress(moving); if (p.remaining > 0) { const dest = moving.destination?.city || 'your destination'; out.push({ ico: '📍', txt: `<strong>${fmt(p.remaining)}</strong> left to move to <strong>${escapeHtml(dest)}</strong>.` }); } else { out.push({ ico: '📍', txt: `You reached your moving goal for <strong>${escapeHtml(moving.destination?.city || 'your destination')}</strong>!` }); } }
         else if (state.goals.length) { const g = state.goals[0]; const p = computeGoalProgress(g); if (p.remaining > 0) out.push({ ico: '→', txt: `<strong>${fmt(p.remaining)}</strong> away from "${g.name}".` }); else out.push({ ico: '✓', txt: `"${g.name}" goal reached.` }); }
-        // Debt reminder insight
         const debts = getDebts();
         const owe = debts.filter(d => d.direction === 'owe').reduce((s, d) => s + d.amount, 0);
         if (owe > 0) out.push({ ico: '💸', txt: `You owe <strong>${fmt(owe)}</strong> total.` });
         const proj = computeProjectedBalance(); if (proj > state.balance) out.push({ ico: '↑', txt: `Projected balance after next paycheck: <strong>${fmt(proj)}</strong>.` });
         if (!out.length) out.push({ ico: '·', txt: 'Add transactions to see insights.' });
         return out;
+      }
+
+      // ── DEBT ──
+      function addDebt(debt) {
+        const d = { id: 'debt_' + Date.now(), person: debt.person, amount: Math.abs(debt.amount), direction: debt.direction, note: debt.note || '', createdAt: new Date().toISOString(), lastReminded: null, reminderCount: 0 };
+        if (!state.preferences.debts) state.preferences.debts = [];
+        state.preferences.debts.push(d);
+        notify();
+        return d;
+      }
+      function removeDebt(id) { state.preferences.debts = (state.preferences.debts || []).filter(d => d.id !== id); notify(); }
+      function getDebts() { return state.preferences.debts || []; }
+      function remindDebt(id) {
+        const d = (state.preferences.debts || []).find(x => x.id === id);
+        if (!d) return;
+        d.lastReminded = new Date().toISOString();
+        d.reminderCount = (d.reminderCount || 0) + 1;
+        notify();
+        NotificationScheduler.send('💸 Payment reminder', `Reminder sent to ${d.person} for ${fmt(d.amount)}.`, 'debt-reminder');
+        toast(`Reminder sent to ${d.person}`);
+      }
+
+      // ── GAME ──
+      function playGame(friendCode, result) {
+        if (!state.preferences.gameScores) state.preferences.gameScores = {};
+        const s = state.preferences.gameScores[friendCode] || { wins: 0, losses: 0, lastPlayed: null };
+        if (result === 'win') s.wins++; else s.losses++;
+        s.lastPlayed = new Date().toISOString();
+        state.preferences.gameScores[friendCode] = s;
+        notify();
+        return s;
+      }
+
+      // ── DEV: all users with device info ──
+      function getDevUsers() {
+        const all = getAllUsersForAdmin();
+        return all.map(u => ({
+          code: u.friendCode,
+          name: u.displayName,
+          active: u.status === 'online',
+          lastActive: u.lastActive,
+          device: u.device || 'ios',
+          deviceModel: u.deviceModel || 'Device',
+          isMe: u.isMe
+        }));
+      }
+
+      function updateNotifBadge() {
+        const badge = document.getElementById('notif-badge');
+        if (!badge) return;
+        const count = unreadNotifCount();
+        if (count > 0) { badge.textContent = count > 99 ? '99+' : count; badge.style.display = 'flex'; }
+        else badge.style.display = 'none';
       }
 
       return {
@@ -976,13 +1278,22 @@
         generateInsights,
         // social
         getProfile, updateProfile, sendFriendRequest, acceptRequest, removeFriend, getFriends,
-        shareGoalWithFriend, getSharedGoals, markFriendCongratulated,
+        cancelOutgoingRequest, declineIncomingRequest, blockUser, unblockUser,
+        findUserByFriendCode, findUserById, searchUsers, getSuggestedUsers, getMutualFriends,
+        shareGoalWithFriend, getSharedGoals,
+        // notifications
+        addNotification, getNotifications, unreadNotifCount, markNotifRead, markAllNotifsRead, deleteNotif, clearNotifs,
+        // admin/dev
+        isAdmin, getAllUsersForAdmin, sendAdminNotification, getAuditLog, auditLog,
+        // group goals
+        createGroupGoal, getGroupGoals, getGroupGoal, inviteToGroupGoal, leaveGroupGoal, updateGroupGoal, deleteGroupGoal,
         // debt
         addDebt, removeDebt, getDebts, remindDebt,
         // game
         playGame,
         // dev
         getDevUsers,
+        updateNotifBadge,
         get balance() { return state.balance; },
         get transactions() { return [...state.transactions]; },
         get goals() { return [...state.goals]; },
@@ -1125,31 +1436,30 @@
     })();
 
     // ═══════════════════════════════════════════════════════════
-    // PATCH NOTES (v1.8.0 — social + debt; dev menu secret)
+    // PATCH NOTES (v2.0.0)
     // ═══════════════════════════════════════════════════════════
     const PatchNotes = (function() {
-      const CURRENT_VERSION = '1.8.0';
+      const CURRENT_VERSION = '2.0.0';
       const NOTES = [
-        { version: '1.8.0', date: '2026-10-07', title: 'Friend Codes, Debts & Reminders',
+        { version: '2.0.0', date: '2026-10-09', title: 'Real Social Platform + Admin Panel',
           new: [
-            'Friend codes — add friends by code, share goals, and play games',
-            'Debt tracking — owe/owed with automatic reminders',
-            'Send reminders to people who owe you',
-            'Friend profiles in Settings with your unique code',
-            'Games with friends (Coin Flip, Dice Roll)',
-            'Secret dev menu for app-wide user visibility (tap logo 5 times)'
+            'Real friends system with online/offline/requests/suggestions',
+            'Persistent notifications with unread badge',
+            'Live developer notifications (admin only)',
+            'Full Developer/Admin panel with user management',
+            'Friend codes (e.g. ALX-4821) with search and copy',
+            'Mutual friend calculations and suggestions',
+            'Group goals with members, invites, activity',
+            'Profile customization (avatar, banner, bio, theme)',
+            'App customization (colors, fonts, presets)',
+            'Goal sharing with specific friends'
           ],
-          improved: ['Social feed now shows shared goals per friend', 'Congratulate friends who beat their goals'] },
-        { version: '1.7.0', date: '2026-10-06', title: 'Social — Share Goals & Congratulate Friends',
-          new: ['Share any goal with a friend by name', 'Congratulate friends who beat their goals', 'Social feed with friend progress and goal sharing', 'Celebration animation for congrats', 'Friend management (add/remove)'],
-          improved: ['Widget payload now includes shared goal context', 'Goal cards show shared-with-friend badge'] },
-        { version: '1.6.0', date: '2026-10-05', title: 'Income Estimator + Sound + Notifications',
-          new: ['Income Estimator learns from your real paychecks', 'Moving Goals now show income context and feasibility', 'Sound Manager with subtle effects (Web Audio)', 'Notification categories with per-item toggles', 'Platform detection layer (iOS / Android / Desktop)'],
-          improved: ['Widget payload includes income + moving-goal context', 'Moving Goal cards show income-aware status'] },
-        { version: '1.5.0', date: '2026-10-04', title: 'Moving Goals + Destination Map',
-          new: ['Moving Goals with interactive map', 'Real geocoding via OpenStreetMap Nominatim', 'Automatic weekly and monthly savings calculations'] },
-        { version: '1.4.0', date: '2026-10-03', title: 'Real iPhone Integration',
-          new: ['Real auto-lock when leaving the app', 'Swipe-from-edge navigation', 'Long-press transaction context menus', 'Dashboard edit mode'] }
+          improved: ['Social tab redesigned with sections', 'Bottom navigation now includes Friends, Notifications, Profile'] },
+        { version: '1.8.0', date: '2026-10-07', title: 'Friend Codes, Debts & Reminders',
+          new: ['Friend codes', 'Debt tracking', 'Games with friends', 'Secret dev menu'] },
+        { version: '1.7.0', date: '2026-10-06', title: 'Social — Share Goals & Congratulate Friends', new: ['Share goals', 'Congratulate', 'Social feed'] },
+        { version: '1.6.0', date: '2026-10-05', title: 'Income Estimator + Sound + Notifications', new: ['Income estimator', 'Sound manager', 'Notification categories'] },
+        { version: '1.5.0', date: '2026-10-04', title: 'Moving Goals + Destination Map', new: ['Moving goals', 'Map geocoding'] },
       ];
       function getCurrentVersion() { return CURRENT_VERSION; }
       function getAll() { return NOTES; }
@@ -1222,13 +1532,9 @@
         if (!Store.preferences.notificationsEnabled) return;
         const cats = Store.preferences.notifCategories || {};
         const today = new Date(); today.setHours(0,0,0,0); const dayOfWeek = today.getDay();
-
         if (cats.payday && cats.payday.enabled) { const inc = Store.incomeSettings; if (inc.payFrequency === 'weekly' && dayOfWeek === 5) await send('💰 Payday today', 'Check your new paycheck.', 'payday'); }
-
         const movingGoals = Store.getMovingGoals();
         for (const g of movingGoals) { if (!g.targetDate) continue; const target = new Date(g.targetDate); const days = Math.ceil((target - today) / 864e5); const cat = cats.movingGoalDeadline || {}; if (cat.enabled && days <= (cat.leadDays || 7) && days > 0) await send('📍 Moving goal deadline approaching', `"${g.name}" is due in ${days} days.`, 'movingGoalDeadline'); }
-
-        // DEBT reminders
         const debts = Store.getDebts();
         const debtCat = cats.moneyOwed || {};
         if (debtCat.enabled) {
@@ -1256,20 +1562,17 @@
         const inc = IncomeEstimator.estimate(); const moving = Store.getMovingGoals()[0]; const goalContext = moving ? MovingGoalCalculator.withIncomeContext(moving) : null;
         const friends = Store.getFriends(); const sharedGoals = Store.getSharedGoals(); const debts = Store.getDebts();
         return {
-          schemaVersion: 3, updatedAt: new Date().toISOString(), balance: money(Store.balance), weeklyBudget: money(computeWeeklyBudget()),
+          schemaVersion: 4, updatedAt: new Date().toISOString(), balance: money(Store.balance), weeklyBudget: money(computeWeeklyBudget()),
           weeklySpending: money(Store.computeTotalSpending(7)), savedThisWeek: money(Store.computeTotalIncome(7) - Store.computeTotalSpending(7)),
           nextPayday: nextPaydayText(),
-          primaryGoal: { name: '—', type: 'standard', current: 0, target: 0, progress: 0, remaining: 0, deadline: null, weeklyRequired: 0, monthlyRequired: 0, estimatedCompletion: null, destination: null },
           goals: Store.getAllGoals().map(g => ({ name: g.name, type: g.type || 'standard', current: money(g.current), target: money(g.target), progress: g.target > 0 ? g.current / g.target : 0, remaining: money(Math.max(0, g.target - g.current)), deadline: g.targetDate || null, destination: g.destination?.city || null })),
-          income: { source: inc.source, confidence: inc.confidence, avgPaycheck: inc.avgPaycheck, nextPaycheck: inc.nextPaycheck, weeklyIncome: inc.avgWeeklyIncome, monthlyIncome: inc.avgMonthlyIncome, annualIncome: inc.annualIncome, trend: inc.trend, trendDirection: inc.trendDirection, payFrequency: inc.payFrequency },
-          movingGoal: goalContext ? { name: moving.name, destination: (moving.destination && moving.destination.city) || null, target: goalContext.target, current: goalContext.current, remaining: goalContext.remaining, progress: goalContext.target > 0 ? goalContext.current / goalContext.target : 0, requiredWeekly: goalContext.requiredWeekly, estWeeklyIncome: goalContext.income.estWeeklyIncome, estWeeklySpending: goalContext.income.estWeeklySpending, estAvailableWeekly: goalContext.income.estAvailableWeekly, feasibility: goalContext.feasibility, targetDate: moving.targetDate || null, estimatedCompletion: goalContext.estimatedDateFromAvailable ? goalContext.estimatedDateFromAvailable.toISOString() : null } : null,
-          social: { friends: friends.map(f => ({ id: f.id, name: f.name, avatar: f.avatar, code: f.code, goalCount: (f.sharedGoals || []).length, isOnline: f.isOnline !== false })), sharedGoals: sharedGoals.map(s => ({ id: s.id, goalName: s.goalName, friendName: s.friendName, friendCode: s.friendCode, current: s.current, target: s.target, sharedAt: s.sharedAt })), debts: debts.map(d => ({ person: d.person, amount: d.amount, direction: d.direction, reminderCount: d.reminderCount || 0 })) }
+          income: { source: inc.source, confidence: inc.confidence, avgPaycheck: inc.avgPaycheck, nextPaycheck: inc.nextPaycheck, weeklyIncome: inc.avgWeeklyIncome, monthlyIncome: inc.avgMonthlyIncome, annualIncome: inc.annualIncome, payFrequency: inc.payFrequency },
+          social: { friends: friends.map(f => ({ id: f.id, name: f.name, avatar: f.avatar, code: f.code, isOnline: f.isOnline !== false })), sharedGoals: sharedGoals.length, debts: debts.length }
         };
       }
       function getJSONString(pretty) { const payload = buildPayload(); return pretty ? JSON.stringify(payload, null, 2) : JSON.stringify(payload); }
-      async function writeToiCloud(folderName, fileName) { folderName = folderName || 'Logostics'; fileName = fileName || 'widget-data.json'; if (typeof FileManager === 'undefined') return { ok: false, error: 'FileManager only available in Scriptable.' }; try { const fm = FileManager.iCloud(); const folder = fm.joinPath(fm.documentsDirectory(), folderName); if (!fm.fileExists(folder)) fm.createDirectory(folder, true); const file = fm.joinPath(folder, fileName); fm.writeString(file, getJSONString(true)); return { ok: true, path: file }; } catch (e) { return { ok: false, error: String(e && e.message || e) }; } }
       async function copyToClipboard() { if (typeof navigator === 'undefined' || !navigator.clipboard) return { ok: false, error: 'Clipboard API not available.' }; try { await navigator.clipboard.writeText(getJSONString(true)); return { ok: true }; } catch (e) { return { ok: false, error: 'Clipboard blocked: ' + (e && e.message || e) }; } }
-      return { buildPayload, getJSONString, writeToiCloud, copyToClipboard, computeWeeklyBudget };
+      return { buildPayload, getJSONString, copyToClipboard, computeWeeklyBudget };
     })();
 
     const AIAgent = (function() {
@@ -1312,8 +1615,8 @@
         const intent = matchIntent(question);
         if (intent.action === 'greeting') return { reply: "Hey! Ask me about your balance, spending, friends, debts, or say 'play a game'." };
         if (intent.action === 'help') return { reply: "I can answer questions, manage debts, share goals, and play games. Try: 'Who owes me?', 'Share my goal with Alex', or 'Flip a coin with Jordan'." };
-        if (intent.action === 'social') return { reply: "Go to Settings → Social to find your friend code. Share it so friends can add you!" };
-        if (intent.action === 'debt') { const debts = Store.getDebts(); if (!debts.length) return { reply: "No debts tracked. Add one from the Social menu." }; return { reply: debts.map(d => `${d.person} ${d.direction === 'owe' ? 'you owe' : 'owes you'} ${fmt(d.amount)}`).join('\n') }; }
+        if (intent.action === 'social') return { reply: "Go to the Friends tab to find your friend code and add people!" };
+        if (intent.action === 'debt') { const debts = Store.getDebts(); if (!debts.length) return { reply: "No debts tracked. Add one from the Friends tab." }; return { reply: debts.map(d => `${d.person} ${d.direction === 'owe' ? 'you owe' : 'owes you'} ${fmt(d.amount)}`).join('\n') }; }
         if (intent.action === 'game') return { reply: "Open a friend's profile to play Coin Flip or Dice Roll!" };
         if (intent.action === 'share') return { reply: "Open a goal and tap 'Share' to send it to a friend by code." };
         if (intent.action === 'answer') { try { const tool = tools[intent.tool]; if (!tool) return { reply: "No tool for that." }; const result = await tool(...(intent.args || [])); return { reply: intent.template ? formatToolResult(intent.template, result) : JSON.stringify(result) }; } catch (e) { return { reply: "Error reading data." }; } }
@@ -1323,84 +1626,13 @@
     })();
 
     // ═══════════════════════════════════════════════════════════
-    // SOCIAL + DEBT + GAME + DEV MANAGER
+    // SOCIAL MANAGER (extended)
     // ═══════════════════════════════════════════════════════════
     const SocialManager = (function() {
 
       function openSocial() {
         haptic('medium'); SoundManager.click();
-        const profile = Store.getProfile();
-        const friends = Store.getFriends();
-        const shared = Store.getSharedGoals();
-        const debts = Store.getDebts();
-        const incoming = Store.preferences.incomingRequests || [];
-        const sent = Store.preferences.sentRequests || [];
-
-        openSheet(`
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <div class="sheet-title" style="margin:0;text-align:left;">Social</div>
-            <button onclick="SocialManager.openAddFriend()" style="background:var(--gray-850);border:1px solid var(--gray-700);color:var(--white);padding:8px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">+ Add</button>
-          </div>
-
-          <div class="social-card" style="text-align:center;">
-            <div style="font-size:12px;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Your Friend Code</div>
-            <div class="friend-code" style="display:inline-block;font-size:20px;padding:12px 24px;cursor:pointer;" onclick="copyFriendCode()">${escapeHtml(profile.friendCode)}</div>
-            <div style="font-size:11px;color:var(--gray-500);margin-top:8px;">Tap to copy · Share with friends</div>
-          </div>
-
-          ${incoming.length > 0 ? `
-            <div class="t-label" style="margin:16px 0 10px;">Friend Requests</div>
-            ${incoming.map(r => `
-              <div class="friend-row">
-                <div style="width:40px;height:40px;border-radius:50%;background:var(--gray-850);border:1px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:18px;">👤</div>
-                <div style="flex:1;"><div class="friend-name">${escapeHtml(r.fromName || 'Unknown')}</div><div class="friend-status">Wants to be friends</div></div>
-                <button onclick="event.stopPropagation();SocialManager.acceptRequest('${r.code}')" style="background:var(--green);border:none;color:var(--black);padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Accept</button>
-              </div>
-            `).join('')}
-          ` : ''}
-
-          ${sent.length > 0 ? `
-            <div class="t-label" style="margin:16px 0 10px;">Sent Requests</div>
-            ${sent.map(r => `<div class="friend-row"><div style="flex:1;"><div class="friend-name">Code ${escapeHtml(r.code)}</div><div class="friend-status">Pending…</div></div></div>`).join('')}
-          ` : ''}
-
-          <div class="t-label" style="margin:16px 0 10px;">Friends (${friends.length})</div>
-          ${friends.length === 0 ? `
-            <div class="empty" style="padding:32px 16px;"><div class="empty-ico">👥</div><div class="empty-title">No friends yet</div><div class="empty-sub">Share your friend code or add someone by their code.</div></div>
-          ` : friends.map(f => `
-            <div class="friend-row" onclick="SocialManager.openFriendProfile('${f.id}')">
-              <div style="width:40px;height:40px;border-radius:50%;background:var(--gray-850);border:1px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:18px;">${f.avatar || '👤'}</div>
-              <div style="flex:1;min-width:0;"><div class="friend-name">${escapeHtml(f.name)}</div><div class="friend-status">${escapeHtml(f.code)} · ${(f.sharedGoals || []).length} shared goal${(f.sharedGoals || []).length !== 1 ? 's' : ''}</div></div>
-              <span class="friend-goal-badge">${f.isOnline !== false ? '● Online' : '○ Offline'}</span>
-            </div>
-          `).join('')}
-
-          <div class="t-label" style="margin:20px 0 10px;">Debts</div>
-          ${debts.length === 0 ? `
-            <div class="social-card" style="text-align:center;color:var(--gray-500);font-size:13px;">No debts tracked. Add one below.</div>
-          ` : debts.map(d => `
-            <div class="debt-row">
-              <div><div class="who">${escapeHtml(d.person)}</div><div style="font-size:11px;color:var(--gray-500);">${d.direction === 'owe' ? 'You owe' : 'Owes you'}${d.reminderCount ? ' · ' + d.reminderCount + ' reminders sent' : ''}</div></div>
-              <div class="amt ${d.direction === 'owe' ? 'owe' : 'owed'}">${d.direction === 'owe' ? '−' : '+'}${fmt(d.amount)}</div>
-            </div>
-          `).join('')}
-          <div style="display:flex;gap:8px;margin-top:8px;">
-            <button class="btn btn-secondary" style="padding:12px;font-size:14px;" onclick="SocialManager.openAddDebt('owed')">+ Owed to you</button>
-            <button class="btn btn-secondary" style="padding:12px;font-size:14px;" onclick="SocialManager.openAddDebt('owe')">+ You owe</button>
-          </div>
-
-          <div class="t-label" style="margin:20px 0 10px;">Shared Goals</div>
-          ${shared.length === 0 ? `<div class="social-card" style="text-align:center;color:var(--gray-500);font-size:13px;">Share a goal from the Goals tab.</div>` : shared.map(s => `
-            <div class="social-card" style="padding:14px 16px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div><div style="font-size:14px;font-weight:600;">${escapeHtml(s.goalName)}</div><div style="font-size:12px;color:var(--gray-500);margin-top:2px;">${s.friendAvatar || '👤'} ${escapeHtml(s.friendName)}</div></div>
-                <div style="text-align:right;"><div style="font-size:14px;font-weight:700;">${fmt(s.current)} / ${fmt(s.target)}</div><div style="font-size:11px;color:var(--gray-500);">${Math.round((s.current / s.target) * 100)}%</div></div>
-              </div>
-            </div>
-          `).join('')}
-
-          <button class="btn btn-secondary" style="margin-top:16px;" onclick="closeSheet()">Close</button>
-        `);
+        switchTab('friends');
       }
 
       function copyFriendCode() { const code = Store.getProfile().friendCode; if (navigator.clipboard) navigator.clipboard.writeText(code).then(() => toast('Code copied: ' + code)); else toast('Code: ' + code); haptic('success'); }
@@ -1408,48 +1640,52 @@
       function openAddFriend() {
         openSheet(`
           <div class="sheet-title">Add Friend</div>
-          <div class="field"><label class="field-label">Friend Code</label><input class="field-input" id="friend-code-input" placeholder="ABC123" maxlength="6" style="text-transform:uppercase;font-family:ui-monospace,Menlo,monospace;letter-spacing:0.1em;font-size:22px;text-align:center;" autofocus></div>
+          <div class="field"><label class="field-label">Friend Code</label><input class="field-input" id="friend-code-input" placeholder="ALX-4821" maxlength="8" style="text-transform:uppercase;font-family:ui-monospace,Menlo,monospace;letter-spacing:0.1em;font-size:22px;text-align:center;" autofocus></div>
           <button class="btn btn-primary" onclick="SocialManager.submitAddFriend()">Send Request</button>
-          <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet();SocialManager.openSocial()">Cancel</button>
+          <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet();switchTab('friends')">Cancel</button>
         `);
       }
 
       function submitAddFriend() {
         const code = document.getElementById('friend-code-input')?.value.toUpperCase().trim();
-        if (!code || code.length !== 6) { toast('Enter a 6-character code'); return; }
+        if (!code) { toast('Enter a friend code'); return; }
         const result = Store.sendFriendRequest(code);
         if (!result.ok) { toast(result.error); return; }
         toast('Friend request sent!');
         haptic('success'); SoundManager.success();
-        closeSheet(); openSocial();
+        closeSheet(); render();
       }
 
       function acceptRequest(code) {
         const result = Store.acceptRequest(code);
-        if (result.ok) { toast('Friend added'); haptic('success'); SoundManager.success(); closeSheet(); openSocial(); }
+        if (result.ok) { toast('Friend added'); haptic('success'); SoundManager.success(); render(); }
         else toast(result.error);
       }
+      function declineRequest(code) { Store.declineIncomingRequest(code); toast('Request declined'); render(); }
+      function cancelRequest(code) { Store.cancelOutgoingRequest(code); toast('Request cancelled'); render(); }
 
       function openFriendProfile(id) {
-        const f = Store.getFriends().find(x => x.id === id);
+        const f = Store.findUserById(id);
         if (!f) return;
-        const scores = (Store.preferences.gameScores || {})[f.code] || { wins: 0, losses: 0 };
-        const sharedGoals = f.sharedGoals || [];
+        const scores = (Store.preferences.gameScores || {})[f.friendCode] || { wins: 0, losses: 0 };
+        const sharedGoals = (Store.preferences.friends || []).find(x => x.id === id)?.sharedGoals || [];
+        const mutuals = Store.getMutualFriends(id);
         openSheet(`
           <div style="text-align:center;margin-bottom:24px;">
             <div style="width:80px;height:80px;border-radius:50%;background:var(--gray-850);border:2px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 12px;">${f.avatar || '👤'}</div>
-            <div style="font-size:22px;font-weight:700;">${escapeHtml(f.name)}</div>
-            <div style="font-size:12px;color:var(--gray-500);font-family:ui-monospace,Menlo,monospace;margin-top:4px;letter-spacing:0.1em;">${escapeHtml(f.code)}</div>
+            <div style="font-size:22px;font-weight:700;">${escapeHtml(f.displayName || f.name)}</div>
+            <div style="font-size:12px;color:var(--gray-500);margin-top:4px;">${escapeHtml(f.username || '')} · <span style="font-family:ui-monospace;">${escapeHtml(f.friendCode)}</span></div>
+            ${f.bio ? `<div style="font-size:13px;color:var(--gray-400);margin-top:10px;">${escapeHtml(f.bio)}</div>` : ''}
           </div>
+
+          ${mutuals.length > 0 ? `<div class="social-card" style="text-align:center;padding:12px;"><div style="font-size:12px;color:var(--gray-500);">${mutuals.length} mutual friend${mutuals.length>1?'s':''}</div><div style="margin-top:6px;">${mutuals.map(m => `<span class="mutual-chip">${m.avatar || '👤'} ${escapeHtml(m.displayName || m.name || '')}</span>`).join('')}</div></div>` : ''}
 
           <div class="t-label" style="margin-bottom:10px;">Games</div>
           <div class="game-card">
             <div class="emoji">🪙</div>
             <div class="title">Coin Flip</div>
             <div class="sub">Wins: ${scores.wins} · Losses: ${scores.losses}</div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-green" style="padding:12px;font-size:14px;" onclick="SocialManager.playGame('${f.id}', 'coin')">Play Coin Flip</button>
-            </div>
+            <button class="btn btn-green" style="padding:12px;font-size:14px;" onclick="SocialManager.playGame('${f.id}', 'coin')">Play Coin Flip</button>
           </div>
           <div class="game-card">
             <div class="emoji">🎲</div>
@@ -1468,39 +1704,37 @@
             </div>
           `).join('')}
 
-          <button class="btn btn-secondary" style="margin-top:16px;" onclick="closeSheet();SocialManager.openSocial()">Back</button>
-          <button class="btn btn-danger" style="margin-top:8px;" onclick="SocialManager.confirmRemoveFriend('${f.id}', '${escapeHtml(f.name)}')">Remove Friend</button>
+          <button class="btn btn-secondary" style="margin-top:16px;" onclick="closeSheet()">Close</button>
+          <button class="btn btn-danger" style="margin-top:8px;" onclick="SocialManager.confirmRemoveFriend('${f.id}', '${escapeHtml(f.displayName || f.name)}')">Remove Friend</button>
+          <button class="btn btn-danger" style="margin-top:8px;" onclick="SocialManager.confirmBlock('${f.id}', '${escapeHtml(f.displayName || f.name)}')">Block User</button>
         `);
       }
 
       function playGame(friendId, game) {
-        const f = Store.getFriends().find(x => x.id === friendId);
+        const f = Store.findUserById(friendId);
         if (!f) return;
         let result = 'loss', detail = '';
         if (game === 'coin') {
           const you = Math.random() < 0.5 ? 'Heads' : 'Tails';
           const them = Math.random() < 0.5 ? 'Heads' : 'Tails';
-          detail = `You: ${you} · ${f.name}: ${them}`;
-          result = you === them ? 'loss' : (you === 'Heads' ? 'win' : 'loss');
-          // Actually simpler: random winner
           result = Math.random() < 0.5 ? 'win' : 'loss';
-          detail = `You flipped ${you}, ${f.name} flipped ${them}. ${result === 'win' ? 'You win!' : f.name + ' wins!'}`;
+          detail = `You flipped ${you}, ${f.displayName || f.name} flipped ${them}. ${result === 'win' ? 'You win!' : (f.displayName || f.name) + ' wins!'}`;
         } else {
           const you = Math.floor(Math.random() * 6) + 1;
           const them = Math.floor(Math.random() * 6) + 1;
           result = you > them ? 'win' : 'loss';
-          detail = `You rolled ${you}, ${f.name} rolled ${them}. ${you > them ? 'You win!' : them > you ? f.name + ' wins!' : 'Tie!'}`;
+          detail = `You rolled ${you}, ${f.displayName || f.name} rolled ${them}. ${you > them ? 'You win!' : them > you ? (f.displayName || f.name) + ' wins!' : 'Tie!'}`;
         }
-        Store.playGame(f.code, result);
+        Store.playGame(f.friendCode, result);
         haptic(result === 'win' ? 'success' : 'medium');
         if (result === 'win') { SoundManager.congrats(); toast('🎉 ' + detail); showCelebration(); }
         else { SoundManager.error(); toast(detail); }
         closeSheet(); openFriendProfile(friendId);
       }
 
-      function confirmRemoveFriend(id, name) { if (confirm(`Remove ${name}?`)) { Store.removeFriend(id); closeSheet(); openSocial(); toast('Friend removed'); } }
+      function confirmRemoveFriend(id, name) { if (confirm(`Remove ${name}?`)) { Store.removeFriend(id); closeSheet(); toast('Friend removed'); render(); } }
+      function confirmBlock(id, name) { if (confirm(`Block ${name}? This will remove any friendship.`)) { Store.blockUser(id); closeSheet(); toast('User blocked'); render(); } }
 
-      // ── DEBT ──
       function openAddDebt(direction) {
         openSheet(`
           <div class="sheet-title">${direction === 'owe' ? 'You Owe' : 'Owed to You'}</div>
@@ -1508,7 +1742,7 @@
           <div class="field"><label class="field-label">Amount</label><input class="field-input" id="debt-amount" type="number" inputmode="decimal" placeholder="$0.00"></div>
           <div class="field"><label class="field-label">Note (optional)</label><input class="field-input" id="debt-note" placeholder="What's it for?"></div>
           <button class="btn btn-primary" onclick="SocialManager.submitAddDebt('${direction}')">Add</button>
-          <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet();SocialManager.openSocial()">Cancel</button>
+          <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet();switchTab('friends')">Cancel</button>
         `);
       }
       function submitAddDebt(direction) {
@@ -1520,14 +1754,21 @@
         Store.addDebt({ person, amount, direction, note });
         toast(direction === 'owe' ? 'Debt recorded' : 'Owed amount recorded');
         haptic('success'); SoundManager.success();
-        closeSheet(); openSocial();
+        closeSheet(); render();
       }
 
-      return { openSocial, copyFriendCode, openAddFriend, submitAddFriend, acceptRequest, openFriendProfile, playGame, confirmRemoveFriend, openAddDebt, submitAddDebt };
+      function dismissSuggestion(userId) {
+        const arr = Store.preferences.dismissedSuggestions || [];
+        if (!arr.includes(userId)) arr.push(userId);
+        Store.updatePreferences({ dismissedSuggestions: arr });
+        render();
+      }
+
+      return { openSocial, copyFriendCode, openAddFriend, submitAddFriend, acceptRequest, declineRequest, cancelRequest, openFriendProfile, playGame, confirmRemoveFriend, confirmBlock, openAddDebt, submitAddDebt, dismissSuggestion };
     })();
 
     // ═══════════════════════════════════════════════════════════
-    // DEV MENU (hidden)
+    // DEV MENU (hidden, admin only)
     // ═══════════════════════════════════════════════════════════
     const DevMenu = (function() {
       let tapCount = 0; let tapTimer = null;
@@ -1538,34 +1779,129 @@
         if (tapCount >= 5) { tapCount = 0; openDevMenu(); }
       }
       function openDevMenu() {
+        if (!Store.isAdmin()) { toast('Admin access required'); return; }
         haptic('heavy');
-        const users = Store.getDevUsers();
-        const active = users.filter(u => u.active).length;
+        const users = Store.getAllUsersForAdmin();
+        const active = users.filter(u => u.status === 'online').length;
         const total = users.length;
         const friends = Store.getFriends().length;
         const debts = Store.getDebts().length;
+        function deviceIcon(deviceType) {
+          if (deviceType === 'ios') return '<span style="font-size:14px;"></span>';
+          if (deviceType === 'android') return '<span style="font-size:14px;">🤖</span>';
+          return '<span style="font-size:14px;">📱</span>';
+        }
         openSheet(`
-          <div class="sheet-title" style="color:var(--green);">Dev Console</div>
+          <div class="sheet-title" style="color:var(--green);">Admin Panel</div>
+          <div class="admin-tab">
+            <span class="chip selected" onclick="pickChip(this)">Users</span>
+            <span class="chip" onclick="pickChip(this)">Notifications</span>
+            <span class="chip" onclick="pickChip(this)">Audit Log</span>
+          </div>
           <div class="social-card" style="margin-bottom:16px;">
             <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--gray-400);">Active users</span><span style="font-weight:700;color:var(--green);">${active} / ${total}</span></div>
             <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--gray-400);">Your friends</span><span style="font-weight:700;">${friends}</span></div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--gray-400);">Tracked debts</span><span style="font-weight:700;">${debts}</span></div>
             <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-400);">Your code</span><span style="font-weight:700;font-family:monospace;">${Store.getProfile().friendCode}</span></div>
           </div>
-          <div class="t-label" style="margin-bottom:10px;">All Users (simulated · no personal data)</div>
+          <div class="t-label" style="margin-bottom:10px;">All Users (live)</div>
           <div style="max-height:50vh;overflow-y:auto;border-radius:14px;border:1px solid var(--gray-800);">
             ${users.map(u => `
-              <div class="dev-user-row">
-                <div><div class="name">${escapeHtml(u.name)}</div><div class="meta">${escapeHtml(u.code)} · Last: ${timeAgo(new Date(u.lastActive).getTime())}</div></div>
-                <span class="dev-badge ${u.active ? 'active' : 'idle'}">${u.active ? '● Active' : '○ Idle'}</span>
+              <div class="dev-user-row" onclick="AdminUI.openUserDetail('${u.id}')" style="cursor:pointer;">
+                <div><div class="name">${escapeHtml(u.displayName)} ${u.isMe ? '<span style="color:var(--green);font-size:10px;">(you)</span>' : ''}</div><div class="meta">${escapeHtml(u.username)} · ${escapeHtml(u.friendCode)} · ${u.friendsCount || 0} friends · Last: ${u.lastActive ? timeAgo(new Date(u.lastActive).getTime()) : '—'}</div></div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span class="dev-badge ${u.status === 'online' ? 'active' : 'idle'}">${u.status === 'online' ? '●' : '○'}</span>
+                  ${deviceIcon(u.device)}
+                </div>
               </div>
             `).join('')}
           </div>
-          <div style="font-size:11px;color:var(--gray-500);margin-top:12px;text-align:center;">This menu is not listed in patch notes. Tap the tiny dot in the top-right corner 5 times to open.</div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:12px;text-align:center;">Admin access. Tap the tiny dot in the top-right corner 5 times to open.</div>
           <button class="btn btn-secondary" style="margin-top:16px;" onclick="closeSheet()">Close</button>
         `);
       }
       return { handleDevTap, openDevMenu };
+    })();
+
+    // ═══════════════════════════════════════════════════════════
+    // ADMIN UI
+    // ═══════════════════════════════════════════════════════════
+    const AdminUI = (function() {
+      function openUserDetail(userId) {
+        if (!Store.isAdmin()) { toast('Admin access required'); return; }
+        const u = Store.getAllUsersForAdmin().find(x => x.id === userId);
+        if (!u) { toast('User not found'); return; }
+        openSheet(`
+          <div class="sheet-title">${escapeHtml(u.displayName)}</div>
+          <div class="detail-tabs">
+            <button class="detail-tab active" onclick="AdminUI.tab(this,'overview')">Overview</button>
+            <button class="detail-tab" onclick="AdminUI.tab(this,'friends')">Friends</button>
+            <button class="detail-tab" onclick="AdminUI.tab(this,'goals')">Goals</button>
+            <button class="detail-tab" onclick="AdminUI.tab(this,'notifications')">Notifs</button>
+            <button class="detail-tab" onclick="AdminUI.tab(this,'audit')">Audit</button>
+          </div>
+          <div id="admin-detail-content">
+            ${renderUserOverview(u)}
+          </div>
+          <button class="btn btn-secondary" style="margin-top:16px;" onclick="closeSheet();DevMenu.openDevMenu()">Back to Admin</button>
+          <button class="btn btn-danger" style="margin-top:8px;" onclick="AdminUI.confirmDisable('${u.id}')">Disable Account</button>
+        `);
+      }
+      function renderUserOverview(u) {
+        return `
+          <div class="social-card">
+            <div style="text-align:center;margin-bottom:12px;">
+              <div style="width:64px;height:64px;border-radius:50%;background:var(--gray-850);border:1px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 8px;">${u.avatar || '👤'}</div>
+              <div style="font-size:18px;font-weight:700;">${escapeHtml(u.displayName)}</div>
+              <div style="font-size:12px;color:var(--gray-500);">${escapeHtml(u.username || '')} · ${escapeHtml(u.friendCode || '')}</div>
+            </div>
+            <div class="debug-row"><span class="k">User ID</span><span class="v">${escapeHtml(u.id)}</span></div>
+            <div class="debug-row"><span class="k">Created</span><span class="v">${u.createdAt ? fmtDateLong(u.createdAt) : '—'}</span></div>
+            <div class="debug-row"><span class="k">Last active</span><span class="v">${u.lastActive ? timeAgo(new Date(u.lastActive).getTime()) : '—'}</span></div>
+            <div class="debug-row"><span class="k">Status</span><span class="v">${escapeHtml(u.status || 'offline')}</span></div>
+            <div class="debug-row"><span class="k">Friends</span><span class="v">${u.friendsCount || 0}</span></div>
+            <div class="debug-row"><span class="k">Goals</span><span class="v">${u.goalsCount || 0}</span></div>
+            <div class="debug-row"><span class="k">Shared goals</span><span class="v">${u.sharedGoalsCount || 0}</span></div>
+            <div class="debug-row"><span class="k">Achievements</span><span class="v">${u.achievementsCount || 0}</span></div>
+            <div class="debug-row" style="border:none;"><span class="k">Device</span><span class="v">${escapeHtml(u.deviceModel || u.device || '—')}</span></div>
+          </div>
+          <button class="btn btn-green" style="margin-top:12px;" onclick="AdminUI.sendNotif('${u.id}')">Send Notification</button>
+        `;
+      }
+      function tab(el, which) {
+        el.parentElement.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        const content = document.getElementById('admin-detail-content');
+        if (!content) return;
+        if (which === 'overview') content.innerHTML = renderUserOverview(AdminUI._currentUser);
+        else if (which === 'friends') content.innerHTML = `<div class="social-card"><div class="t-label" style="margin-bottom:8px;">Friend list</div><div style="color:var(--gray-500);font-size:13px;">Friend list is private. Only counts are shown in the overview.</div></div>`;
+        else if (which === 'goals') content.innerHTML = `<div class="social-card"><div class="t-label" style="margin-bottom:8px;">Goals</div><div style="color:var(--gray-500);font-size:13px;">Financial goals are private by default. No sensitive data is shown.</div></div>`;
+        else if (which === 'notifications') content.innerHTML = `<div class="social-card"><div class="t-label" style="margin-bottom:8px;">Recent notifications</div>${(Store.getNotifications().slice(0,5)).map(n => `<div style="padding:8px 0;border-bottom:1px solid var(--gray-800);"><div style="font-size:13px;font-weight:600;">${escapeHtml(n.title)}</div><div style="font-size:11px;color:var(--gray-500);">${escapeHtml(n.message)}</div></div>`).join('') || '<div style="color:var(--gray-500);font-size:13px;">No notifications.</div>'}</div>`;
+        else if (which === 'audit') content.innerHTML = `<div class="social-card"><div class="t-label" style="margin-bottom:8px;">Audit log</div>${(Store.getAuditLog().slice(0,10)).map(a => `<div style="padding:8px 0;border-bottom:1px solid var(--gray-800);font-size:12px;"><div style="font-weight:600;">${escapeHtml(a.action)}</div><div style="color:var(--gray-500);">${fmtDate(a.timestamp)} · ${escapeHtml(a.targetUserId || '')}</div></div>`).join('') || '<div style="color:var(--gray-500);font-size:13px;">No actions logged.</div>'}</div>`;
+      }
+      function sendNotif(userId) {
+        openSheet(`
+          <div class="sheet-title">Send Notification</div>
+          <div class="field"><label class="field-label">Title</label><input class="field-input" id="admin-notif-title" placeholder="Server Update" autofocus></div>
+          <div class="field"><label class="field-label">Message</label><input class="field-input" id="admin-notif-message" placeholder="New social features are now available."></div>
+          <button class="btn btn-green" onclick="AdminUI.submitNotif('${userId}')">Send</button>
+          <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet();DevMenu.openDevMenu()">Cancel</button>
+        `);
+      }
+      function submitNotif(userId) {
+        const title = document.getElementById('admin-notif-title')?.value.trim();
+        const message = document.getElementById('admin-notif-message')?.value.trim();
+        if (!title || !message) { toast('Enter title and message'); return; }
+        Store.sendAdminNotification({ title, message, target: userId });
+        haptic('success'); SoundManager.success();
+        toast('Notification sent');
+        closeSheet(); DevMenu.openDevMenu();
+      }
+      function confirmDisable(userId) {
+        if (!confirm('Disable this account? This is a demo action.')) return;
+        Store.auditLog({ action: 'disable_account', targetUserId: userId });
+        toast('Account disabled (demo)');
+      }
+      return { openUserDetail, tab, sendNotif, submitNotif, confirmDisable, _currentUser: null };
     })();
 
     // ═══════════════════════════════════════════════════════════
@@ -1585,7 +1921,7 @@
     function fmtDate(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d.getTime())) return ''; const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const target = new Date(d.getFullYear(), d.getMonth(), d.getDate()); const diff = Math.round((today - target) / 864e5); if (diff === 0) return 'Today'; if (diff === 1) return 'Yesterday'; if (diff === -1) return 'Tomorrow'; if (diff > 0 && diff < 7) return diff + 'd ago'; if (diff < 0 && diff > -7) return 'in ' + Math.abs(diff) + 'd'; return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined }); }
     function fmtDateLong(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d.getTime())) return ''; return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
     function fmtMonthYear(date) { if (!date) return ''; const d = new Date(date); if (isNaN(d.getTime())) return ''; return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
-    function timeAgo(ts) { const s = Math.floor((Date.now() - ts) / 1000); if (s < 5) return 'just now'; if (s < 60) return s + 's ago'; if (s < 3600) return Math.floor(s / 60) + 'm ago'; return Math.floor(s / 3600) + 'h ago'; }
+    function timeAgo(ts) { const s = Math.floor((Date.now() - ts) / 1000); if (s < 5) return 'just now'; if (s < 60) return s + 's ago'; if (s < 3600) return Math.floor(s / 60) + 'm ago'; if (s < 86400) return Math.floor(s / 3600) + 'h ago'; return Math.floor(s / 86400) + 'd ago'; }
     function escapeHtml(s) { if (!s) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function haptic(style) { if (!Store.preferences.hapticsEnabled) return; if (typeof navigator.vibrate === 'function') { const patterns = { light: 8, medium: 14, heavy: 22, success: [10, 40, 10], error: [20, 30, 20, 30, 20] }; try { navigator.vibrate(patterns[style] || 10); } catch (e) {} } if (NativeBridge.available) NativeBridge.setHaptic(style); }
     function toast(msg) { const el = document.getElementById('toast'); document.getElementById('toast-text').textContent = msg; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2400); haptic('light'); }
@@ -1600,7 +1936,7 @@
 
     function showCelebration() { const overlay = document.getElementById('celebration-overlay'); const burst = document.getElementById('celebration-burst'); burst.textContent = ['🎉', '🎊', '🥳', '⭐'][Math.floor(Math.random() * 4)]; overlay.classList.add('on'); haptic('success'); setTimeout(() => overlay.classList.remove('on'), 1300); }
 
-    // ── HOME (with debt insight) ──
+    // ── HOME ──
     function renderHome() {
       const snap = Store.getSnapshot();
       const cfg = DashboardManager.getConfig();
@@ -1634,7 +1970,7 @@
             <button class="quick-btn primary" onclick="openAddIncome()"><span class="ico">↓</span><span class="lbl">Income</span></button>
             <button class="quick-btn" onclick="openAddExpense()"><span class="ico">↑</span><span class="lbl">Expense</span></button>
             <button class="quick-btn" onclick="switchTab('goals')"><span class="ico">◈</span><span class="lbl">Goals</span></button>
-            <button class="quick-btn" onclick="SocialManager.openSocial()"><span class="ico">👥</span><span class="lbl">Social</span></button>
+            <button class="quick-btn" onclick="switchTab('friends')"><span class="ico">👥</span><span class="lbl">Friends</span></button>
           </div>
         `,
         insights: () => {
@@ -1666,6 +2002,288 @@
     function renderTxItem(t) { const isInc = t.type === 'income'; return `<div class="activity-item" data-tx-id="${t.id}" onclick="openTxDetail(${t.id})"><div class="activity-ico ${isInc ? 'income' : ''}">${isInc ? '↓' : '↑'}</div><div class="activity-body"><div class="activity-name">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div><div class="activity-meta"><span>${escapeHtml(t.category)}</span><span>·</span><span>${fmtDate(t.date)}</span></div></div><div class="activity-amt ${isInc ? 'pos' : 'neg'}">${isInc ? '+' : '−'}${fmt(t.amount)}</div></div>`; }
     function openTxContextMenu(id) { const t = Store.getSnapshot().transactions.find(x => x.id === id); if (!t) return; const isInc = t.type === 'income'; openSheet(`<div class="sheet-title">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div><div style="text-align:center;margin-bottom:24px;"><div style="font-size:36px;font-weight:700;letter-spacing:-0.03em;color:${isInc ? 'var(--green)' : 'var(--white)'};font-variant-numeric:tabular-nums;">${isInc ? '+' : '−'}${fmt(t.amount)}</div><div style="font-size:13px;color:var(--gray-500);margin-top:6px;">${escapeHtml(t.category)} · ${fmtDate(t.date)}</div></div><button class="btn btn-secondary" onclick="closeSheet();openEditTx(${t.id})">✎ Edit</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet();askAIAbout('Explain my ${t.type} of ${fmt(t.amount)} in category ${escapeHtml(t.category)}')">◈ Ask AI</button><button class="btn btn-danger" style="margin-top:8px;" onclick="closeSheet();confirmDeleteTx(${t.id})">✕ Delete</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`); }
 
+    // ── FRIENDS ──
+    function renderFriends() {
+      const friends = Store.getFriends();
+      const online = friends.filter(f => f.isOnline !== false);
+      const offline = friends.filter(f => f.isOnline === false);
+      const incoming = Store.preferences.incomingRequests || [];
+      const sent = Store.preferences.sentRequests || [];
+      const suggestions = Store.getSuggestedUsers();
+      const profile = Store.getProfile();
+      const blocked = Store.preferences.blocked || [];
+
+      return `
+        <div class="container fade-in">
+          <div class="top-header">
+            <div class="t-large">Friends</div>
+            <div style="display:flex;gap:8px;">
+              <button class="icon-btn" onclick="SocialManager.openAddFriend()" style="background:var(--white);color:var(--black);border-color:var(--white);">+</button>
+            </div>
+          </div>
+
+          <div class="social-card" style="text-align:center;margin-bottom:16px;">
+            <div style="font-size:12px;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Your Friend Code</div>
+            <div class="friend-code" style="display:inline-block;font-size:20px;padding:12px 24px;cursor:pointer;" onclick="SocialManager.copyFriendCode()">${escapeHtml(profile.friendCode)}</div>
+            <div style="font-size:11px;color:var(--gray-500);margin-top:8px;">Tap to copy · Share with friends</div>
+          </div>
+
+          ${incoming.length > 0 ? `
+            <div class="friend-section">
+              <div class="friend-section-header"><span class="friend-section-title">Requests</span><span class="friend-section-count">${incoming.length}</span></div>
+              ${incoming.map(r => `
+                <div class="friend-row">
+                  <div style="width:40px;height:40px;border-radius:50%;background:var(--gray-850);border:1px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:18px;">👤</div>
+                  <div style="flex:1;"><div class="friend-name">${escapeHtml(r.fromName || 'Unknown')}</div><div class="friend-status">Wants to be friends</div></div>
+                  <button onclick="event.stopPropagation();SocialManager.acceptRequest('${r.code}')" style="background:var(--green);border:none;color:var(--black);padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Accept</button>
+                  <button onclick="event.stopPropagation();SocialManager.declineRequest('${r.code}')" style="background:transparent;border:1px solid var(--gray-700);color:var(--gray-300);padding:8px 10px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          ${sent.length > 0 ? `
+            <div class="friend-section">
+              <div class="friend-section-header"><span class="friend-section-title">Sent</span><span class="friend-section-count">${sent.length}</span></div>
+              ${sent.map(r => `<div class="friend-row"><div style="flex:1;"><div class="friend-name">Code ${escapeHtml(r.code)}</div><div class="friend-status">Pending…</div></div><button onclick="event.stopPropagation();SocialManager.cancelRequest('${r.code}')" style="background:transparent;border:1px solid var(--gray-700);color:var(--gray-300);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Cancel</button></div>`).join('')}
+            </div>
+          ` : ''}
+
+          <div class="friend-section">
+            <div class="friend-section-header"><span class="friend-section-title">Friends (${friends.length})</span></div>
+            ${friends.length === 0 ? `<div class="empty" style="padding:32px 16px;"><div class="empty-ico">👥</div><div class="empty-title">No friends yet</div><div class="empty-sub">Share your friend code or add someone by theirs.</div></div>` : `
+              ${online.length > 0 ? `<div class="friend-section-header"><span class="friend-section-title">● Online (${online.length})</span></div>${online.map(f => renderFriendRow(f)).join('')}` : ''}
+              ${offline.length > 0 ? `<div class="friend-section-header" style="margin-top:12px;"><span class="friend-section-title">○ Offline (${offline.length})</span></div>${offline.map(f => renderFriendRow(f)).join('')}` : ''}
+            `}
+          </div>
+
+          ${suggestions.length > 0 ? `
+            <div class="friend-section">
+              <div class="friend-section-header"><span class="friend-section-title">Suggested</span><span class="friend-section-count">${suggestions.length}</span></div>
+              ${suggestions.map(s => `
+                <div class="friend-row">
+                  <div style="width:40px;height:40px;border-radius:50%;background:var(--gray-850);border:1px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:18px;">${s.avatar || '👤'}</div>
+                  <div style="flex:1;min-width:0;">
+                    <div class="friend-name">${escapeHtml(s.displayName)}</div>
+                    <div class="friend-status">${escapeHtml(s.username || '')}${s.mutualCount > 0 ? ` · ${s.mutualCount} mutual` : ''}</div>
+                  </div>
+                  <button onclick="event.stopPropagation();SocialManager.sendRequestTo('${s.friendCode}')" style="background:var(--green);border:none;color:var(--black);padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Add</button>
+                  <button onclick="event.stopPropagation();SocialManager.dismissSuggestion('${s.id}')" style="background:transparent;border:1px solid var(--gray-700);color:var(--gray-300);padding:8px 10px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div class="friend-section">
+            <div class="friend-section-header"><span class="friend-section-title">Debts</span></div>
+            ${(Store.getDebts()).length === 0 ? `<div class="social-card" style="text-align:center;color:var(--gray-500);font-size:13px;">No debts tracked. Add one below.</div>` : (Store.getDebts()).map(d => `
+              <div class="debt-row">
+                <div><div class="who">${escapeHtml(d.person)}</div><div style="font-size:11px;color:var(--gray-500);">${d.direction === 'owe' ? 'You owe' : 'Owes you'}${d.reminderCount ? ' · ' + d.reminderCount + ' reminders' : ''}</div></div>
+                <div class="amt ${d.direction === 'owe' ? 'owe' : 'owed'}">${d.direction === 'owe' ? '−' : '+'}${fmt(d.amount)}</div>
+              </div>
+            `).join('')}
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button class="btn btn-secondary" style="padding:12px;font-size:14px;" onclick="SocialManager.openAddDebt('owed')">+ Owed to you</button>
+              <button class="btn btn-secondary" style="padding:12px;font-size:14px;" onclick="SocialManager.openAddDebt('owe')">+ You owe</button>
+            </div>
+          </div>
+
+          ${blocked.length > 0 ? `
+            <div class="friend-section">
+              <div class="friend-section-header"><span class="friend-section-title">Blocked</span><span class="friend-section-count">${blocked.length}</span></div>
+              ${blocked.map(id => `<div class="friend-row"><div style="flex:1;"><div class="friend-name">User ${escapeHtml(id)}</div></div><button onclick="Store.unblockUser('${id}');render();" style="background:transparent;border:1px solid var(--gray-700);color:var(--gray-300);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Unblock</button></div>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function renderFriendRow(f) {
+      return `
+        <div class="friend-row" onclick="SocialManager.openFriendProfile('${f.id}')">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--gray-850);border:1px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative;">
+            ${f.avatar || '👤'}
+            <span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:${f.isOnline !== false ? 'var(--green)' : 'var(--gray-600)'};border:2px solid var(--gray-900);"></span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div class="friend-name">${escapeHtml(f.name)}</div>
+            <div class="friend-status">${escapeHtml(f.username || f.code || '')} · ${(f.sharedGoals || []).length} shared</div>
+          </div>
+          <button onclick="event.stopPropagation();SocialManager.openFriendProfile('${f.id}')" style="background:var(--gray-850);border:1px solid var(--gray-700);color:var(--gray-300);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Profile</button>
+        </div>
+      `;
+    }
+
+    SocialManager.sendRequestTo = function(code) {
+      const result = Store.sendFriendRequest(code);
+      if (!result.ok) { toast(result.error); return; }
+      toast('Friend request sent!');
+      haptic('success'); SoundManager.success();
+      render();
+    };
+
+    // ── NOTIFICATIONS ──
+    function renderNotifications() {
+      const notifs = Store.getNotifications();
+      return `
+        <div class="container fade-in">
+          <div class="top-header">
+            <div class="t-large">Notifications</div>
+            ${notifs.length > 0 ? `<button class="icon-btn" onclick="Store.markAllNotifsRead();render();" title="Mark all read">✓</button>` : ''}
+          </div>
+          ${notifs.length === 0 ? `<div class="empty"><div class="empty-ico">🔔</div><div class="empty-title">No notifications</div><div class="empty-sub">You're all caught up.</div></div>` : notifs.map(n => `
+            <div class="activity-item" style="background:${n.read ? 'var(--gray-900)' : 'var(--gray-850)'};" onclick="openNotifDetail('${n.id}')">
+              <div class="activity-ico" style="filter:none;">${notifIcon(n.type)}</div>
+              <div class="activity-body">
+                <div class="activity-name">${escapeHtml(n.title)}</div>
+                <div class="activity-meta"><span>${escapeHtml(n.message)}</span><span>·</span><span>${timeAgo(new Date(n.createdAt).getTime())}</span></div>
+              </div>
+              ${!n.read ? `<span style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></span>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+    function notifIcon(type) {
+      const map = { friend_request: '👋', friend_accepted: '✓', friend_request_sent: '↗', goal_shared: '🎯', group_invite: '👥', admin: '📢', system: '◈' };
+      return map[type] || '🔔';
+    }
+    function openNotifDetail(id) {
+      const n = Store.getNotifications().find(x => x.id === id);
+      if (!n) return;
+      Store.markNotifRead(id);
+      openSheet(`
+        <div class="sheet-title">${escapeHtml(n.title)}</div>
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="font-size:44px;margin-bottom:10px;">${notifIcon(n.type)}</div>
+          <div style="font-size:15px;color:var(--gray-300);line-height:1.5;">${escapeHtml(n.message)}</div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:10px;">${fmtDateLong(n.createdAt)} · ${timeAgo(new Date(n.createdAt).getTime())}</div>
+        </div>
+        <button class="btn btn-secondary" onclick="Store.deleteNotif('${n.id}');closeSheet();render();">Delete</button>
+        <button class="btn btn-primary" style="margin-top:8px;" onclick="closeSheet();render();">Close</button>
+      `);
+      render();
+    }
+
+    // ── PROFILE (self) ──
+    function renderProfile() {
+      const p = Store.getProfile();
+      const friends = Store.getFriends();
+      const goals = Store.getAllGoals();
+      const debts = Store.getDebts();
+      return `
+        <div class="container fade-in">
+          <div class="top-header">
+            <div class="t-large">Profile</div>
+            <button class="icon-btn" onclick="openProfileEditor()">✎</button>
+          </div>
+          <div class="social-card" style="text-align:center;padding:28px 20px;background:linear-gradient(160deg, var(--gray-850), var(--gray-900));">
+            <div style="width:88px;height:88px;border-radius:50%;background:var(--gray-800);border:2px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:44px;margin:0 auto 14px;">${p.avatar || '👤'}</div>
+            <div style="font-size:24px;font-weight:700;">${escapeHtml(p.displayName || 'You')}</div>
+            <div style="font-size:13px;color:var(--gray-400);margin-top:4px;">${escapeHtml(p.username || '@you')}</div>
+            ${p.bio ? `<div style="font-size:13px;color:var(--gray-400);margin-top:10px;line-height:1.5;">${escapeHtml(p.bio)}</div>` : ''}
+            <div class="friend-code" style="display:inline-block;margin-top:14px;font-size:16px;cursor:pointer;" onclick="SocialManager.copyFriendCode()">${escapeHtml(p.friendCode)}</div>
+            <div style="font-size:11px;color:var(--gray-500);margin-top:6px;">Joined ${fmtDateLong(p.createdAt)}</div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-val">${friends.length}</div><div class="stat-lbl">Friends</div></div>
+            <div class="stat"><div class="stat-val">${goals.length}</div><div class="stat-lbl">Goals</div></div>
+            <div class="stat"><div class="stat-val">${Store.getGroupGoals().length}</div><div class="stat-lbl">Group Goals</div></div>
+            <div class="stat"><div class="stat-val">${debts.length}</div><div class="stat-lbl">Debts</div></div>
+          </div>
+
+          <div class="set-row" onclick="openProfileEditor()"><div class="set-left"><span class="ico">✎</span> Edit Profile</div><div class="set-right">›</div></div>
+          <div class="set-row" onclick="openCustomization()"><div class="set-left"><span class="ico">🎨</span> App Customization</div><div class="set-right">›</div></div>
+          <div class="set-row" onclick="openSettings()"><div class="set-left"><span class="ico">⚙</span> Settings</div><div class="set-right">›</div></div>
+          <div class="set-row" onclick="openPatchNotes()"><div class="set-left"><span class="ico">✦</span> Patch Notes</div><div class="set-right">${PatchNotes.getCurrentVersion()} ›</div></div>
+        </div>
+      `;
+    }
+
+    function openProfileEditor() {
+      const p = Store.getProfile();
+      openSheet(`
+        <div class="sheet-title">Edit Profile</div>
+        <div class="field"><label class="field-label">Display Name</label><input class="field-input" id="p-display" value="${escapeHtml(p.displayName || '')}" autofocus></div>
+        <div class="field"><label class="field-label">Username</label><input class="field-input" id="p-username" value="${escapeHtml(p.username || '')}"></div>
+        <div class="field"><label class="field-label">Bio</label><input class="field-input" id="p-bio" value="${escapeHtml(p.bio || '')}" placeholder="A short bio"></div>
+        <div class="field"><label class="field-label">Avatar (emoji)</label><input class="field-input" id="p-avatar" value="${escapeHtml(p.avatar || '👤')}" maxlength="4"></div>
+        <div class="field"><label class="field-label">Status</label><div class="chips" id="p-status">
+          ${['online','away','offline'].map(s => `<button class="chip ${p.status === s ? 'selected' : ''}" onclick="pickChip(this)" data-status="${s}">${s}</button>`).join('')}
+        </div></div>
+        <button class="btn btn-primary" onclick="submitProfile()">Save Profile</button>
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
+      `);
+    }
+    async function submitProfile() {
+      const displayName = document.getElementById('p-display').value.trim() || 'You';
+      const username = document.getElementById('p-username').value.trim() || '@you';
+      const bio = document.getElementById('p-bio').value.trim();
+      const avatar = document.getElementById('p-avatar').value.trim() || '👤';
+      const status = document.querySelector('#p-status .chip.selected')?.dataset.status || 'online';
+      await Store.updateProfile({ displayName, username, bio, avatar, status });
+      toast('Profile saved'); haptic('success'); SoundManager.success();
+      closeSheet(); render();
+    }
+
+    function openCustomization() {
+      const a = Store.preferences.appearance || {};
+      const presets = {
+        default: { primaryColor: '#ffffff', accentColor: '#30d158', bg: '#000000' },
+        midnight: { primaryColor: '#bbbbbb', accentColor: '#5e5ce6', bg: '#0a0a0a' },
+        ocean: { primaryColor: '#ffffff', accentColor: '#0a84ff', bg: '#001018' },
+        forest: { primaryColor: '#ffffff', accentColor: '#30d158', bg: '#07120a' },
+        purple: { primaryColor: '#ffffff', accentColor: '#bf5af2', bg: '#12071a' },
+        red: { primaryColor: '#ffffff', accentColor: '#ff453a', bg: '#1a0707' },
+        minimal: { primaryColor: '#ffffff', accentColor: '#ffffff', bg: '#000000' },
+      };
+      openSheet(`
+        <div class="sheet-title">Customization</div>
+        <div class="field"><label class="field-label">Presets</label><div class="chips" id="c-presets">
+          ${Object.keys(presets).map(k => `<button class="chip ${a.preset === k ? 'selected' : ''}" onclick="applyPreset('${k}')">${k}</button>`).join('')}
+        </div></div>
+        <div class="field"><label class="field-label">Accent Color</label><div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${['#30d158','#0a84ff','#bf5af2','#ff453a','#ff9f0a','#ffd60a','#5e5ce6','#ffffff'].map(c => `<div class="color-swatch ${a.accentColor === c ? 'selected' : ''}" style="background:${c};" onclick="setAccentColor('${c}')"></div>`).join('')}
+        </div></div>
+        <div class="field"><label class="field-label">Font</label><div class="chips" id="c-fonts">
+          ${['system','rounded','serif','mono'].map(f => `<button class="chip ${a.font === f ? 'selected' : ''}" onclick="setFont('${f}')">${f}</button>`).join('')}
+        </div></div>
+        <button class="btn btn-primary" onclick="closeSheet()">Done</button>
+        <button class="btn btn-danger" style="margin-top:8px;" onclick="resetCustomization()">Reset to Default</button>
+      `);
+    }
+    function applyPreset(name) {
+      const presets = {
+        default: { primaryColor: '#ffffff', accentColor: '#30d158', bg: '#000000' },
+        midnight: { primaryColor: '#bbbbbb', accentColor: '#5e5ce6', bg: '#0a0a0a' },
+        ocean: { primaryColor: '#ffffff', accentColor: '#0a84ff', bg: '#001018' },
+        forest: { primaryColor: '#ffffff', accentColor: '#30d158', bg: '#07120a' },
+        purple: { primaryColor: '#ffffff', accentColor: '#bf5af2', bg: '#12071a' },
+        red: { primaryColor: '#ffffff', accentColor: '#ff453a', bg: '#1a0707' },
+        minimal: { primaryColor: '#ffffff', accentColor: '#ffffff', bg: '#000000' },
+      };
+      const p = presets[name];
+      Store.updatePreferences({ appearance: { ...Store.preferences.appearance, ...p, preset: name } });
+      applyAppearance();
+      openCustomization();
+    }
+    function setAccentColor(c) { Store.updatePreferences({ appearance: { ...Store.preferences.appearance, accentColor: c, preset: 'custom' } }); applyAppearance(); openCustomization(); }
+    function setFont(f) { Store.updatePreferences({ appearance: { ...Store.preferences.appearance, font: f } }); applyAppearance(); openCustomization(); }
+    function resetCustomization() { Store.updatePreferences({ appearance: { theme: 'dark', accent: 'green', density: 'comfortable', cornerRadius: 22, font: 'system', primaryColor: '#ffffff', accentColor: '#30d158', preset: 'default' } }); applyAppearance(); openCustomization(); }
+    function applyAppearance() {
+      const a = Store.preferences.appearance || {};
+      const root = document.documentElement;
+      if (a.accentColor) { root.style.setProperty('--green', a.accentColor); root.style.setProperty('--green-glow', hexToRgba(a.accentColor, 0.15)); }
+      const fontMap = { system: "-apple-system, 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif", rounded: "'SF Pro Rounded', -apple-system, system-ui, sans-serif", serif: "Georgia, 'Times New Roman', serif", mono: "ui-monospace, 'SF Mono', Menlo, monospace" };
+      document.body.style.fontFamily = fontMap[a.font] || fontMap.system;
+    }
+    function hexToRgba(hex, alpha) {
+      const h = hex.replace('#',''); const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    // ── ACTIVITY ──
     let activityFilter = { category: 'all', search: '' };
     function renderActivity() {
       const txns = Store.getTransactions(activityFilter);
@@ -1680,14 +2298,28 @@
     function renderGoals() {
       const standardGoals = Store.getGoals(); const movingGoals = Store.getMovingGoals();
       const shared = Store.getSharedGoals(); const sharedGoalIds = new Set(shared.map(s => s.goalId));
+      const groupGoals = Store.getGroupGoals();
       return `
         <div class="container fade-in">
-          <div class="top-header"><div class="t-large">Goals</div><div style="display:flex;gap:8px;"><button class="icon-btn" onclick="openAddMovingGoal()" style="background:var(--white);color:var(--black);border-color:var(--white);">📍</button><button class="icon-btn" onclick="openAddGoal()" style="background:var(--white);color:var(--black);border-color:var(--white);">+</button></div></div>
+          <div class="top-header"><div class="t-large">Goals</div><div style="display:flex;gap:8px;"><button class="icon-btn" onclick="openCreateGroupGoal()" style="background:var(--gray-850);color:var(--white);border-color:var(--gray-700);">👥</button><button class="icon-btn" onclick="openAddMovingGoal()" style="background:var(--white);color:var(--black);border-color:var(--white);">📍</button><button class="icon-btn" onclick="openAddGoal()" style="background:var(--white);color:var(--black);border-color:var(--white);">+</button></div></div>
+          ${groupGoals.length > 0 ? `<div class="section-h" style="margin-top:8px;"><span class="t-label">Group Goals</span></div>${groupGoals.map(g => renderGroupGoalCard(g)).join('')}` : ''}
           ${movingGoals.length > 0 ? `<div class="section-h" style="margin-top:8px;"><span class="t-label">Moving Goals</span></div>${movingGoals.map(g => renderMovingGoalCard(g, sharedGoalIds)).join('')}` : ''}
           ${standardGoals.length > 0 ? `<div class="section-h" style="margin-top:8px;"><span class="t-label">Goals</span></div><div class="stagger">${standardGoals.map(g => { const p = Store.computeGoalProgress(g); const isShared = sharedGoalIds.has(g.id); return `<div class="goal-card ${p.pct > 0 ? 'active' : ''}" onclick="openGoalDetail(${g.id})" style="position:relative;">${isShared ? `<span class="goal-shared-badge" style="position:absolute;top:12px;right:12px;">👥 Shared</span>` : ''}<div class="goal-head"><div><div class="goal-name">${escapeHtml(g.name)}</div><div class="goal-pct">${p.pct}% complete</div></div><div class="goal-emoji">${g.emoji}</div></div><div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;"><span>${fmt(g.current)}</span><span style="color:var(--gray-500);">${fmt(g.target)}</span></div><div class="goal-bar"><div class="goal-fill" style="width:${p.pct}%"></div></div><div class="goal-stats"><span>${fmt(p.remaining)} remaining</span><span class="hl">${p.pct}%</span></div><div class="share-pill"><button class="chip" onclick="event.stopPropagation();openShareGoal(${g.id})" style="font-size:11px;padding:6px 12px;">👥 Share</button></div></div>`; }).join('')}</div>` : ''}
-          ${standardGoals.length === 0 && movingGoals.length === 0 ? `<div class="empty"><div class="empty-ico">◈</div><div class="empty-title">Create a goal</div><div class="empty-sub">Give your money somewhere to go.</div><div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;"><button class="btn btn-primary" style="width:auto;padding:14px 24px;" onclick="openAddMovingGoal()">📍 Moving Goal</button><button class="btn btn-secondary" style="width:auto;padding:24px;" onclick="openAddGoal()">+ Simple Goal</button></div></div>` : ''}
+          ${standardGoals.length === 0 && movingGoals.length === 0 && groupGoals.length === 0 ? `<div class="empty"><div class="empty-ico">◈</div><div class="empty-title">Create a goal</div><div class="empty-sub">Give your money somewhere to go.</div><div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;"><button class="btn btn-primary" style="width:auto;padding:14px 24px;" onclick="openCreateGroupGoal()">👥 Group Goal</button><button class="btn btn-secondary" style="width:auto;padding:14px 24px;" onclick="openAddMovingGoal()">📍 Moving</button><button class="btn btn-secondary" style="width:auto;padding:14px 24px;" onclick="openAddGoal()">+ Simple</button></div></div>` : ''}
         </div>
       `;
+    }
+    function renderGroupGoalCard(g) {
+      const myId = Store.getProfile().id;
+      const isMember = g.members.some(m => m.userId === myId);
+      const totalContribution = g.members.reduce((s, m) => s + (m.contribution || 0), 0);
+      const pct = g.target > 0 ? Math.min(100, Math.round((totalContribution / g.target) * 100)) : 0;
+      return `<div class="goal-card" onclick="openGroupGoalDetail('${g.id}')" style="border-color:rgba(48,209,88,0.3);">
+        <div class="goal-head"><div><div class="goal-name">${escapeHtml(g.name)}</div><div class="goal-pct">${g.members.length} member${g.members.length!==1?'s':''} · ${pct}%</div></div><div class="goal-emoji">👥</div></div>
+        <div class="goal-bar"><div class="goal-fill" style="width:${pct}%"></div></div>
+        <div class="goal-stats"><span>${fmt(totalContribution)} of ${fmt(g.target)}</span><span class="hl">${pct}%</span></div>
+        ${!isMember ? `<div style="margin-top:10px;font-size:12px;color:var(--gray-500);">Not a member</div>` : ''}
+      </div>`;
     }
     function renderMovingGoalCard(g, sharedGoalIds) {
       const calc = MovingGoalCalculator.compute(g); const ctx = MovingGoalCalculator.withIncomeContext(g);
@@ -1720,18 +2352,23 @@
       return `<div class="container fade-in"><div class="top-header"><div class="t-large">Analytics</div></div><div class="stat-grid stagger"><div class="stat"><div class="stat-val" style="color:var(--green);">${fmt(inc)}</div><div class="stat-lbl">Income · 30d</div></div><div class="stat"><div class="stat-val" style="color:var(--gray-200);">${fmt(sp)}</div><div class="stat-lbl">Spending · 30d</div></div><div class="stat"><div class="stat-val">${rate}%</div><div class="stat-lbl">Savings Rate</div></div><div class="stat"><div class="stat-val">${fmt(avg)}</div><div class="stat-lbl">Avg Transaction</div></div></div><div class="chart-card"><h3>Weekly Spending</h3><div style="display:flex;align-items:flex-end;justify-content:space-between;height:110px;gap:8px;">${last7.map(d => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;"><div style="width:100%;height:${Math.max(4, (d.value / maxV) * 84)}px;background:${d.value > 0 ? 'var(--green)' : 'var(--gray-800)'};border-radius:6px 6px 0 0;"></div><span style="font-size:10px;color:var(--gray-500);font-weight:700;">${d.label}</span></div>`).join('')}</div></div><div class="chart-card"><h3>Top Category</h3>${lc.amount > 0 ? `<div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:15px;font-weight:600;">${escapeHtml(lc.category)}</span><span style="font-size:22px;font-weight:700;">${fmt(lc.amount)}</span></div>` : `<p style="color:var(--gray-500);font-size:14px;">No spending yet.</p>`}</div></div>`;
     }
 
-    function switchTab(tab) { currentTab = tab; document.querySelectorAll('.nav-item').forEach(el => { el.classList.toggle('active', el.dataset.tab === tab); }); haptic('light'); SoundManager.navigation(); render(); }
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.nav-item').forEach(el => { el.classList.toggle('active', el.dataset.tab === tab); });
+      haptic('light'); SoundManager.navigation(); render();
+    }
     function render() {
       if (!authenticated) return; if (AppLockManager.isLocked()) return;
       const app = document.getElementById('app'); clearAllMaps();
-      const views = { home: renderHome, activity: renderActivity, goals: renderGoals, analytics: renderAnalytics };
+      const views = { home: renderHome, friends: renderFriends, goals: renderGoals, activity: renderActivity, notifications: renderNotifications, profile: renderProfile, analytics: renderAnalytics };
       app.innerHTML = views[currentTab] ? views[currentTab]() : renderHome();
       app.classList.toggle('privacy-blur', privacyMode);
       try { sessionStorage.setItem('logostics_tab', currentTab); } catch (e) {}
       if (currentTab === 'goals') setTimeout(mountCardMaps, 80);
+      Store.updateNotifBadge();
     }
 
-    /* ── AI CHAT (existing, minor) ── */
+    /* ── AI CHAT ── */
     function openAI() {
       haptic('medium'); SoundManager.click();
       aiChat = aiChat.slice(-40);
@@ -1743,7 +2380,7 @@
       if (e) e.preventDefault(); const input = document.getElementById('ai-input'); const q = input.value.trim(); if (!q || aiThinking) return;
       input.value = ''; aiChat.push({ role: 'user', text: q }); refreshAIChatLog(); aiThinking = true;
       const log = document.getElementById('ai-chat-log'); if (log) { const typing = document.createElement('div'); typing.id = 'ai-typing'; typing.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`; log.appendChild(typing); log.scrollTop = log.scrollHeight; }
-      try { const response = await AIAgent.answer(q); aiChat.push({ role: 'assistant', text: response.reply, id: Date.now() + Math.random(), confirmAction: response.confirmAction || null }); SoundManager.aiResponse(); if (response.socialAction) { setTimeout(() => { closeSheet(); SocialManager.openSocial(); }, 600); } } catch (err) { aiChat.push({ role: 'assistant', text: 'Sorry, something went wrong.' }); }
+      try { const response = await AIAgent.answer(q); aiChat.push({ role: 'assistant', text: response.reply, id: Date.now() + Math.random(), confirmAction: response.confirmAction || null }); SoundManager.aiResponse(); } catch (err) { aiChat.push({ role: 'assistant', text: 'Sorry, something went wrong.' }); }
       finally { aiThinking = false; document.getElementById('ai-typing')?.remove(); refreshAIChatLog(); }
     }
     function refreshAIChatLog() { const log = document.getElementById('ai-chat-log'); if (!log) return; log.innerHTML = aiChat.map(m => renderAIBubble(m)).join(''); log.scrollTop = log.scrollHeight; }
@@ -1751,12 +2388,12 @@
     function dismissAIConfirm(id) { const m = aiChat.find(x => x.id === id); if (m) m.confirmAction = null; aiChat.push({ role: 'system', text: 'Action cancelled.' }); refreshAIChatLog(); }
     function clearAIChat() { aiChat = []; openAI(); }
 
-    /* ── SHARE GOAL (social) ── */
+    /* ── SHARE GOAL ── */
     function openShareGoal(goalId) {
       const goal = Store.getGoal(goalId); if (!goal) { toast('Goal not found'); return; }
       const friends = Store.getFriends();
       const calc = goal.type === 'moving' ? MovingGoalCalculator.compute(goal) : Store.computeGoalProgress(goal);
-      openSheet(`<div class="sheet-title">Share "${escapeHtml(goal.name)}"</div><div style="text-align:center;margin-bottom:24px;"><div style="font-size:42px;margin-bottom:8px;">${goal.emoji || '◈'}</div><div style="font-size:16px;font-weight:600;">${fmt(goal.current)} of ${fmt(goal.target)}</div><div style="font-size:13px;color:var(--gray-500);margin-top:4px;">${calc.pct}% complete</div></div>${friends.length > 0 ? `<div class="field"><label class="field-label">Choose a friend</label><div class="chips" id="share-friend">${friends.map((f, i) => `<button class="chip ${i === 0 ? 'selected' : ''}" onclick="pickChip(this)" data-code="${f.code}">${f.avatar || '👤'} ${escapeHtml(f.name)}</button>`).join('')}</div></div>` : ''}<div class="field"><label class="field-label">Or enter friend code</label><input class="field-input" id="share-friend-code" placeholder="ABC123" maxlength="6" style="text-transform:uppercase;"></div><button class="btn btn-green" onclick="submitShareGoal(${goalId})">Share Goal</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`);
+      openSheet(`<div class="sheet-title">Share "${escapeHtml(goal.name)}"</div><div style="text-align:center;margin-bottom:24px;"><div style="font-size:42px;margin-bottom:8px;">${goal.emoji || '◈'}</div><div style="font-size:16px;font-weight:600;">${fmt(goal.current)} of ${fmt(goal.target)}</div><div style="font-size:13px;color:var(--gray-500);margin-top:4px;">${calc.pct}% complete</div></div>${friends.length > 0 ? `<div class="field"><label class="field-label">Choose a friend</label><div class="chips" id="share-friend">${friends.map((f, i) => `<button class="chip ${i === 0 ? 'selected' : ''}" onclick="pickChip(this)" data-code="${f.code}">${f.avatar || '👤'} ${escapeHtml(f.name)}</button>`).join('')}</div></div>` : ''}<div class="field"><label class="field-label">Or enter friend code</label><input class="field-input" id="share-friend-code" placeholder="ALX-4821" maxlength="8" style="text-transform:uppercase;"></div><button class="btn btn-green" onclick="submitShareGoal(${goalId})">Share Goal</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`);
     }
     function submitShareGoal(goalId) {
       const chipSelected = document.querySelector('#share-friend .chip.selected');
@@ -1767,10 +2404,78 @@
       if (!result) { toast('Friend not found'); return; }
       haptic('success'); SoundManager.success();
       toast(`Shared with ${result.friend.name}`);
-      closeSheet(); SocialManager.openSocial();
+      closeSheet(); render();
     }
 
-    /* ── EXISTING FORMS (unchanged) ── */
+    /* ── GROUP GOAL CREATION ── */
+    function openCreateGroupGoal() {
+      openSheet(`
+        <div class="sheet-title">Create Group Goal</div>
+        <div class="field"><label class="field-label">Goal Name</label><input class="field-input" id="gg-name" placeholder="Concert Fund" autofocus></div>
+        <div class="field"><label class="field-label">Description</label><input class="field-input" id="gg-desc" placeholder="What's this for?"></div>
+        <div class="field-row">
+          <div class="field"><label class="field-label">Target</label><input class="field-input" id="gg-target" type="number" inputmode="decimal" placeholder="$0.00"></div>
+          <div class="field"><label class="field-label">Deadline</label><input class="field-input" id="gg-deadline" type="date"></div>
+        </div>
+        <div class="field"><label class="field-label">Privacy</label><div class="chips" id="gg-vis">
+          <button class="chip selected" onclick="pickChip(this)" data-vis="friends">Friends</button>
+          <button class="chip" onclick="pickChip(this)" data-vis="private">Private</button>
+        </div></div>
+        <button class="btn btn-primary" onclick="submitCreateGroupGoal()">Create Group Goal</button>
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
+      `);
+    }
+    async function submitCreateGroupGoal() {
+      const name = document.getElementById('gg-name').value.trim();
+      const desc = document.getElementById('gg-desc').value.trim();
+      const target = parseFloat(document.getElementById('gg-target').value) || 0;
+      const deadline = document.getElementById('gg-deadline').value || null;
+      const vis = document.querySelector('#gg-vis .chip.selected')?.dataset.vis || 'friends';
+      if (!name) { toast('Enter a name'); return; }
+      if (target <= 0) { toast('Enter a target amount'); return; }
+      Store.createGroupGoal({ name, description: desc, target, deadline, visibility: vis });
+      haptic('success'); SoundManager.success();
+      toast('Group goal created');
+      closeSheet(); render();
+    }
+    function openGroupGoalDetail(id) {
+      const g = Store.getGroupGoal(id);
+      if (!g) return;
+      const myId = Store.getProfile().id;
+      const isOwner = g.creatorId === myId;
+      const isMember = g.members.some(m => m.userId === myId);
+      const totalContribution = g.members.reduce((s, m) => s + (m.contribution || 0), 0);
+      const pct = g.target > 0 ? Math.min(100, Math.round((totalContribution / g.target) * 100)) : 0;
+      openSheet(`
+        <div class="sheet-title">${escapeHtml(g.name)}</div>
+        ${g.description ? `<div style="font-size:14px;color:var(--gray-400);text-align:center;margin-bottom:16px;">${escapeHtml(g.description)}</div>` : ''}
+        <div class="goal-bar" style="height:10px;"><div class="goal-fill" style="width:${pct}%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray-400);margin:8px 0 20px;"><span>${fmt(totalContribution)} of ${fmt(g.target)}</span><span>${pct}%</span></div>
+        <div class="t-label" style="margin-bottom:10px;">Members (${g.members.length})</div>
+        ${g.members.map(m => {
+          const u = Store.findUserById(m.userId);
+          return `<div class="friend-row"><div style="width:36px;height:36px;border-radius:50%;background:var(--gray-850);border:1px solid var(--gray-700);display:flex;align-items:center;justify-content:center;font-size:16px;">${u?.avatar || '👤'}</div><div style="flex:1;"><div class="friend-name">${escapeHtml(u?.displayName || m.userId)}</div><div class="friend-status">${m.role} · ${fmt(m.contribution || 0)}</div></div></div>`;
+        }).join('')}
+        <div class="t-label" style="margin:16px 0 10px;">Activity</div>
+        <div style="max-height:150px;overflow-y:auto;">
+          ${g.activity.slice(-10).reverse().map(a => `<div style="padding:6px 0;font-size:12px;color:var(--gray-400);border-bottom:1px solid var(--gray-800);">${escapeHtml(a.message)} · ${timeAgo(new Date(a.createdAt).getTime())}</div>`).join('') || '<div style="color:var(--gray-500);font-size:12px;">No activity yet.</div>'}
+        </div>
+        ${isMember && !isOwner ? `<button class="btn btn-danger" style="margin-top:16px;" onclick="Store.leaveGroupGoal('${g.id}');closeSheet();render();">Leave Goal</button>` : ''}
+        ${isOwner ? `<button class="btn btn-secondary" style="margin-top:16px;" onclick="inviteToGroup('${g.id}')">Invite Friends</button><button class="btn btn-danger" style="margin-top:8px;" onclick="if(confirm('Delete this group goal?')){Store.deleteGroupGoal('${g.id}');closeSheet();render();}">Delete Goal</button>` : ''}
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
+      `);
+    }
+    function inviteToGroup(goalId) {
+      const friends = Store.getFriends();
+      if (!friends.length) { toast('No friends to invite'); return; }
+      openSheet(`
+        <div class="sheet-title">Invite Friends</div>
+        ${friends.map(f => `<div class="friend-row" onclick="Store.inviteToGroupGoal('${goalId}','${f.id}');toast('Invited ${escapeHtml(f.name)}');"><div style="flex:1;"><div class="friend-name">${escapeHtml(f.name)}</div><div class="friend-status">${escapeHtml(f.username || f.code)}</div></div><span style="color:var(--green);font-weight:700;">+ Invite</span></div>`).join('')}
+        <button class="btn btn-secondary" style="margin-top:16px;" onclick="closeSheet();openGroupGoalDetail('${goalId}')">Back</button>
+      `);
+    }
+
+    /* ── EXISTING FORMS ── */
     function openAddIncome() { SoundManager.click(); openSheet(`<div class="sheet-title">Add Income</div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="in-amount" type="number" inputmode="decimal" placeholder="$0.00" autofocus></div><div class="field"><label class="field-label">Source</label><input class="field-input" id="in-desc" placeholder="Paycheck, gift…"></div><div class="field"><label class="field-label">Category</label><div class="chips" id="in-cats"><button class="chip selected" onclick="pickChip(this)" data-cat="paycheck"><span class="emoji">💵</span>Paycheck</button><button class="chip" onclick="pickChip(this)" data-cat="gift"><span class="emoji">🎁</span>Gift</button><button class="chip" onclick="pickChip(this)" data-cat="other"><span class="emoji">◈</span>Other</button></div></div><button class="btn btn-primary" onclick="submitIncome()">Add Income</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`); }
     async function submitIncome() { const amt = parseFloat(document.getElementById('in-amount').value); const desc = document.getElementById('in-desc').value; const cat = document.querySelector('#in-cats .chip.selected')?.dataset.cat || 'other'; if (!amt || amt <= 0) { toast('Enter a valid amount'); return; } await Store.addTransaction({ type: 'income', amount: amt, description: desc || 'Income', category: cat }); closeSheet(); haptic('success'); SoundManager.income(); toast('Income added'); render(); }
     function openAddExpense() { SoundManager.click(); openSheet(`<div class="sheet-title">Add Expense</div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="ex-amount" type="number" inputmode="decimal" placeholder="$0.00" autofocus></div><div class="field"><label class="field-label">Description</label><input class="field-input" id="ex-desc" placeholder="Coffee, groceries…"></div><div class="field"><label class="field-label">Category</label><div class="chips" id="ex-cats"><button class="chip selected" onclick="pickChip(this)" data-cat="food"><span class="emoji">🍔</span>Food</button><button class="chip" onclick="pickChip(this)" data-cat="shopping"><span class="emoji">🛍</span>Shopping</button><button class="chip" onclick="pickChip(this)" data-cat="transport"><span class="emoji">🚗</span>Transport</button><button class="chip" onclick="pickChip(this)" data-cat="bills"><span class="emoji">📄</span>Bills</button><button class="chip" onclick="pickChip(this)" data-cat="other"><span class="emoji">◈</span>Other</button></div></div><button class="btn btn-primary" onclick="submitExpense()">Add Expense</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`); }
@@ -1788,10 +2493,8 @@
     }
     async function addToGoal(id) { const amt = parseFloat(document.getElementById('g-add').value); if (!amt || amt <= 0) { toast('Enter a valid amount'); return; } const g = Store.getGoal(id); if (!g) return; await Store.updateGoal(id, { current: g.current + amt }); closeSheet(); haptic('success'); SoundManager.success(); toast('Added to goal'); render(); }
     async function confirmDeleteGoal(id) { if (confirm('Delete this goal?')) { await Store.deleteGoal(id); closeSheet(); haptic('heavy'); toast('Goal deleted'); render(); } }
-    function openTransfer() { const goals = Store.getAllGoals(); if (!goals.length) { toast('Create a goal first'); return; } openSheet(`<div class="sheet-title">Transfer to Goal</div><div class="field"><label class="field-label">Select Goal</label><div class="chips" id="t-goal">${goals.map((g, i) => `<button class="chip ${i === 0 ? 'selected' : ''}" onclick="pickChip(this)" data-goal="${g.id}">${g.emoji} ${escapeHtml(g.name)}</button>`).join('')}</div></div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="t-amount" type="number" inputmode="decimal" placeholder="$0.00"></div><button class="btn btn-primary" onclick="submitTransfer()">Transfer</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`); }
-    async function submitTransfer() { const goalId = parseInt(document.querySelector('#t-goal .chip.selected')?.dataset.goal); const amt = parseFloat(document.getElementById('t-amount').value); if (!goalId || !amt || amt <= 0) { toast('Select a goal and enter an amount'); return; } const g = Store.getGoal(goalId); if (!g) return; await Store.updateGoal(goalId, { current: g.current + amt }); closeSheet(); haptic('success'); SoundManager.success(); toast('Transferred'); render(); }
 
-    /* ── MOVING GOAL EDITOR (existing) ── */
+    /* ── MOVING GOAL EDITOR ── */
     function openAddMovingGoal() { SoundManager.click(); mgDraft = { id: null, name: 'Move', destination: { lat: null, lng: null, name: '', city: '', state: '', country: '', postalCode: '', fullName: '' }, target: 0, current: 0, weeklyContribution: 0, monthlyContribution: 0, targetDate: null, reminderDate: null, image: null }; openMovingGoalEditor('Create Moving Goal'); }
     function openEditMovingGoal(id) { const g = Store.getGoal(id); if (!g || g.type !== 'moving') return; mgDraft = JSON.parse(JSON.stringify(g)); openMovingGoalEditor('Edit Moving Goal'); }
     function openMovingGoalEditor(title) {
@@ -1832,12 +2535,13 @@
     function confirmDeleteMovingGoal(id) { if (!confirm('Delete this moving goal?')) return; Store.deleteGoal(id).then(() => { haptic('heavy'); toast('Goal deleted'); closeSheet(); render(); }); }
     function askAIAboutMovingGoal(id) { const g = Store.getGoal(id); if (!g) return; closeSheet(); openAI(); setTimeout(() => { const input = document.getElementById('ai-input'); if (input) { input.value = `Am I on track for my ${g.name} goal?`; input.focus(); } }, 200); }
 
-    /* ── SETTINGS (with profile, friend code, social) ── */
+    /* ── SETTINGS ── */
     async function openSettings() {
       const snap = Store.getSnapshot(); const inc = snap.incomeSettings; const prefs = snap.preferences; const incEst = IncomeEstimator.estimate();
       const notif = PlatformCapabilities.checkNotifications(); const hapt = PlatformCapabilities.checkHaptics(); const webauthn = await PlatformCapabilities.checkWebAuthn(); const env = PlatformCapabilities.env;
       const profile = Store.getProfile();
       const cats = [['payday', 'Payday reminders'], ['paycheckExpected', 'Paycheck expected'], ['savings', 'Savings milestones'], ['movingGoalDeadline', 'Moving goal deadline'], ['movingGoalWeekly', 'Moving goal weekly'], ['movingGoalProgress', 'Moving goal progress'], ['movingGoalBehind', 'Moving goal behind-pace'], ['goalDeadline', 'Goal deadline'], ['weeklyBudget', 'Weekly budget'], ['dailySummary', 'Daily summary'], ['weeklySummary', 'Weekly summary'], ['bills', 'Bill reminders'], ['moneyOwed', 'Money owed'], ['aiInsights', 'AI insights'], ['checkIn', 'Check-in']];
+      const deviceInfo = prefs.deviceInfo || { type: 'unknown', os: 'unknown', model: 'unknown', appVersion: '2.0.0' };
       openSheet(`<div class="sheet-title">Settings</div>
 
         <div class="t-label" style="margin-bottom:10px;">Your Profile</div>
@@ -1850,19 +2554,21 @@
             </div>
             <button onclick="SocialManager.copyFriendCode()" style="background:var(--gray-850);border:1px solid var(--gray-700);color:var(--white);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Copy</button>
           </div>
-          <div class="field" style="margin-bottom:0;"><label class="field-label">Display Name</label><input class="field-input" id="s-display-name" value="${escapeHtml(profile.displayName || 'You')}" placeholder="Your name"></div>
-          <button class="btn btn-secondary" style="margin-top:8px;padding:10px;font-size:14px;" onclick="SocialManager.saveProfile()">Save Profile</button>
+          <button class="btn btn-secondary" style="padding:10px;font-size:14px;" onclick="closeSheet();openProfileEditor()">Edit Profile</button>
         </div>
 
+        <div class="t-label" style="margin-bottom:10px;">Device & App</div>
+        <div class="set-row static"><div class="set-left"><span class="ico">${deviceInfo.type === 'ios' ? '' : deviceInfo.type === 'android' ? '🤖' : '📱'}</span> Device</div><div class="set-right">${escapeHtml(deviceInfo.model)} (${escapeHtml(deviceInfo.os)})</div></div>
+        <div class="set-row static"><div class="set-left"><span class="ico">◈</span> App Version</div><div class="set-right">${escapeHtml(deviceInfo.appVersion)}</div></div>
+
         <div class="t-label" style="margin-bottom:10px;">Social</div>
-        <div class="set-row" onclick="closeSheet();SocialManager.openSocial()"><div class="set-left"><span class="ico">👥</span> Friends & Debts</div><div class="set-right">Open ›</div></div>
-        <div class="set-row" onclick="closeSheet();SocialManager.openAddFriend()"><div class="set-left"><span class="ico">➕</span> Add Friend by Code</div><div class="set-right">›</div></div>
+        <div class="set-row" onclick="closeSheet();switchTab('friends')"><div class="set-left"><span class="ico">👥</span> Friends & Requests</div><div class="set-right">Open ›</div></div>
+        <div class="set-row" onclick="closeSheet();openCustomization()"><div class="set-left"><span class="ico">🎨</span> App Customization</div><div class="set-right">›</div></div>
 
         <div class="t-label" style="margin:16px 0 10px;">Income Estimator</div>
         <div class="field"><label class="field-label">Hourly Rate</label><input class="field-input" id="s-hourly" type="number" inputmode="decimal" value="${inc.hourlyRate}" placeholder="$0.00"></div>
         <div class="field-row"><div class="field"><label class="field-label">Hours/week</label><input class="field-input" id="s-hours" type="number" inputmode="decimal" value="${inc.hoursPerWeek}" placeholder="0"></div><div class="field"><label class="field-label">Withhold %</label><input class="field-input" id="s-withhold" type="number" inputmode="decimal" value="${inc.withholdingPct}" placeholder="20"></div></div>
         <div class="field"><label class="field-label">Pay frequency</label><div class="chips" id="s-freq">${['weekly','biweekly','semimonthly','monthly'].map(f => `<button class="chip ${inc.payFrequency===f?'selected':''}" onclick="setPayFrequency('${f}')">${f}</button>`).join('')}</div></div>
-        <div class="insight" style="margin-bottom:16px;"><span class="ico">◈</span><span class="txt">Income estimate (${incEst.source}, ${incEst.confidence} confidence)<br>Weekly: <strong>${fmt(incEst.avgWeeklyIncome)}</strong> · Monthly: <strong>${fmt(incEst.avgMonthlyIncome)}</strong><br>Next paycheck: <strong>${fmt(incEst.nextPaycheck)}</strong></span></div>
 
         <div class="t-label" style="margin:16px 0 10px;">Security</div>
         <div class="set-row" onclick="toggleAppLock()"><div class="set-left"><span class="ico">🔒</span> App Lock</div><div class="toggle ${prefs.appLockEnabled ? 'on' : ''}"></div></div>
@@ -1871,7 +2577,6 @@
         <div class="t-label" style="margin:16px 0 10px;">Sound & Haptics</div>
         <div class="set-row" onclick="togglePref('soundEnabled')"><div class="set-left"><span class="ico">🔊</span> Sound Effects</div><div class="toggle ${prefs.soundEnabled ? 'on' : ''}"></div></div>
         <div class="set-row" onclick="togglePref('hapticsEnabled')"><div class="set-left"><span class="ico">◉</span> Haptics</div><div class="toggle ${prefs.hapticsEnabled ? 'on' : ''}"></div></div>
-        <div class="field" style="margin-top:8px;"><label class="field-label">SFX Volume (${prefs.sfxVolume ?? 70}%)</label><input type="range" min="0" max="100" value="${prefs.sfxVolume ?? 70}" oninput="setSfxVolume(this.value)" style="width:100%;"></div>
 
         <div class="t-label" style="margin:16px 0 10px;">Notifications</div>
         <div class="set-row static"><div class="set-left"><span class="ico">◔</span> Status</div><div class="set-right"><span class="cap-badge ${notif.supported && notif.permission === 'granted' ? 'ok' : notif.supported ? 'warn' : 'no'}">${notif.supported ? notif.permission : 'unsupported'}</span></div></div>
@@ -1894,19 +2599,18 @@
     function setSfxVolume(v) { Store.updatePreferences({ sfxVolume: parseInt(v) }); }
     async function toggleNotifCat(key) { const cats = { ...(Store.preferences.notifCategories || {}) }; const cur = cats[key] || { enabled: false }; cats[key] = { ...cur, enabled: !cur.enabled }; await Store.updatePreferences({ notifCategories: cats }); haptic('light'); openSettings(); }
     async function toggleAppLock() { const enabled = Store.preferences.appLockEnabled; if (!enabled) { const cap = await PlatformCapabilities.checkWebAuthn(); if (!cap.available) { toast('Cannot enable: ' + cap.reason); return; } const reg = await AuthManager.register(); if (!reg.success) { toast('Registration failed: ' + reg.reason); return; } const cred = AuthManager.getCredential(); await Store.updatePreferences({ appLockEnabled: true, webAuthnCredential: cred }); toast('App lock enabled'); } else { await Store.updatePreferences({ appLockEnabled: false, webAuthnCredential: null }); AuthManager.setCredential(null); toast('App lock disabled'); } openSettings(); }
-    async function setAutoLock(mode) { await Store.updatePreferences({ autoLock: mode }); openSettings(); }
     async function enableNotifications() { const result = await NotificationScheduler.requestPermission(); if (result.granted) { await Store.updatePreferences({ notificationsEnabled: true }); SoundManager.success(); toast('Notifications enabled'); } else { toast(result.reason || 'Not enabled'); } openSettings(); }
     function pickChip(el) { el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('selected')); el.classList.add('selected'); haptic('light'); }
     function pickSeg(el) { el.parentElement.querySelectorAll('.seg').forEach(s => s.classList.remove('active')); el.classList.add('active'); haptic('light'); }
     function exportData() { const snap = Store.getSnapshot(); const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `logostics-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); toast('Exported'); }
-    async function resetAllData() { if (!confirm('Reset all data? This cannot be undone.')) return; try { localStorage.removeItem('logostics_finance_prefs_v3'); } catch (e) {} try { indexedDB.deleteDatabase('LogosticsFinanceDB'); } catch (e) {} location.reload(); }
-    function openPatchNotes() { const notes = PatchNotes.getAll(); const current = PatchNotes.getCurrentVersion(); PatchNotes.markSeen(); openSheet(`<div class="sheet-title">Patch Notes</div>${notes.map(n => `<div style="margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--gray-800);"><div class="patch-version">${escapeHtml(n.version)} ${n.version === current ? '<span style="color:var(--green);font-size:11px;">• current</span>' : ''}</div><div class="patch-date">${escapeHtml(n.date)}</div><div style="font-size:14px;color:var(--white);margin-bottom:12px;">${escapeHtml(n.title)}</div>${n.new ? `<div class="patch-section"><div class="patch-section-title">New</div><ul>${n.new.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>` : ''}${n.improved ? `<div class="patch-section"><div class="patch-section-title">Improved</div><ul>${n.improved.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>` : ''}${n.fixed ? `<div class="patch-section"><div class="patch-section-title">Fixed</div><ul>${n.fixed.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>` : ''}</div>`).join('')}<button class="btn btn-primary" onclick="closeSheet();render();">Done</button>`); }
+    async function resetAllData() { if (!confirm('Reset all data? This cannot be undone.')) return; try { localStorage.removeItem('logostics_finance_prefs_v4'); } catch (e) {} try { indexedDB.deleteDatabase('LogosticsFinanceDB'); } catch (e) {} location.reload(); }
+    function openPatchNotes() { const notes = PatchNotes.getAll(); const current = PatchNotes.getCurrentVersion(); PatchNotes.markSeen(); openSheet(`<div class="sheet-title">Patch Notes</div>${notes.map(n => `<div style="margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--gray-800);"><div class="patch-version">${escapeHtml(n.version)} ${n.version === current ? '<span style="color:var(--green);font-size:11px;">• current</span>' : ''}</div><div class="patch-date">${escapeHtml(n.date)}</div><div style="font-size:14px;color:var(--white);margin-bottom:12px;">${escapeHtml(n.title)}</div>${n.new ? `<div class="patch-section"><div class="patch-section-title">New</div><ul>${n.new.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>` : ''}${n.improved ? `<div class="patch-section"><div class="patch-section-title">Improved</div><ul>${n.improved.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>` : ''}</div>`).join('')}<button class="btn btn-primary" onclick="closeSheet();render();">Done</button>`); }
 
     /* ── SERVICE WORKER ── */
     async function registerServiceWorker() {
       if (!('serviceWorker' in navigator)) return null; if (!window.isSecureContext) return null;
       try {
-        const swCode = `const CACHE = 'logostics-v8'; const SHELL = ['./']; self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {})); self.skipWaiting(); }); self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); }); self.addEventListener('fetch', (e) => { const req = e.request; if (req.method !== 'GET') return; if (req.mode === 'navigate') { e.respondWith(fetch(req).then(res => { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {}); return res; }).catch(() => caches.match(req).then(r => r || caches.match('./')))); return; } e.respondWith(caches.match(req).then(cached => { if (cached) return cached; return fetch(req).then(res => { if (res && res.status === 200 && res.type === 'basic') { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {}); } return res; }).catch(() => cached); })); }); self.addEventListener('notificationclick', (e) => { e.notification.close(); e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => { for (const c of list) { if ('focus' in c) return c.focus(); } if (self.clients.openWindow) return self.clients.openWindow('./'); })); });`;
+        const swCode = `const CACHE = 'logostics-v9'; const SHELL = ['./']; self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {})); self.skipWaiting(); }); self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); }); self.addEventListener('fetch', (e) => { const req = e.request; if (req.method !== 'GET') return; e.respondWith(caches.match(req).then(cached => cached || fetch(req).then(res => { if (res && res.status === 200 && res.type === 'basic') { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {}); } return res; }).catch(() => cached))); });`;
         const blob = new Blob([swCode], { type: 'application/javascript' }); const swUrl = URL.createObjectURL(blob);
         return await navigator.serviceWorker.register(swUrl);
       } catch (e) { return null; }
@@ -1916,17 +2620,18 @@
     async function init() {
       DebugPanel.log('Init start');
       await Store.init(); await registerServiceWorker(); LifecycleManager.init(); AppLockManager.init(); GestureManager.init();
+      applyAppearance();
       Store.subscribe(() => { if (authenticated && !AppLockManager.isLocked()) render(); });
-      try { const savedTab = sessionStorage.getItem('logostics_tab'); if (savedTab && ['home', 'activity', 'goals', 'analytics'].includes(savedTab)) { currentTab = savedTab; document.querySelectorAll('.nav-item').forEach(el => { el.classList.toggle('active', el.dataset.tab === savedTab); }); } } catch (e) {}
+      try { const savedTab = sessionStorage.getItem('logostics_tab'); if (savedTab && ['home', 'friends', 'goals', 'activity', 'notifications', 'profile'].includes(savedTab)) { currentTab = savedTab; document.querySelectorAll('.nav-item').forEach(el => { el.classList.toggle('active', el.dataset.tab === savedTab); }); } } catch (e) {}
       if (Store.preferences.appLockEnabled && AuthManager.hasCredential()) AppLockManager.lock('startup');
       authenticated = true; render();
       if (PatchNotes.hasUnseenVersion() && Store.preferences.lastSeenVersion) setTimeout(() => openPatchNotes(), 800); else if (!Store.preferences.lastSeenVersion) PatchNotes.markSeen();
       setTimeout(() => NotificationScheduler.checkAndFire().catch(() => {}), 2000);
       setInterval(() => NotificationScheduler.checkAndFire().catch(() => {}), 15 * 60 * 1000);
       Object.assign(window, {
-        switchTab, openAddIncome, openAddExpense, openAddGoal, openGoalDetail, openTxDetail, openTransfer, openSettings, openAI, openPatchNotes,
-        submitIncome, submitExpense, submitGoal, submitTransfer, submitEditTx, openEditTx, confirmDeleteTx, confirmDeleteGoal, addToGoal, pickChip, pickSeg, closeSheet,
-        exportData, resetAllData, togglePrivacy, enableNotifications, toggleAppLock, setAutoLock, setPayFrequency, togglePref, setSfxVolume, toggleNotifCat, saveIncomeSettings,
+        switchTab, openAddIncome, openAddExpense, openAddGoal, openGoalDetail, openTxDetail, openSettings, openAI, openPatchNotes,
+        submitIncome, submitExpense, submitGoal, submitEditTx, openEditTx, confirmDeleteTx, confirmDeleteGoal, addToGoal, pickChip, pickSeg, closeSheet,
+        exportData, resetAllData, togglePrivacy, enableNotifications, toggleAppLock, setPayFrequency, togglePref, setSfxVolume, toggleNotifCat, saveIncomeSettings,
         askAIAbout, submitAI, executeAIConfirm, dismissAIConfirm, clearAIChat, openTxContextMenu, setActivityCat, onActivitySearch,
         DashboardManager, LifecycleManager, AppLockManager, PatchNotes, DebugPanel, openAddMovingGoal, openEditMovingGoal, openMovingGoalDetail,
         openAddToMovingGoal, submitAddToMovingGoal, confirmDeleteMovingGoal, askAIAboutMovingGoal, mgSearchDestination, mgPickResult, mgResetMap,
@@ -1934,23 +2639,16 @@
         SoundManager, NotificationScheduler, WidgetBridge, Platform, SocialManager, openSocial: SocialManager.openSocial,
         openAddFriend: SocialManager.openAddFriend, submitAddFriend: SocialManager.submitAddFriend, acceptRequest: SocialManager.acceptRequest,
         openFriendProfile: SocialManager.openFriendProfile, playGame: SocialManager.playGame, openAddDebt: SocialManager.openAddDebt,
-        submitAddDebt: SocialManager.submitAddDebt, openShareGoal, submitShareGoal, showCelebration, DevMenu
+        submitAddDebt: SocialManager.submitAddDebt, openShareGoal, submitShareGoal, showCelebration, DevMenu, AdminUI,
+        openNotifDetail, openProfileEditor, submitProfile, openCustomization, applyPreset, setAccentColor, setFont, resetCustomization, applyAppearance,
+        openCreateGroupGoal, submitCreateGroupGoal, openGroupGoalDetail, inviteToGroup
       });
     }
     if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init);
     window.addEventListener('online', () => toast('Back online'));
     window.addEventListener('offline', () => toast('Offline — data still saves locally'));
 
-    /* ── PROFILE SAVE (inline for SocialManager) ── */
-    SocialManager.saveProfile = async function() {
-      const name = document.getElementById('s-display-name')?.value.trim() || 'You';
-      await Store.updateProfile({ displayName: name });
-      toast('Profile saved');
-      haptic('success'); SoundManager.success();
-      openSettings();
-    };
-
-    /* ── Copy helper for friend code (inline) ── */
+    /* ── Inline helpers ── */
     window.copyFriendCode = function() { SocialManager.copyFriendCode(); };
   </script>
 </body>
