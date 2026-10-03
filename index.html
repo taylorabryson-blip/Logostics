@@ -315,6 +315,7 @@
     .debt-row .amt.owed { color: var(--green); }
     .reminder-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; background: rgba(255,159,10,0.12); color: var(--orange); border: 1px solid rgba(255,159,10,0.25); text-transform: uppercase; letter-spacing: 0.04em; margin-left: 8px; }
     .dev-menu-btn { position: fixed; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: transparent; border: 1px solid transparent; color: transparent; z-index: 9000; cursor: pointer; font-size: 14px; }
+    .dev-menu-btn:hover { background: var(--gray-850); border-color: var(--gray-700); color: var(--gray-600); }
     .dev-menu-btn:active { background: var(--gray-800); border-color: var(--gray-700); color: var(--gray-400); }
     .dev-user-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--gray-800); font-size: 13px; }
     .dev-user-row .name { font-weight: 600; }
@@ -726,6 +727,7 @@
 
       function loadPrefs() {
         try {
+          if (typeof localStorage === 'undefined') return;
           const raw = localStorage.getItem(PREFS_KEY);
           if (raw) {
             const p = JSON.parse(raw);
@@ -750,7 +752,14 @@
           }
         } catch (e) {}
       }
-      function savePrefs() { try { localStorage.setItem(PREFS_KEY, JSON.stringify({ preferences: state.preferences, incomeSettings: state.incomeSettings })); } catch (e) {} }
+      function savePrefs() {
+        try {
+          if (typeof localStorage === 'undefined') return;
+          localStorage.setItem(PREFS_KEY, JSON.stringify({ preferences: state.preferences, incomeSettings: state.incomeSettings }));
+        } catch (e) {
+          console.error('Logostics: Could not save preferences (storage full or blocked):', e.message);
+        }
+      }
 
       function generateFriendCode() {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -789,8 +798,7 @@
         // Seed some default notifications for demo (only once)
         if (!state.preferences.notifications.length && !state.preferences._seededNotifs) {
           state.preferences.notifications = [
-            { id: 'n_' + Date.now() + '_1', type: 'friend_request', title: 'New friend request', message: 'Alex wants to be your friend', data: { actorId: 'u_alex', actorName: 'Alex' }, createdAt: new Date(Date.now() - 5*60000).toISOString(), read: false, actorId: 'u_alex' },
-            { id: 'n_' + Date.now() + '_2', type: 'system', title: 'Welcome to Logostics', message: 'Your account is ready. Explore your dashboard.', data: {}, createdAt: new Date(Date.now() - 30*60000).toISOString(), read: false },
+            { id: 'n_' + Date.now() + '_1', type: 'system', title: 'Welcome to Logostics', message: 'Your account is ready. Use the Friends tab to add friends by code.', data: {}, createdAt: new Date(Date.now() - 30*60000).toISOString(), read: false },
           ];
           state.preferences._seededNotifs = true;
         }
@@ -901,18 +909,14 @@
         code = (code || '').toUpperCase().trim();
         if (!code) return null;
         if (code === getProfile().friendCode) return null; // own code
-        const sim = SIM_USERS.find(u => u.friendCode.toUpperCase() === code);
-        if (sim) return sim;
-        // Also search friends list
+        // Search friends list only (real users)
         const f = (state.preferences.friends || []).find(x => (x.code || '').toUpperCase() === code);
-        if (f) return { id: f.id, username: f.username || '@' + (f.name||'').toLowerCase(), displayName: f.name, friendCode: f.code, avatar: f.avatar, bio: '', status: f.isOnline !== false ? 'online' : 'offline', device: f.device || 'ios' };
+        if (f) return { id: f.id, username: f.username || '@' + (f.name||'').toLowerCase(), displayName: f.name, friendCode: f.code, avatar: f.avatar, bio: '', status: f.isOnline !== false ? 'online' : 'offline', device: f.device || 'web', deviceModel: f.deviceModel || 'Browser', friends: [] };
         return null;
       }
       function findUserById(id) {
         if (!id) return null;
         if (id === 'u_me' || id === getProfile().id) return getProfile();
-        const sim = SIM_USERS.find(u => u.id === id);
-        if (sim) return sim;
         const f = (state.preferences.friends || []).find(x => x.id === id);
         if (f) return { id: f.id, username: f.username || '@' + (f.name||'').toLowerCase(), displayName: f.name, friendCode: f.code, avatar: f.avatar, bio: '', status: f.isOnline !== false ? 'online' : 'offline' };
         return null;
@@ -922,15 +926,10 @@
         if (!q) return [];
         const out = [];
         const seen = new Set();
-        SIM_USERS.forEach(u => {
-          if (u.id === getProfile().id) return;
-          if (state.preferences.blocked.includes(u.id)) return;
-          if (u.username.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q) || u.friendCode.toLowerCase().includes(q)) {
-            out.push(u); seen.add(u.id);
-          }
-        });
+        // Only search real friends
         (state.preferences.friends || []).forEach(f => {
           if (seen.has(f.id)) return;
+          if (state.preferences.blocked.includes(f.id)) return;
           if (f.name.toLowerCase().includes(q) || (f.username || '').toLowerCase().includes(q) || (f.code || '').toLowerCase().includes(q)) {
             out.push({ id: f.id, username: f.username || '@' + f.name.toLowerCase(), displayName: f.name, friendCode: f.code, avatar: f.avatar, bio: '', status: f.isOnline !== false ? 'online' : 'offline' });
             seen.add(f.id);
@@ -939,29 +938,18 @@
         return out;
       }
       function getSuggestedUsers() {
-        const myFriends = new Set((state.preferences.friends || []).map(f => f.id));
-        const dismissed = new Set(state.preferences.dismissedSuggestions || []);
-        const scored = [];
-        SIM_USERS.forEach(u => {
-          if (u.id === getProfile().id) return;
-          if (myFriends.has(u.id)) return;
-          if (state.preferences.blocked.includes(u.id)) return;
-          if (dismissed.has(u.id)) return;
-          // score by mutual friends
-          const mutuals = (u.friends || []).filter(fid => myFriends.has(fid));
-          const score = mutuals.length * 10 + (u.status === 'online' ? 2 : 0);
-          scored.push({ user: u, mutuals, score });
-        });
-        // include friends-of-friends from the simulated directory
-        return scored.sort((a, b) => b.score - a.score).slice(0, 6).map(x => ({ ...x.user, mutuals: x.mutuals, mutualCount: x.mutuals.length }));
+        // Suggestions come from real friends-of-friends or known contacts
+        // Since we only have real users (current user + friends), suggestions are limited
+        // For now, return empty - suggestions can be added via shared contacts later
+        return [];
       }
       function getMutualFriends(userId) {
-        const me = getProfile();
         const myFriends = new Set((state.preferences.friends || []).map(f => f.id));
         const user = findUserById(userId);
         if (!user) return [];
-        const theirFriends = user.friends || [];
-        return theirFriends.filter(fid => myFriends.has(fid)).map(fid => findUserById(fid)).filter(Boolean);
+        // Mutual friends are tracked via shared goal connections
+        const sharedWith = (state.preferences.friends || []).filter(f => (f.sharedGoals || []).some(s => s.friendId === userId));
+        return sharedWith.map(f => ({ id: f.id, displayName: f.name, avatar: f.avatar })).filter(Boolean);
       }
 
       function sendFriendRequest(code) {
@@ -989,7 +977,7 @@
             if (!(state.preferences.friends || []).some(f => f.code === code)) {
               state.preferences.friends.push({
                 id: target.id, code, name: target.displayName, avatar: target.avatar || '👤',
-                username: target.username, device: target.device,
+                username: target.username, device: target.device || 'web', deviceModel: target.deviceModel || 'Browser',
                 sharedGoals: [], lastActive: new Date().toISOString(), isOnline: true
               });
               addNotification({
@@ -1106,7 +1094,15 @@
       function clearNotifs() { state.preferences.notifications = []; notify(); }
 
       // ── ADMIN / DEV ──
-      function isAdmin() { return (state.preferences.adminIds || []).includes(getProfile().id) || getProfile().id === 'u_me'; }
+      function isAdmin() {
+        // Centralized permission check - current user is always admin in local mode
+        const profile = getProfile();
+        return profile && profile.id === 'u_me';
+      }
+      function isDeveloper(userId) {
+        // Developer permissions (for future backend auth)
+        return isAdmin() && (!userId || userId === 'u_me');
+      }
       function auditLog(entry) {
         if (!state.preferences.auditLog) state.preferences.auditLog = [];
         state.preferences.auditLog.unshift({ id: 'a_' + Date.now(), ...entry, timestamp: new Date().toISOString(), adminId: getProfile().id });
@@ -1115,17 +1111,20 @@
       }
       function getAllUsersForAdmin() {
         const out = [];
-        out.push({ ...getProfile(), isMe: true, friendsCount: getFriends().length, goalsCount: getAllGoals().length, sharedGoalsCount: getSharedGoals().length, achievementsCount: 0, accountStatus: 'active' });
-        SIM_USERS.forEach(u => {
-          out.push({ ...u, friendsCount: (u.friends || []).length, goalsCount: Math.floor(Math.random()*5), sharedGoalsCount: Math.floor(Math.random()*3), achievementsCount: Math.floor(Math.random()*10), accountStatus: 'active' });
-        });
+        const profile = getProfile();
+        // Only real users: the current user and any actual friends
+        out.push({ id: profile.id, username: profile.username, displayName: profile.displayName, friendCode: profile.friendCode, avatar: profile.avatar, bio: profile.bio, status: 'online', lastActive: new Date().toISOString(), device: 'web', deviceModel: 'Browser', isMe: true, friendsCount: getFriends().length, goalsCount: getAllGoals().length, sharedGoalsCount: getSharedGoals().length, achievementsCount: 0, accountStatus: 'active', createdAt: profile.createdAt || new Date().toISOString() });
+        // Add real friends only
         (state.preferences.friends || []).forEach(f => {
-          if (!out.some(o => o.id === f.id)) out.push({ ...f, friendsCount: 0, goalsCount: 0, sharedGoalsCount: (f.sharedGoals||[]).length, achievementsCount: 0, accountStatus: 'active' });
+          if (!out.some(o => o.id === f.id)) {
+            out.push({ id: f.id, username: f.username || '@' + f.name.toLowerCase().replace(/\s/g,''), displayName: f.name, friendCode: f.code, avatar: f.avatar || '👤', bio: '', status: f.isOnline !== false ? 'online' : 'offline', lastActive: f.lastActive || new Date().toISOString(), device: f.device || 'web', deviceModel: f.deviceModel || 'Browser', isMe: false, friendsCount: 0, goalsCount: (f.sharedGoals||[]).length, sharedGoalsCount: (f.sharedGoals||[]).length, achievementsCount: 0, accountStatus: 'active', createdAt: null });
+          }
         });
         return out;
       }
       function sendAdminNotification({ title, message, target }) {
         if (!isAdmin()) return { ok: false, error: 'Not authorized' };
+        // Create the notification
         const notif = addNotification({
           type: 'admin',
           title: title || 'Announcement',
@@ -1133,7 +1132,29 @@
           data: { target: target || 'everyone' },
           actorId: 'system'
         });
+        // For 'everyone' and 'active' targets, also add to friends' notification lists (simulated)
+        if (target === 'everyone' || target === 'active') {
+          (state.preferences.friends || []).forEach(f => {
+            if (!state.preferences.notifications) state.preferences.notifications = [];
+            state.preferences.notifications.push({
+              id: 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+              type: 'admin',
+              title: title || 'Announcement',
+              message: message || '',
+              data: { target: target },
+              actorId: 'system',
+              createdAt: new Date().toISOString(),
+              read: false,
+              sourceNotifId: notif.id
+            });
+          });
+          // Trim
+          if (state.preferences.notifications && state.preferences.notifications.length > 200) {
+            state.preferences.notifications = state.preferences.notifications.slice(0, 200);
+          }
+        }
         auditLog({ action: 'send_admin_notification', targetUserId: target || 'everyone', metadata: { title, message } });
+        notify();
         return { ok: true, notif };
       }
       function getAuditLog() { return state.preferences.auditLog || []; }
@@ -1149,7 +1170,7 @@
           deadline: g.deadline || null,
           visibility: g.visibility || 'friends',
           creatorId: getProfile().id,
-          members: [{ userId: getProfile().id, role: 'owner', contribution: 0, joinedAt: new Date().toISOString(), permissions: ['edit','invite','delete'] }],
+          members: [{ userId: getProfile().id, role: 'owner', contribution: 0, weeklyContribution: 0, joinedAt: new Date().toISOString(), permissions: ['edit','invite','delete'] }],
           activity: [{ id: 'act_' + Date.now(), userId: getProfile().id, type: 'created', message: `created the goal`, createdAt: new Date().toISOString() }],
           createdAt: new Date().toISOString()
         };
@@ -1163,8 +1184,8 @@
       function inviteToGroupGoal(goalId, userId) {
         const g = getGroupGoal(goalId); if (!g) return { ok: false, error: 'Goal not found' };
         if (g.members.some(m => m.userId === userId)) return { ok: false, error: 'Already a member' };
-        g.members.push({ userId, role: 'member', contribution: 0, joinedAt: new Date().toISOString(), permissions: [] });
-        g.activity.push({ id: 'act_' + Date.now(), userId: getProfile().id, type: 'invited', message: `invited ${userId}`, createdAt: new Date().toISOString() });
+        g.members.push({ userId, role: 'member', contribution: 0, weeklyContribution: 0, joinedAt: new Date().toISOString(), permissions: [] });
+        g.activity.push({ id: 'act_' + Date.now(), userId: getProfile().id, type: 'invited', message: `invited member`, createdAt: new Date().toISOString() });
         addNotification({ type: 'group_invite', title: 'Group goal invite', message: `You were invited to "${g.name}"`, data: { goalId, invitedBy: getProfile().id } });
         notify();
         return { ok: true };
@@ -1187,7 +1208,63 @@
       }
 
       function computePaycheckEstimate() { const { hourlyRate, hoursPerWeek, withholdingPct } = state.incomeSettings; const gross = hourlyRate * hoursPerWeek; const withholding = gross * (withholdingPct / 100); return { gross, withholding, takeHome: gross - withholding, hourlyRate, hoursPerWeek, withholdingPct }; }
-      function computeGoalProgress(g) { const pct = g.target > 0 ? Math.min(100, Math.round((g.current / g.target) * 100)) : 0; const remaining = Math.max(0, g.target - g.current); let estimatedDate = null; if (g.weeklySavings > 0 && remaining > 0) { const weeks = remaining / g.weeklySavings; estimatedDate = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000); } else if (g.targetDate) { estimatedDate = new Date(g.targetDate); } return { pct, remaining, estimatedDate }; }
+      function computeGoalProgress(g) {
+    const pct = g.target > 0 ? Math.min(100, Math.round((g.current / g.target) * 100)) : 0;
+    const remaining = Math.max(0, g.target - g.current);
+    let estimatedDate = null;
+    let weeksRemaining = null;
+    let weeklyRate = 0;
+    
+    // Determine weekly contribution/savings rate from multiple sources
+    if (g.weeklySavings > 0) {
+      weeklyRate = g.weeklySavings;
+    } else if (g.weeklyContribution > 0) {
+      weeklyRate = g.weeklyContribution;
+    } else {
+      // Try income-based estimate if available
+      const inc = state.incomeSettings || {};
+      if (inc.hourlyRate > 0 && inc.hoursPerWeek > 0) {
+        const totalBudget = (inc.hourlyRate * inc.hoursPerWeek * (1 - (inc.withholdingPct || 0) / 100));
+        // Assume ~20% of take-home could go to savings as a conservative estimate
+        weeklyRate = totalBudget * 0.2;
+      }
+    }
+    
+    if (weeklyRate > 0 && remaining > 0) {
+      weeksRemaining = Math.ceil(remaining / weeklyRate);
+      estimatedDate = new Date(Date.now() + weeksRemaining * 7 * 24 * 60 * 60 * 1000);
+    } else if (g.targetDate) {
+      const targetD = new Date(g.targetDate);
+      if (!isNaN(targetD.getTime())) {
+        estimatedDate = targetD;
+        const diffMs = targetD.getTime() - Date.now();
+        weeksRemaining = diffMs > 0 ? Math.ceil(diffMs / (7 * 24 * 60 * 60 * 1000)) : 0;
+      }
+    }
+    
+    // Status: on track / at risk / behind / completed
+    let status = 'unknown';
+    if (pct >= 100) {
+      status = 'completed';
+    } else if (g.targetDate) {
+      const targetD = new Date(g.targetDate);
+      if (!isNaN(targetD.getTime())) {
+        const totalMs = targetD.getTime() - new Date(g.createdAt || Date.now()).getTime();
+        const elapsedMs = Date.now() - new Date(g.createdAt || Date.now()).getTime();
+        const expectedPct = totalMs > 0 ? Math.min(100, (elapsedMs / totalMs) * 100) : 0;
+        if (pct >= expectedPct * 1.1) status = 'ahead';
+        else if (pct >= expectedPct * 0.9) status = 'on-track';
+        else if (pct >= expectedPct * 0.5) status = 'at-risk';
+        else status = 'behind';
+      }
+    } else if (weeklyRate > 0) {
+      status = 'on-track';
+    } else {
+      status = 'no-rate';
+    }
+    
+    return { pct, remaining, estimatedDate, weeksRemaining, weeklyRate, status };
+  }
       function computeProjectedBalance() { const est = computePaycheckEstimate(); const planned = state.recurringExpenses.filter(e => e.active !== false).reduce((s, e) => s + (e.amount || 0), 0); return state.balance + est.takeHome - planned; }
       function computeSpendingByCategory(days) { days = days || 7; const cutoff = Date.now() - days * 864e5; const by = {}; state.transactions.filter(t => t.type === 'expense' && new Date(t.date).getTime() >= cutoff).forEach(t => { by[t.category] = (by[t.category] || 0) + t.amount; }); return by; }
       function computeTotalSpending(days) { days = days || 7; const cutoff = Date.now() - days * 864e5; return state.transactions.filter(t => t.type === 'expense' && new Date(t.date).getTime() >= cutoff).reduce((s, t) => s + t.amount, 0); }
@@ -1252,8 +1329,8 @@
           name: u.displayName,
           active: u.status === 'online',
           lastActive: u.lastActive,
-          device: u.device || 'ios',
-          deviceModel: u.deviceModel || 'Device',
+          device: u.device || 'web',
+          deviceModel: u.deviceModel || 'Browser',
           isMe: u.isMe
         }));
       }
@@ -1775,7 +1852,7 @@
       function handleDevTap() {
         tapCount++;
         clearTimeout(tapTimer);
-        tapTimer = setTimeout(() => { tapCount = 0; }, 800);
+        tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
         if (tapCount >= 5) { tapCount = 0; openDevMenu(); }
       }
       function openDevMenu() {
@@ -1805,12 +1882,12 @@
           </div>
           <div class="t-label" style="margin-bottom:10px;">All Users (live)</div>
           <div style="max-height:50vh;overflow-y:auto;border-radius:14px;border:1px solid var(--gray-800);">
-            ${users.map(u => `
+            ${users.length === 0 ? '<div style="padding:24px;text-align:center;color:var(--gray-500);font-size:14px;">No registered users.</div>' : users.map(u => `
               <div class="dev-user-row" onclick="AdminUI.openUserDetail('${u.id}')" style="cursor:pointer;">
-                <div><div class="name">${escapeHtml(u.displayName)} ${u.isMe ? '<span style="color:var(--green);font-size:10px;">(you)</span>' : ''}</div><div class="meta">${escapeHtml(u.username)} · ${escapeHtml(u.friendCode)} · ${u.friendsCount || 0} friends · Last: ${u.lastActive ? timeAgo(new Date(u.lastActive).getTime()) : '—'}</div></div>
+                <div><div class="name">${escapeHtml(u.displayName)} ${u.isMe ? '<span style="color:var(--green);font-size:10px;">(you)</span>' : ''}</div><div class="meta">${escapeHtml(u.username || '')}${u.friendCode ? ' · ' + escapeHtml(u.friendCode) : ''} · ${u.friendsCount || 0} friends · Last: ${u.lastActive ? timeAgo(new Date(u.lastActive).getTime()) : '—'}</div></div>
                 <div style="display:flex;align-items:center;gap:6px;">
                   <span class="dev-badge ${u.status === 'online' ? 'active' : 'idle'}">${u.status === 'online' ? '●' : '○'}</span>
-                  ${deviceIcon(u.device)}
+                  ${deviceIcon(u.device || 'web')}
                 </div>
               </div>
             `).join('')}
@@ -1881,6 +1958,11 @@
       function sendNotif(userId) {
         openSheet(`
           <div class="sheet-title">Send Notification</div>
+          <div class="field"><label class="field-label">Target</label><div class="chips" id="admin-notif-target">
+            <button class="chip selected" onclick="pickChip(this)" data-target="${userId}">This user</button>
+            <button class="chip" onclick="pickChip(this)" data-target="everyone">Everyone</button>
+            <button class="chip" onclick="pickChip(this)" data-target="active">Active users</button>
+          </div></div>
           <div class="field"><label class="field-label">Title</label><input class="field-input" id="admin-notif-title" placeholder="Server Update" autofocus></div>
           <div class="field"><label class="field-label">Message</label><input class="field-input" id="admin-notif-message" placeholder="New social features are now available."></div>
           <button class="btn btn-green" onclick="AdminUI.submitNotif('${userId}')">Send</button>
@@ -1888,10 +1970,16 @@
         `);
       }
       function submitNotif(userId) {
-        const title = document.getElementById('admin-notif-title')?.value.trim();
-        const message = document.getElementById('admin-notif-message')?.value.trim();
+        const titleEl = document.getElementById('admin-notif-title');
+        const messageEl = document.getElementById('admin-notif-message');
+        const targetEl = document.querySelector('#admin-notif-target .chip.selected');
+        if (!titleEl || !messageEl) { toast('Form error'); return; }
+        const title = titleEl.value.trim();
+        const message = messageEl.value.trim();
+        const target = targetEl ? targetEl.dataset.target : userId;
         if (!title || !message) { toast('Enter title and message'); return; }
-        Store.sendAdminNotification({ title, message, target: userId });
+        const result = Store.sendAdminNotification({ title, message, target });
+        if (!result.ok) { toast(result.error || 'Failed to send'); return; }
         haptic('success'); SoundManager.success();
         toast('Notification sent');
         closeSheet(); DevMenu.openDevMenu();
@@ -1919,18 +2007,45 @@
     function clearAllMaps() { activeMaps.forEach((entry) => { try { entry.map.remove(); } catch (e) {} }); activeMaps.clear(); }
     function fmt(n) { if (n === undefined || n === null || !isFinite(n)) return '$0.00'; const abs = Math.abs(n); const str = abs.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); return '$' + str; }
     function fmtDate(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d.getTime())) return ''; const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const target = new Date(d.getFullYear(), d.getMonth(), d.getDate()); const diff = Math.round((today - target) / 864e5); if (diff === 0) return 'Today'; if (diff === 1) return 'Yesterday'; if (diff === -1) return 'Tomorrow'; if (diff > 0 && diff < 7) return diff + 'd ago'; if (diff < 0 && diff > -7) return 'in ' + Math.abs(diff) + 'd'; return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined }); }
-    function fmtDateLong(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d.getTime())) return ''; return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+    function fmtDateLong(iso) { if (!iso) return 'Not available'; const d = new Date(iso); if (isNaN(d.getTime())) return 'Not available'; return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
     function fmtMonthYear(date) { if (!date) return ''; const d = new Date(date); if (isNaN(d.getTime())) return ''; return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
     function timeAgo(ts) { const s = Math.floor((Date.now() - ts) / 1000); if (s < 5) return 'just now'; if (s < 60) return s + 's ago'; if (s < 3600) return Math.floor(s / 60) + 'm ago'; if (s < 86400) return Math.floor(s / 3600) + 'h ago'; return Math.floor(s / 86400) + 'd ago'; }
     function escapeHtml(s) { if (!s) return ''; return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function haptic(style) { if (!Store.preferences.hapticsEnabled) return; if (typeof navigator.vibrate === 'function') { const patterns = { light: 8, medium: 14, heavy: 22, success: [10, 40, 10], error: [20, 30, 20, 30, 20] }; try { navigator.vibrate(patterns[style] || 10); } catch (e) {} } if (NativeBridge.available) NativeBridge.setHaptic(style); }
-    function toast(msg) { const el = document.getElementById('toast'); document.getElementById('toast-text').textContent = msg; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2400); haptic('light'); }
-    function openSheet(html) { document.getElementById('sheet-content').innerHTML = html; document.getElementById('sheet-overlay').classList.add('on'); sheetReturnFocus = document.activeElement; haptic('light'); SoundManager.click(); }
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      if (!el) return;
+      const textEl = document.getElementById('toast-text');
+      if (textEl) textEl.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove('show'), 2400);
+      haptic('light');
+    }
+    function openSheet(html) {
+      const contentEl = document.getElementById('sheet-content');
+      if (!contentEl) return;
+      contentEl.innerHTML = html;
+      const overlay = document.getElementById('sheet-overlay');
+      if (overlay) overlay.classList.add('on');
+      sheetReturnFocus = document.activeElement;
+      haptic('light'); SoundManager.click();
+    }
     function closeSheet(e) {
-      if (e && e.target !== document.getElementById('sheet-overlay')) return;
-      document.getElementById('sheet-overlay').classList.remove('on');
-      activeMaps.forEach((entry, id) => { if (document.getElementById(id) === null || !document.body.contains(document.getElementById(id))) { try { entry.map.remove(); } catch (err) {} activeMaps.delete(id); } });
-      if (sheetReturnFocus && sheetReturnFocus.focus) { try { sheetReturnFocus.focus(); } catch (err) {} }
+      const overlay = document.getElementById('sheet-overlay');
+      if (!overlay) return;
+      if (e && e.target !== overlay) return;
+      overlay.classList.remove('on');
+      activeMaps.forEach((entry, id) => {
+        const el = document.getElementById(id);
+        if (!el || !document.body.contains(el)) {
+          try { entry.map.remove(); } catch (err) {}
+          activeMaps.delete(id);
+        }
+      });
+      if (sheetReturnFocus && sheetReturnFocus.focus) {
+        try { sheetReturnFocus.focus(); } catch (err) {}
+      }
     }
     function togglePrivacy() { privacyMode = !privacyMode; const btn = document.getElementById('privacy-btn'); btn.textContent = privacyMode ? '🙈' : '👁'; btn.classList.toggle('active', privacyMode); document.getElementById('app').classList.toggle('privacy-blur', privacyMode); haptic('medium'); toast(privacyMode ? 'Privacy mode on' : 'Privacy mode off'); }
 
@@ -1987,7 +2102,7 @@
       return `
         <div class="container fade-in ${editMode ? 'edit-mode' : ''}" id="home-container">
           <div class="top-header">
-            <div class="brand" onclick="DevMenu.handleDevTap()">Logostics<span class="brand-dot"></span></div>
+            <div class="brand" onclick="handleDevTap()">Logostics<span class="brand-dot"></span></div>
             <div style="display:flex;gap:8px;">
               ${PatchNotes.hasUnseenVersion() ? `<button class="icon-btn" onclick="openPatchNotes()" style="border-color:var(--green);color:var(--green);">✦</button>` : ''}
               <button class="icon-btn" onclick="openSettings()">⚙</button>
@@ -2116,7 +2231,7 @@
 
     SocialManager.sendRequestTo = function(code) {
       const result = Store.sendFriendRequest(code);
-      if (!result.ok) { toast(result.error); return; }
+      if (!result.ok) { toast(result.error || 'Could not send request'); return; }
       toast('Friend request sent!');
       haptic('success'); SoundManager.success();
       render();
@@ -2150,7 +2265,7 @@
     }
     function openNotifDetail(id) {
       const n = Store.getNotifications().find(x => x.id === id);
-      if (!n) return;
+      if (!n) { toast('Notification not found'); return; }
       Store.markNotifRead(id);
       openSheet(`
         <div class="sheet-title">${escapeHtml(n.title)}</div>
@@ -2360,6 +2475,9 @@
     function render() {
       if (!authenticated) return; if (AppLockManager.isLocked()) return;
       const app = document.getElementById('app'); clearAllMaps();
+      // Update lastActive timestamp on each render (user is active)
+      const profile = Store.getProfile();
+      if (profile) Store.updateProfile({ lastActive: new Date().toISOString(), status: 'online' });
       const views = { home: renderHome, friends: renderFriends, goals: renderGoals, activity: renderActivity, notifications: renderNotifications, profile: renderProfile, analytics: renderAnalytics };
       app.innerHTML = views[currentTab] ? views[currentTab]() : renderHome();
       app.classList.toggle('privacy-blur', privacyMode);
@@ -2446,11 +2564,26 @@
       const isMember = g.members.some(m => m.userId === myId);
       const totalContribution = g.members.reduce((s, m) => s + (m.contribution || 0), 0);
       const pct = g.target > 0 ? Math.min(100, Math.round((totalContribution / g.target) * 100)) : 0;
+      // Group goal estimate: use total weekly contributions of all members
+      const remaining = Math.max(0, g.target - totalContribution);
+      const memberWeeklyRate = g.members.reduce((s, m) => s + (m.weeklyContribution || 0), 0);
+      const groupWeeklyRate = memberWeeklyRate || (remaining > 0 ? remaining / 12 : 0); // default ~12 weeks if no rate set
+      let groupEstimatedDate = null, groupWeeks = null;
+      if (groupWeeklyRate > 0 && remaining > 0) {
+        groupWeeks = Math.ceil(remaining / groupWeeklyRate);
+        groupEstimatedDate = new Date(Date.now() + groupWeeks * 7 * 24 * 60 * 60 * 1000);
+      }
+      const weeksHtml = groupWeeks !== null ? `<div style="background:var(--gray-900);border:1px solid var(--gray-800);border-radius:14px;padding:14px;margin-bottom:16px;font-size:13px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:var(--gray-400);">Remaining</span><span style="font-weight:700;">${fmt(remaining)}</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:var(--gray-400);">Group rate</span><span style="font-weight:700;">${fmt(groupWeeklyRate)}/week</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-400);">${groupWeeks} week${groupWeeks !== 1 ? 's' : ''} remaining</span>${groupEstimatedDate ? `<span style="font-weight:700;">${fmtDateLong(groupEstimatedDate.toISOString())}</span>` : ''}</div>
+      </div>` : '';
       openSheet(`
         <div class="sheet-title">${escapeHtml(g.name)}</div>
         ${g.description ? `<div style="font-size:14px;color:var(--gray-400);text-align:center;margin-bottom:16px;">${escapeHtml(g.description)}</div>` : ''}
         <div class="goal-bar" style="height:10px;"><div class="goal-fill" style="width:${pct}%"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray-400);margin:8px 0 20px;"><span>${fmt(totalContribution)} of ${fmt(g.target)}</span><span>${pct}%</span></div>
+        ${weeksHtml}
         <div class="t-label" style="margin-bottom:10px;">Members (${g.members.length})</div>
         ${g.members.map(m => {
           const u = Store.findUserById(m.userId);
@@ -2477,9 +2610,33 @@
 
     /* ── EXISTING FORMS ── */
     function openAddIncome() { SoundManager.click(); openSheet(`<div class="sheet-title">Add Income</div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="in-amount" type="number" inputmode="decimal" placeholder="$0.00" autofocus></div><div class="field"><label class="field-label">Source</label><input class="field-input" id="in-desc" placeholder="Paycheck, gift…"></div><div class="field"><label class="field-label">Category</label><div class="chips" id="in-cats"><button class="chip selected" onclick="pickChip(this)" data-cat="paycheck"><span class="emoji">💵</span>Paycheck</button><button class="chip" onclick="pickChip(this)" data-cat="gift"><span class="emoji">🎁</span>Gift</button><button class="chip" onclick="pickChip(this)" data-cat="other"><span class="emoji">◈</span>Other</button></div></div><button class="btn btn-primary" onclick="submitIncome()">Add Income</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`); }
-    async function submitIncome() { const amt = parseFloat(document.getElementById('in-amount').value); const desc = document.getElementById('in-desc').value; const cat = document.querySelector('#in-cats .chip.selected')?.dataset.cat || 'other'; if (!amt || amt <= 0) { toast('Enter a valid amount'); return; } await Store.addTransaction({ type: 'income', amount: amt, description: desc || 'Income', category: cat }); closeSheet(); haptic('success'); SoundManager.income(); toast('Income added'); render(); }
+    async function submitIncome() {
+      const amtEl = document.getElementById('in-amount');
+      const descEl = document.getElementById('in-desc');
+      if (!amtEl) { toast('Form error - please try again'); return; }
+      const amt = parseFloat(amtEl.value);
+      const desc = descEl ? descEl.value : '';
+      const cat = document.querySelector('#in-cats .chip.selected')?.dataset.cat || 'other';
+      if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
+      try {
+        await Store.addTransaction({ type: 'income', amount: amt, description: desc || 'Income', category: cat });
+        closeSheet(); haptic('success'); SoundManager.income(); toast('Income added'); render();
+      } catch (e) { toast("Couldn't save changes. Try again."); }
+    }
     function openAddExpense() { SoundManager.click(); openSheet(`<div class="sheet-title">Add Expense</div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="ex-amount" type="number" inputmode="decimal" placeholder="$0.00" autofocus></div><div class="field"><label class="field-label">Description</label><input class="field-input" id="ex-desc" placeholder="Coffee, groceries…"></div><div class="field"><label class="field-label">Category</label><div class="chips" id="ex-cats"><button class="chip selected" onclick="pickChip(this)" data-cat="food"><span class="emoji">🍔</span>Food</button><button class="chip" onclick="pickChip(this)" data-cat="shopping"><span class="emoji">🛍</span>Shopping</button><button class="chip" onclick="pickChip(this)" data-cat="transport"><span class="emoji">🚗</span>Transport</button><button class="chip" onclick="pickChip(this)" data-cat="bills"><span class="emoji">📄</span>Bills</button><button class="chip" onclick="pickChip(this)" data-cat="other"><span class="emoji">◈</span>Other</button></div></div><button class="btn btn-primary" onclick="submitExpense()">Add Expense</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`); }
-    async function submitExpense() { const amt = parseFloat(document.getElementById('ex-amount').value); const desc = document.getElementById('ex-desc').value; const cat = document.querySelector('#ex-cats .chip.selected')?.dataset.cat || 'other'; if (!amt || amt <= 0) { toast('Enter a valid amount'); return; } await Store.addTransaction({ type: 'expense', amount: amt, description: desc || 'Expense', category: cat }); closeSheet(); haptic('success'); SoundManager.spending(); toast('Expense added'); render(); }
+    async function submitExpense() {
+      const amtEl = document.getElementById('ex-amount');
+      const descEl = document.getElementById('ex-desc');
+      if (!amtEl) { toast('Form error - please try again'); return; }
+      const amt = parseFloat(amtEl.value);
+      const desc = descEl ? descEl.value : '';
+      const cat = document.querySelector('#ex-cats .chip.selected')?.dataset.cat || 'other';
+      if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
+      try {
+        await Store.addTransaction({ type: 'expense', amount: amt, description: desc || 'Expense', category: cat });
+        closeSheet(); haptic('success'); SoundManager.spending(); toast('Expense added'); render();
+      } catch (e) { toast("Couldn't save changes. Try again."); }
+    }
     function openAddGoal() { SoundManager.click(); openSheet(`<div class="sheet-title">Create Goal</div><div class="field"><label class="field-label">Goal Name</label><input class="field-input" id="g-name" placeholder="iPhone, Vacation…" autofocus></div><div class="field"><label class="field-label">Target Amount</label><input class="field-input" id="g-target" type="number" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label class="field-label">Current Amount</label><input class="field-input" id="g-current" type="number" inputmode="decimal" placeholder="$0.00" value="0"></div><div class="field"><label class="field-label">Weekly Savings (optional)</label><input class="field-input" id="g-weekly" type="number" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label class="field-label">Icon</label><div class="chips" id="g-emoji"><button class="chip selected" onclick="pickChip(this)" data-emoji="◈">◈</button><button class="chip" onclick="pickChip(this)" data-emoji="▣">▣</button><button class="chip" onclick="pickChip(this)" data-emoji="◆">◆</button><button class="chip" onclick="pickChip(this)" data-emoji="●">●</button></div></div><button class="btn btn-primary" onclick="submitGoal()">Create Goal</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>`); }
     async function submitGoal() { const name = document.getElementById('g-name').value.trim(); const target = parseFloat(document.getElementById('g-target').value); const current = parseFloat(document.getElementById('g-current').value) || 0; const weekly = parseFloat(document.getElementById('g-weekly').value) || 0; const emoji = document.querySelector('#g-emoji .chip.selected')?.dataset.emoji || '◈'; if (!name) { toast('Enter a goal name'); return; } if (!target || target <= 0) { toast('Enter a valid target'); return; } await Store.addGoal({ name, target, current, weeklySavings: weekly, emoji }); closeSheet(); haptic('success'); SoundManager.goalCreated(); toast('Goal created'); render(); }
     function openTxDetail(id) { const t = Store.getSnapshot().transactions.find(x => x.id === id); if (!t) return; const isInc = t.type === 'income'; openSheet(`<div style="text-align:center;margin-bottom:28px;"><div style="font-size:44px;font-weight:700;letter-spacing:-0.04em;color:${isInc ? 'var(--green)' : 'var(--white)'};font-variant-numeric:tabular-nums;">${isInc ? '+' : '−'}${fmt(t.amount)}</div><div style="font-size:14px;color:var(--gray-500);margin-top:6px;font-weight:500;">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px;">${escapeHtml(t.category)} · ${fmtDate(t.date)}</div></div><div class="btn-row"><button class="btn btn-secondary" onclick="closeSheet();openEditTx(${t.id})">Edit</button><button class="btn btn-danger" onclick="confirmDeleteTx(${t.id})">Delete</button></div><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>`); }
@@ -2489,7 +2646,22 @@
     function openGoalDetail(id) {
       const g = Store.getGoal(id); if (!g) return; if (g.type === 'moving') { openMovingGoalDetail(id); return; }
       const p = Store.computeGoalProgress(g); const shared = Store.getSharedGoals().filter(s => s.goalId === id);
-      openSheet(`<div style="text-align:center;margin-bottom:28px;"><div style="font-size:52px;margin-bottom:10px;filter:grayscale(1);opacity:0.8;">${g.emoji}</div><div style="font-size:22px;font-weight:700;">${escapeHtml(g.name)}</div><div style="font-size:14px;color:var(--gray-500);margin-top:4px;">${p.pct}% complete</div></div><div style="display:flex;justify-content:space-between;font-size:22px;font-weight:700;margin-bottom:14px;font-variant-numeric:tabular-nums;"><span>${fmt(g.current)}</span><span style="color:var(--gray-500);">${fmt(g.target)}</span></div><div class="goal-bar" style="height:10px;margin-bottom:20px;"><div class="goal-fill" style="width:${p.pct}%"></div></div><div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray-400);margin-bottom:24px;font-weight:500;"><span>${fmt(p.remaining)} remaining</span><span>${p.pct}%</span></div><div class="field"><label class="field-label">Add to goal</label><div style="display:flex;gap:8px;"><input class="field-input" id="g-add" type="number" inputmode="decimal" placeholder="$0.00" style="flex:1;"><button class="btn btn-green" style="width:auto;padding:14px 22px;" onclick="addToGoal(${g.id})">Add</button></div></div><button class="btn btn-secondary" onclick="closeSheet();openShareGoal(${g.id})">👥 Share with a friend</button>${shared.length > 0 ? `<div style="margin-top:12px;font-size:12px;color:var(--gray-500);text-align:center;">Shared with: ${shared.map(s => escapeHtml(s.friendName)).join(', ')}</div>` : ''}<button class="btn btn-danger" style="margin-top:12px;" onclick="confirmDeleteGoal(${g.id})">Delete Goal</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>`);
+      const statusLabels = { 'completed': '<span style="color:var(--green);">✓ Completed</span>', 'ahead': '<span style="color:var(--green);">Ahead of schedule</span>', 'on-track': '<span style="color:var(--green);">On track</span>', 'at-risk': '<span style="color:#ff9f0a;">At risk</span>', 'behind': '<span style="color:#ff453a;">Behind</span>', 'no-rate': 'Add a contribution amount to estimate completion', 'unknown': 'Add more information to estimate completion' };
+      let estimateHtml = '';
+      if (p.status === 'no-rate' || p.status === 'unknown') {
+        estimateHtml = `<div style="background:var(--gray-900);border:1px solid var(--gray-800);border-radius:14px;padding:14px;margin-bottom:16px;font-size:13px;color:var(--gray-500);text-align:center;">${statusLabels[p.status] || statusLabels.unknown}</div>`;
+      } else if (p.status === 'completed') {
+        estimateHtml = `<div style="background:var(--gray-900);border:1px solid var(--green);border-radius:14px;padding:14px;margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:var(--gray-400);">Status</span><span style="font-weight:700;color:var(--green);">✓ Goal reached!</span></div><div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-400);">Remaining</span><span style="font-weight:700;">$0.00</span></div></div>`;
+      } else {
+        const weeklyInfo = p.weeklyRate > 0 ? `<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:var(--gray-400);">~${fmt(p.weeklyRate)}/week</span><span style="font-weight:700;">~${p.weeksRemaining} weeks</span></div>` : '';
+        estimateHtml = `<div style="background:var(--gray-900);border:1px solid var(--gray-800);border-radius:14px;padding:14px;margin-bottom:16px;font-size:13px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--gray-400);">Progress</span><span style="font-weight:700;">${p.pct}% · ${statusLabels[p.status] || p.status}</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="color:var(--gray-400);">Remaining</span><span style="font-weight:700;">${fmt(p.remaining)}</span></div>
+          ${weeklyInfo}
+          ${p.estimatedDate ? `<div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--gray-800);"><span style="color:var(--gray-400);">Estimated completion</span><span style="font-weight:700;">${fmtDateLong(new Date(p.estimatedDate).toISOString())}</span></div>` : ''}
+        </div>`;
+      }
+      openSheet(`<div style="text-align:center;margin-bottom:28px;"><div style="font-size:52px;margin-bottom:10px;filter:grayscale(1);opacity:0.8;">${g.emoji}</div><div style="font-size:22px;font-weight:700;">${escapeHtml(g.name)}</div><div style="font-size:14px;color:var(--gray-500);margin-top:4px;">${p.pct}% complete</div></div><div style="display:flex;justify-content:space-between;font-size:22px;font-weight:700;margin-bottom:14px;font-variant-numeric:tabular-nums;"><span>${fmt(g.current)}</span><span style="color:var(--gray-500);">${fmt(g.target)}</span></div><div class="goal-bar" style="height:10px;margin-bottom:20px;"><div class="goal-fill" style="width:${p.pct}%"></div></div><div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray-400);margin-bottom:24px;font-weight:500;"><span>${fmt(p.remaining)} remaining</span><span>${p.pct}%</span></div>${estimateHtml}<div class="field"><label class="field-label">Add to goal</label><div style="display:flex;gap:8px;"><input class="field-input" id="g-add" type="number" inputmode="decimal" placeholder="$0.00" style="flex:1;"><button class="btn btn-green" style="width:auto;padding:14px 22px;" onclick="addToGoal(${g.id})">Add</button></div></div><button class="btn btn-secondary" onclick="closeSheet();openShareGoal(${g.id})">👥 Share with a friend</button>${shared.length > 0 ? `<div style="margin-top:12px;font-size:12px;color:var(--gray-500);text-align:center;">Shared with: ${shared.map(s => escapeHtml(s.friendName)).join(', ')}</div>` : ''}<button class="btn btn-danger" style="margin-top:12px;" onclick="confirmDeleteGoal(${g.id})">Delete Goal</button><button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>`);
     }
     async function addToGoal(id) { const amt = parseFloat(document.getElementById('g-add').value); if (!amt || amt <= 0) { toast('Enter a valid amount'); return; } const g = Store.getGoal(id); if (!g) return; await Store.updateGoal(id, { current: g.current + amt }); closeSheet(); haptic('success'); SoundManager.success(); toast('Added to goal'); render(); }
     async function confirmDeleteGoal(id) { if (confirm('Delete this goal?')) { await Store.deleteGoal(id); closeSheet(); haptic('heavy'); toast('Goal deleted'); render(); } }
@@ -2566,9 +2738,10 @@
         <div class="set-row" onclick="closeSheet();openCustomization()"><div class="set-left"><span class="ico">🎨</span> App Customization</div><div class="set-right">›</div></div>
 
         <div class="t-label" style="margin:16px 0 10px;">Income Estimator</div>
-        <div class="field"><label class="field-label">Hourly Rate</label><input class="field-input" id="s-hourly" type="number" inputmode="decimal" value="${inc.hourlyRate}" placeholder="$0.00"></div>
-        <div class="field-row"><div class="field"><label class="field-label">Hours/week</label><input class="field-input" id="s-hours" type="number" inputmode="decimal" value="${inc.hoursPerWeek}" placeholder="0"></div><div class="field"><label class="field-label">Withhold %</label><input class="field-input" id="s-withhold" type="number" inputmode="decimal" value="${inc.withholdingPct}" placeholder="20"></div></div>
-        <div class="field"><label class="field-label">Pay frequency</label><div class="chips" id="s-freq">${['weekly','biweekly','semimonthly','monthly'].map(f => `<button class="chip ${inc.payFrequency===f?'selected':''}" onclick="setPayFrequency('${f}')">${f}</button>`).join('')}</div></div>
+        <div class="field"><label class="field-label">Hourly Rate</label><input class="field-input" id="s-hourly" type="number" inputmode="decimal" value="${inc.hourlyRate || ''}" placeholder="$0.00" oninput="debouncedSaveIncome()"></div>
+        <div class="field-row"><div class="field"><label class="field-label">Hours/week</label><input class="field-input" id="s-hours" type="number" inputmode="decimal" value="${inc.hoursPerWeek || ''}" placeholder="0" oninput="debouncedSaveIncome()"></div><div class="field"><label class="field-label">Withhold %</label><input class="field-input" id="s-withhold" type="number" inputmode="decimal" value="${inc.withholdingPct || 20}" placeholder="20" oninput="debouncedSaveIncome()"></div></div>
+        <div class="field"><label class="field-label">Pay frequency</label><div class="chips" id="s-freq">${['weekly','biweekly','semimonthly','monthly'].map(f => `<button class="chip ${inc.payFrequency===f?'selected':''}" onclick="setPayFrequency('${f}');debouncedSaveIncome()">${f}</button>`).join('')}</div></div>
+        <div style="font-size:11px;color:var(--gray-500);margin-bottom:16px;padding:0 4px;">Values are saved automatically as you type.</div>
 
         <div class="t-label" style="margin:16px 0 10px;">Security</div>
         <div class="set-row" onclick="toggleAppLock()"><div class="set-left"><span class="ico">🔒</span> App Lock</div><div class="toggle ${prefs.appLockEnabled ? 'on' : ''}"></div></div>
@@ -2590,8 +2763,7 @@
         <div class="t-label" style="margin:16px 0 10px;">About</div>
         <div class="set-row" onclick="openPatchNotes()"><div class="set-left"><span class="ico">✦</span> Patch Notes</div><div class="set-right">${PatchNotes.getCurrentVersion()} ›</div></div>
 
-        <button class="btn btn-primary" style="margin-top:16px;" onclick="saveIncomeSettings()">Save Income Settings</button>
-        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>`);
+        <button class="btn btn-secondary" style="margin-top:16px;" onclick="closeSheet()">Close</button>`);
     }
     async function saveIncomeSettings() { const h = parseFloat(document.getElementById('s-hourly').value) || 0; const hs = parseFloat(document.getElementById('s-hours').value) || 0; const w = parseFloat(document.getElementById('s-withhold').value) || 20; await Store.updateIncomeSettings({ hourlyRate: h, hoursPerWeek: hs, withholdingPct: w }); haptic('success'); SoundManager.success(); toast('Income settings saved'); openSettings(); }
     async function setPayFrequency(f) { await Store.updateIncomeSettings({ payFrequency: f }); openSettings(); }
@@ -2628,10 +2800,25 @@
       if (PatchNotes.hasUnseenVersion() && Store.preferences.lastSeenVersion) setTimeout(() => openPatchNotes(), 800); else if (!Store.preferences.lastSeenVersion) PatchNotes.markSeen();
       setTimeout(() => NotificationScheduler.checkAndFire().catch(() => {}), 2000);
       setInterval(() => NotificationScheduler.checkAndFire().catch(() => {}), 15 * 60 * 1000);
-      Object.assign(window, {
+      // Debounced income autosave (global for inline oninput use)
+    let _incomeSaveTimer = null;
+    function debouncedSaveIncome() {
+      if (_incomeSaveTimer) clearTimeout(_incomeSaveTimer);
+      _incomeSaveTimer = setTimeout(() => {
+        const h = parseFloat(document.getElementById('s-hourly')?.value) || 0;
+        const hs = parseFloat(document.getElementById('s-hours')?.value) || 0;
+        const w = parseFloat(document.getElementById('s-withhold')?.value) || 20;
+        const fEl = document.querySelector('#s-freq .chip.selected');
+        const f = fEl ? fEl.textContent.trim() : 'weekly';
+        Store.updateIncomeSettings({ hourlyRate: h, hoursPerWeek: hs, withholdingPct: w, payFrequency: f }).catch((e) => console.error('Income autosave failed:', e));
+        _incomeSaveTimer = null;
+      }, 400);
+    }
+
+    Object.assign(window, {
         switchTab, openAddIncome, openAddExpense, openAddGoal, openGoalDetail, openTxDetail, openSettings, openAI, openPatchNotes,
         submitIncome, submitExpense, submitGoal, submitEditTx, openEditTx, confirmDeleteTx, confirmDeleteGoal, addToGoal, pickChip, pickSeg, closeSheet,
-        exportData, resetAllData, togglePrivacy, enableNotifications, toggleAppLock, setPayFrequency, togglePref, setSfxVolume, toggleNotifCat, saveIncomeSettings,
+        exportData, resetAllData, togglePrivacy, enableNotifications, toggleAppLock, setPayFrequency, togglePref, setSfxVolume, toggleNotifCat, saveIncomeSettings, debouncedSaveIncome, handleDevTap: () => DevMenu.handleDevTap(), openSocial: () => { SocialManager.openSocial(); },
         askAIAbout, submitAI, executeAIConfirm, dismissAIConfirm, clearAIChat, openTxContextMenu, setActivityCat, onActivitySearch,
         DashboardManager, LifecycleManager, AppLockManager, PatchNotes, DebugPanel, openAddMovingGoal, openEditMovingGoal, openMovingGoalDetail,
         openAddToMovingGoal, submitAddToMovingGoal, confirmDeleteMovingGoal, askAIAboutMovingGoal, mgSearchDestination, mgPickResult, mgResetMap,
