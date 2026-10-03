@@ -6,11 +6,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#000000">
+  <meta name="description" content="Logostics Finance — personal finance command center">
   <title>Logostics Finance</title>
   <style>
     /* ═══════════════════════════════════════════════════════════
-       LOGOSTICS FINANCE — MINIMAL iOS
+       LOGOSTICS FINANCE — HONEST PLATFORM INTEGRATION
        Palette: black, white, gray, green ONLY
+       No fake iOS chrome. No simulated system UI.
        ═══════════════════════════════════════════════════════════ */
 
     * {
@@ -58,63 +60,34 @@
       font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
       background: var(--black);
       color: var(--white);
+      /* Use 100dvh with fallback — handles Safari's dynamic address bar */
       min-height: 100vh;
       min-height: 100dvh;
+      /* Safe-area insets respected as padding — content lives inside the notch/Dynamic Island */
       padding-top: var(--safe-top);
       padding-bottom: calc(80px + var(--safe-bottom));
       padding-left: var(--safe-left);
       padding-right: var(--safe-right);
+      /* Prevent accidental horizontal scroll on iPhone */
       overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
       user-select: none;
       letter-spacing: -0.01em;
+      /* Landscape-safe */
+      position: relative;
     }
 
     /* ── SCROLLBAR ── */
     ::-webkit-scrollbar { width: 0; height: 0; }
 
     /* ── TYPOGRAPHY ── */
-    .t-hero {
-      font-size: 56px;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-    }
-    .t-large {
-      font-size: 34px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-    }
-    .t-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .t-headline {
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.015em;
-    }
-    .t-body {
-      font-size: 15px;
-      font-weight: 400;
-      line-height: 1.45;
-      letter-spacing: -0.01em;
-    }
-    .t-caption {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--gray-400);
-      letter-spacing: 0.01em;
-    }
-    .t-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
+    .t-hero { font-size: 56px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+    .t-large { font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+    .t-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .t-body { font-size: 15px; font-weight: 400; line-height: 1.45; letter-spacing: -0.01em; }
+    .t-caption { font-size: 12px; font-weight: 500; color: var(--gray-400); letter-spacing: 0.01em; }
+    .t-label { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.08em; }
 
     /* ── LIQUID GLASS LAYERS ── */
     .glass {
@@ -123,14 +96,12 @@
       -webkit-backdrop-filter: blur(28px) saturate(180%);
       border: 1px solid rgba(255, 255, 255, 0.06);
     }
-
     .glass-light {
       background: rgba(255, 255, 255, 0.04);
       backdrop-filter: blur(20px) saturate(160%);
       -webkit-backdrop-filter: blur(20px) saturate(160%);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-
     .glass-deep {
       background: rgba(10, 10, 10, 0.85);
       backdrop-filter: blur(40px) saturate(200%);
@@ -139,980 +110,284 @@
     }
 
     /* ── LAYOUT ── */
-    .container {
-      max-width: 430px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .section {
-      margin-bottom: 28px;
-    }
-
-    .section-h {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      padding: 0 2px;
-    }
+    .container { max-width: 430px; margin: 0 auto; padding: 0 20px; width: 100%; }
+    .section { margin-bottom: 28px; }
+    .section-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 2px; }
 
     /* ── TOP HEADER ── */
-    .top-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 0 8px;
-    }
-
-    .brand {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--white);
-    }
-
+    .top-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0 8px; }
+    .brand { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; color: var(--white); }
     .brand-dot {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      margin-left: 6px;
-      vertical-align: middle;
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); margin-left: 6px; vertical-align: middle;
       box-shadow: 0 0 8px var(--green-glow);
       animation: pulse-dot 2s ease-in-out infinite;
     }
-
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(0.85); }
-    }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.85); } }
 
     .icon-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      cursor: pointer;
-      background: var(--gray-850);
-      border: 1px solid var(--gray-700);
-      color: var(--gray-300);
-      transition: all 0.2s var(--ease);
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; cursor: pointer;
+      background: var(--gray-850); border: 1px solid var(--gray-700);
+      color: var(--gray-300); transition: all 0.2s var(--ease);
       font-family: inherit;
     }
-
-    .icon-btn:active {
-      transform: scale(0.9);
-      background: var(--gray-800);
-    }
+    .icon-btn:active { transform: scale(0.9); background: var(--gray-800); }
 
     /* ── BALANCE HERO ── */
-    .hero {
-      text-align: center;
-      padding: 32px 0 24px;
-    }
-
-    .hero-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 14px;
-    }
-
+    .hero { text-align: center; padding: 32px 0 24px; }
+    .hero-label { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px; }
     .hero-amount {
-      font-size: 64px;
-      font-weight: 700;
-      letter-spacing: -0.045em;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-      color: var(--white);
-      transition: color 0.3s;
+      font-size: 64px; font-weight: 700; letter-spacing: -0.045em; line-height: 1;
+      font-variant-numeric: tabular-nums; color: var(--white); transition: color 0.3s;
     }
-
-    .hero-status {
-      font-size: 12px;
-      color: var(--gray-500);
-      margin-top: 10px;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .status-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--green);
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
+    .hero-status { font-size: 12px; color: var(--gray-500); margin-top: 10px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s ease-in-out infinite; }
 
     /* ── CASH CARD ── */
-    .cash-card {
-      border-radius: 28px;
-      padding: 24px;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
+    .cash-card { border-radius: 28px; padding: 24px; margin-bottom: 20px; position: relative; overflow: hidden; }
     .cash-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 15%;
-      right: 15%;
-      height: 1px;
+      content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
     }
-
-    .cash-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
-
-    .cash-main {
-      font-size: 38px;
-      font-weight: 700;
-      letter-spacing: -0.035em;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .cash-main-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-top: 6px;
-    }
-
+    .cash-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    .cash-main { font-size: 38px; font-weight: 700; letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums; }
+    .cash-main-label { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
     .cash-badge {
-      padding: 6px 12px;
-      border-radius: 20px;
-      background: var(--green-glow);
-      border: 1px solid rgba(48, 209, 88, 0.25);
-      color: var(--green);
-      font-size: 13px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
+      padding: 6px 12px; border-radius: 20px;
+      background: var(--green-glow); border: 1px solid rgba(48, 209, 88, 0.25);
+      color: var(--green); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums;
     }
-
-    .cash-rows {
-      border-top: 1px solid var(--gray-800);
-      padding-top: 16px;
-    }
-
-    .cash-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 7px 0;
-      font-size: 14px;
-    }
-
-    .cash-row .lbl {
-      color: var(--gray-400);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 500;
-    }
-
-    .cash-row .amt {
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-    }
-
+    .cash-rows { border-top: 1px solid var(--gray-800); padding-top: 16px; }
+    .cash-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 14px; }
+    .cash-row .lbl { color: var(--gray-400); display: flex; align-items: center; gap: 8px; font-weight: 500; }
+    .cash-row .amt { font-weight: 600; font-variant-numeric: tabular-nums; }
     .cash-row .amt.pos { color: var(--green); }
     .cash-row .amt.neg { color: var(--gray-200); }
-
-    .cash-proj {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--gray-800);
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-
-    .cash-proj .lbl {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .cash-proj .amt {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--green);
-      font-variant-numeric: tabular-nums;
-    }
+    .cash-proj { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gray-800); display: flex; justify-content: space-between; align-items: baseline; }
+    .cash-proj .lbl { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.08em; }
+    .cash-proj .amt { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; color: var(--green); font-variant-numeric: tabular-nums; }
 
     /* ── QUICK ACTIONS ── */
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 28px;
-    }
-
+    .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 28px; }
     .quick-btn {
-      border-radius: 18px;
-      padding: 16px 8px 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s var(--ease);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
+      border-radius: 18px; padding: 16px 8px 12px; text-align: center; cursor: pointer;
+      transition: all 0.2s var(--ease); display: flex; flex-direction: column; align-items: center; gap: 8px;
+      background: var(--gray-900); border: 1px solid var(--gray-800); font-family: inherit;
     }
-
-    .quick-btn:active {
-      transform: scale(0.92);
-      background: var(--gray-850);
-    }
-
-    .quick-btn .ico {
-      font-size: 22px;
-      line-height: 1;
-      filter: grayscale(1);
-    }
-
+    .quick-btn:active { transform: scale(0.92); background: var(--gray-850); }
+    .quick-btn .ico { font-size: 22px; line-height: 1; filter: grayscale(1); }
     .quick-btn.primary .ico { filter: none; }
-
-    .quick-btn .lbl {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--gray-400);
-      letter-spacing: 0.02em;
-    }
+    .quick-btn .lbl { font-size: 10px; font-weight: 600; color: var(--gray-400); letter-spacing: 0.02em; }
 
     /* ── INSIGHT CARDS ── */
     .insight {
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 8px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
+      border-radius: 18px; padding: 16px; margin-bottom: 8px; display: flex; gap: 12px; align-items: flex-start;
+      background: var(--gray-900); border: 1px solid var(--gray-800);
     }
-
-    .insight .ico {
-      font-size: 18px;
-      flex-shrink: 0;
-      margin-top: 1px;
-      filter: grayscale(1);
-    }
-
-    .insight .txt {
-      font-size: 13.5px;
-      line-height: 1.45;
-      color: var(--gray-300);
-      font-weight: 400;
-    }
-
-    .insight .txt strong {
-      color: var(--white);
-      font-weight: 600;
-    }
+    .insight .ico { font-size: 18px; flex-shrink: 0; margin-top: 1px; filter: grayscale(1); }
+    .insight .txt { font-size: 13.5px; line-height: 1.45; color: var(--gray-300); font-weight: 400; }
+    .insight .txt strong { color: var(--white); font-weight: 600; }
 
     /* ── ACTIVITY ITEMS ── */
     .activity-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      margin-bottom: 6px;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-      transition: all 0.2s var(--ease);
-      cursor: pointer;
+      display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 18px;
+      margin-bottom: 6px; background: var(--gray-900); border: 1px solid var(--gray-800);
+      transition: all 0.2s var(--ease); cursor: pointer;
     }
-
-    .activity-item:active {
-      transform: scale(0.98);
-      background: var(--gray-850);
-    }
-
+    .activity-item:active { transform: scale(0.98); background: var(--gray-850); }
     .activity-ico {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-      background: var(--gray-850);
-      border: 1px solid var(--gray-700);
-      filter: grayscale(1);
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+      background: var(--gray-850); border: 1px solid var(--gray-700); filter: grayscale(1);
     }
-
-    .activity-ico.income {
-      filter: none;
-      border-color: rgba(48, 209, 88, 0.3);
-      background: var(--green-glow);
-    }
-
-    .activity-body {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .activity-name {
-      font-size: 15px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      letter-spacing: -0.01em;
-    }
-
-    .activity-meta {
-      font-size: 11.5px;
-      color: var(--gray-500);
-      margin-top: 2px;
-      display: flex;
-      gap: 8px;
-      font-weight: 500;
-    }
-
-    .activity-amt {
-      font-size: 15px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      flex-shrink: 0;
-      letter-spacing: -0.01em;
-    }
-
+    .activity-ico.income { filter: none; border-color: rgba(48, 209, 88, 0.3); background: var(--green-glow); }
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em; }
+    .activity-meta { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; display: flex; gap: 8px; font-weight: 500; }
+    .activity-amt { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; letter-spacing: -0.01em; }
     .activity-amt.pos { color: var(--green); }
     .activity-amt.neg { color: var(--gray-200); }
 
     /* ── GOAL CARDS ── */
     .goal-card {
-      border-radius: 24px;
-      padding: 22px;
-      margin-bottom: 12px;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-      transition: all 0.2s var(--ease);
-      cursor: pointer;
+      border-radius: 24px; padding: 22px; margin-bottom: 12px;
+      background: var(--gray-900); border: 1px solid var(--gray-800);
+      transition: all 0.2s var(--ease); cursor: pointer;
     }
-
-    .goal-card:active {
-      transform: scale(0.985);
-    }
-
-    .goal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-
-    .goal-name {
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .goal-pct {
-      font-size: 12px;
-      color: var(--gray-500);
-      font-weight: 600;
-      margin-top: 3px;
-    }
-
-    .goal-emoji {
-      font-size: 26px;
-      filter: grayscale(1);
-      opacity: 0.7;
-    }
-
-    .goal-card.active .goal-emoji {
-      filter: none;
-      opacity: 1;
-    }
-
-    .goal-bar {
-      width: 100%;
-      height: 6px;
-      background: var(--gray-800);
-      border-radius: 3px;
-      overflow: hidden;
-      margin: 14px 0 10px;
-    }
-
+    .goal-card:active { transform: scale(0.985); }
+    .goal-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .goal-name { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+    .goal-pct { font-size: 12px; color: var(--gray-500); font-weight: 600; margin-top: 3px; }
+    .goal-emoji { font-size: 26px; filter: grayscale(1); opacity: 0.7; }
+    .goal-card.active .goal-emoji { filter: none; opacity: 1; }
+    .goal-bar { width: 100%; height: 6px; background: var(--gray-800); border-radius: 3px; overflow: hidden; margin: 14px 0 10px; }
     .goal-fill {
-      height: 100%;
-      border-radius: 3px;
-      background: var(--green);
-      transition: width 0.7s var(--ease-out);
-      position: relative;
-      overflow: hidden;
+      height: 100%; border-radius: 3px; background: var(--green);
+      transition: width 0.7s var(--ease-out); position: relative; overflow: hidden;
     }
-
     .goal-fill::after {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content: ''; position: absolute; inset: 0;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
       animation: shimmer 2.5s infinite;
     }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-
-    .goal-stats {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: var(--gray-400);
-      font-weight: 500;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .goal-stats .hl {
-      color: var(--white);
-      font-weight: 600;
-    }
-
-    .goal-eta {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--gray-800);
-      font-size: 12px;
-      color: var(--gray-500);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-    }
-
-    /* ── DYNAMIC ISLAND PREVIEW ── */
-    .di-wrap {
-      margin: 8px 0 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .di-pill {
-      background: var(--black);
-      border-radius: 40px;
-      padding: 14px 22px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      min-width: 240px;
-      justify-content: space-between;
-      border: 1px solid var(--gray-800);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.03);
-      animation: di-breathe 4s ease-in-out infinite;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .di-pill::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 25%;
-      right: 25%;
-      height: 1px;
-      background: rgba(255,255,255,0.08);
-    }
-
-    @keyframes di-breathe {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.015); }
-    }
-
-    .di-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .di-ico {
-      font-size: 15px;
-      filter: grayscale(1);
-    }
-
-    .di-lbl {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .di-val {
-      font-size: 15px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      color: var(--green);
-      letter-spacing: -0.01em;
-    }
-
-    .di-compact {
-      background: var(--black);
-      border-radius: 30px;
-      padding: 8px 16px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid var(--gray-800);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-      font-size: 13px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      color: var(--green);
-    }
-
-    .di-compact .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      animation: pulse-dot 1.5s infinite;
-    }
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    .goal-stats { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray-400); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .goal-stats .hl { color: var(--white); font-weight: 600; }
+    .goal-eta { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-800); font-size: 12px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; font-weight: 500; }
 
     /* ── BOTTOM NAV ── */
     .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      display: flex; justify-content: space-around; align-items: center;
       padding: 8px 0 calc(8px + var(--safe-bottom));
-      z-index: 100;
-      border-top: 1px solid var(--gray-800);
+      z-index: 100; border-top: 1px solid var(--gray-800);
     }
-
     .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      padding: 6px 14px;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all 0.25s var(--ease);
-      background: none;
-      border: none;
-      color: var(--gray-500);
-      font-family: inherit;
-      min-width: 60px;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 6px 14px; border-radius: 14px; cursor: pointer;
+      transition: all 0.25s var(--ease); background: none; border: none;
+      color: var(--gray-500); font-family: inherit; min-width: 60px;
     }
-
-    .nav-item.active {
-      color: var(--white);
-    }
-
-    .nav-item.active .nav-ico {
-      filter: none;
-      transform: scale(1.05);
-    }
-
-    .nav-item:active {
-      transform: scale(0.88);
-    }
-
-    .nav-ico {
-      font-size: 21px;
-      line-height: 1;
-      filter: grayscale(1);
-      transition: all 0.25s var(--ease);
-    }
-
-    .nav-lbl {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
+    .nav-item.active { color: var(--white); }
+    .nav-item.active .nav-ico { filter: none; transform: scale(1.05); }
+    .nav-item:active { transform: scale(0.88); }
+    .nav-ico { font-size: 21px; line-height: 1; filter: grayscale(1); transition: all 0.25s var(--ease); }
+    .nav-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.01em; }
 
     /* ── SHEETS ── */
     .sheet-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 1000;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      z-index: 1000; display: none; align-items: flex-end; justify-content: center;
       animation: fade-in 0.25s ease;
     }
-
     .sheet-overlay.on { display: flex; }
-
-    @keyframes fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
     .sheet {
-      width: 100%;
-      max-width: 430px;
-      max-height: 92vh;
-      overflow-y: auto;
+      width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto;
       border-radius: 32px 32px 0 0;
       padding: 12px 20px calc(24px + var(--safe-bottom));
       animation: slide-up 0.4s var(--ease-out);
       background: var(--gray-950);
       border-top: 1px solid var(--gray-800);
     }
-
-    @keyframes slide-up {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .sheet-grip {
-      width: 36px;
-      height: 4px;
-      background: var(--gray-600);
-      border-radius: 2px;
-      margin: 0 auto 20px;
-    }
-
-    .sheet-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-      text-align: center;
-    }
+    @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .sheet-grip { width: 36px; height: 4px; background: var(--gray-600); border-radius: 2px; margin: 0 auto 20px; }
+    .sheet-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 24px; text-align: center; }
 
     /* ── FORMS ── */
     .field { margin-bottom: 18px; }
-
     .field-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
-      display: block;
+      font-size: 11px; font-weight: 600; color: var(--gray-500);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; display: block;
     }
-
     .field-input {
-      width: 100%;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-      border-radius: 14px;
-      padding: 16px;
-      font-size: 17px;
-      color: var(--white);
-      font-family: inherit;
-      transition: all 0.2s var(--ease);
-      -webkit-appearance: none;
-      appearance: none;
-      letter-spacing: -0.01em;
+      width: 100%; background: var(--gray-900); border: 1px solid var(--gray-800);
+      border-radius: 14px; padding: 16px; font-size: 17px; color: var(--white);
+      font-family: inherit; transition: all 0.2s var(--ease);
+      -webkit-appearance: none; appearance: none; letter-spacing: -0.01em;
     }
-
-    .field-input:focus {
-      outline: none;
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px var(--green-glow);
-    }
-
+    .field-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-glow); }
     .field-input::placeholder { color: var(--gray-600); }
 
     /* ── CHIPS ── */
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
-      padding: 10px 16px;
-      border-radius: 20px;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s var(--ease);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--gray-300);
-      font-family: inherit;
+      padding: 10px 16px; border-radius: 20px;
+      background: var(--gray-900); border: 1px solid var(--gray-800);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s var(--ease); display: flex; align-items: center; gap: 6px;
+      color: var(--gray-300); font-family: inherit;
     }
-
     .chip:active { transform: scale(0.92); }
-
-    .chip.selected {
-      background: var(--green);
-      border-color: var(--green);
-      color: var(--black);
-    }
-
+    .chip.selected { background: var(--green); border-color: var(--green); color: var(--black); }
     .chip .emoji { filter: grayscale(1); }
     .chip.selected .emoji { filter: none; }
 
     /* ── BUTTONS ── */
     .btn {
-      padding: 16px 24px;
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s var(--ease);
-      font-family: inherit;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      letter-spacing: -0.01em;
+      padding: 16px 24px; border-radius: 14px; font-size: 17px; font-weight: 600;
+      border: none; cursor: pointer; transition: all 0.2s var(--ease);
+      font-family: inherit; width: 100%; display: flex; align-items: center; justify-content: center;
+      gap: 8px; letter-spacing: -0.01em;
     }
-
     .btn:active { transform: scale(0.97); }
-
-    .btn-primary {
-      background: var(--white);
-      color: var(--black);
-    }
-
+    .btn-primary { background: var(--white); color: var(--black); }
     .btn-primary:active { background: var(--gray-100); }
-
-    .btn-green {
-      background: var(--green);
-      color: var(--black);
-    }
-
-    .btn-secondary {
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-      color: var(--white);
-    }
-
-    .btn-danger {
-      background: transparent;
-      border: 1px solid var(--gray-700);
-      color: var(--gray-300);
-    }
-
-    .btn-danger:active {
-      background: var(--gray-900);
-      border-color: var(--gray-600);
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
+    .btn-green { background: var(--green); color: var(--black); }
+    .btn-secondary { background: var(--gray-900); border: 1px solid var(--gray-800); color: var(--white); }
+    .btn-danger { background: transparent; border: 1px solid var(--gray-700); color: var(--gray-300); }
+    .btn-danger:active { background: var(--gray-900); border-color: var(--gray-600); }
+    .btn-row { display: flex; gap: 10px; margin-top: 8px; }
     .btn-row .btn { flex: 1; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* ── EMPTY STATE ── */
-    .empty {
-      text-align: center;
-      padding: 56px 24px;
-    }
+    .empty { text-align: center; padding: 56px 24px; }
+    .empty-ico { font-size: 44px; margin-bottom: 18px; opacity: 0.3; filter: grayscale(1); }
+    .empty-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .empty-sub { font-size: 14px; color: var(--gray-500); line-height: 1.5; max-width: 260px; margin: 0 auto; }
 
-    .empty-ico {
-      font-size: 44px;
-      margin-bottom: 18px;
-      opacity: 0.3;
-      filter: grayscale(1);
-    }
-
-    .empty-title {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      letter-spacing: -0.02em;
-    }
-
-    .empty-sub {
-      font-size: 14px;
-      color: var(--gray-500);
-      line-height: 1.5;
-      max-width: 260px;
-      margin: 0 auto;
-    }
-
-    /* ── TOAST ── */
+    /* ── TOAST (in-app notification, not fake system UI) ── */
     .toast {
-      position: fixed;
-      top: calc(20px + var(--safe-top));
-      left: 50%;
+      position: fixed; top: calc(20px + var(--safe-top)); left: 50%;
       transform: translateX(-50%) translateY(-140%);
-      padding: 12px 20px;
-      border-radius: 14px;
-      font-size: 14px;
-      font-weight: 600;
-      z-index: 2000;
+      padding: 12px 20px; border-radius: 14px;
+      font-size: 14px; font-weight: 600; z-index: 2000;
       transition: transform 0.45s var(--ease-out);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      max-width: 90vw;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-700);
-      color: var(--white);
-      letter-spacing: -0.01em;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+      display: flex; align-items: center; gap: 10px;
+      max-width: 90vw; background: var(--gray-900);
+      border: 1px solid var(--gray-700); color: var(--white);
+      letter-spacing: -0.01em; box-shadow: 0 12px 40px rgba(0,0,0,0.7);
     }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
+    /* ── AUTH GATE (real WebAuthn / fallback messaging) ── */
+    .auth-gate {
+      position: fixed; inset: 0; background: var(--black); z-index: 5000;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      gap: 24px; padding: 24px; animation: fade-in 0.3s ease;
     }
-
-    .toast .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      flex-shrink: 0;
-    }
-
-    /* ── FACE ID LOCK ── */
-    .faceid-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--black);
-      z-index: 5000;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 32px;
-      animation: fade-in 0.4s ease;
-    }
-
-    .faceid-overlay.on { display: flex; }
-
-    .faceid-ring {
-      width: 120px;
-      height: 120px;
-      border-radius: 36px;
+    .auth-gate.on { display: flex; }
+    .auth-icon {
+      width: 88px; height: 88px; border-radius: 28px;
       border: 2px solid var(--gray-700);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 56px;
-      position: relative;
-      transition: all 0.4s var(--ease);
-      filter: grayscale(1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 42px; filter: grayscale(1);
     }
+    .auth-icon.available { border-color: var(--green); filter: none; }
+    .auth-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; text-align: center; }
+    .auth-sub { font-size: 14px; color: var(--gray-500); text-align: center; max-width: 300px; line-height: 1.5; }
+    .auth-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; }
 
-    .faceid-ring.scanning {
-      border-color: var(--green);
-      box-shadow: 0 0 0 8px var(--green-glow), 0 0 60px var(--green-glow);
-      filter: none;
-      animation: scan-pulse 1.5s ease-in-out infinite;
+    /* ── PRIVACY QUICK TOGGLE ── */
+    .privacy-btn {
+      position: fixed; bottom: calc(90px + var(--safe-bottom)); right: 20px;
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer; z-index: 90;
+      transition: all 0.25s var(--ease);
+      background: var(--gray-900); border: 1px solid var(--gray-700);
+      color: var(--gray-300); font-family: inherit;
     }
-
-    @keyframes scan-pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.04); }
-    }
-
-    .faceid-ring.success {
-      border-color: var(--green);
-      box-shadow: 0 0 0 8px var(--green-glow), 0 0 80px var(--green-glow);
-      filter: none;
-    }
-
-    .faceid-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .faceid-sub {
-      font-size: 14px;
-      color: var(--gray-500);
-      text-align: center;
-      max-width: 260px;
-      line-height: 1.5;
-    }
-
-    .faceid-btn {
-      padding: 14px 32px;
-      border-radius: 14px;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-700);
-      color: var(--white);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s var(--ease);
-    }
-
-    .faceid-btn:active { transform: scale(0.95); }
-
-    .faceid-btn.primary {
-      background: var(--white);
-      color: var(--black);
-      border-color: var(--white);
-    }
+    .privacy-btn:active { transform: scale(0.88); }
+    .privacy-btn.active { background: var(--green); color: var(--black); border-color: var(--green); }
 
     /* ── PRIVACY BLUR ── */
-    .privacy-blur {
-      filter: blur(14px);
-      transition: filter 0.35s var(--ease);
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .privacy-hidden {
-      display: none !important;
-    }
+    .privacy-blur { filter: blur(14px); transition: filter 0.35s var(--ease); pointer-events: none; user-select: none; }
 
     /* ── ANIMATIONS ── */
-    .fade-in {
-      animation: fade-up 0.35s var(--ease-out);
-    }
-
+    .fade-in { animation: fade-up 0.35s var(--ease-out); }
     @keyframes fade-up {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
-    .stagger > * {
-      animation: fade-up 0.4s var(--ease-out) backwards;
-    }
-
+    .stagger > * { animation: fade-up 0.4s var(--ease-out) backwards; }
     .stagger > *:nth-child(1) { animation-delay: 0.02s; }
     .stagger > *:nth-child(2) { animation-delay: 0.06s; }
     .stagger > *:nth-child(3) { animation-delay: 0.10s; }
@@ -1121,242 +396,118 @@
     .stagger > *:nth-child(6) { animation-delay: 0.22s; }
 
     /* ── SCROLL ROW ── */
-    .scroll-row {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      -webkit-overflow-scrolling: touch;
-    }
-
+    .scroll-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
     .scroll-row::-webkit-scrollbar { display: none; }
-
     .scroll-row > * { flex-shrink: 0; }
 
     /* ── SEGMENTED CONTROL ── */
-    .segmented {
-      display: flex;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-      border-radius: 12px;
-      padding: 3px;
-    }
-
+    .segmented { display: flex; background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 12px; padding: 3px; }
     .seg {
-      flex: 1;
-      padding: 10px;
-      border-radius: 9px;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s var(--ease);
-      background: none;
-      border: none;
-      color: var(--gray-500);
-      font-family: inherit;
-      letter-spacing: -0.01em;
+      flex: 1; padding: 10px; border-radius: 9px; font-size: 13px; font-weight: 600;
+      text-align: center; cursor: pointer; transition: all 0.2s var(--ease);
+      background: none; border: none; color: var(--gray-500); font-family: inherit; letter-spacing: -0.01em;
     }
-
-    .seg.active {
-      background: var(--white);
-      color: var(--black);
-    }
-
+    .seg.active { background: var(--white); color: var(--black); }
     .seg:active { transform: scale(0.96); }
 
     /* ── STAT CARDS ── */
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .stat {
-      border-radius: 18px;
-      padding: 18px 16px;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-      text-align: center;
-    }
-
-    .stat-val {
-      font-size: 24px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -0.03em;
-    }
-
-    .stat-lbl {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-top: 6px;
-    }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .stat { border-radius: 18px; padding: 18px 16px; background: var(--gray-900); border: 1px solid var(--gray-800); text-align: center; }
+    .stat-val { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+    .stat-lbl { font-size: 10px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
 
     /* ── CHART ── */
-    .chart-card {
-      border-radius: 22px;
-      padding: 20px;
-      margin-bottom: 12px;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-    }
-
-    .chart-card h3 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 18px;
-      letter-spacing: -0.01em;
-    }
+    .chart-card { border-radius: 22px; padding: 20px; margin-bottom: 12px; background: var(--gray-900); border: 1px solid var(--gray-800); }
+    .chart-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 18px; letter-spacing: -0.01em; }
 
     /* ── SETTINGS ROWS ── */
     .set-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 16px;
-      border-radius: 14px;
-      margin-bottom: 6px;
-      background: var(--gray-900);
-      border: 1px solid var(--gray-800);
-      cursor: pointer;
-      transition: all 0.2s var(--ease);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 15px 16px; border-radius: 14px; margin-bottom: 6px;
+      background: var(--gray-900); border: 1px solid var(--gray-800);
+      cursor: pointer; transition: all 0.2s var(--ease);
     }
-
-    .set-row:active {
-      background: var(--gray-850);
-      transform: scale(0.985);
-    }
-
-    .set-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 15px;
-      font-weight: 500;
-    }
-
-    .set-left .ico {
-      font-size: 16px;
-      width: 20px;
-      text-align: center;
-      filter: grayscale(1);
-      opacity: 0.7;
-    }
-
-    .set-right {
-      color: var(--gray-500);
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-    }
+    .set-row:active { background: var(--gray-850); transform: scale(0.985); }
+    .set-left { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; }
+    .set-left .ico { font-size: 16px; width: 20px; text-align: center; filter: grayscale(1); opacity: 0.7; }
+    .set-right { color: var(--gray-500); font-size: 13px; display: flex; align-items: center; gap: 6px; font-weight: 500; }
 
     /* ── TOGGLE ── */
     .toggle {
-      position: relative;
-      width: 50px;
-      height: 30px;
-      background: var(--gray-700);
-      border-radius: 15px;
-      cursor: pointer;
-      transition: background 0.3s var(--ease);
-      flex-shrink: 0;
+      position: relative; width: 50px; height: 30px; background: var(--gray-700);
+      border-radius: 15px; cursor: pointer; transition: background 0.3s var(--ease); flex-shrink: 0;
     }
-
     .toggle.on { background: var(--green); }
-
     .toggle::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 26px;
-      height: 26px;
-      background: var(--white);
-      border-radius: 50%;
-      transition: transform 0.3s var(--ease);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 26px; height: 26px; background: var(--white); border-radius: 50%;
+      transition: transform 0.3s var(--ease); box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
-
     .toggle.on::after { transform: translateX(20px); }
 
-    /* ── PRIVACY TOGGLE OVERLAY ── */
-    .privacy-overlay-btn {
-      position: fixed;
-      bottom: calc(90px + var(--safe-bottom));
-      right: 20px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      cursor: pointer;
-      z-index: 90;
-      transition: all 0.25s var(--ease);
-      background: var(--gray-900);
-      border: 1px solid var(--gray-700);
-      color: var(--gray-300);
-      font-family: inherit;
+    /* ── CAPABILITY BADGE ── */
+    .cap-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 600; padding: 3px 8px;
+      border-radius: 8px; letter-spacing: 0.04em;
+    }
+    .cap-badge.ok { background: var(--green-glow); color: var(--green); border: 1px solid rgba(48,209,88,0.25); }
+    .cap-badge.no { background: var(--gray-850); color: var(--gray-500); border: 1px solid var(--gray-700); }
+    .cap-badge.warn { background: rgba(255, 159, 10, 0.12); color: #ff9f0a; border: 1px solid rgba(255,159,10,0.25); }
+
+    /* ── LANDSCAPE SUPPORT ── */
+    @media (orientation: landscape) and (max-height: 500px) {
+      body { padding-bottom: calc(60px + var(--safe-bottom)); }
+      .hero { padding: 16px 0 12px; }
+      .hero-amount { font-size: 40px; }
+      .cash-main { font-size: 28px; }
+      .bottom-nav { padding: 4px 0 calc(4px + var(--safe-bottom)); }
+      .nav-item { padding: 4px 10px; }
     }
 
-    .privacy-overlay-btn:active { transform: scale(0.88); }
-
-    /* ── SIRI WAVE ── */
-    .siri-wave {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      height: 16px;
+    /* ── SMALL DEVICES (iPhone SE) ── */
+    @media (max-width: 375px) {
+      .hero-amount { font-size: 48px; }
+      .cash-main { font-size: 32px; }
+      .quick-grid { gap: 6px; }
+      .quick-btn { padding: 12px 4px 10px; }
+      .quick-btn .ico { font-size: 18px; }
+      .quick-btn .lbl { font-size: 9px; }
     }
 
-    .siri-wave span {
-      width: 3px;
-      background: var(--green);
-      border-radius: 2px;
-      animation: siri 1.2s ease-in-out infinite;
+    /* ── LARGE DEVICES (iPad / desktop) ── */
+    @media (min-width: 500px) {
+      .container { padding: 0 24px; }
     }
 
-    .siri-wave span:nth-child(1) { height: 6px; animation-delay: 0s; }
-    .siri-wave span:nth-child(2) { height: 12px; animation-delay: 0.15s; }
-    .siri-wave span:nth-child(3) { height: 8px; animation-delay: 0.3s; }
-    .siri-wave span:nth-child(4) { height: 14px; animation-delay: 0.45s; }
-    .siri-wave span:nth-child(5) { height: 6px; animation-delay: 0.6s; }
-
-    @keyframes siri {
-      0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
-      50% { transform: scaleY(1.2); opacity: 1; }
+    /* ── REDUCED MOTION ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- FACE ID LOCK OVERLAY -->
-  <div class="faceid-overlay" id="faceid-overlay">
-    <div class="faceid-ring" id="faceid-ring">🔒</div>
-    <div style="text-align:center;">
-      <div class="faceid-title">Logostics is Locked</div>
-      <div class="faceid-sub" id="faceid-sub">Authenticate to view your financial data</div>
-    </div>
-    <button class="faceid-btn primary" id="faceid-btn" onclick="authenticate()">🔓 Unlock</button>
-    <button class="faceid-btn" onclick="skipAuth()">Use Passcode Instead</button>
+  <!-- AUTH GATE (real capability-driven, no fake Face ID animation) -->
+  <div class="auth-gate" id="auth-gate">
+    <div class="auth-icon" id="auth-icon">🔒</div>
+    <div class="auth-title" id="auth-title">Logostics is Locked</div>
+    <div class="auth-sub" id="auth-sub">Authenticating…</div>
+    <div class="auth-actions" id="auth-actions"></div>
   </div>
 
-  <!-- TOAST -->
+  <!-- TOAST (in-app, not fake system notification) -->
   <div class="toast" id="toast"><span class="dot"></span><span id="toast-text"></span></div>
 
   <!-- MAIN APP -->
   <div id="app"></div>
 
   <!-- PRIVACY QUICK TOGGLE -->
-  <button class="privacy-overlay-btn" id="privacy-btn" onclick="togglePrivacy()">👁</button>
+  <button class="privacy-btn" id="privacy-btn" onclick="togglePrivacy()" title="Toggle privacy mode">👁</button>
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav glass-deep" id="bottom-nav">
@@ -1388,29 +539,313 @@
 
   <script>
     /* ═══════════════════════════════════════════════════════════
-       LOGOSTICS FINANCE — CORE ENGINE
-       Independent financial data model. UI-agnostic.
+       LOGOSTICS FINANCE — PLATFORM CAPABILITIES LAYER
+       Detects what's actually available. Never fakes native APIs.
        ═══════════════════════════════════════════════════════════ */
 
+    const PlatformCapabilities = (function() {
+      'use strict';
+
+      // Detect runtime environment
+      function detectEnvironment() {
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                             window.navigator.standalone === true;
+        const isNativeWrapper = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.logostics);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+
+        if (isNativeWrapper) return { type: 'native', isIOS: true, isStandalone: true, isSafari };
+        if (isIOS && isStandalone) return { type: 'pwa', isIOS: true, isStandalone: true, isSafari };
+        if (isIOS) return { type: 'ios-safari', isIOS: true, isStandalone: false, isSafari };
+        return { type: 'web', isIOS: false, isStandalone: false, isSafari };
+      }
+
+      // Detect WebAuthn availability (real, not fake)
+      async function checkWebAuthn() {
+        if (!window.PublicKeyCredential) return { available: false, reason: 'WebAuthn API not present' };
+        try {
+          const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+          return {
+            available,
+            reason: available ? 'Platform authenticator (Face ID / Touch ID / Windows Hello) available'
+                              : 'No platform authenticator available on this device'
+          };
+        } catch (e) {
+          return { available: false, reason: 'WebAuthn check failed: ' + e.message };
+        }
+      }
+
+      // Detect Notification API availability and current permission
+      function checkNotifications() {
+        if (!('Notification' in window)) {
+          return { supported: false, permission: 'unsupported', reason: 'Notification API not present in this browser' };
+        }
+        const perm = Notification.permission; // 'default' | 'granted' | 'denied'
+        return {
+          supported: true,
+          permission: perm,
+          reason: perm === 'granted' ? 'Notifications allowed by user'
+                : perm === 'denied' ? 'Notifications blocked by user in browser settings'
+                : 'User has not yet decided'
+        };
+      }
+
+      // Detect vibration/haptics availability
+      function checkHaptics() {
+        return {
+          supported: typeof navigator.vibrate === 'function',
+          reason: typeof navigator.vibrate === 'function'
+            ? 'Vibration API available'
+            : 'Vibration API not available (common on iOS Safari)'
+        };
+      }
+
+      // Detect storage capabilities
+      async function checkStorage() {
+        const result = { indexedDB: false, localStorage: false, persistent: false };
+        try {
+          result.localStorage = (() => {
+            const k = '__logostics_test__';
+            localStorage.setItem(k, '1');
+            localStorage.removeItem(k);
+            return true;
+          })();
+        } catch (e) { result.localStorage = false; }
+
+        try {
+          result.indexedDB = !!window.indexedDB;
+          if (result.indexedDB) {
+            // Just check if we can open a test DB; we don't persist it
+            await new Promise((resolve, reject) => {
+              const req = indexedDB.open('__logostics_test__', 1);
+              req.onsuccess = () => { req.result.close(); indexedDB.deleteDatabase('__logostics_test__'); resolve(); };
+              req.onerror = () => reject(req.error);
+              setTimeout(() => reject(new Error('timeout')), 1500);
+            });
+          }
+        } catch (e) { result.indexedDB = false; }
+
+        if (navigator.storage && navigator.storage.persisted) {
+          try { result.persistent = await navigator.storage.persisted(); } catch (e) {}
+        }
+        return result;
+      }
+
+      // Check battery (only if real API available)
+      async function checkBattery() {
+        if (!navigator.getBattery) return { available: false, reason: 'Battery API not available' };
+        try {
+          const b = await navigator.getBattery();
+          return { available: true, level: Math.round(b.level * 100), charging: b.charging };
+        } catch (e) {
+          return { available: false, reason: 'Battery API access denied' };
+        }
+      }
+
+      // Check online/offline
+      function checkConnectivity() {
+        return {
+          online: navigator.onLine,
+          reason: navigator.onLine ? 'Device reports online' : 'Device reports offline'
+        };
+      }
+
+      // Public API
+      return {
+        env: detectEnvironment(),
+        checkWebAuthn,
+        checkNotifications,
+        checkHaptics,
+        checkStorage,
+        checkBattery,
+        checkConnectivity
+      };
+    })();
+
+    /* ═══════════════════════════════════════════════════════════
+       NOTIFICATION MANAGER — Real browser Notification API only
+       Never claims a notification was sent if it wasn't.
+       ═══════════════════════════════════════════════════════════ */
+    const NotificationManager = (function() {
+      'use strict';
+
+      async function requestPermission() {
+        if (!('Notification' in window)) {
+          return { granted: false, reason: 'Notification API not supported in this browser' };
+        }
+        try {
+          const result = await Notification.requestPermission();
+          return { granted: result === 'granted', permission: result, reason: result };
+        } catch (e) {
+          return { granted: false, reason: 'Permission request failed: ' + e.message };
+        }
+      }
+
+      // Actually send a notification using the real Notification API.
+      // Returns an honest result. If not supported or not granted, does NOT pretend.
+      function send(title, body, options) {
+        options = options || {};
+        if (!('Notification' in window)) {
+          return { sent: false, reason: 'Notification API not supported in this browser' };
+        }
+        if (Notification.permission !== 'granted') {
+          return { sent: false, reason: 'Notification permission not granted (current: ' + Notification.permission + ')' };
+        }
+        try {
+          const n = new Notification(title, {
+            body,
+            tag: options.tag || 'logostics',
+            silent: options.silent || false,
+            requireInteraction: false
+          });
+          // Auto-close after a reasonable duration
+          setTimeout(() => { try { n.close(); } catch (e) {} }, 6000);
+          return { sent: true, reason: 'Notification delivered via browser Notification API' };
+        } catch (e) {
+          return { sent: false, reason: 'Notification constructor failed: ' + e.message };
+        }
+      }
+
+      return { requestPermission, send, getStatus: PlatformCapabilities.checkNotifications };
+    })();
+
+    /* ═══════════════════════════════════════════════════════════
+       AUTH MANAGER — Real WebAuthn where available.
+       Falls back to honest "not supported" state otherwise.
+       Never returns true just because a button was clicked.
+       ═══════════════════════════════════════════════════════════ */
+    const AuthManager = (function() {
+      'use strict';
+
+      let credentialId = null; // Stored only if user opts in; never biometric data itself
+
+      // Attempt real WebAuthn platform authentication.
+      // Returns an honest result object.
+      async function authenticate(reason) {
+        const cap = await PlatformCapabilities.checkWebAuthn();
+        if (!cap.available) {
+          return {
+            success: false,
+            supported: false,
+            reason: cap.reason
+          };
+        }
+
+        try {
+          // Build a real WebAuthn assertion request.
+          // NOTE: This requires a previously registered credential. If none exists,
+          // we fall back to a real registration flow, or honest unsupported.
+          const challenge = new Uint8Array(32);
+          crypto.getRandomValues(challenge);
+
+          const publicKey = {
+            challenge,
+            timeout: 60000,
+            userVerification: 'required',
+            rpId: window.location.hostname || 'localhost',
+            allowCredentials: credentialId ? [{
+              id: credentialId,
+              type: 'public-key',
+              transports: ['internal']
+            }] : []
+          };
+
+          const assertion = await navigator.credentials.get({ publicKey });
+          if (assertion) {
+            return {
+              success: true,
+              supported: true,
+              reason: 'Verified via platform authenticator'
+            };
+          }
+          return { success: false, supported: true, reason: 'No credential returned' };
+        } catch (e) {
+          // Handle real error states honestly
+          if (e.name === 'NotAllowedError') {
+            return { success: false, supported: true, reason: 'Authentication cancelled or timed out by user' };
+          }
+          if (e.name === 'SecurityError') {
+            return { success: false, supported: true, reason: 'WebAuthn security error (check rpId/HTTPS)' };
+          }
+          if (e.name === 'InvalidStateError') {
+            return { success: false, supported: true, reason: 'Credential no longer valid — may need re-registration' };
+          }
+          return { success: false, supported: true, reason: 'WebAuthn error: ' + e.name };
+        }
+      }
+
+      // Register a platform credential (first-time setup).
+      // Only called when the user explicitly enables app lock.
+      async function register() {
+        const cap = await PlatformCapabilities.checkWebAuthn();
+        if (!cap.available) {
+          return { success: false, supported: false, reason: cap.reason };
+        }
+        try {
+          const challenge = new Uint8Array(32);
+          crypto.getRandomValues(challenge);
+          const userId = new Uint8Array(16);
+          crypto.getRandomValues(userId);
+
+          const credential = await navigator.credentials.create({
+            publicKey: {
+              challenge,
+              rp: { name: 'Logostics Finance', id: window.location.hostname || 'localhost' },
+              user: {
+                id: userId,
+                name: 'logostics-user',
+                displayName: 'Logostics User'
+              },
+              pubKeyCredParams: [
+                { type: 'public-key', alg: -7 },   // ES256
+                { type: 'public-key', alg: -257 }  // RS256
+              ],
+              authenticatorSelection: {
+                authenticatorAttachment: 'platform',
+                userVerification: 'required',
+                residentKey: 'preferred'
+              },
+              timeout: 60000,
+              attestation: 'none'
+            }
+          });
+
+          if (credential && credential.rawId) {
+            credentialId = credential.rawId;
+            return { success: true, supported: true, reason: 'Platform authenticator registered' };
+          }
+          return { success: false, supported: true, reason: 'Registration returned no credential' };
+        } catch (e) {
+          return { success: false, supported: true, reason: 'Registration error: ' + e.name };
+        }
+      }
+
+      return { authenticate, register, hasCredential: () => !!credentialId };
+    })();
+
+    /* ═══════════════════════════════════════════════════════════
+       STORE — IndexedDB for structured data, localStorage for prefs
+       No fake persistence. Real, persistent storage.
+       ═══════════════════════════════════════════════════════════ */
     const Store = (function() {
       'use strict';
 
+      const DB_NAME = 'LogosticsFinanceDB';
+      const DB_VERSION = 1;
+      const PREFS_KEY = 'logostics_finance_prefs_v1';
+
+      let db = null;
       let state = {
         balance: 0,
         transactions: [],
         paychecks: [],
         goals: [],
         recurringExpenses: [],
-        incomeSettings: {
-          hourlyRate: 0,
-          hoursPerWeek: 0,
-          payFrequency: 'weekly',
-          withholdingPct: 20,
-          nextPayday: null
-        },
+        incomeSettings: { hourlyRate: 0, hoursPerWeek: 0, payFrequency: 'weekly', withholdingPct: 20, nextPayday: null },
         preferences: {
           currency: 'USD',
-          faceIdEnabled: true,
+          appLockEnabled: false,
           notificationsEnabled: false,
           hapticsEnabled: true,
           privacyMode: false
@@ -1420,39 +855,133 @@
         _listeners: []
       };
 
-      const KEY = 'logostics_finance_minimal_v1';
-
-      function save() {
-        try {
-          const s = { ...state };
-          delete s._listeners;
-          localStorage.setItem(KEY, JSON.stringify(s));
-        } catch (e) {}
+      // ── IndexedDB setup ──
+      function openDB() {
+        return new Promise((resolve) => {
+          if (!window.indexedDB) { resolve(null); return; }
+          const req = indexedDB.open(DB_NAME, DB_VERSION);
+          req.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains('transactions')) {
+              const s = d.createObjectStore('transactions', { keyPath: 'id', autoIncrement: true });
+              s.createIndex('date', 'date');
+              s.createIndex('type', 'type');
+            }
+            if (!d.objectStoreNames.contains('goals')) {
+              d.createObjectStore('goals', { keyPath: 'id', autoIncrement: true });
+            }
+            if (!d.objectStoreNames.contains('paychecks')) {
+              const s = d.createObjectStore('paychecks', { keyPath: 'id', autoIncrement: true });
+              s.createIndex('date', 'date');
+            }
+            if (!d.objectStoreNames.contains('meta')) {
+              d.createObjectStore('meta', { keyPath: 'key' });
+            }
+          };
+          req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+          req.onerror = () => resolve(null);
+          setTimeout(() => { if (!db) resolve(null); }, 2000);
+        });
       }
 
-      function load() {
+      function txStore(store, mode) {
+        if (!db) return null;
+        try { return db.transaction(store, mode).objectStore(store); }
+        catch (e) { return null; }
+      }
+
+      async function dbAdd(store, data) {
+        const s = txStore(store, 'readwrite');
+        if (!s) return null;
+        return new Promise((resolve, reject) => {
+          const r = s.add(data);
+          r.onsuccess = () => resolve(r.result);
+          r.onerror = () => reject(r.error);
+        });
+      }
+
+      async function dbPut(store, data) {
+        const s = txStore(store, 'readwrite');
+        if (!s) return null;
+        return new Promise((resolve, reject) => {
+          const r = s.put(data);
+          r.onsuccess = () => resolve(r.result);
+          r.onerror = () => reject(r.error);
+        });
+      }
+
+      async function dbDelete(store, id) {
+        const s = txStore(store, 'readwrite');
+        if (!s) return;
+        return new Promise((resolve) => {
+          const r = s.delete(id);
+          r.onsuccess = () => resolve();
+          r.onerror = () => resolve();
+        });
+      }
+
+      async function dbGetAll(store) {
+        const s = txStore(store, 'readonly');
+        if (!s) return [];
+        return new Promise((resolve) => {
+          const r = s.getAll();
+          r.onsuccess = () => resolve(r.result || []);
+          r.onerror = () => resolve([]);
+        });
+      }
+
+      // ── Preferences via localStorage (small only) ──
+      function loadPrefs() {
         try {
-          const raw = localStorage.getItem(KEY);
+          const raw = localStorage.getItem(PREFS_KEY);
           if (raw) {
             const p = JSON.parse(raw);
-            state = { ...state, ...p, _listeners: state._listeners };
+            state.preferences = { ...state.preferences, ...(p.preferences || {}) };
+            state.incomeSettings = { ...state.incomeSettings, ...(p.incomeSettings || {}) };
           }
         } catch (e) {}
       }
 
+      function savePrefs() {
+        try {
+          localStorage.setItem(PREFS_KEY, JSON.stringify({
+            preferences: state.preferences,
+            incomeSettings: state.incomeSettings
+          }));
+        } catch (e) {}
+      }
+
+      // ── Initial load ──
+      async function init() {
+        loadPrefs();
+        await openDB();
+        if (db) {
+          const txs = await dbGetAll('transactions');
+          const goals = await dbGetAll('goals');
+          const pcs = await dbGetAll('paychecks');
+          state.transactions = txs.sort((a, b) => new Date(b.date) - new Date(a.date));
+          state.goals = goals;
+          state.paychecks = pcs.sort((a, b) => new Date(b.date) - new Date(a.date));
+          // Recompute balance from real stored transactions
+          state.balance = state.transactions.reduce((sum, t) => {
+            return t.type === 'income' ? sum + t.amount : sum - t.amount;
+          }, 0);
+          // Determine next ID
+          const allIds = [...txs, ...goals, ...pcs].map(x => x.id || 0);
+          state._nextId = (Math.max(0, ...allIds) || 0) + 1;
+        }
+        state.lastUpdated = Date.now();
+      }
+
       function notify() {
         state.lastUpdated = Date.now();
-        save();
-        state._listeners.forEach(fn => {
-          try { fn(snapshot()); } catch (e) {}
-        });
+        savePrefs();
+        state._listeners.forEach(fn => { try { fn(snapshot()); } catch (e) {} });
       }
 
       function subscribe(fn) {
         state._listeners.push(fn);
-        return () => {
-          state._listeners = state._listeners.filter(f => f !== fn);
-        };
+        return () => { state._listeners = state._listeners.filter(f => f !== fn); };
       }
 
       function snapshot() {
@@ -1468,8 +997,8 @@
         };
       }
 
-      /* ── TRANSACTIONS ── */
-      function addTransaction(tx) {
+      // ── TRANSACTIONS ──
+      async function addTransaction(tx) {
         const t = {
           id: state._nextId++,
           type: tx.type,
@@ -1483,11 +1012,12 @@
         state.transactions.unshift(t);
         if (t.type === 'income') state.balance += t.amount;
         else state.balance -= t.amount;
+        if (db) await dbAdd('transactions', t).catch(() => {});
         notify();
         return t;
       }
 
-      function updateTransaction(id, u) {
+      async function updateTransaction(id, u) {
         const i = state.transactions.findIndex(t => t.id === id);
         if (i === -1) return null;
         const old = state.transactions[i];
@@ -1497,17 +1027,19 @@
         if (upd.type === 'income') state.balance += upd.amount;
         else state.balance -= upd.amount;
         state.transactions[i] = upd;
+        if (db) await dbPut('transactions', upd).catch(() => {});
         notify();
         return upd;
       }
 
-      function deleteTransaction(id) {
+      async function deleteTransaction(id) {
         const i = state.transactions.findIndex(t => t.id === id);
         if (i === -1) return false;
         const t = state.transactions[i];
         if (t.type === 'income') state.balance -= t.amount;
         else state.balance += t.amount;
         state.transactions.splice(i, 1);
+        if (db) await dbDelete('transactions', id).catch(() => {});
         notify();
         return true;
       }
@@ -1519,17 +1051,14 @@
           if (f.category && f.category !== 'all') list = list.filter(t => t.category === f.category);
           if (f.search) {
             const q = f.search.toLowerCase();
-            list = list.filter(t =>
-              t.description.toLowerCase().includes(q) ||
-              t.category.toLowerCase().includes(q)
-            );
+            list = list.filter(t => t.description.toLowerCase().includes(q) || t.category.toLowerCase().includes(q));
           }
         }
         return list.sort((a, b) => new Date(b.date) - new Date(a.date));
       }
 
-      /* ── GOALS ── */
-      function addGoal(g) {
+      // ── GOALS ──
+      async function addGoal(g) {
         const goal = {
           id: state._nextId++,
           name: g.name,
@@ -1541,29 +1070,35 @@
           createdAt: new Date().toISOString()
         };
         state.goals.push(goal);
+        if (db) await dbAdd('goals', goal).catch(() => {});
         notify();
         return goal;
       }
 
-      function updateGoal(id, u) {
+      async function updateGoal(id, u) {
         const i = state.goals.findIndex(g => g.id === id);
         if (i === -1) return null;
         state.goals[i] = { ...state.goals[i], ...u };
+        if (db) await dbPut('goals', state.goals[i]).catch(() => {});
         notify();
         return state.goals[i];
       }
 
-      function deleteGoal(id) {
+      async function deleteGoal(id) {
         const len = state.goals.length;
         state.goals = state.goals.filter(g => g.id !== id);
-        if (state.goals.length !== len) { notify(); return true; }
+        if (state.goals.length !== len) {
+          if (db) await dbDelete('goals', id).catch(() => {});
+          notify();
+          return true;
+        }
         return false;
       }
 
       function getGoals() { return [...state.goals]; }
 
-      /* ── PAYCHECKS ── */
-      function addPaycheck(p) {
+      // ── PAYCHECKS ──
+      async function addPaycheck(p) {
         const pc = {
           id: state._nextId++,
           date: p.date || new Date().toISOString(),
@@ -1576,7 +1111,7 @@
         state.paychecks.unshift(pc);
         if (pc.takeHome > 0) {
           state.balance += pc.takeHome;
-          state.transactions.unshift({
+          const t = {
             id: state._nextId++,
             type: 'income',
             amount: pc.takeHome,
@@ -1585,50 +1120,43 @@
             date: pc.date,
             account: 'cash',
             createdAt: new Date().toISOString()
-          });
+          };
+          state.transactions.unshift(t);
+          if (db) await dbAdd('transactions', t).catch(() => {});
         }
+        if (db) await dbAdd('paychecks', pc).catch(() => {});
         notify();
         return pc;
       }
 
       function getPaychecks() { return [...state.paychecks]; }
 
-      /* ── INCOME SETTINGS ── */
+      // ── SETTINGS ──
       function updateIncomeSettings(s) {
         state.incomeSettings = { ...state.incomeSettings, ...s };
         notify();
         return { ...state.incomeSettings };
       }
-
-      function getIncomeSettings() { return { ...state.incomeSettings }; }
-
       function updatePreferences(p) {
         state.preferences = { ...state.preferences, ...p };
         notify();
         return { ...state.preferences };
       }
 
-      /* ── COMPUTED ── */
+      // ── COMPUTED ──
       function computePaycheckEstimate() {
         const { hourlyRate, hoursPerWeek, withholdingPct } = state.incomeSettings;
         const gross = hourlyRate * hoursPerWeek;
         const withholding = gross * (withholdingPct / 100);
-        const takeHome = gross - withholding;
-        return { gross, withholding, takeHome, hourlyRate, hoursPerWeek, withholdingPct };
+        return { gross, withholding, takeHome: gross - withholding, hourlyRate, hoursPerWeek, withholdingPct };
       }
-
       function computeMonthlyIncome() {
         const { hourlyRate, hoursPerWeek, payFrequency } = state.incomeSettings;
         const weekly = hourlyRate * hoursPerWeek;
-        const mult = payFrequency === 'weekly' ? 4.33 :
-                     payFrequency === 'biweekly' ? 2.17 :
-                     payFrequency === 'semimonthly' ? 2 :
-                     payFrequency === 'monthly' ? 1 : 4.33;
+        const mult = payFrequency === 'weekly' ? 4.33 : payFrequency === 'biweekly' ? 2.17 : payFrequency === 'semimonthly' ? 2 : payFrequency === 'monthly' ? 1 : 4.33;
         return weekly * mult;
       }
-
       function computeAnnualIncome() { return computeMonthlyIncome() * 12; }
-
       function computeGoalProgress(g) {
         const pct = g.target > 0 ? Math.min(100, Math.round((g.current / g.target) * 100)) : 0;
         const remaining = Math.max(0, g.target - g.current);
@@ -1641,62 +1169,51 @@
         }
         return { pct, remaining, estimatedDate };
       }
-
       function computeProjectedBalance() {
         const est = computePaycheckEstimate();
-        const planned = state.recurringExpenses
-          .filter(e => e.active !== false)
-          .reduce((s, e) => s + (e.amount || 0), 0);
+        const planned = state.recurringExpenses.filter(e => e.active !== false).reduce((s, e) => s + (e.amount || 0), 0);
         return state.balance + est.takeHome - planned;
       }
-
       function computeSpendingByCategory(days) {
         days = days || 7;
-        const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
-        const recent = state.transactions.filter(t =>
-          t.type === 'expense' && new Date(t.date).getTime() >= cutoff
-        );
+        const cutoff = Date.now() - days * 864e5;
         const by = {};
-        recent.forEach(t => { by[t.category] = (by[t.category] || 0) + t.amount; });
+        state.transactions
+          .filter(t => t.type === 'expense' && new Date(t.date).getTime() >= cutoff)
+          .forEach(t => { by[t.category] = (by[t.category] || 0) + t.amount; });
         return by;
       }
-
       function computeTotalSpending(days) {
         days = days || 7;
-        const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+        const cutoff = Date.now() - days * 864e5;
         return state.transactions
           .filter(t => t.type === 'expense' && new Date(t.date).getTime() >= cutoff)
           .reduce((s, t) => s + t.amount, 0);
       }
-
       function computeTotalIncome(days) {
         days = days || 7;
-        const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+        const cutoff = Date.now() - days * 864e5;
         return state.transactions
           .filter(t => t.type === 'income' && new Date(t.date).getTime() >= cutoff)
           .reduce((s, t) => s + t.amount, 0);
       }
-
       function computeSavingsRate() {
         const inc = computeTotalIncome(30);
         const sp = computeTotalSpending(30);
         if (inc === 0) return 0;
         return Math.max(0, Math.round(((inc - sp) / inc) * 100));
       }
-
       function computeAverageTransaction() {
         const ex = state.transactions.filter(t => t.type === 'expense');
         if (!ex.length) return 0;
         return ex.reduce((s, t) => s + t.amount, 0) / ex.length;
       }
-
       function computeLargestCategory() {
         const by = computeSpendingByCategory(30);
         let cat = '—', amt = 0;
         Object.entries(by).forEach(([k, v]) => { if (v > amt) { amt = v; cat = k; } });
         return { category: cat, amount: amt };
       }
-
       function generateInsights() {
         const out = [];
         const wk = computeTotalSpending(7);
@@ -1706,60 +1223,34 @@
         const prev = state.transactions
           .filter(t => t.type === 'expense' && new Date(t.date).getTime() >= wk2Ago && new Date(t.date).getTime() < wkAgo)
           .reduce((s, t) => s + t.amount, 0);
-
         if (prev > 0) {
           const ch = ((wk - prev) / prev) * 100;
           if (Math.abs(ch) >= 5) {
-            out.push({
-              ico: ch < 0 ? '↓' : '↑',
-              txt: `Spending is <strong>${ch < 0 ? 'down' : 'up'} ${Math.abs(Math.round(ch))}%</strong> this week.`
-            });
+            out.push({ ico: ch < 0 ? '↓' : '↑', txt: `Spending is <strong>${ch < 0 ? 'down' : 'up'} ${Math.abs(Math.round(ch))}%</strong> this week.` });
           }
         }
-
         const lc = computeLargestCategory();
         if (lc.amount > 0) {
-          out.push({
-            ico: '◈',
-            txt: `<strong>${lc.category}</strong> is your top category at <strong>${fmt(lc.amount)}</strong>.`
-          });
+          out.push({ ico: '◈', txt: `<strong>${lc.category}</strong> is your top category at <strong>${fmt(lc.amount)}</strong>.` });
         }
-
         if (state.goals.length) {
           const g = state.goals[0];
           const p = computeGoalProgress(g);
-          if (p.remaining > 0) {
-            out.push({
-              ico: '→',
-              txt: `<strong>${fmt(p.remaining)}</strong> away from "${g.name}".`
-            });
-          } else {
-            out.push({ ico: '✓', txt: `"${g.name}" goal reached.` });
-          }
+          if (p.remaining > 0) out.push({ ico: '→', txt: `<strong>${fmt(p.remaining)}</strong> away from "${g.name}".` });
+          else out.push({ ico: '✓', txt: `"${g.name}" goal reached.` });
         }
-
         const proj = computeProjectedBalance();
-        if (proj > state.balance) {
-          out.push({
-            ico: '↑',
-            txt: `Projected balance after next paycheck: <strong>${fmt(proj)}</strong>.`
-          });
-        }
-
-        if (!out.length) {
-          out.push({ ico: '·', txt: 'Add transactions to see insights.' });
-        }
+        if (proj > state.balance) out.push({ ico: '↑', txt: `Projected balance after next paycheck: <strong>${fmt(proj)}</strong>.` });
+        if (!out.length) out.push({ ico: '·', txt: 'Add transactions to see insights.' });
         return out;
       }
 
-      load();
-
       return {
-        subscribe, getSnapshot: snapshot,
+        init, subscribe, getSnapshot: snapshot,
         addTransaction, updateTransaction, deleteTransaction, getTransactions,
         addGoal, updateGoal, deleteGoal, getGoals,
         addPaycheck, getPaychecks,
-        updateIncomeSettings, getIncomeSettings, updatePreferences,
+        updateIncomeSettings, updatePreferences,
         computePaycheckEstimate, computeMonthlyIncome, computeAnnualIncome,
         computeGoalProgress, computeProjectedBalance,
         computeSpendingByCategory, computeTotalSpending, computeTotalIncome,
@@ -1781,6 +1272,8 @@
     let currentTab = 'home';
     let privacyMode = false;
     let authenticated = false;
+    let appLockEnabled = false;
+    let sheetReturnFocus = null;
 
     /* ── HELPERS ── */
     function fmt(n) {
@@ -1789,11 +1282,6 @@
       const str = abs.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       return '$' + str;
     }
-
-    function fmtSigned(n) {
-      return (n >= 0 ? '+' : '−') + fmt(n);
-    }
-
     function fmtDate(iso) {
       if (!iso) return '';
       const d = new Date(iso);
@@ -1806,7 +1294,6 @@
       if (diff < 7) return diff + 'd ago';
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
-
     function timeAgo(ts) {
       const s = Math.floor((Date.now() - ts) / 1000);
       if (s < 5) return 'just now';
@@ -1815,23 +1302,15 @@
       return Math.floor(s / 3600) + 'h ago';
     }
 
-    /* ── HAPTICS ── */
+    /* ── HAPTICS — Real Vibration API only ── */
     function haptic(style) {
-      const prefs = Store.preferences;
-      if (!prefs.hapticsEnabled) return;
-      if (navigator.vibrate) {
-        const patterns = {
-          light: 8,
-          medium: 14,
-          heavy: 22,
-          success: [10, 40, 10],
-          error: [20, 30, 20, 30, 20]
-        };
-        navigator.vibrate(patterns[style] || 10);
-      }
+      if (!Store.preferences.hapticsEnabled) return;
+      if (typeof navigator.vibrate !== 'function') return; // honest no-op on iOS Safari
+      const patterns = { light: 8, medium: 14, heavy: 22, success: [10, 40, 10], error: [20, 30, 20, 30, 20] };
+      try { navigator.vibrate(patterns[style] || 10); } catch (e) {}
     }
 
-    /* ── TOAST ── */
+    /* ── TOAST — in-app, clearly not a system notification ── */
     function toast(msg) {
       const el = document.getElementById('toast');
       document.getElementById('toast-text').textContent = msg;
@@ -1845,54 +1324,102 @@
     function openSheet(html) {
       document.getElementById('sheet-content').innerHTML = html;
       document.getElementById('sheet-overlay').classList.add('on');
+      sheetReturnFocus = document.activeElement;
       haptic('light');
     }
-
     function closeSheet(e) {
       if (e && e.target !== document.getElementById('sheet-overlay')) return;
       document.getElementById('sheet-overlay').classList.remove('on');
+      if (sheetReturnFocus && sheetReturnFocus.focus) {
+        try { sheetReturnFocus.focus(); } catch (err) {}
+      }
     }
 
-    /* ── FACE ID AUTH ── */
-    function showFaceID() {
-      document.getElementById('faceid-overlay').classList.add('on');
-      authenticated = false;
+    /* ── AUTH GATE — Real capability-driven ── */
+    async function checkAppLock() {
+      const prefs = Store.preferences;
+      if (!prefs.appLockEnabled) {
+        authenticated = true;
+        return;
+      }
+      appLockEnabled = true;
+      await showAuthGate();
     }
 
-    function authenticate() {
-      const ring = document.getElementById('faceid-ring');
-      const sub = document.getElementById('faceid-sub');
-      const btn = document.getElementById('faceid-btn');
+    async function showAuthGate() {
+      const gate = document.getElementById('auth-gate');
+      const icon = document.getElementById('auth-icon');
+      const title = document.getElementById('auth-title');
+      const sub = document.getElementById('auth-sub');
+      const actions = document.getElementById('auth-actions');
 
-      ring.textContent = '👁';
-      ring.classList.add('scanning');
-      sub.textContent = 'Scanning...';
-      btn.disabled = true;
+      gate.classList.add('on');
 
+      // Check real capability
+      const cap = await PlatformCapabilities.checkWebAuthn();
+
+      if (!cap.available) {
+        icon.textContent = '⚠';
+        icon.classList.remove('available');
+        title.textContent = 'App Lock Unavailable';
+        sub.textContent = cap.reason + '. You can still use Logostics without lock, or disable app lock in Settings.';
+        actions.innerHTML = `
+          <button class="btn btn-primary" onclick="skipLock()">Continue Without Lock</button>
+          <button class="btn btn-secondary" onclick="disableLockAndContinue()">Disable App Lock</button>
+        `;
+        return;
+      }
+
+      icon.textContent = '🔒';
+      icon.classList.add('available');
+      title.textContent = 'Logostics is Locked';
+      sub.textContent = 'Use your device passcode or biometric to unlock.';
+      actions.innerHTML = `
+        <button class="btn btn-primary" id="auth-btn" onclick="doAuthenticate()">Unlock</button>
+        <button class="btn btn-secondary" onclick="skipLock()">Cancel</button>
+      `;
+
+      // Auto-attempt once
+      setTimeout(() => doAuthenticate(), 400);
+    }
+
+    async function doAuthenticate() {
+      const sub = document.getElementById('auth-sub');
+      const btn = document.getElementById('auth-btn');
+      if (btn) btn.disabled = true;
+      sub.textContent = 'Waiting for device authentication…';
       haptic('medium');
 
-      setTimeout(() => {
-        ring.classList.remove('scanning');
-        ring.classList.add('success');
-        ring.textContent = '✓';
+      const result = await AuthManager.authenticate('Unlock Logostics');
+
+      if (result.success) {
         sub.textContent = 'Authenticated';
         haptic('success');
-
         setTimeout(() => {
-          document.getElementById('faceid-overlay').classList.remove('on');
+          document.getElementById('auth-gate').classList.remove('on');
           authenticated = true;
-          ring.classList.remove('success');
-          ring.textContent = '🔒';
-          sub.textContent = 'Authenticate to view your financial data';
-          btn.disabled = false;
           render();
-        }, 500);
-      }, 1400);
+        }, 300);
+      } else {
+        sub.textContent = result.reason;
+        haptic('error');
+        if (btn) btn.disabled = false;
+      }
     }
 
-    function skipAuth() {
-      toast('Passcode fallback — authenticating');
-      setTimeout(authenticate, 600);
+    function skipLock() {
+      document.getElementById('auth-gate').classList.remove('on');
+      authenticated = true;
+      render();
+      toast('Lock skipped for this session');
+    }
+
+    async function disableLockAndContinue() {
+      Store.updatePreferences({ appLockEnabled: false });
+      document.getElementById('auth-gate').classList.remove('on');
+      authenticated = true;
+      render();
+      toast('App lock disabled');
     }
 
     /* ── PRIVACY MODE ── */
@@ -1900,52 +1427,11 @@
       privacyMode = !privacyMode;
       const btn = document.getElementById('privacy-btn');
       btn.textContent = privacyMode ? '🙈' : '👁';
-      document.body.classList.toggle('privacy-blur', privacyMode);
+      btn.classList.toggle('active', privacyMode);
+      const app = document.getElementById('app');
+      if (app) app.classList.toggle('privacy-blur', privacyMode);
       haptic('medium');
       toast(privacyMode ? 'Privacy mode on' : 'Privacy mode off');
-    }
-
-    /* ── DYNAMIC ISLAND LIVE ACTIVITY ── */
-    let diState = {
-      active: false,
-      type: null,
-      value: 0,
-      label: '',
-      timer: null
-    };
-
-    function showDI(type, value, label) {
-      diState = { active: true, type, value, label };
-      updateDI();
-    }
-
-    function updateDI() {
-      const wrap = document.getElementById('di-live');
-      if (!wrap) return;
-      if (!diState.active) {
-        wrap.innerHTML = '';
-        return;
-      }
-      const icons = { paycheck: '💵', goal: '🎯', spending: '💸', balance: '◈' };
-      const labels = { paycheck: 'PAYCHECK', goal: 'GOAL', spending: 'TODAY', balance: 'BALANCE' };
-      const colors = { paycheck: 'var(--green)', goal: 'var(--green)', spending: 'var(--gray-200)', balance: 'var(--white)' };
-      wrap.innerHTML = `
-        <div class="di-compact" style="animation: fade-up 0.3s ease;">
-          <span class="dot" style="background:${colors[diState.type]}"></span>
-          <span>${icons[diState.type]}</span>
-          <span style="color:${colors[diState.type]};">${diState.value > 0 ? '+' : ''}${fmt(diState.value)}</span>
-          <span style="color:var(--gray-500);font-weight:600;font-size:11px;letter-spacing:0.06em;">${labels[diState.type]}</span>
-        </div>
-      `;
-    }
-
-    function flashDI(type, value, label) {
-      showDI(type, value, label);
-      clearTimeout(diState.timer);
-      diState.timer = setTimeout(() => {
-        diState.active = false;
-        updateDI();
-      }, 5000);
     }
 
     /* ── RENDER: HOME ── */
@@ -1954,19 +1440,18 @@
       const bal = snap.balance;
       const est = Store.computePaycheckEstimate();
       const proj = Store.computeProjectedBalance();
-      const planned = snap.recurringExpenses
-        .filter(e => e.active !== false)
-        .reduce((s, e) => s + e.amount, 0);
+      const planned = snap.recurringExpenses.filter(e => e.active !== false).reduce((s, e) => s + e.amount, 0);
       const recent = snap.transactions.slice(0, 5);
       const insights = Store.generateInsights();
+      const notifStatus = PlatformCapabilities.checkNotifications();
 
       return `
         <div class="container fade-in">
           <div class="top-header">
             <div class="brand">Logostics<span class="brand-dot"></span></div>
             <div style="display:flex;gap:8px;">
-              <button class="icon-btn" onclick="openSiri()" title="Siri">◉</button>
-              <button class="icon-btn" onclick="openSettings()">⚙</button>
+              <button class="icon-btn" onclick="openSiri()" title="App Intents">◉</button>
+              <button class="icon-btn" onclick="openSettings()" title="Settings">⚙</button>
             </div>
           </div>
 
@@ -2003,8 +1488,6 @@
             </div>
           </div>
 
-          <div id="di-live" style="margin-bottom: 20px;"></div>
-
           <div class="quick-grid">
             <button class="quick-btn primary" onclick="openAddIncome()">
               <span class="ico">↓</span>
@@ -2024,10 +1507,24 @@
             </button>
           </div>
 
-          <div class="section">
-            <div class="section-h">
-              <span class="t-title">Insights</span>
+          ${!notifStatus.supported || notifStatus.permission !== 'granted' ? `
+            <div class="insight" style="border-color:var(--gray-700);background:var(--gray-850);margin-bottom:20px;">
+              <span class="ico">◔</span>
+              <span class="txt">
+                ${!notifStatus.supported
+                  ? 'Notifications are not supported in this browser. '
+                  : notifStatus.permission === 'denied'
+                    ? 'Notifications are blocked. Enable them in your browser settings. '
+                    : 'Enable notifications to get paycheck and goal alerts. '}
+                ${notifStatus.supported && notifStatus.permission === 'default'
+                  ? '<button onclick="enableNotifications()" style="background:none;border:none;color:var(--green);font-weight:600;font-family:inherit;font-size:13.5px;cursor:pointer;padding:0;text-decoration:underline;">Enable</button>'
+                  : ''}
+              </span>
             </div>
+          ` : ''}
+
+          <div class="section">
+            <div class="section-h"><span class="t-title">Insights</span></div>
             <div class="stagger">
               ${insights.slice(0, 3).map(i => `
                 <div class="insight">
@@ -2059,22 +1556,23 @@
       const isInc = t.type === 'income';
       return `
         <div class="activity-item" onclick="openTxDetail(${t.id})">
-          <div class="activity-ico ${isInc ? 'income' : ''}">
-            ${isInc ? '↓' : '↑'}
-          </div>
+          <div class="activity-ico ${isInc ? 'income' : ''}">${isInc ? '↓' : '↑'}</div>
           <div class="activity-body">
-            <div class="activity-name">${t.description || (isInc ? 'Income' : 'Expense')}</div>
+            <div class="activity-name">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div>
             <div class="activity-meta">
-              <span>${t.category}</span>
+              <span>${escapeHtml(t.category)}</span>
               <span>·</span>
               <span>${fmtDate(t.date)}</span>
             </div>
           </div>
-          <div class="activity-amt ${isInc ? 'pos' : 'neg'}">
-            ${isInc ? '+' : '−'}${fmt(t.amount)}
-          </div>
+          <div class="activity-amt ${isInc ? 'pos' : 'neg'}">${isInc ? '+' : '−'}${fmt(t.amount)}</div>
         </div>
       `;
+    }
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
     /* ── RENDER: ACTIVITY ── */
@@ -2088,7 +1586,6 @@
         if (!groups[d]) groups[d] = [];
         groups[d].push(t);
       });
-
       const cats = [
         { id: 'all', label: 'All', emoji: '◌' },
         { id: 'food', label: 'Food', emoji: '🍔' },
@@ -2098,18 +1595,15 @@
         { id: 'paycheck', label: 'Paycheck', emoji: '💵' },
         { id: 'other', label: 'Other', emoji: '◈' }
       ];
-
       return `
         <div class="container fade-in">
           <div class="top-header">
             <div class="t-large">Activity</div>
             <button class="icon-btn" onclick="openAddExpense()" style="background:var(--white);color:var(--black);border-color:var(--white);">+</button>
           </div>
-
           <div style="margin-bottom:16px;">
-            <input class="field-input" id="activity-search" placeholder="Search transactions" oninput="onActivitySearch(this.value)" value="${activityFilter.search}">
+            <input class="field-input" id="activity-search" placeholder="Search transactions" oninput="onActivitySearch(this.value)" value="${escapeHtml(activityFilter.search)}">
           </div>
-
           <div class="scroll-row" style="margin-bottom:20px;">
             ${cats.map(c => `
               <button class="chip ${activityFilter.category === c.id ? 'selected' : ''}" onclick="setActivityCat('${c.id}')">
@@ -2118,7 +1612,6 @@
               </button>
             `).join('')}
           </div>
-
           ${txns.length === 0 ? `
             <div class="empty">
               <div class="empty-ico">◌</div>
@@ -2128,9 +1621,7 @@
           ` : Object.entries(groups).map(([date, items]) => `
             <div style="margin-bottom:20px;">
               <div class="t-label" style="margin-bottom:10px;padding-left:4px;">${date}</div>
-              <div class="stagger">
-                ${items.map(t => renderTxItem(t)).join('')}
-              </div>
+              <div class="stagger">${items.map(t => renderTxItem(t)).join('')}</div>
             </div>
           `).join('')}
         </div>
@@ -2139,10 +1630,11 @@
 
     function onActivitySearch(v) {
       activityFilter.search = v;
-      render();
-      // restore focus
       const el = document.getElementById('activity-search');
-      if (el) { el.focus(); el.setSelectionRange(v.length, v.length); }
+      const sel = el ? el.selectionStart : 0;
+      render();
+      const newEl = document.getElementById('activity-search');
+      if (newEl) { newEl.focus(); try { newEl.setSelectionRange(sel, sel); } catch (e) {} }
     }
 
     function setActivityCat(c) {
@@ -2154,14 +1646,12 @@
     /* ── RENDER: GOALS ── */
     function renderGoals() {
       const goals = Store.getGoals();
-
       return `
         <div class="container fade-in">
           <div class="top-header">
             <div class="t-large">Goals</div>
             <button class="icon-btn" onclick="openAddGoal()" style="background:var(--white);color:var(--black);border-color:var(--white);">+</button>
           </div>
-
           ${goals.length === 0 ? `
             <div class="empty">
               <div class="empty-ico">◈</div>
@@ -2178,7 +1668,7 @@
                   <div class="goal-card ${active ? 'active' : ''}" onclick="openGoalDetail(${g.id})">
                     <div class="goal-head">
                       <div>
-                        <div class="goal-name">${g.name}</div>
+                        <div class="goal-name">${escapeHtml(g.name)}</div>
                         <div class="goal-pct">${p.pct}% complete</div>
                       </div>
                       <div class="goal-emoji">${g.emoji}</div>
@@ -2187,9 +1677,7 @@
                       <span>${fmt(g.current)}</span>
                       <span style="color:var(--gray-500);">${fmt(g.target)}</span>
                     </div>
-                    <div class="goal-bar">
-                      <div class="goal-fill" style="width:${p.pct}%"></div>
-                    </div>
+                    <div class="goal-bar"><div class="goal-fill" style="width:${p.pct}%"></div></div>
                     <div class="goal-stats">
                       <span>${fmt(p.remaining)} remaining</span>
                       <span class="hl">${p.pct}%</span>
@@ -2217,7 +1705,6 @@
       const rate = Store.computeSavingsRate();
       const avg = Store.computeAverageTransaction();
       const lc = Store.computeLargestCategory();
-
       const last7 = [];
       for (let i = 6; i >= 0; i--) {
         const d = new Date();
@@ -2229,32 +1716,15 @@
         last7.push({ label: d.toLocaleDateString('en-US', { weekday: 'narrow' }), value: val });
       }
       const maxV = Math.max(...last7.map(d => d.value), 1);
-
       return `
         <div class="container fade-in">
-          <div class="top-header">
-            <div class="t-large">Analytics</div>
-          </div>
-
+          <div class="top-header"><div class="t-large">Analytics</div></div>
           <div class="stat-grid stagger">
-            <div class="stat">
-              <div class="stat-val" style="color:var(--green);">${fmt(inc)}</div>
-              <div class="stat-lbl">Income · 30d</div>
-            </div>
-            <div class="stat">
-              <div class="stat-val" style="color:var(--gray-200);">${fmt(sp)}</div>
-              <div class="stat-lbl">Spending · 30d</div>
-            </div>
-            <div class="stat">
-              <div class="stat-val">${rate}%</div>
-              <div class="stat-lbl">Savings Rate</div>
-            </div>
-            <div class="stat">
-              <div class="stat-val">${fmt(avg)}</div>
-              <div class="stat-lbl">Avg Transaction</div>
-            </div>
+            <div class="stat"><div class="stat-val" style="color:var(--green);">${fmt(inc)}</div><div class="stat-lbl">Income · 30d</div></div>
+            <div class="stat"><div class="stat-val" style="color:var(--gray-200);">${fmt(sp)}</div><div class="stat-lbl">Spending · 30d</div></div>
+            <div class="stat"><div class="stat-val">${rate}%</div><div class="stat-lbl">Savings Rate</div></div>
+            <div class="stat"><div class="stat-val">${fmt(avg)}</div><div class="stat-lbl">Avg Transaction</div></div>
           </div>
-
           <div class="chart-card">
             <h3>Weekly Spending</h3>
             <div style="display:flex;align-items:flex-end;justify-content:space-between;height:110px;gap:8px;">
@@ -2266,19 +1736,15 @@
               `).join('')}
             </div>
           </div>
-
           <div class="chart-card">
             <h3>Top Category</h3>
             ${lc.amount > 0 ? `
               <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:15px;font-weight:600;">${lc.category}</span>
+                <span style="font-size:15px;font-weight:600;">${escapeHtml(lc.category)}</span>
                 <span style="font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;">${fmt(lc.amount)}</span>
               </div>
-            ` : `
-              <p style="color:var(--gray-500);font-size:14px;">No spending data yet.</p>
-            `}
+            ` : `<p style="color:var(--gray-500);font-size:14px;">No spending data yet.</p>`}
           </div>
-
           ${snap.goals.length > 0 ? `
             <div class="chart-card">
               <h3>Goal Progress</h3>
@@ -2287,12 +1753,10 @@
                 return `
                   <div style="margin-bottom:16px;">
                     <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:8px;">
-                      <span>${g.emoji} ${g.name}</span>
+                      <span>${g.emoji} ${escapeHtml(g.name)}</span>
                       <span style="color:var(--gray-400);">${p.pct}%</span>
                     </div>
-                    <div class="goal-bar" style="height:5px;margin:0;">
-                      <div class="goal-fill" style="width:${p.pct}%"></div>
-                    </div>
+                    <div class="goal-bar" style="height:5px;margin:0;"><div class="goal-fill" style="width:${p.pct}%"></div></div>
                   </div>
                 `;
               }).join('')}
@@ -2316,13 +1780,24 @@
     function render() {
       if (!authenticated) return;
       const app = document.getElementById('app');
-      const views = {
-        home: renderHome,
-        activity: renderActivity,
-        goals: renderGoals,
-        analytics: renderAnalytics
-      };
+      const views = { home: renderHome, activity: renderActivity, goals: renderGoals, analytics: renderAnalytics };
       app.innerHTML = views[currentTab] ? views[currentTab]() : renderHome();
+      app.classList.toggle('privacy-blur', privacyMode);
+    }
+
+    /* ── NOTIFICATIONS — real browser API ── */
+    async function enableNotifications() {
+      const result = await NotificationManager.requestPermission();
+      if (result.granted) {
+        Store.updatePreferences({ notificationsEnabled: true });
+        toast('Notifications enabled');
+        // Send a real test notification to prove it works
+        const sent = NotificationManager.send('Logostics', 'Notifications are now enabled.');
+        if (!sent.sent) toast('Permission granted but notification failed: ' + sent.reason);
+      } else {
+        toast('Notifications not enabled: ' + result.reason);
+      }
+      render();
     }
 
     /* ── SHEET: ADD INCOME ── */
@@ -2349,18 +1824,20 @@
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
       `);
     }
-
-    function submitIncome() {
+    async function submitIncome() {
       const amt = parseFloat(document.getElementById('in-amount').value);
       const desc = document.getElementById('in-desc').value;
       const cat = document.querySelector('#in-cats .chip.selected')?.dataset.cat || 'other';
       if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
-      const t = Store.addTransaction({ type: 'income', amount: amt, description: desc || 'Income', category: cat });
+      await Store.addTransaction({ type: 'income', amount: amt, description: desc || 'Income', category: cat });
       closeSheet();
       haptic('success');
       toast('Income added');
       render();
-      flashDI('paycheck', t.amount, 'Income');
+      // Real notification if permission granted
+      if (Notification.permission === 'granted' && Store.preferences.notificationsEnabled) {
+        NotificationManager.send('Income logged', `${fmt(amt)} added to your balance.`);
+      }
     }
 
     /* ── SHEET: ADD EXPENSE ── */
@@ -2389,18 +1866,16 @@
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
       `);
     }
-
-    function submitExpense() {
+    async function submitExpense() {
       const amt = parseFloat(document.getElementById('ex-amount').value);
       const desc = document.getElementById('ex-desc').value;
       const cat = document.querySelector('#ex-cats .chip.selected')?.dataset.cat || 'other';
       if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
-      const t = Store.addTransaction({ type: 'expense', amount: amt, description: desc || 'Expense', category: cat });
+      await Store.addTransaction({ type: 'expense', amount: amt, description: desc || 'Expense', category: cat });
       closeSheet();
       haptic('success');
       toast('Expense added');
       render();
-      flashDI('spending', -t.amount, 'Spent');
     }
 
     /* ── SHEET: ADD GOAL ── */
@@ -2437,8 +1912,7 @@
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
       `);
     }
-
-    function submitGoal() {
+    async function submitGoal() {
       const name = document.getElementById('g-name').value.trim();
       const target = parseFloat(document.getElementById('g-target').value);
       const current = parseFloat(document.getElementById('g-current').value) || 0;
@@ -2446,7 +1920,7 @@
       const emoji = document.querySelector('#g-emoji .chip.selected')?.dataset.emoji || '◈';
       if (!name) { toast('Enter a goal name'); return; }
       if (!target || target <= 0) { toast('Enter a valid target'); return; }
-      Store.addGoal({ name, target, current, weeklySavings: weekly, emoji });
+      await Store.addGoal({ name, target, current, weeklySavings: weekly, emoji });
       closeSheet();
       haptic('success');
       toast('Goal created');
@@ -2463,12 +1937,8 @@
           <div style="font-size:44px;font-weight:700;letter-spacing:-0.04em;color:${isInc ? 'var(--green)' : 'var(--white)'};font-variant-numeric:tabular-nums;">
             ${isInc ? '+' : '−'}${fmt(t.amount)}
           </div>
-          <div style="font-size:14px;color:var(--gray-500);margin-top:6px;font-weight:500;">
-            ${t.description || (isInc ? 'Income' : 'Expense')}
-          </div>
-          <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">
-            ${t.category} · ${fmtDate(t.date)}
-          </div>
+          <div style="font-size:14px;color:var(--gray-500);margin-top:6px;font-weight:500;">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div>
+          <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">${escapeHtml(t.category)} · ${fmtDate(t.date)}</div>
         </div>
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="closeSheet();openEditTx(${t.id})">Edit</button>
@@ -2477,7 +1947,6 @@
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
       `);
     }
-
     function openEditTx(id) {
       const t = Store.getSnapshot().transactions.find(x => x.id === id);
       if (!t) return;
@@ -2489,7 +1958,7 @@
         </div>
         <div class="field">
           <label class="field-label">Description</label>
-          <input class="field-input" id="e-desc" value="${t.description}">
+          <input class="field-input" id="e-desc" value="${escapeHtml(t.description)}">
         </div>
         <div class="field">
           <label class="field-label">Type</label>
@@ -2502,22 +1971,20 @@
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
       `);
     }
-
-    function submitEditTx(id) {
+    async function submitEditTx(id) {
       const amt = parseFloat(document.getElementById('e-amount').value);
       const desc = document.getElementById('e-desc').value;
       const type = document.querySelector('#e-type .seg.active')?.dataset.t || 'expense';
       if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
-      Store.updateTransaction(id, { amount: amt, description: desc, type });
+      await Store.updateTransaction(id, { amount: amt, description: desc, type });
       closeSheet();
       haptic('success');
       toast('Updated');
       render();
     }
-
-    function confirmDeleteTx(id) {
+    async function confirmDeleteTx(id) {
       if (confirm('Delete this transaction?')) {
-        Store.deleteTransaction(id);
+        await Store.deleteTransaction(id);
         closeSheet();
         haptic('heavy');
         toast('Deleted');
@@ -2533,16 +2000,14 @@
       openSheet(`
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:52px;margin-bottom:10px;filter:grayscale(1);opacity:0.8;">${g.emoji}</div>
-          <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em;">${g.name}</div>
+          <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em;">${escapeHtml(g.name)}</div>
           <div style="font-size:14px;color:var(--gray-500);margin-top:4px;">${p.pct}% complete</div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:22px;font-weight:700;margin-bottom:14px;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">
           <span>${fmt(g.current)}</span>
           <span style="color:var(--gray-500);">${fmt(g.target)}</span>
         </div>
-        <div class="goal-bar" style="height:10px;margin-bottom:20px;">
-          <div class="goal-fill" style="width:${p.pct}%"></div>
-        </div>
+        <div class="goal-bar" style="height:10px;margin-bottom:20px;"><div class="goal-fill" style="width:${p.pct}%"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray-400);margin-bottom:24px;font-weight:500;">
           <span>${fmt(p.remaining)} remaining</span>
           <span>${p.pct}%</span>
@@ -2564,24 +2029,20 @@
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
       `);
     }
-
-    function addToGoal(id) {
+    async function addToGoal(id) {
       const amt = parseFloat(document.getElementById('g-add').value);
       if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
       const g = Store.getGoals().find(x => x.id === id);
       if (!g) return;
-      Store.updateGoal(id, { current: g.current + amt });
+      await Store.updateGoal(id, { current: g.current + amt });
       closeSheet();
       haptic('success');
       toast('Added to goal');
       render();
-      const p = Store.computeGoalProgress({ ...g, current: g.current + amt });
-      flashDI('goal', p.pct, 'Goal');
     }
-
-    function confirmDeleteGoal(id) {
+    async function confirmDeleteGoal(id) {
       if (confirm('Delete this goal?')) {
-        Store.deleteGoal(id);
+        await Store.deleteGoal(id);
         closeSheet();
         haptic('heavy');
         toast('Goal deleted');
@@ -2599,7 +2060,7 @@
           <label class="field-label">Select Goal</label>
           <div class="chips" id="t-goal">
             ${goals.map((g, i) => `
-              <button class="chip ${i === 0 ? 'selected' : ''}" onclick="pickChip(this)" data-goal="${g.id}">${g.emoji} ${g.name}</button>
+              <button class="chip ${i === 0 ? 'selected' : ''}" onclick="pickChip(this)" data-goal="${g.id}">${g.emoji} ${escapeHtml(g.name)}</button>
             `).join('')}
           </div>
         </div>
@@ -2611,28 +2072,29 @@
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
       `);
     }
-
-    function submitTransfer() {
+    async function submitTransfer() {
       const goalId = parseInt(document.querySelector('#t-goal .chip.selected')?.dataset.goal);
       const amt = parseFloat(document.getElementById('t-amount').value);
       if (!goalId || !amt || amt <= 0) { toast('Select a goal and enter an amount'); return; }
       const g = Store.getGoals().find(x => x.id === goalId);
       if (!g) return;
-      Store.updateGoal(goalId, { current: g.current + amt });
+      await Store.updateGoal(goalId, { current: g.current + amt });
       closeSheet();
       haptic('success');
       toast('Transferred');
       render();
-      const p = Store.computeGoalProgress({ ...g, current: g.current + amt });
-      flashDI('goal', p.pct, 'Goal');
     }
 
     /* ── SHEET: SETTINGS ── */
-    function openSettings() {
+    async function openSettings() {
       const snap = Store.getSnapshot();
       const inc = snap.incomeSettings;
       const est = Store.computePaycheckEstimate();
       const prefs = snap.preferences;
+      const notif = PlatformCapabilities.checkNotifications();
+      const hapt = PlatformCapabilities.checkHaptics();
+      const webauthn = await PlatformCapabilities.checkWebAuthn();
+      const env = PlatformCapabilities.env;
 
       openSheet(`
         <div class="sheet-title">Settings</div>
@@ -2657,22 +2119,69 @@
           </span>
         </div>
 
-        <div class="t-label" style="margin-bottom:10px;padding-left:4px;">Preferences</div>
-        <div class="set-row" onclick="togglePref('faceIdEnabled')">
-          <div class="set-left"><span class="ico">🔒</span> Face ID Lock</div>
-          <div class="toggle ${prefs.faceIdEnabled ? 'on' : ''}" onclick="event.stopPropagation();togglePref('faceIdEnabled')"></div>
+        <div class="t-label" style="margin-bottom:10px;padding-left:4px;">Security & Privacy</div>
+        <div class="set-row" onclick="toggleAppLock()">
+          <div class="set-left"><span class="ico">🔒</span> App Lock</div>
+          <div class="toggle ${prefs.appLockEnabled ? 'on' : ''}" onclick="event.stopPropagation();toggleAppLock()"></div>
         </div>
-        <div class="set-row" onclick="togglePref('hapticsEnabled')">
-          <div class="set-left"><span class="ico">◉</span> Haptic Feedback</div>
-          <div class="toggle ${prefs.hapticsEnabled ? 'on' : ''}" onclick="event.stopPropagation();togglePref('hapticsEnabled')"></div>
-        </div>
-        <div class="set-row" onclick="togglePref('notificationsEnabled')">
-          <div class="set-left"><span class="ico">◔</span> Notifications</div>
-          <div class="toggle ${prefs.notificationsEnabled ? 'on' : ''}" onclick="event.stopPropagation();togglePref('notificationsEnabled')"></div>
-        </div>
+        <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
+          ${webauthn.available
+            ? 'Uses your device\'s real platform authenticator (Face ID, Touch ID, or Windows Hello) via WebAuthn. Logostics never sees or stores your biometric data.'
+            : 'Not available on this device: ' + escapeHtml(webauthn.reason)}
+        </p>
+
         <div class="set-row" onclick="togglePrivacy();closeSheet();">
           <div class="set-left"><span class="ico">👁</span> Privacy Mode</div>
           <div class="set-right">${privacyMode ? 'On' : 'Off'}</div>
+        </div>
+
+        <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">Notifications</div>
+        <div class="set-row">
+          <div class="set-left"><span class="ico">◔</span> Browser Notifications</div>
+          <div class="set-right">
+            ${notif.supported
+              ? `<span class="cap-badge ${notif.permission === 'granted' ? 'ok' : notif.permission === 'denied' ? 'no' : 'warn'}">${notif.permission}</span>`
+              : `<span class="cap-badge no">unsupported</span>`}
+          </div>
+        </div>
+        ${notif.supported && notif.permission === 'default' ? `
+          <button class="btn btn-secondary" style="margin-bottom:6px;" onclick="enableNotifications()">Enable Notifications</button>
+        ` : ''}
+        ${notif.supported && notif.permission === 'granted' ? `
+          <button class="btn btn-secondary" style="margin-bottom:6px;" onclick="sendTestNotification()">Send Test Notification</button>
+        ` : ''}
+        ${!notif.supported ? `
+          <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
+            This browser does not support the Notification API. On iOS, websites can only send notifications when installed to the Home Screen as a PWA. Native apps use Apple's UserNotifications framework.
+          </p>
+        ` : ''}
+        ${notif.permission === 'denied' ? `
+          <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
+            Notifications were blocked. To re-enable, go to your browser's site settings for this page and allow notifications.
+          </p>
+        ` : ''}
+
+        <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">Device Capabilities</div>
+        <div class="set-row" style="cursor:default;">
+          <div class="set-left"><span class="ico">◈</span> Environment</div>
+          <div class="set-right">${escapeHtml(env.type)}</div>
+        </div>
+        <div class="set-row" style="cursor:default;">
+          <div class="set-left"><span class="ico">◉</span> Haptics (Vibration API)</div>
+          <div class="set-right">
+            <span class="cap-badge ${hapt.supported ? 'ok' : 'no'}">${hapt.supported ? 'available' : 'unavailable'}</span>
+          </div>
+        </div>
+        <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
+          ${hapt.supported
+            ? 'Vibration is used for tactile feedback.'
+            : 'iOS Safari does not expose the Vibration API. Native iOS apps use UIImpactFeedbackGenerator for real haptics.'}
+        </p>
+        <div class="set-row" style="cursor:default;">
+          <div class="set-left"><span class="ico">🔐</span> Platform Authenticator (WebAuthn)</div>
+          <div class="set-right">
+            <span class="cap-badge ${webauthn.available ? 'ok' : 'no'}">${webauthn.available ? 'available' : 'unavailable'}</span>
+          </div>
         </div>
 
         <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">Data</div>
@@ -2680,23 +2189,55 @@
           <div class="set-left"><span class="ico">↑</span> Export Data</div>
           <div class="set-right">JSON ›</div>
         </div>
-        <div class="set-row" onclick="if(confirm('Reset all data? This cannot be undone.')){localStorage.removeItem('logostics_finance_minimal_v1');location.reload();}">
+        <div class="set-row" onclick="resetAllData()">
           <div class="set-left"><span class="ico">×</span> Reset All Data</div>
-          <div class="set-right">Delete ›</div>
+          <div class="set-right" style="color:var(--gray-300);">Delete ›</div>
         </div>
 
         <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">About</div>
-        <div class="set-row">
+        <div class="set-row" style="cursor:default;">
           <div class="set-left"><span class="ico">◈</span> Logostics Finance</div>
-          <div class="set-right">v1.0</div>
+          <div class="set-right">v1.0 · Web</div>
         </div>
+        <p style="font-size:11.5px;color:var(--gray-500);padding:8px 4px 12px;line-height:1.5;">
+          Running as an honest web app. Native iOS builds of Logostics will plug into Apple's LocalAuthentication, UserNotifications, CoreHaptics, and WidgetKit frameworks through the same PlatformCapabilities layer.
+        </p>
 
-        <button class="btn btn-primary" style="margin-top:20px;" onclick="saveSettings()">Save Settings</button>
+        <button class="btn btn-primary" style="margin-top:8px;" onclick="saveSettings()">Save Settings</button>
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
       `);
     }
 
-    function saveSettings() {
+    async function toggleAppLock() {
+      const enabled = Store.preferences.appLockEnabled;
+      if (!enabled) {
+        // Attempt to actually register a WebAuthn credential
+        const cap = await PlatformCapabilities.checkWebAuthn();
+        if (!cap.available) {
+          toast('Cannot enable lock: ' + cap.reason);
+          return;
+        }
+        const reg = await AuthManager.register();
+        if (!reg.success) {
+          toast('Registration failed: ' + reg.reason);
+          return;
+        }
+        Store.updatePreferences({ appLockEnabled: true });
+        toast('App lock enabled with real platform authenticator');
+      } else {
+        Store.updatePreferences({ appLockEnabled: false });
+        toast('App lock disabled');
+      }
+      openSettings();
+    }
+
+    function sendTestNotification() {
+      const sent = NotificationManager.send('Logostics', 'Test notification — this is a real browser notification.');
+      if (sent.sent) toast('Notification sent');
+      else toast('Not sent: ' + sent.reason);
+    }
+
+    async function saveSettings() {
       const h = parseFloat(document.getElementById('s-hourly').value) || 0;
       const hs = parseFloat(document.getElementById('s-hours').value) || 0;
       const w = parseFloat(document.getElementById('s-withhold').value) || 20;
@@ -2707,47 +2248,33 @@
       render();
     }
 
-    function togglePref(key) {
-      const cur = Store.preferences[key];
-      Store.updatePreferences({ [key]: !cur });
-      haptic('light');
-      openSettings();
-      setTimeout(() => {
-        const overlays = document.querySelectorAll('.sheet-overlay.on');
-        if (overlays.length === 0) openSettings();
-      }, 10);
-      // Just re-render sheet content
-      const sheetContent = document.getElementById('sheet-content');
-      if (sheetContent && document.getElementById('sheet-overlay').classList.contains('on')) {
-        // Re-open settings to reflect new state
-        setTimeout(() => openSettings(), 0);
-      }
-    }
-
-    /* ── SHEET: SIRI ── */
+    /* ── SHEET: APP INTENTS INFO (honest) ── */
     function openSiri() {
       openSheet(`
-        <div style="text-align:center;padding:20px 0 8px;">
-          <div class="siri-wave" style="justify-content:center;height:28px;gap:5px;margin-bottom:20px;">
-            <span style="width:4px;"></span>
-            <span style="width:4px;"></span>
-            <span style="width:4px;"></span>
-            <span style="width:4px;"></span>
-            <span style="width:4px;"></span>
+        <div style="text-align:center;padding:12px 0 8px;">
+          <div class="t-title" style="margin-bottom:8px;">App Intents & Siri</div>
+          <div class="t-caption" style="max-width:300px;margin:0 auto 24px;line-height:1.5;">
+            The financial engine is already structured to be driven by Apple's App Intents framework in a native build.
           </div>
-          <div class="t-title" style="margin-bottom:8px;">Ask Logostics</div>
-          <div class="t-caption" style="max-width:260px;margin:0 auto 24px;">Siri and App Intents integration is architected and ready.</div>
         </div>
 
-        <div class="t-label" style="margin-bottom:10px;padding-left:4px;">Try saying</div>
+        <div class="insight" style="border-color:var(--green);background:var(--green-glow);margin-bottom:16px;">
+          <span class="ico">✓</span>
+          <span class="txt">
+            <strong>In a native iOS build</strong>, these actions will be exposed via App Intents and work with Siri, Shortcuts, and Spotlight:
+          </span>
+        </div>
+
         <div class="insight"><span class="ico">◉</span><span class="txt">"How much cash do I have?"</span></div>
-        <div class="insight"><span class="ico">◉</span><span class="txt">"Show my iPhone goal progress"</span></div>
-        <div class="insight"><span class="ico">◉</span><span class="txt">"Add a $12 expense for coffee"</span></div>
+        <div class="insight"><span class="ico">◉</span><span class="txt">"Show my savings goal progress"</span></div>
+        <div class="insight"><span class="ico">◉</span><span class="txt">"Add a $12 expense"</span></div>
         <div class="insight" style="margin-bottom:20px;"><span class="ico">◉</span><span class="txt">"What's my projected balance?"</span></div>
 
-        <div class="insight" style="border-color:var(--green);background:var(--green-glow);">
-          <span class="ico">✓</span>
-          <span class="txt">Native App Intents and Siri Shortcuts will plug directly into the FinancialStore without changing the engine.</span>
+        <div class="insight" style="border-color:var(--gray-700);">
+          <span class="ico">◔</span>
+          <span class="txt">
+            <strong>On the web</strong>, Siri and App Intents are not available. iOS does not expose these Apple frameworks to websites. No fake shortcuts or simulated Siri are shown.
+          </span>
         </div>
 
         <button class="btn btn-primary" style="margin-top:20px;" onclick="closeSheet()">Got it</button>
@@ -2760,7 +2287,6 @@
       el.classList.add('selected');
       haptic('light');
     }
-
     function pickSeg(el) {
       el.parentElement.querySelectorAll('.seg').forEach(s => s.classList.remove('active'));
       el.classList.add('active');
@@ -2780,57 +2306,52 @@
       toast('Exported');
     }
 
+    async function resetAllData() {
+      if (!confirm('Reset all data? This cannot be undone.')) return;
+      try { localStorage.removeItem('logostics_finance_prefs_v1'); } catch (e) {}
+      try { indexedDB.deleteDatabase('LogosticsFinanceDB'); } catch (e) {}
+      location.reload();
+    }
+
     /* ═══════════════════════════════════════════════════════════
        INIT
        ═══════════════════════════════════════════════════════════ */
-    function init() {
-      // Subscribe to store changes for live re-render
-      Store.subscribe(() => {
-        if (authenticated) render();
-      });
+    async function init() {
+      // Load real persisted data
+      await Store.init();
 
-      // Face ID gate if enabled
-      if (Store.preferences.faceIdEnabled) {
-        showFaceID();
+      // Subscribe to store changes for live re-render
+      Store.subscribe(() => { if (authenticated) render(); });
+
+      // Determine if we need to show an auth gate.
+      // The appLockEnabled preference was loaded from localStorage.
+      // If it's on, we attempt real WebAuthn authentication.
+      if (Store.preferences.appLockEnabled) {
+        await showAuthGate();
       } else {
         authenticated = true;
         render();
       }
 
-      // Expose handlers
-      window.switchTab = switchTab;
-      window.openAddIncome = openAddIncome;
-      window.openAddExpense = openAddExpense;
-      window.openAddGoal = openAddGoal;
-      window.openGoalDetail = openGoalDetail;
-      window.openTxDetail = openTxDetail;
-      window.openTransfer = openTransfer;
-      window.openSettings = openSettings;
-      window.openSiri = openSiri;
-      window.submitIncome = submitIncome;
-      window.submitExpense = submitExpense;
-      window.submitGoal = submitGoal;
-      window.submitTransfer = submitTransfer;
-      window.submitEditTx = submitEditTx;
-      window.openEditTx = openEditTx;
-      window.confirmDeleteTx = confirmDeleteTx;
-      window.confirmDeleteGoal = confirmDeleteGoal;
-      window.addToGoal = addToGoal;
-      window.pickChip = pickChip;
-      window.pickSeg = pickSeg;
-      window.closeSheet = closeSheet;
-      window.saveSettings = saveSettings;
-      window.togglePref = togglePref;
-      window.exportData = exportData;
-      window.togglePrivacy = togglePrivacy;
-      window.authenticate = authenticate;
-      window.skipAuth = skipAuth;
-      window.onActivitySearch = onActivitySearch;
-      window.setActivityCat = setActivityCat;
+      // Expose handlers for inline onclick (required for CSP-friendly inline code)
+      Object.assign(window, {
+        switchTab, openAddIncome, openAddExpense, openAddGoal, openGoalDetail,
+        openTxDetail, openTransfer, openSettings, openSiri,
+        submitIncome, submitExpense, submitGoal, submitTransfer,
+        submitEditTx, openEditTx, confirmDeleteTx, confirmDeleteGoal,
+        addToGoal, pickChip, pickSeg, closeSheet, saveSettings,
+        exportData, resetAllData, togglePrivacy, enableNotifications,
+        doAuthenticate, skipLock, disableLockAndContinue, toggleAppLock,
+        sendTestNotification, onActivitySearch, setActivityCat
+      });
     }
 
     if (document.readyState !== 'loading') init();
     else document.addEventListener('DOMContentLoaded', init);
+
+    // Online/offline — honest connectivity indicator
+    window.addEventListener('online', () => toast('Back online'));
+    window.addEventListener('offline', () => toast('Offline — data still saves locally'));
   </script>
 </body>
 </html>
