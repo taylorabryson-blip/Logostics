@@ -7,15 +7,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Logostics">
   <meta name="theme-color" content="#000000">
-  <meta name="description" content="Logostics Finance — personal finance command center">
-  <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTG9nb3N0aWNzIEZpbmFuY2UiLCJzaG9ydF9uYW1lIjoiTG9nb3N0aWNzIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwMDAwMDAiLCJ0aGVtZV9jb2xvciI6IiMwMDAwMDAiLCJvcmllbnRhdGlvbiI6InBvcnRyYWl0IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJME1DSWdhR1ZwWjJoMFBTSTBNQ0lnZG1sbGQzQm9iM1J2UFNJMElqNDhjbVZqZENCM2FXUjBhRDBpTkRBdWFtRjJZWE5qY21sd2RDSWdZMnhoYzNNOUltTnNiM05sWTI5dVpTSStQQzl5WldOMFBqd3ZjM1puUGc9PSIsInNpemVzIjoiNDB4NDAiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkifV19">
   <title>Logostics Finance</title>
   <style>
     /* ═══════════════════════════════════════════════════════════
-       LOGOSTICS FINANCE — iPhone-first, capability-honest web app
+       LOGOSTICS FINANCE — PATCHED
        Palette: black, white, gray, green ONLY
-       No fake iOS chrome anywhere
        ═══════════════════════════════════════════════════════════ */
 
     *, *::before, *::after {
@@ -25,7 +21,6 @@
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
     :root {
@@ -43,7 +38,6 @@
       --gray-200: #bbbbbb;
       --gray-100: #dddddd;
       --green: #30d158;
-      --green-dim: #1f8a3a;
       --green-glow: rgba(48, 209, 88, 0.15);
       --red: #ff453a;
       --safe-top: env(safe-area-inset-top, 0px);
@@ -53,8 +47,6 @@
       --ease: cubic-bezier(0.32, 0.72, 0, 1);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --nav-h: 76px;
-      --radius: 22px;
-      --radius-lg: 28px;
     }
 
     html {
@@ -86,6 +78,40 @@
       touch-action: manipulation;
     }
 
+    /* ── APP LOCK SCREEN (real redaction, not navigation) ── */
+    .app-lock {
+      position: fixed; inset: 0;
+      background: var(--black);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 24px;
+      animation: fade-in 0.2s ease;
+    }
+    .app-lock.on { display: flex; }
+    .app-lock-icon {
+      width: 88px; height: 88px; border-radius: 28px;
+      border: 2px solid var(--gray-700);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 42px; filter: grayscale(1);
+    }
+    .app-lock-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; text-align: center; }
+    .app-lock-sub { font-size: 14px; color: var(--gray-500); text-align: center; max-width: 300px; line-height: 1.5; }
+    .app-lock-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; }
+
+    /* ── REDACTED CONTENT (financial numbers hidden when locked) ── */
+    .redacted {
+      background: var(--gray-800);
+      color: transparent !important;
+      user-select: none;
+      pointer-events: none;
+      border-radius: 4px;
+      filter: blur(6px);
+    }
+
     /* ── REDUCED MOTION ── */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -95,16 +121,13 @@
       }
     }
 
-    /* ── SCROLLBAR ── */
     ::-webkit-scrollbar { width: 0; height: 0; }
 
-    /* ── TYPOGRAPHY ── */
     .t-large { font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
     .t-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
     .t-caption { font-size: 12px; font-weight: 500; color: var(--gray-400); letter-spacing: 0.01em; }
     .t-label { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.08em; }
 
-    /* ── LIQUID GLASS ── */
     .glass-deep {
       background: rgba(10, 10, 10, 0.85);
       backdrop-filter: blur(40px) saturate(200%);
@@ -118,12 +141,10 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    /* ── LAYOUT ── */
     .container { max-width: 430px; margin: 0 auto; padding: 0 20px; width: 100%; }
     .section { margin-bottom: 28px; }
     .section-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 2px; }
 
-    /* ── TOP HEADER ── */
     .top-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0 8px; }
     .brand { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; color: var(--white); }
     .brand-dot {
@@ -144,7 +165,6 @@
     }
     .icon-btn:active { transform: scale(0.9); background: var(--gray-800); }
 
-    /* ── HERO ── */
     .hero { text-align: center; padding: 32px 0 24px; }
     .hero-label { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px; }
     .hero-amount {
@@ -155,7 +175,6 @@
     .hero-status { font-size: 12px; color: var(--gray-500); margin-top: 10px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
     .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s ease-in-out infinite; }
 
-    /* ── CASH CARD ── */
     .cash-card { border-radius: 28px; padding: 24px; margin-bottom: 20px; position: relative; overflow: hidden; }
     .cash-card::before {
       content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
@@ -180,7 +199,6 @@
     .cash-proj .lbl { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.08em; }
     .cash-proj .amt { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; color: var(--green); font-variant-numeric: tabular-nums; }
 
-    /* ── QUICK ACTIONS ── */
     .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 28px; }
     .quick-btn {
       border-radius: 18px; padding: 16px 8px 12px; text-align: center; cursor: pointer;
@@ -192,7 +210,6 @@
     .quick-btn.primary .ico { filter: none; }
     .quick-btn .lbl { font-size: 10px; font-weight: 600; color: var(--gray-400); letter-spacing: 0.02em; }
 
-    /* ── INSIGHTS ── */
     .insight {
       border-radius: 18px; padding: 16px; margin-bottom: 8px; display: flex; gap: 12px; align-items: flex-start;
       background: var(--gray-900); border: 1px solid var(--gray-800);
@@ -201,23 +218,14 @@
     .insight .txt { font-size: 13.5px; line-height: 1.45; color: var(--gray-300); font-weight: 400; }
     .insight .txt strong { color: var(--white); font-weight: 600; }
 
-    /* ── ACTIVITY ── */
     .activity-item {
       display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 18px;
       margin-bottom: 6px; background: var(--gray-900); border: 1px solid var(--gray-800);
       transition: all 0.2s var(--ease); cursor: pointer;
-      position: relative; overflow: hidden;
+      position: relative;
       touch-action: pan-y;
     }
     .activity-item:active { transform: scale(0.98); background: var(--gray-850); }
-    .activity-item.swiping { transition: none; }
-    .activity-item .swipe-hint {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      font-size: 11px; color: var(--gray-600); font-weight: 600;
-      pointer-events: none; opacity: 0.5;
-      animation: swipe-pulse 2s ease-in-out infinite;
-    }
-    @keyframes swipe-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
     .activity-ico {
       width: 40px; height: 40px; border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
@@ -232,7 +240,6 @@
     .activity-amt.pos { color: var(--green); }
     .activity-amt.neg { color: var(--gray-200); }
 
-    /* ── GOAL CARDS ── */
     .goal-card {
       border-radius: 24px; padding: 22px; margin-bottom: 12px;
       background: var(--gray-900); border: 1px solid var(--gray-800);
@@ -249,17 +256,10 @@
       height: 100%; border-radius: 3px; background: var(--green);
       transition: width 0.7s var(--ease-out); position: relative; overflow: hidden;
     }
-    .goal-fill::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-      animation: shimmer 2.5s infinite;
-    }
-    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
     .goal-stats { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray-400); font-weight: 500; font-variant-numeric: tabular-nums; }
     .goal-stats .hl { color: var(--white); font-weight: 600; }
     .goal-eta { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-800); font-size: 12px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; font-weight: 500; }
 
-    /* ── BOTTOM NAV ── */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
       display: flex; justify-content: space-around; align-items: center;
@@ -280,7 +280,24 @@
     .nav-ico { font-size: 21px; line-height: 1; filter: grayscale(1); transition: all 0.25s var(--ease); }
     .nav-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.01em; }
 
-    /* ── SHEETS ── */
+    /* ── SWIPE BACK INDICATOR ── */
+    .swipe-back-indicator {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 60px;
+      background: var(--green);
+      border-radius: 0 4px 4px 0;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .swipe-back-indicator.on { opacity: 0.6; }
+
+    /* ── SHEET ── */
     .sheet-overlay {
       position: fixed; inset: 0;
       background: rgba(0, 0, 0, 0.6);
@@ -305,7 +322,6 @@
     .sheet-grip { width: 36px; height: 4px; background: var(--gray-600); border-radius: 2px; margin: 0 auto 20px; }
     .sheet-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 24px; text-align: center; }
 
-    /* ── FORMS ── */
     .field { margin-bottom: 18px; }
     .field-label {
       font-size: 11px; font-weight: 600; color: var(--gray-500);
@@ -320,7 +336,6 @@
     .field-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-glow); }
     .field-input::placeholder { color: var(--gray-600); }
 
-    /* ── CHIPS ── */
     .chips { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
       padding: 10px 16px; border-radius: 20px;
@@ -334,7 +349,6 @@
     .chip .emoji { filter: grayscale(1); }
     .chip.selected .emoji { filter: none; }
 
-    /* ── BUTTONS ── */
     .btn {
       padding: 16px 24px; border-radius: 14px; font-size: 17px; font-weight: 600;
       border: none; cursor: pointer; transition: all 0.2s var(--ease);
@@ -347,18 +361,15 @@
     .btn-green { background: var(--green); color: var(--black); }
     .btn-secondary { background: var(--gray-900); border: 1px solid var(--gray-800); color: var(--white); }
     .btn-danger { background: transparent; border: 1px solid var(--gray-700); color: var(--gray-300); }
-    .btn-danger:active { background: var(--gray-900); border-color: var(--gray-600); }
     .btn-row { display: flex; gap: 10px; margin-top: 8px; }
     .btn-row .btn { flex: 1; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ── EMPTY STATE ── */
     .empty { text-align: center; padding: 56px 24px; }
     .empty-ico { font-size: 44px; margin-bottom: 18px; opacity: 0.3; filter: grayscale(1); }
     .empty-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.02em; }
     .empty-sub { font-size: 14px; color: var(--gray-500); line-height: 1.5; max-width: 260px; margin: 0 auto; }
 
-    /* ── TOAST ── */
     .toast {
       position: fixed; top: calc(20px + var(--safe-top)); left: 50%;
       transform: translateX(-50%) translateY(-140%);
@@ -373,25 +384,6 @@
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
-    /* ── AUTH GATE ── */
-    .auth-gate {
-      position: fixed; inset: 0; background: var(--black); z-index: 5000;
-      display: none; flex-direction: column; align-items: center; justify-content: center;
-      gap: 24px; padding: 24px; animation: fade-in 0.3s ease;
-    }
-    .auth-gate.on { display: flex; }
-    .auth-icon {
-      width: 88px; height: 88px; border-radius: 28px;
-      border: 2px solid var(--gray-700);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 42px; filter: grayscale(1);
-    }
-    .auth-icon.available { border-color: var(--green); filter: none; }
-    .auth-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; text-align: center; }
-    .auth-sub { font-size: 14px; color: var(--gray-500); text-align: center; max-width: 300px; line-height: 1.5; }
-    .auth-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; }
-
-    /* ── PRIVACY BTN ── */
     .privacy-btn {
       position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); right: 20px;
       width: 44px; height: 44px; border-radius: 50%;
@@ -401,10 +393,8 @@
       background: var(--gray-900); border: 1px solid var(--gray-700);
       color: var(--gray-300); font-family: inherit;
     }
-    .privacy-btn:active { transform: scale(0.88); }
     .privacy-btn.active { background: var(--green); color: var(--black); border-color: var(--green); }
 
-    /* ── AI FLOATING BUTTON ── */
     .ai-fab {
       position: fixed;
       bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
@@ -419,16 +409,9 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.6);
     }
     .ai-fab:active { transform: scale(0.9); }
-    .ai-fab.pulse { animation: ai-pulse 3s ease-in-out infinite; }
-    @keyframes ai-pulse {
-      0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 0 0 rgba(48,209,88,0.4); }
-      50% { box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 0 12px rgba(48,209,88,0); }
-    }
 
-    /* ── PRIVACY BLUR ── */
     .privacy-blur { filter: blur(14px); transition: filter 0.35s var(--ease); pointer-events: none; user-select: none; }
 
-    /* ── ANIMATIONS ── */
     .fade-in { animation: fade-up 0.35s var(--ease-out); }
     @keyframes fade-up {
       from { opacity: 0; transform: translateY(10px); }
@@ -439,35 +422,27 @@
     .stagger > *:nth-child(2) { animation-delay: 0.06s; }
     .stagger > *:nth-child(3) { animation-delay: 0.10s; }
     .stagger > *:nth-child(4) { animation-delay: 0.14s; }
-    .stagger > *:nth-child(5) { animation-delay: 0.18s; }
-    .stagger > *:nth-child(6) { animation-delay: 0.22s; }
 
-    /* ── SCROLL ROW ── */
     .scroll-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
     .scroll-row::-webkit-scrollbar { display: none; }
     .scroll-row > * { flex-shrink: 0; }
 
-    /* ── SEGMENTED ── */
     .segmented { display: flex; background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 12px; padding: 3px; }
     .seg {
       flex: 1; padding: 10px; border-radius: 9px; font-size: 13px; font-weight: 600;
       text-align: center; cursor: pointer; transition: all 0.2s var(--ease);
-      background: none; border: none; color: var(--gray-500); font-family: inherit; letter-spacing: -0.01em;
+      background: none; border: none; color: var(--gray-500); font-family: inherit;
     }
     .seg.active { background: var(--white); color: var(--black); }
-    .seg:active { transform: scale(0.96); }
 
-    /* ── STATS ── */
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
     .stat { border-radius: 18px; padding: 18px 16px; background: var(--gray-900); border: 1px solid var(--gray-800); text-align: center; }
     .stat-val { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
     .stat-lbl { font-size: 10px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
 
-    /* ── CHART ── */
     .chart-card { border-radius: 22px; padding: 20px; margin-bottom: 12px; background: var(--gray-900); border: 1px solid var(--gray-800); }
-    .chart-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 18px; letter-spacing: -0.01em; }
+    .chart-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 18px; }
 
-    /* ── SETTINGS ── */
     .set-row {
       display: flex; justify-content: space-between; align-items: center;
       padding: 15px 16px; border-radius: 14px; margin-bottom: 6px;
@@ -476,12 +451,11 @@
     }
     .set-row:active { background: var(--gray-850); transform: scale(0.985); }
     .set-row.static { cursor: default; }
-    .set-row.static:active { transform: none; background: var(--gray-900); }
+    .set-row.static:active { transform: none; }
     .set-left { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; }
     .set-left .ico { font-size: 16px; width: 20px; text-align: center; filter: grayscale(1); opacity: 0.7; }
     .set-right { color: var(--gray-500); font-size: 13px; display: flex; align-items: center; gap: 6px; font-weight: 500; }
 
-    /* ── TOGGLE ── */
     .toggle {
       position: relative; width: 50px; height: 30px; background: var(--gray-700);
       border-radius: 15px; cursor: pointer; transition: background 0.3s var(--ease); flex-shrink: 0;
@@ -494,7 +468,6 @@
     }
     .toggle.on::after { transform: translateX(20px); }
 
-    /* ── CAP BADGE ── */
     .cap-badge {
       display: inline-flex; align-items: center; gap: 4px;
       font-size: 10px; font-weight: 700; padding: 3px 8px;
@@ -503,6 +476,45 @@
     .cap-badge.ok { background: var(--green-glow); color: var(--green); border: 1px solid rgba(48,209,88,0.25); }
     .cap-badge.no { background: var(--gray-850); color: var(--gray-500); border: 1px solid var(--gray-700); }
     .cap-badge.warn { background: rgba(255, 159, 10, 0.12); color: #ff9f0a; border: 1px solid rgba(255,159,10,0.25); }
+
+    /* ── PATCH NOTES ── */
+    .patch-version {
+      font-size: 18px; font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .patch-date {
+      font-size: 11px; color: var(--gray-500); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .patch-section {
+      margin-bottom: 12px;
+    }
+    .patch-section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--green);
+      margin-bottom: 6px;
+    }
+    .patch-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .patch-section li {
+      font-size: 13.5px; color: var(--gray-300); line-height: 1.5;
+      padding: 3px 0 3px 16px; position: relative;
+    }
+    .patch-section li::before {
+      content: '·'; position: absolute; left: 4px; color: var(--gray-500);
+    }
+
+    /* ── DEV MODE DEBUG ── */
+    .debug-row {
+      display: flex; justify-content: space-between;
+      padding: 8px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace;
+      border-bottom: 1px solid var(--gray-800);
+    }
+    .debug-row .k { color: var(--gray-500); }
+    .debug-row .v { color: var(--white); font-weight: 600; }
 
     /* ── AI CHAT ── */
     .ai-chat-bubble {
@@ -528,19 +540,15 @@
       color: var(--gray-500); font-size: 12px; text-align: center;
       margin: 12px auto; max-width: 90%;
     }
-    .ai-action-row {
-      display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
-    }
+    .ai-action-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
     .ai-action-btn {
       padding: 8px 14px; border-radius: 10px; background: var(--gray-850);
       border: 1px solid var(--gray-700); color: var(--white);
       font-family: inherit; font-size: 13px; font-weight: 600;
       cursor: pointer; transition: all 0.2s var(--ease);
     }
-    .ai-action-btn:active { transform: scale(0.95); }
     .ai-action-btn.primary { background: var(--green); color: var(--black); border-color: var(--green); }
 
-    /* ── TYPING INDICATOR ── */
     .typing-indicator {
       display: inline-flex; gap: 4px; padding: 12px 16px;
       background: var(--gray-900); border: 1px solid var(--gray-800);
@@ -558,53 +566,90 @@
       30% { transform: translateY(-6px); opacity: 1; }
     }
 
-    /* ── DRAG HANDLE ── */
-    .drag-handle {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; border-radius: 8px;
-      cursor: grab; color: var(--gray-600); font-size: 18px;
-      touch-action: none; user-select: none;
+    /* ── DASHBOARD EDIT MODE ── */
+    .edit-mode .dashboard-card {
+      position: relative;
+      cursor: grab;
+      touch-action: none;
     }
-    .drag-handle:active { cursor: grabbing; color: var(--gray-400); }
-
-    /* ── LANDSCAPE ── */
-    @media (orientation: landscape) and (max-height: 500px) {
-      :root { --nav-h: 60px; }
-      .hero { padding: 16px 0 12px; }
-      .hero-amount { font-size: 40px; }
-      .cash-main { font-size: 28px; }
-      .bottom-nav { padding: 4px 0 calc(4px + var(--safe-bottom)); }
-      .nav-item { padding: 4px 10px; }
+    .edit-mode .dashboard-card::before {
+      content: '≡';
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 28px; height: 28px;
+      background: var(--gray-800);
+      border: 1px solid var(--gray-700);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-400);
+      font-size: 14px;
+      z-index: 10;
     }
-
-    /* ── SMALL DEVICES ── */
-    @media (max-width: 375px) {
-      .hero-amount { font-size: 48px; }
-      .cash-main { font-size: 32px; }
-      .quick-grid { gap: 6px; }
-      .quick-btn { padding: 12px 4px 10px; }
-      .quick-btn .ico { font-size: 18px; }
-      .quick-btn .lbl { font-size: 9px; }
+    .edit-mode .dashboard-card.dragging {
+      opacity: 0.5;
+      transform: scale(0.98);
     }
-
-    /* ── PWA STANDALONE ── */
-    @media (display-mode: standalone) {
-      body { overscroll-behavior-y: none; }
+    .edit-mode .dashboard-card.hidden-card {
+      opacity: 0.3;
+    }
+    .edit-mode .dashboard-card.hidden-card::after {
+      content: 'Hidden';
+      position: absolute;
+      top: 8px; left: 8px;
+      padding: 2px 6px;
+      background: var(--gray-800);
+      border-radius: 6px;
+      font-size: 9px;
+      color: var(--gray-400);
+      z-index: 10;
+    }
+    .edit-toolbar {
+      position: fixed;
+      bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 16px;
+      z-index: 150;
+      background: var(--gray-900);
+      border: 1px solid var(--gray-700);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+    }
+    .edit-toolbar button {
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: var(--gray-850);
+      border: 1px solid var(--gray-700);
+      color: var(--white);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .edit-toolbar button.primary {
+      background: var(--green);
+      color: var(--black);
+      border-color: var(--green);
     }
   </style>
 </head>
 <body>
 
-  <!-- AUTH GATE -->
-  <div class="auth-gate" id="auth-gate">
-    <div class="auth-icon" id="auth-icon">🔒</div>
-    <div class="auth-title" id="auth-title">Logostics is Locked</div>
-    <div class="auth-sub" id="auth-sub">Authenticating…</div>
-    <div class="auth-actions" id="auth-actions"></div>
+  <!-- REAL APP LOCK SCREEN (redacts content, doesn't navigate) -->
+  <div class="app-lock" id="app-lock">
+    <div class="app-lock-icon" id="lock-icon">🔒</div>
+    <div class="app-lock-title" id="lock-title">Logostics is Locked</div>
+    <div class="app-lock-sub" id="lock-sub">Authenticate to view your financial data</div>
+    <div class="app-lock-actions" id="lock-actions"></div>
   </div>
 
   <!-- TOAST -->
   <div class="toast" id="toast"><span class="dot"></span><span id="toast-text"></span></div>
+
+  <!-- SWIPE BACK INDICATOR -->
+  <div class="swipe-back-indicator" id="swipe-back-indicator"></div>
 
   <!-- MAIN -->
   <div id="app"></div>
@@ -613,7 +658,7 @@
   <button class="privacy-btn" id="privacy-btn" onclick="togglePrivacy()" title="Toggle privacy mode">👁</button>
 
   <!-- AI FAB -->
-  <button class="ai-fab pulse" id="ai-fab" onclick="openAI()" title="Ask Logostics AI">◈</button>
+  <button class="ai-fab" id="ai-fab" onclick="openAI()" title="Ask Logostics AI">◈</button>
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav glass-deep" id="bottom-nav">
@@ -641,8 +686,18 @@
 
   <script>
     /* ═══════════════════════════════════════════════════════════
-       LOGOSTICS FINANCE — COMPLETE IMPLEMENTATION
-       Honest platform detection · Real APIs · No fake iOS chrome
+       LOGOSTICS FINANCE — CRITICAL PATCH
+       Addresses: real auto-lock, real gestures, real patch notes,
+       real widgets + customization architecture.
+
+       HONEST NOTES:
+       - Web/PWA CANNOT access native iOS scene lifecycle.
+       - Web/PWA CANNOT create real Home Screen widgets (those need WidgetKit).
+       - Web/PWA CANNOT use LocalAuthentication (Face ID).
+       - Web/PWA CAN use WebAuthn for passkeys/Face ID on supported browsers.
+       - Web/PWA CAN use visibilitychange + Page Lifecycle API for what iOS Safari exposes.
+       - Web/PWA CAN use touch events for gestures (limited but real).
+       - WidgetKit / LocalAuthentication / scenePhase require the Swift files below.
        ═══════════════════════════════════════════════════════════ */
 
     'use strict';
@@ -650,7 +705,6 @@
     // ═══════════════════════════════════════════════════════════
     //  1. PLATFORM CAPABILITY ENGINE
     // ═══════════════════════════════════════════════════════════
-
     const PlatformCapabilities = (function() {
       function detectEnvironment() {
         const ua = navigator.userAgent || '';
@@ -660,18 +714,13 @@
                              window.navigator.standalone === true;
         const isNativeWrapper = !!(window.webkit && window.webkit.messageHandlers &&
                                    window.webkit.messageHandlers.logostics);
-        const isSafari = /^((?!chrome|android|crios|fxios).)*safari/i.test(ua);
-        const isChromeIOS = /CriOS/.test(ua);
-
         let type = 'web';
         if (isNativeWrapper) type = 'native-ios';
         else if (isIOS && isStandalone) type = 'pwa-ios';
         else if (isIOS) type = 'ios-safari';
         else if (isStandalone) type = 'pwa';
-
-        return { type, isIOS, isStandalone, isSafari, isChromeIOS, isNativeWrapper };
+        return { type, isIOS, isStandalone, isNativeWrapper };
       }
-
       const env = detectEnvironment();
 
       async function checkWebAuthn() {
@@ -685,9 +734,8 @@
           const avail = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
           return {
             available: avail,
-            reason: avail
-              ? 'Platform authenticator available (Face ID / Touch ID / device passcode)'
-              : 'No platform authenticator enrolled on this device'
+            reason: avail ? 'Platform authenticator available'
+                          : 'No platform authenticator enrolled on this device'
           };
         } catch (e) {
           return { available: false, reason: 'WebAuthn check failed: ' + e.message };
@@ -696,39 +744,31 @@
 
       function checkNotifications() {
         if (!('Notification' in window)) {
-          return { supported: false, permission: 'unsupported',
-                   reason: 'Notification API not available in this browser' };
+          return { supported: false, permission: 'unsupported', reason: 'Notification API not available' };
         }
         const perm = Notification.permission;
         const iosSafariNeedsPWA = env.isIOS && !env.isStandalone;
         if (iosSafariNeedsPWA && perm === 'default') {
           return {
-            supported: false,
-            permission: perm,
+            supported: false, permission: perm,
             reason: 'On iOS, web notifications require installing Logostics to the Home Screen (iOS 16.4+)',
             requiresInstall: true
           };
         }
         return {
-          supported: true,
-          permission: perm,
+          supported: true, permission: perm,
           reason: perm === 'granted' ? 'Notifications allowed'
                 : perm === 'denied' ? 'Notifications blocked in browser settings'
                 : 'Not yet decided'
         };
       }
 
-      function checkServiceWorker() {
-        return { supported: 'serviceWorker' in navigator && window.isSecureContext };
-      }
-
       function checkHaptics() {
         const supported = typeof navigator.vibrate === 'function';
         return {
           supported,
-          reason: supported
-            ? 'Vibration API available'
-            : (env.isIOS ? 'iOS Safari does not expose vibration to web apps' : 'Vibration API not available')
+          reason: supported ? 'Vibration API available'
+                            : (env.isIOS ? 'iOS Safari does not expose vibration to web apps' : 'Not available')
         };
       }
 
@@ -740,136 +780,360 @@
       }
 
       function checkStorage() {
-        const result = {
+        return {
           indexedDB: !!window.indexedDB,
           localStorage: (() => { try { localStorage.setItem('__t__', '1'); localStorage.removeItem('__t__'); return true; } catch (e) { return false; } })(),
           cacheAPI: 'caches' in window
         };
-        return result;
       }
 
-      async function checkStorageDetail() {
-        const base = checkStorage();
-        try {
-          if (navigator.storage && navigator.storage.persisted) {
-            base.persistent = await navigator.storage.persisted();
-          }
-          if (navigator.storage && navigator.storage.estimate) {
-            const est = await navigator.storage.estimate();
-            base.estimate = { usage: est.usage, quota: est.quota };
-          }
-        } catch (e) {}
-        return base;
-      }
-
-      function checkNetwork() {
+      // ── Page Lifecycle API (best available on web for app lifecycle) ──
+      function checkPageLifecycle() {
         return {
-          online: navigator.onLine,
-          connection: navigator.connection ? {
-            effectiveType: navigator.connection.effectiveType,
-            downlink: navigator.connection.downlink,
-            rtt: navigator.connection.rtt
-          } : null
+          visibilityAPI: typeof document.visibilityState !== 'undefined',
+          pageHide: 'onpagehide' in window,
+          freezeResume: 'onfreeze' in document,
+          // iOS Safari does NOT fire freeze/resume reliably
+          iosLimitation: env.isIOS,
+          reason: env.isIOS
+            ? 'iOS Safari does not expose native scene lifecycle to web. Using visibilitychange + pagehide as best-effort. Native build uses scenePhase.'
+            : 'Page Lifecycle API available for background detection'
         };
       }
 
       return {
         env,
-        checkWebAuthn,
-        checkNotifications,
-        checkServiceWorker,
-        checkHaptics,
-        checkShare,
-        checkStorage,
-        checkStorageDetail,
-        checkNetwork
+        checkWebAuthn, checkNotifications, checkHaptics, checkShare,
+        checkStorage, checkPageLifecycle
       };
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  2. HAPTICS ABSTRACTION
+    //  2. NATIVE BRIDGE (for when wrapped in a native iOS app)
+    //  Real message-passing to Swift. Honest no-op on web.
     // ═══════════════════════════════════════════════════════════
-    const Haptics = (function() {
-      const supported = typeof navigator.vibrate === 'function';
-      const patterns = {
-        light: 8, medium: 14, heavy: 22,
-        success: [10, 40, 10], warning: [20, 30, 20], error: [20, 30, 20, 30, 20]
-      };
-      function trigger(style) {
-        if (!supported) return false;
-        try { navigator.vibrate(patterns[style] || 10); return true; }
-        catch (e) { return false; }
-      }
-      return {
-        supported,
-        light: () => trigger('light'),
-        medium: () => trigger('medium'),
-        heavy: () => trigger('heavy'),
-        success: () => trigger('success'),
-        warning: () => trigger('warning'),
-        error: () => trigger('error')
-      };
-    })();
+    const NativeBridge = (function() {
+      const available = !!(window.webkit && window.webkit.messageHandlers &&
+                           window.webkit.messageHandlers.logostics);
 
-    // ═══════════════════════════════════════════════════════════
-    //  3. NOTIFICATION MANAGER
-    // ═══════════════════════════════════════════════════════════
-    const NotificationManager = (function() {
-      async function requestPermission() {
-        if (!('Notification' in window)) {
-          return { granted: false, reason: 'Notification API not supported in this browser' };
-        }
-        if (PlatformCapabilities.env.isIOS && !PlatformCapabilities.env.isStandalone) {
-          return {
-            granted: false,
-            reason: 'On iOS, web notifications require installing Logostics to the Home Screen (iOS 16.4+)',
-            requiresInstall: true
-          };
-        }
-        try {
-          const result = await Notification.requestPermission();
-          return { granted: result === 'granted', permission: result };
-        } catch (e) {
-          return { granted: false, reason: 'Permission request failed: ' + e.message };
-        }
-      }
-
-      async function send(title, body, options) {
-        options = options || {};
-        if (!('Notification' in window)) {
-          return { sent: false, reason: 'Notification API not supported', via: 'none' };
-        }
-        if (Notification.permission !== 'granted') {
-          return { sent: false, reason: 'Permission not granted (currently: ' + Notification.permission + ')', via: 'none' };
-        }
-        if ('serviceWorker' in navigator) {
+      function postMessage(method, payload) {
+        if (!available) return Promise.resolve({ supported: false, reason: 'Not running in native wrapper' });
+        return new Promise((resolve) => {
+          const id = 'req_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+          window._logosticsCallbacks = window._logosticsCallbacks || {};
+          window._logosticsCallbacks[id] = resolve;
           try {
-            const reg = await navigator.serviceWorker.ready;
-            if (reg && reg.showNotification) {
-              await reg.showNotification(title, {
-                body, tag: options.tag || 'logostics',
-                silent: options.silent || false, data: options.data || {}
-              });
-              return { sent: true, reason: 'Delivered via service worker', via: 'sw' };
+            window.webkit.messageHandlers.logostics.postMessage({
+              id, method, payload: payload || {}
+            });
+          } catch (e) {
+            resolve({ supported: false, reason: 'Bridge error: ' + e.message });
+          }
+          setTimeout(() => {
+            if (window._logosticsCallbacks[id]) {
+              delete window._logosticsCallbacks[id];
+              resolve({ supported: false, reason: 'Native bridge timed out' });
             }
-          } catch (e) {}
-        }
-        try {
-          const n = new Notification(title, {
-            body, tag: options.tag || 'logostics', silent: options.silent || false
-          });
-          setTimeout(() => { try { n.close(); } catch (e) {} }, 6000);
-          return { sent: true, reason: 'Delivered via Notification constructor', via: 'constructor' };
-        } catch (e) {
-          return { sent: false, reason: 'Notification failed: ' + e.message, via: 'none' };
-        }
+          }, 60000);
+        });
       }
 
-      return { requestPermission, send, getStatus: PlatformCapabilities.checkNotifications };
+      // Called by Swift: window.LogosticsNative.handleResponse(id, result)
+      window.LogosticsNative = {
+        handleResponse(id, result) {
+          if (window._logosticsCallbacks && window._logosticsCallbacks[id]) {
+            window._logosticsCallbacks[id](result);
+            delete window._logosticsCallbacks[id];
+          }
+        },
+        // Called by Swift when scene phase changes (real native lifecycle)
+        onScenePhase(phase) {
+          LifecycleManager.onNativeScenePhase(phase);
+        },
+        // Called by Swift on biometric result
+        onBiometricResult(success, reason) {
+          AppLockManager.onNativeResult(success, reason);
+        }
+      };
+
+      return {
+        available,
+        postMessage,
+        // ── High-level native operations (no-op on web, real on native) ──
+        authenticate: (reason) => postMessage('authenticate', { reason }),
+        getScenePhase: () => postMessage('getScenePhase'),
+        scheduleNotification: (title, body, delay) => postMessage('scheduleNotification', { title, body, delay }),
+        updateWidgetData: (data) => postMessage('updateWidgetData', data),
+        setHaptic: (style) => postMessage('haptic', { style })
+      };
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  4. AUTH MANAGER (real WebAuthn only)
+    //  3. LIFECYCLE MANAGER — Real auto-lock source of truth
+    //  Uses native bridge if available; else visibilitychange + pagehide
+    // ═══════════════════════════════════════════════════════════
+    const LifecycleManager = (function() {
+      let appState = 'active'; // 'active' | 'inactive' | 'background'
+      let lastActive = Date.now();
+      let lastBackground = null;
+      let listeners = [];
+      let webVisibilityHandler = null;
+
+      function notify(event, data) {
+        listeners.forEach(fn => { try { fn(event, data); } catch (e) {} });
+      }
+
+      function setState(newState, source) {
+        if (appState === newState) return;
+        const prev = appState;
+        appState = newState;
+        if (newState === 'active') {
+          lastActive = Date.now();
+        } else if (newState === 'background' || newState === 'inactive') {
+          lastBackground = Date.now();
+        }
+        notify('stateChanged', { from: prev, to: newState, source });
+        // Debug log
+        if (DebugPanel.isEnabled()) DebugPanel.log(`Lifecycle: ${prev} → ${newState} (${source})`);
+      }
+
+      function subscribe(fn) {
+        listeners.push(fn);
+        return () => { listeners = listeners.filter(f => f !== fn); };
+      }
+
+      // Called from native Swift via NativeBridge
+      function onNativeScenePhase(phase) {
+        // phase: 'active' | 'inactive' | 'background'
+        setState(phase, 'native');
+      }
+
+      // Web fallback: uses visibilitychange + pagehide + freeze
+      function installWebFallback() {
+        if (webVisibilityHandler) return;
+        webVisibilityHandler = () => {
+          if (document.visibilityState === 'hidden') {
+            setState('background', 'web-visibility');
+          } else {
+            setState('active', 'web-visibility');
+          }
+        };
+        document.addEventListener('visibilitychange', webVisibilityHandler);
+        window.addEventListener('pagehide', () => setState('background', 'web-pagehide'));
+        window.addEventListener('pageshow', () => setState('active', 'web-pageshow'));
+        // focus/blur is a secondary signal
+        window.addEventListener('blur', () => setState('inactive', 'web-blur'));
+        window.addEventListener('focus', () => setState('active', 'web-focus'));
+      }
+
+      function init() {
+        if (NativeBridge.available) {
+          // Native build: scene lifecycle comes from Swift
+          DebugPanel.log('Lifecycle: native mode (scenePhase)');
+          NativeBridge.getScenePhase().then(r => {
+            if (r && r.phase) setState(r.phase, 'native-init');
+          });
+        } else {
+          DebugPanel.log('Lifecycle: web mode (visibilitychange + pagehide)');
+          installWebFallback();
+        }
+      }
+
+      return {
+        init, subscribe, onNativeScenePhase,
+        getState: () => appState,
+        getLastActive: () => lastActive,
+        getLastBackground: () => lastBackground,
+        isNative: () => NativeBridge.available
+      };
+    })();
+
+    // ═══════════════════════════════════════════════════════════
+    //  4. APP LOCK MANAGER — Real content redaction + auth
+    // ═══════════════════════════════════════════════════════════
+    const AppLockManager = (function() {
+      let locked = false;
+      let pendingResolve = null;
+      let autoLockTimer = null;
+
+      function isAutoLockEnabled() {
+        const prefs = Store.preferences;
+        return prefs.appLockEnabled && prefs.autoLock !== 'off';
+      }
+
+      function getAutoLockTimeout() {
+        return Store.preferences.autoLock || 'immediately';
+      }
+
+      // ── Lock the app (real redaction) ──
+      function lock(reason) {
+        if (locked) return;
+        if (!Store.preferences.appLockEnabled) return;
+        // Only lock if we actually have a credential
+        if (!AuthManager.hasCredential()) return;
+        locked = true;
+        DebugPanel.log('AppLock: LOCKED (' + (reason || 'manual') + ')');
+        showLockScreen(reason);
+      }
+
+      // ── Unlock (requires real auth) ──
+      async function unlock() {
+        const result = await AuthManager.authenticate();
+        if (result.success) {
+          locked = false;
+          hideLockScreen();
+          DebugPanel.log('AppLock: UNLOCKED');
+          return true;
+        }
+        return false;
+      }
+
+      function isLocked() { return locked; }
+
+      function showLockScreen(reason) {
+        const lock = document.getElementById('app-lock');
+        const icon = document.getElementById('lock-icon');
+        const title = document.getElementById('lock-title');
+        const sub = document.getElementById('lock-sub');
+        const actions = document.getElementById('lock-actions');
+
+        lock.classList.add('on');
+        icon.textContent = '🔒';
+
+        PlatformCapabilities.checkWebAuthn().then(cap => {
+          if (cap.available) {
+            title.textContent = 'Logostics is Locked';
+            sub.textContent = reason === 'background'
+              ? 'You left the app. Authenticate to continue.'
+              : 'Authenticate to view your financial data';
+            actions.innerHTML = `
+              <button class="btn btn-primary" id="lock-auth-btn" onclick="AppLockManager.authenticateNow()">Unlock</button>
+              <button class="btn btn-secondary" onclick="AppLockManager.continueWithoutLock()">Continue Without Lock</button>
+            `;
+            // Auto-trigger
+            setTimeout(() => AppLockManager.authenticateNow(), 300);
+          } else {
+            title.textContent = 'App Lock Unavailable';
+            sub.textContent = cap.reason;
+            actions.innerHTML = `
+              <button class="btn btn-primary" onclick="AppLockManager.continueWithoutLock()">Continue</button>
+              <button class="btn btn-secondary" onclick="AppLockManager.disableLock()">Disable App Lock</button>
+            `;
+          }
+        });
+      }
+
+      function hideLockScreen() {
+        document.getElementById('app-lock').classList.remove('on');
+      }
+
+      async function authenticateNow() {
+        const btn = document.getElementById('lock-auth-btn');
+        if (btn) btn.disabled = true;
+        const sub = document.getElementById('lock-sub');
+        if (sub) sub.textContent = 'Waiting for authentication…';
+        haptic('medium');
+
+        // Prefer native biometric if available
+        if (NativeBridge.available) {
+          const result = await NativeBridge.authenticate('Unlock Logostics');
+          if (result && result.success) {
+            locked = false;
+            hideLockScreen();
+            haptic('success');
+            return;
+          }
+          if (sub) sub.textContent = (result && result.reason) || 'Authentication failed';
+          if (btn) btn.disabled = false;
+          return;
+        }
+
+        // Web: WebAuthn
+        const result = await AuthManager.authenticate();
+        if (result.success) {
+          locked = false;
+          hideLockScreen();
+          haptic('success');
+        } else {
+          if (sub) sub.textContent = result.reason;
+          if (btn) btn.disabled = false;
+        }
+      }
+
+      function continueWithoutLock() {
+        locked = false;
+        hideLockScreen();
+      }
+
+      async function disableLock() {
+        await Store.updatePreferences({ appLockEnabled: false, webAuthnCredential: null });
+        AuthManager.setCredential(null);
+        locked = false;
+        hideLockScreen();
+        toast('App lock disabled');
+      }
+
+      // ── Called by native bridge on biometric result ──
+      function onNativeResult(success, reason) {
+        if (success) {
+          locked = false;
+          hideLockScreen();
+        } else {
+          const sub = document.getElementById('lock-sub');
+          if (sub) sub.textContent = reason || 'Authentication failed';
+        }
+      }
+
+      // ── Auto-lock on lifecycle transition ──
+      function onLifecycleChange(from, to) {
+        if (!Store.preferences.appLockEnabled) return;
+        const mode = Store.preferences.autoLock || 'immediately';
+        if (mode === 'off') return;
+
+        if (to === 'background' || to === 'inactive') {
+          // Cancel any pending unlock timer
+          if (autoLockTimer) { clearTimeout(autoLockTimer); autoLockTimer = null; }
+          const timeout = {
+            'immediately': 0,
+            'leaving': 0,
+            '15s': 15000,
+            '30s': 30000,
+            '1m': 60000,
+            '5m': 300000
+          }[mode];
+          if (timeout === 0) {
+            lock('background');
+          } else {
+            // Schedule lock — but if we return before it fires, cancel
+            autoLockTimer = setTimeout(() => {
+              lock('timeout');
+              autoLockTimer = null;
+            }, timeout);
+          }
+        } else if (to === 'active') {
+          // If we're back before the timer fired, cancel it
+          if (autoLockTimer && !locked) {
+            clearTimeout(autoLockTimer);
+            autoLockTimer = null;
+          }
+          // If we're locked, the lock screen is already showing
+        }
+      }
+
+      return {
+        init() {
+          LifecycleManager.subscribe((event, data) => {
+            if (event === 'stateChanged') onLifecycleChange(data.from, data.to);
+          });
+        },
+        lock, unlock, isLocked,
+        authenticateNow, continueWithoutLock, disableLock,
+        onNativeResult
+      };
+    })();
+
+    // ═══════════════════════════════════════════════════════════
+    //  5. AUTH MANAGER (real WebAuthn)
     // ═══════════════════════════════════════════════════════════
     const AuthManager = (function() {
       let credentialIdB64 = null;
@@ -891,20 +1155,16 @@
 
       async function authenticate() {
         const cap = await PlatformCapabilities.checkWebAuthn();
-        if (!cap.available) {
-          return { success: false, supported: false, reason: cap.reason };
-        }
+        if (!cap.available) return { success: false, supported: false, reason: cap.reason };
         if (!credentialIdB64) {
-          return { success: false, supported: true, reason: 'No credential registered. Enable App Lock in Settings first.' };
+          return { success: false, supported: true, reason: 'No credential registered. Enable App Lock first.' };
         }
         try {
           const challenge = new Uint8Array(32);
           crypto.getRandomValues(challenge);
           const assertion = await navigator.credentials.get({
             publicKey: {
-              challenge,
-              timeout: 60000,
-              userVerification: 'required',
+              challenge, timeout: 60000, userVerification: 'required',
               rpId: window.location.hostname || 'localhost',
               allowCredentials: [{
                 id: b64ToBuf(credentialIdB64),
@@ -913,16 +1173,16 @@
               }]
             }
           });
-          if (assertion) return { success: true, supported: true, reason: 'Verified via platform authenticator' };
+          if (assertion) return { success: true, supported: true, reason: 'Verified' };
           return { success: false, supported: true, reason: 'No credential returned' };
         } catch (e) {
           const reasons = {
-            NotAllowedError: 'Authentication was cancelled or timed out',
-            SecurityError: 'WebAuthn security error — ensure HTTPS',
-            InvalidStateError: 'Stored credential is no longer valid — disable and re-enable App Lock',
-            AbortError: 'Authentication aborted'
+            NotAllowedError: 'Cancelled or timed out',
+            SecurityError: 'Security error — ensure HTTPS',
+            InvalidStateError: 'Credential invalid — re-enable App Lock',
+            AbortError: 'Aborted'
           };
-          return { success: false, supported: true, reason: reasons[e.name] || ('WebAuthn error: ' + e.name) };
+          return { success: false, supported: true, reason: reasons[e.name] || ('Error: ' + e.name) };
         }
       }
 
@@ -948,22 +1208,21 @@
                 userVerification: 'required',
                 residentKey: 'preferred'
               },
-              timeout: 60000,
-              attestation: 'none'
+              timeout: 60000, attestation: 'none'
             }
           });
           if (credential && credential.rawId) {
             credentialIdB64 = bufToB64(credential.rawId);
-            return { success: true, supported: true, reason: 'Platform authenticator registered' };
+            return { success: true, supported: true, reason: 'Registered' };
           }
-          return { success: false, supported: true, reason: 'Registration returned no credential' };
+          return { success: false, supported: true, reason: 'No credential returned' };
         } catch (e) {
           const reasons = {
-            NotAllowedError: 'Registration cancelled or timed out',
-            InvalidStateError: 'A credential already exists for this account',
-            SecurityError: 'Security error — ensure HTTPS and correct rpId'
+            NotAllowedError: 'Cancelled or timed out',
+            InvalidStateError: 'Credential already exists',
+            SecurityError: 'Security error — ensure HTTPS'
           };
-          return { success: false, supported: true, reason: reasons[e.name] || ('Registration error: ' + e.name) };
+          return { success: false, supported: true, reason: reasons[e.name] || ('Error: ' + e.name) };
         }
       }
 
@@ -976,12 +1235,109 @@
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  5. STORE — IndexedDB with localStorage prefs + migrations
+    //  6. GESTURE MANAGER — Swipe back, swipe actions, pull to refresh, long press
+    // ═══════════════════════════════════════════════════════════
+    const GestureManager = (function() {
+      const EDGE_THRESHOLD = 30; // px from left edge to start back swipe
+      let activeGesture = null;
+
+      function init() {
+        // ── Swipe-from-left-edge → back ──
+        document.addEventListener('touchstart', (e) => {
+          const t = e.touches[0];
+          if (t.clientX < EDGE_THRESHOLD && !e.target.closest('.sheet')) {
+            activeGesture = {
+              type: 'edge-back',
+              startX: t.clientX,
+              startY: t.clientY,
+              lastX: t.clientX
+            };
+          }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+          if (!activeGesture || activeGesture.type !== 'edge-back') return;
+          const t = e.touches[0];
+          activeGesture.lastX = t.clientX;
+          const dx = t.clientX - activeGesture.startX;
+          if (dx > 10) {
+            document.getElementById('swipe-back-indicator').classList.add('on');
+          }
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+          if (!activeGesture || activeGesture.type !== 'edge-back') return;
+          const dx = activeGesture.lastX - activeGesture.startX;
+          document.getElementById('swipe-back-indicator').classList.remove('on');
+          if (dx > 60) {
+            handleSwipeBack();
+          }
+          activeGesture = null;
+        });
+
+        // ── Long press on activity items → context menu ──
+        document.addEventListener('touchstart', (e) => {
+          const item = e.target.closest('.activity-item');
+          if (!item) return;
+          const id = item.getAttribute('data-tx-id');
+          if (!id) return;
+          const touch = e.touches[0];
+          const startX = touch.clientX;
+          const startY = touch.clientY;
+          let cancelled = false;
+          const cancel = () => { cancelled = true; };
+          const timer = setTimeout(() => {
+            if (cancelled) return;
+            haptic('medium');
+            openTxContextMenu(parseInt(id));
+          }, 500);
+          const onMove = (ev) => {
+            const t = ev.touches[0];
+            if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) {
+              cancel();
+              clearTimeout(timer);
+              document.removeEventListener('touchmove', onMove);
+              document.removeEventListener('touchend', onEnd);
+            }
+          };
+          const onEnd = () => {
+            clearTimeout(timer);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+          };
+          document.addEventListener('touchmove', onMove);
+          document.addEventListener('touchend', onEnd);
+        }, { passive: true });
+      }
+
+      function handleSwipeBack() {
+        haptic('light');
+        // If a sheet is open, close it
+        if (document.getElementById('sheet-overlay').classList.contains('on')) {
+          closeSheet();
+          return;
+        }
+        // If dashboard edit mode is on, exit it
+        if (DashboardManager.isEditMode()) {
+          DashboardManager.exitEditMode();
+          return;
+        }
+        // Otherwise, navigate to home if not already
+        if (currentTab !== 'home') {
+          switchTab('home');
+        }
+      }
+
+      return { init };
+    })();
+
+    // ═══════════════════════════════════════════════════════════
+    //  7. STORE — IndexedDB with persistent prefs
     // ═══════════════════════════════════════════════════════════
     const Store = (function() {
       const DB_NAME = 'LogosticsFinanceDB';
       const DB_VERSION = 1;
-      const PREFS_KEY = 'logostics_finance_prefs_v2';
+      const PREFS_KEY = 'logostics_finance_prefs_v3';
 
       let db = null;
       let useIndexedDB = false;
@@ -1002,19 +1358,30 @@
           privacyMode: false,
           webAuthnCredential: null,
           authTimeout: 'session',
-          protectedPages: { home: false, activity: false, goals: false, analytics: false, settings: false },
+          autoLock: 'immediately',
+          protectedPages: { home: false, activity: false, goals: false, analytics: false },
           appearance: {
             theme: 'dark',
             accent: 'green',
             density: 'comfortable',
-            animationIntensity: 'normal',
-            typographyScale: 1.0,
-            cornerRadius: 22,
-            glassIntensity: 'normal'
+            cornerRadius: 22
           },
           aiEnabled: true,
-          aiPersonality: 'concise',
-          aiHistory: []
+          // ── Dashboard customization (real, persisted) ──
+          dashboard: {
+            order: ['hero', 'cashCard', 'quickActions', 'insights', 'recent'],
+            hidden: [],
+            pinned: []
+          },
+          // ── Widget preferences (for native WidgetKit) ──
+          widgets: {
+            balanceVisible: true,
+            preferredGoalId: null,
+            spendingCategory: 'all',
+            privacyOnLockScreen: true
+          },
+          // ── Patch notes tracking ──
+          lastSeenVersion: null
         },
         lastUpdated: Date.now(),
         _nextId: 1,
@@ -1040,9 +1407,6 @@
             if (!d.objectStoreNames.contains('paychecks')) {
               const s = d.createObjectStore('paychecks', { keyPath: 'id', autoIncrement: true });
               s.createIndex('date', 'date');
-            }
-            if (!d.objectStoreNames.contains('meta')) {
-              d.createObjectStore('meta', { keyPath: 'key' });
             }
           };
           req.onsuccess = (e) => { db = e.target.result; useIndexedDB = true; resolve(db); };
@@ -1109,6 +1473,16 @@
             const p = JSON.parse(raw);
             state.preferences = { ...state.preferences, ...(p.preferences || {}) };
             state.incomeSettings = { ...state.incomeSettings, ...(p.incomeSettings || {}) };
+            // Deep-merge nested
+            if (p.preferences && p.preferences.dashboard) {
+              state.preferences.dashboard = { ...state.preferences.dashboard, ...p.preferences.dashboard };
+            }
+            if (p.preferences && p.preferences.appearance) {
+              state.preferences.appearance = { ...state.preferences.appearance, ...p.preferences.appearance };
+            }
+            if (p.preferences && p.preferences.widgets) {
+              state.preferences.widgets = { ...state.preferences.widgets, ...p.preferences.widgets };
+            }
           }
         } catch (e) {}
       }
@@ -1145,13 +1519,35 @@
         const allIds = [...state.transactions, ...state.goals, ...state.paychecks].map(x => x.id || 0);
         state._nextId = (Math.max(0, ...allIds) || 0) + 1;
         state.lastUpdated = Date.now();
+        // Push widget data to native
+        pushWidgetData();
       }
 
       function notify() {
         state.lastUpdated = Date.now();
         savePrefs();
+        // Push to native widget
+        pushWidgetData();
         state._listeners.forEach(fn => { try { fn(snapshot()); } catch (e) {} });
       }
+
+      function pushWidgetData() {
+        if (!NativeBridge.available) return;
+        const widgetData = {
+          balance: state.balance,
+          balanceVisible: state.preferences.widgets.balanceVisible,
+          privacyOnLockScreen: state.preferences.widgets.privacyOnLockScreen,
+          goals: state.goals.map(g => ({
+            id: g.id, name: g.name, current: g.current, target: g.target
+          })),
+          preferredGoalId: state.preferences.widgets.preferredGoalId,
+          nextPaycheck: computePaycheckEstimate().takeHome,
+          recentSpending: computeTotalSpending(7),
+          lastUpdated: state.lastUpdated
+        };
+        NativeBridge.updateWidgetData(widgetData);
+      }
+
       function subscribe(fn) {
         state._listeners.push(fn);
         return () => { state._listeners = state._listeners.filter(f => f !== fn); };
@@ -1164,7 +1560,7 @@
           goals: [...state.goals],
           recurringExpenses: [...state.recurringExpenses],
           incomeSettings: { ...state.incomeSettings },
-          preferences: { ...state.preferences },
+          preferences: JSON.parse(JSON.stringify(state.preferences)),
           lastUpdated: state.lastUpdated,
           storageMode: useIndexedDB ? 'indexeddb' : 'memory'
         };
@@ -1235,8 +1631,7 @@
       async function addGoal(g) {
         const goal = {
           id: state._nextId++,
-          name: g.name,
-          emoji: g.emoji || '◈',
+          name: g.name, emoji: g.emoji || '◈',
           target: Math.abs(g.target),
           current: Math.abs(g.current || 0),
           targetDate: g.targetDate || null,
@@ -1270,37 +1665,6 @@
         return false;
       }
       function getGoals() { return [...state.goals]; }
-
-      async function addPaycheck(p) {
-        const pc = {
-          id: state._nextId++,
-          date: p.date || new Date().toISOString(),
-          gross: p.gross || 0,
-          takeHome: p.takeHome || 0,
-          expected: p.expected || 0,
-          hours: p.hours || 0,
-          createdAt: new Date().toISOString()
-        };
-        state.paychecks.unshift(pc);
-        if (pc.takeHome > 0) {
-          state.balance += pc.takeHome;
-          const t = {
-            id: state._nextId++,
-            type: 'income', amount: pc.takeHome,
-            category: 'paycheck', description: 'Paycheck',
-            date: pc.date, account: 'cash',
-            createdAt: new Date().toISOString()
-          };
-          state.transactions.unshift(t);
-          if (useIndexedDB) await dbAdd('transactions', t);
-          else memory.transactions.unshift(t);
-        }
-        if (useIndexedDB) await dbAdd('paychecks', pc);
-        else memory.paychecks.unshift(pc);
-        notify();
-        return pc;
-      }
-      function getPaychecks() { return [...state.paychecks]; }
 
       function updateIncomeSettings(s) {
         state.incomeSettings = { ...state.incomeSettings, ...s };
@@ -1411,7 +1775,6 @@
         init, subscribe, getSnapshot: snapshot,
         addTransaction, updateTransaction, deleteTransaction, getTransactions,
         addGoal, updateGoal, deleteGoal, getGoals,
-        addPaycheck, getPaychecks,
         updateIncomeSettings, updatePreferences,
         computePaycheckEstimate, computeGoalProgress, computeProjectedBalance,
         computeSpendingByCategory, computeTotalSpending, computeTotalIncome,
@@ -1422,15 +1785,226 @@
         get goals() { return [...state.goals]; },
         get paychecks() { return [...state.paychecks]; },
         get incomeSettings() { return { ...state.incomeSettings }; },
-        get preferences() { return { ...state.preferences }; }
+        get preferences() { return JSON.parse(JSON.stringify(state.preferences)); }
       };
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  6. AI AGENT — Local, tool-based, no fake responses
+    //  8. DASHBOARD MANAGER — Real reorder + hide with persistence
+    // ═══════════════════════════════════════════════════════════
+    const DashboardManager = (function() {
+      let editMode = false;
+      let draggedCard = null;
+      let dragStartY = 0;
+
+      const CARD_LABELS = {
+        hero: 'Balance Header',
+        cashCard: 'Live Cash Card',
+        quickActions: 'Quick Actions',
+        insights: 'Insights',
+        recent: 'Recent Activity'
+      };
+
+      function getConfig() {
+        return Store.preferences.dashboard || {
+          order: ['hero', 'cashCard', 'quickActions', 'insights', 'recent'],
+          hidden: [], pinned: []
+        };
+      }
+
+      async function saveConfig(cfg) {
+        await Store.updatePreferences({ dashboard: cfg });
+      }
+
+      function isEditMode() { return editMode; }
+
+      function enterEditMode() {
+        editMode = true;
+        render();
+        toast('Edit mode — drag to reorder, tap ≡ to hide');
+      }
+
+      function exitEditMode() {
+        editMode = false;
+        render();
+        toast('Layout saved');
+      }
+
+      async function toggleCardVisibility(cardId) {
+        const cfg = getConfig();
+        const hidden = new Set(cfg.hidden || []);
+        if (hidden.has(cardId)) hidden.delete(cardId);
+        else hidden.add(cardId);
+        cfg.hidden = Array.from(hidden);
+        await saveConfig(cfg);
+        render();
+      }
+
+      async function reorder(newOrder) {
+        const cfg = getConfig();
+        cfg.order = newOrder;
+        await saveConfig(cfg);
+      }
+
+      // ── Touch-based drag for reorder (web) ──
+      function startDrag(e, cardId) {
+        if (!editMode) return;
+        draggedCard = cardId;
+        dragStartY = e.touches ? e.touches[0].clientY : e.clientY;
+        const el = document.querySelector(`[data-dash-card="${cardId}"]`);
+        if (el) el.classList.add('dragging');
+        haptic('medium');
+      }
+
+      function onDragMove(e) {
+        if (!draggedCard) return;
+        e.preventDefault();
+        const y = e.touches ? e.touches[0].clientY : e.clientY;
+        const el = document.elementFromPoint(
+          e.touches ? e.touches[0].clientX : e.clientX,
+          y
+        );
+        const target = el ? el.closest('[data-dash-card]') : null;
+        if (target && target.dataset.dashCard !== draggedCard) {
+          const targetId = target.dataset.dashCard;
+          const cfg = getConfig();
+          const order = [...cfg.order];
+          const fromIdx = order.indexOf(draggedCard);
+          const toIdx = order.indexOf(targetId);
+          if (fromIdx >= 0 && toIdx >= 0) {
+            order.splice(fromIdx, 1);
+            order.splice(toIdx, 0, draggedCard);
+            cfg.order = order;
+            saveConfig(cfg);
+            render();
+            // Re-add dragging class after re-render
+            const newEl = document.querySelector(`[data-dash-card="${draggedCard}"]`);
+            if (newEl) newEl.classList.add('dragging');
+          }
+        }
+      }
+
+      function endDrag() {
+        if (draggedCard) {
+          const el = document.querySelector(`[data-dash-card="${draggedCard}"]`);
+          if (el) el.classList.remove('dragging');
+          draggedCard = null;
+          haptic('success');
+        }
+      }
+
+      return {
+        getConfig, saveConfig, isEditMode,
+        enterEditMode, exitEditMode, toggleCardVisibility, reorder,
+        startDrag, onDragMove, endDrag,
+        CARD_LABELS
+      };
+    })();
+
+    // ═══════════════════════════════════════════════════════════
+    //  9. PATCH NOTES — Data-driven, version tracking
+    // ═══════════════════════════════════════════════════════════
+    const PatchNotes = (function() {
+      const CURRENT_VERSION = '1.4.0';
+
+      // In a real deployment, this would be fetched from patch-notes.json
+      const NOTES = [
+        {
+          version: '1.4.0',
+          date: '2026-10-03',
+          title: 'Real iPhone Integration',
+          new: [
+            'Real auto-lock when leaving the app',
+            'Swipe-from-edge navigation',
+            'Long-press transaction context menus',
+            'Dashboard edit mode with real reordering',
+            'Data-driven patch notes system',
+            'Widget preference architecture (native WidgetKit)'
+          ],
+          improved: [
+            'Lifecycle detection via native scenePhase (native) or visibilitychange (web)',
+            'Content redaction when locked instead of page navigation',
+            'Auto-lock settings with granular timeouts'
+          ],
+          fixed: [
+            'Auto-lock no longer relies on JavaScript timers alone',
+            'Content is actually hidden when locked, not just navigated away',
+            'Gesture handling now uses edge detection'
+          ],
+          security: [
+            'WebAuthn used for all app lock authentication',
+            'No biometric data stored anywhere in the app'
+          ],
+          ios: [
+            'Native Swift files provided for scenePhase, LocalAuthentication, WidgetKit',
+            'App Intents architecture ready for Siri integration'
+          ]
+        },
+        {
+          version: '1.3.0',
+          date: '2026-09-15',
+          title: 'AI Assistant',
+          new: [
+            'Built-in AI assistant with tool-based data access',
+            'Ask AI about transactions via long press',
+            'AI can navigate and log transactions (with confirmation)'
+          ],
+          improved: [
+            'Better insight generation',
+            'Faster chart rendering'
+          ],
+          fixed: [
+            'Storage fallback when IndexedDB blocked'
+          ]
+        }
+      ];
+
+      function getCurrentVersion() { return CURRENT_VERSION; }
+      function getAll() { return NOTES; }
+      function getLatest() { return NOTES[0]; }
+
+      function hasUnseenVersion() {
+        const lastSeen = Store.preferences.lastSeenVersion;
+        return lastSeen !== CURRENT_VERSION;
+      }
+
+      async function markSeen() {
+        await Store.updatePreferences({ lastSeenVersion: CURRENT_VERSION });
+      }
+
+      return { getCurrentVersion, getAll, getLatest, hasUnseenVersion, markSeen };
+    })();
+
+    // ═══════════════════════════════════════════════════════════
+    //  10. DEBUG PANEL — Developer-only diagnostics
+    // ═══════════════════════════════════════════════════════════
+    const DebugPanel = (function() {
+      const STORAGE_KEY = 'logostics_debug_enabled';
+      let enabled = false;
+      const logs = [];
+
+      try { enabled = localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) {}
+
+      function isEnabled() { return enabled; }
+      function setEnabled(v) {
+        enabled = v;
+        try { localStorage.setItem(STORAGE_KEY, v ? '1' : '0'); } catch (e) {}
+      }
+      function log(msg) {
+        const entry = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        logs.push(entry);
+        if (logs.length > 100) logs.shift();
+        if (enabled) console.log('[Logostics]', msg);
+      }
+      function getLogs() { return [...logs]; }
+
+      return { isEnabled, setEnabled, log, getLogs };
+    })();
+
+    // ═══════════════════════════════════════════════════════════
+    //  11. AI AGENT
     // ═══════════════════════════════════════════════════════════
     const AIAgent = (function() {
-      // ── Tools the AI can call. Each returns REAL data from the app. ──
       const tools = {
         getBalance() {
           const snap = Store.getSnapshot();
@@ -1443,9 +2017,7 @@
             description: t.description, date: t.date
           }));
         },
-        getSpendingByCategory(days) {
-          return Store.computeSpendingByCategory(days || 7);
-        },
+        getSpendingByCategory(days) { return Store.computeSpendingByCategory(days || 7); },
         getTotalSpending(days) { return Store.computeTotalSpending(days || 7); },
         getTotalIncome(days) { return Store.computeTotalIncome(days || 7); },
         getSavingsRate() { return Store.computeSavingsRate(); },
@@ -1459,137 +2031,63 @@
         getProjectedBalance() { return Store.computeProjectedBalance(); },
         getLargestCategory() { return Store.computeLargestCategory(); },
         getAverageTransaction() { return Store.computeAverageTransaction(); },
-        getInsights() { return Store.generateInsights(); },
-        getCapabilities() {
-          return {
-            env: PlatformCapabilities.env.type,
-            notifications: PlatformCapabilities.checkNotifications(),
-            webauthn: 'check deferred',
-            haptics: PlatformCapabilities.checkHaptics(),
-            share: PlatformCapabilities.checkShare()
-          };
-        }
+        getInsights() { return Store.generateInsights(); }
       };
 
-      // ── Intent matcher: maps user input → tool calls + response phrasing. ──
       function matchIntent(q) {
         const lower = q.toLowerCase().trim();
 
-        // Navigation intents
         if (/^(take me|go|open|show me|navigate to|jump to)/.test(lower)) {
           if (/savings|goal/.test(lower)) return { action: 'navigate', target: 'goals', reply: 'Opening Goals.' };
-          if (/analytics|charts|graphs|spending pattern/.test(lower)) return { action: 'navigate', target: 'analytics', reply: 'Opening Analytics.' };
-          if (/activity|transactions|history/.test(lower)) return { action: 'navigate', target: 'activity', reply: 'Opening Activity.' };
-          if (/home|dashboard|balance/.test(lower)) return { action: 'navigate', target: 'home', reply: 'Opening Home.' };
-          if (/settings|preferences|config/.test(lower)) return { action: 'navigate', target: 'settings', reply: 'Opening Settings.' };
+          if (/analytics|charts|graphs/.test(lower)) return { action: 'navigate', target: 'analytics', reply: 'Opening Analytics.' };
+          if (/activity|transactions/.test(lower)) return { action: 'navigate', target: 'activity', reply: 'Opening Activity.' };
+          if (/home|dashboard/.test(lower)) return { action: 'navigate', target: 'home', reply: 'Opening Home.' };
+          if (/settings|preferences/.test(lower)) return { action: 'navigate', target: 'settings', reply: 'Opening Settings.' };
         }
         if (/^(add|log|record)\s+\$?\d/.test(lower)) {
           const amtMatch = lower.match(/\$?(\d+(\.\d+)?)/);
           if (amtMatch) {
             const amt = parseFloat(amtMatch[1]);
-            const isIncome = /income|paycheck|received|got paid/.test(lower);
+            const isIncome = /income|paycheck|received/.test(lower);
             return { action: 'confirm-add', amount: amt, type: isIncome ? 'income' : 'expense',
-              reply: `I can log a ${isIncome ? 'income' : 'expense'} of ${fmt(amt)}. Confirm?` };
+              reply: `Log a ${isIncome ? 'income' : 'expense'} of ${fmt(amt)}?` };
           }
         }
-
-        // Question intents
-        if (/(how much|what'?s|what is).*(cash|balance|have|money)/.test(lower)) {
-          return { action: 'answer', tool: 'getBalance' };
-        }
-        if (/(how much|what).*(spend|spent|spending)/.test(lower)) {
-          return { action: 'answer', tool: 'getTotalSpending', args: [7], template: 'spending7' };
-        }
-        if (/(how much|what).*(income|earn|earned|made)/.test(lower)) {
-          return { action: 'answer', tool: 'getTotalIncome', args: [30], template: 'income30' };
-        }
-        if (/(savings rate|saving rate)/.test(lower)) {
-          return { action: 'answer', tool: 'getSavingsRate', template: 'savingsRate' };
-        }
-        if (/goal/.test(lower)) {
-          return { action: 'answer', tool: 'getGoals', template: 'goals' };
-        }
-        if (/(projected|projection|after.*paycheck|next paycheck)/.test(lower)) {
-          return { action: 'answer', tool: 'getProjectedBalance', template: 'projected' };
-        }
-        if (/(top|largest|biggest).*(categor|spend)/.test(lower)) {
-          return { action: 'answer', tool: 'getLargestCategory', template: 'largestCat' };
-        }
-        if (/(average|avg).*(transaction|purchase)/.test(lower)) {
-          return { action: 'answer', tool: 'getAverageTransaction', template: 'avgTx' };
-        }
-        if (/(insight|summary|overview|how am i doing)/.test(lower)) {
-          return { action: 'answer', tool: 'getInsights', template: 'insights' };
-        }
-        if (/(what|which).*(category|categories)/.test(lower)) {
-          return { action: 'answer', tool: 'getSpendingByCategory', args: [30], template: 'byCategory' };
-        }
-        if (/(paycheck|pay|wage|hourly)/.test(lower)) {
-          return { action: 'answer', tool: 'getPaycheckEstimate', template: 'paycheck' };
-        }
-        if (/(capabilit|what can you|device|platform)/.test(lower)) {
-          return { action: 'answer', tool: 'getCapabilities', template: 'capabilities' };
-        }
-        if (/^(hi|hey|hello|yo|sup|what'?s up)/.test(lower)) {
-          return { action: 'greeting' };
-        }
-        if (/(help|what can you do)/.test(lower)) {
-          return { action: 'help' };
-        }
-
+        if (/(how much|what'?s|what is).*(cash|balance|have|money)/.test(lower)) return { action: 'answer', tool: 'getBalance' };
+        if (/(how much|what).*(spend|spent|spending)/.test(lower)) return { action: 'answer', tool: 'getTotalSpending', args: [7], template: 'spending7' };
+        if (/(how much|what).*(income|earn)/.test(lower)) return { action: 'answer', tool: 'getTotalIncome', args: [30], template: 'income30' };
+        if (/goal/.test(lower)) return { action: 'answer', tool: 'getGoals', template: 'goals' };
+        if (/(projected|next paycheck)/.test(lower)) return { action: 'answer', tool: 'getProjectedBalance', template: 'projected' };
+        if (/(top|largest|biggest).*(categor)/.test(lower)) return { action: 'answer', tool: 'getLargestCategory', template: 'largestCat' };
+        if (/(average|avg).*(transaction)/.test(lower)) return { action: 'answer', tool: 'getAverageTransaction', template: 'avgTx' };
+        if (/(insight|summary|overview)/.test(lower)) return { action: 'answer', tool: 'getInsights', template: 'insights' };
+        if (/^(hi|hey|hello)/.test(lower)) return { action: 'greeting' };
+        if (/help/.test(lower)) return { action: 'help' };
         return { action: 'unknown' };
       }
 
       function formatToolResult(template, result) {
         switch (template) {
-          case 'spending7':
-            return `You've spent ${fmt(result)} in the last 7 days.`;
-          case 'income30':
-            return `You've earned ${fmt(result)} in the last 30 days.`;
-          case 'savingsRate':
-            return `Your current savings rate is ${result}% over the last 30 days.`;
+          case 'spending7': return `You've spent ${fmt(result)} in the last 7 days.`;
+          case 'income30': return `You've earned ${fmt(result)} in the last 30 days.`;
           case 'goals':
             if (!result.length) return "You don't have any savings goals set yet.";
-            return result.map(g =>
-              `"${g.name}": ${fmt(g.current)} of ${fmt(g.target)} — ${g.pct}% complete, ${fmt(g.remaining)} remaining.`
-            ).join('\n');
-          case 'projected':
-            return `Your projected balance after your next paycheck is ${fmt(result)}.`;
-          case 'largestCat':
-            if (result.amount === 0) return 'No spending data yet.';
-            return `Your largest spending category is "${result.category}" at ${fmt(result.amount)}.`;
-          case 'avgTx':
-            return `Your average transaction is ${fmt(result)}.`;
-          case 'insights':
-            if (!result.length) return 'No insights yet — add some transactions.';
-            return result.map(i => i.txt.replace(/<[^>]*>/g, '')).join('\n');
-          case 'byCategory':
-            const entries = Object.entries(result);
-            if (!entries.length) return 'No spending to break down.';
-            return entries.sort((a, b) => b[1] - a[1])
-              .map(([cat, amt]) => `${cat}: ${fmt(amt)}`)
-              .join('\n');
-          case 'paycheck':
-            return `Estimated paycheck: gross ${fmt(result.gross)}, withholding ${fmt(result.withholding)}, take-home ${fmt(result.takeHome)}.`;
-          case 'capabilities':
-            const parts = [`Running as: ${result.env}`];
-            parts.push(`Notifications: ${result.notifications.supported ? result.notifications.permission : 'unsupported'}`);
-            parts.push(`Haptics: ${result.haptics.supported ? 'available' : 'unavailable'}`);
-            parts.push(`Share: ${result.share.supported ? 'available' : 'unavailable'}`);
-            return parts.join('\n');
-          default:
-            return typeof result === 'string' ? result : JSON.stringify(result, null, 2);
+            return result.map(g => `"${g.name}": ${fmt(g.current)} of ${fmt(g.target)} — ${g.pct}% complete.`).join('\n');
+          case 'projected': return `Your projected balance is ${fmt(result)}.`;
+          case 'largestCat': return result.amount === 0 ? 'No spending yet.' : `Largest category: "${result.category}" at ${fmt(result.amount)}.`;
+          case 'avgTx': return `Average transaction: ${fmt(result)}.`;
+          case 'insights': return result.map(i => i.txt.replace(/<[^>]*>/g, '')).join('\n');
+          default: return typeof result === 'string' ? result : JSON.stringify(result);
         }
       }
 
       async function answer(question) {
         const intent = matchIntent(question);
-
         if (intent.action === 'greeting') {
           return { reply: "Hey. Ask me about your balance, spending, goals, or say 'take me to analytics'." };
         }
         if (intent.action === 'help') {
-          return { reply: "I can:\n• Answer questions about your balance, spending, income, goals\n• Navigate between screens\n• Log transactions (with your confirmation)\n• Explain your data patterns\n\nTry: \"How much have I spent this week?\"" };
+          return { reply: "I can answer questions about your balance, spending, income, goals, navigate between screens, and log transactions (with your confirmation)." };
         }
         if (intent.action === 'navigate') {
           setTimeout(() => {
@@ -1605,15 +2103,14 @@
               label: `Log ${fmt(intent.amount)} ${intent.type}`,
               execute: async () => {
                 await Store.addTransaction({
-                  type: intent.type,
-                  amount: intent.amount,
+                  type: intent.type, amount: intent.amount,
                   description: 'Logged via AI',
                   category: intent.type === 'income' ? 'other' : 'other'
                 });
                 haptic('success');
                 toast(`${intent.type === 'income' ? 'Income' : 'Expense'} logged`);
                 render();
-                return `Logged ${fmt(intent.amount)} as ${intent.type}.`;
+                return `Logged ${fmt(intent.amount)}.`;
               }
             }
           };
@@ -1630,27 +2127,23 @@
             return { reply: "I ran into an error reading that data." };
           }
         }
-        return {
-          reply: "I'm not sure I understood that. Try asking about your balance, spending, goals, or say 'take me to analytics'."
-        };
+        return { reply: "I'm not sure I understood. Try asking about your balance, spending, or goals." };
       }
 
-      return { answer, tools };
+      return { answer };
     })();
 
     // ═══════════════════════════════════════════════════════════
-    //  7. UI LAYER
+    //  12. UI LAYER
     // ═══════════════════════════════════════════════════════════
 
     let currentTab = 'home';
     let privacyMode = false;
     let authenticated = false;
     let sheetReturnFocus = null;
-    let aiChat = []; // { role, text, confirmAction }
+    let aiChat = [];
     let aiThinking = false;
-    let unlockedPages = {}; // { pageName: expiryTimestamp }
 
-    /* ── HELPERS ── */
     function fmt(n) {
       if (n === undefined || n === null) return '$0.00';
       const abs = Math.abs(n);
@@ -1683,7 +2176,13 @@
 
     function haptic(style) {
       if (!Store.preferences.hapticsEnabled) return;
-      Haptics[style] ? Haptics[style]() : Haptics.light();
+      if (typeof navigator.vibrate === 'function') {
+        const patterns = { light: 8, medium: 14, heavy: 22, success: [10, 40, 10], error: [20, 30, 20, 30, 20] };
+        try { navigator.vibrate(patterns[style] || 10); } catch (e) {}
+      }
+      if (NativeBridge.available) {
+        NativeBridge.setHaptic(style);
+      }
     }
 
     function toast(msg) {
@@ -1709,108 +2208,6 @@
       }
     }
 
-    /* ── AUTH ── */
-    async function checkAppLock() {
-      if (!Store.preferences.appLockEnabled) { authenticated = true; return; }
-      await showAuthGate('Logostics is Locked', 'Authenticating…');
-    }
-    async function showAuthGate(title, subtitle, onSuccess) {
-      const gate = document.getElementById('auth-gate');
-      const icon = document.getElementById('auth-icon');
-      const titleEl = document.getElementById('auth-title');
-      const subEl = document.getElementById('auth-sub');
-      const actions = document.getElementById('auth-actions');
-      gate.classList.add('on');
-      titleEl.textContent = title;
-      subEl.textContent = subtitle;
-
-      const cap = await PlatformCapabilities.checkWebAuthn();
-      if (!cap.available) {
-        icon.textContent = '⚠';
-        icon.classList.remove('available');
-        titleEl.textContent = 'Authentication Unavailable';
-        subEl.textContent = cap.reason + ' You can continue without lock, or disable it in Settings.';
-        actions.innerHTML = `
-          <button class="btn btn-primary" onclick="skipLock()">Continue Without Lock</button>
-          <button class="btn btn-secondary" onclick="disableLockAndContinue()">Disable App Lock</button>
-        `;
-        return;
-      }
-      icon.textContent = '🔒';
-      icon.classList.add('available');
-      actions.innerHTML = `
-        <button class="btn btn-primary" id="auth-btn" onclick="doAuthenticate(${onSuccess ? 'true' : 'false'})">Unlock</button>
-        <button class="btn btn-secondary" onclick="skipLock()">Cancel</button>
-      `;
-      // Auto-trigger
-      setTimeout(() => doAuthenticate(!!onSuccess), 400);
-    }
-    let pendingAuthSuccess = null;
-    async function doAuthenticate(isPageUnlock) {
-      const sub = document.getElementById('auth-sub');
-      const btn = document.getElementById('auth-btn');
-      if (btn) btn.disabled = true;
-      sub.textContent = 'Waiting for device authentication…';
-      haptic('medium');
-      const result = await AuthManager.authenticate();
-      if (result.success) {
-        sub.textContent = 'Authenticated';
-        haptic('success');
-        setTimeout(() => {
-          document.getElementById('auth-gate').classList.remove('on');
-          if (isPageUnlock) {
-            if (pendingAuthSuccess) pendingAuthSuccess();
-            pendingAuthSuccess = null;
-          } else {
-            authenticated = true;
-            render();
-          }
-        }, 250);
-      } else {
-        sub.textContent = result.reason;
-        haptic('error');
-        if (btn) btn.disabled = false;
-      }
-    }
-    function skipLock() {
-      document.getElementById('auth-gate').classList.remove('on');
-      authenticated = true;
-      render();
-      toast('Lock skipped for this session');
-    }
-    async function disableLockAndContinue() {
-      await Store.updatePreferences({ appLockEnabled: false });
-      document.getElementById('auth-gate').classList.remove('on');
-      authenticated = true;
-      render();
-      toast('App lock disabled');
-    }
-
-    // ── Per-page protection ──
-    function isPageProtected(tab) {
-      const prefs = Store.preferences.protectedPages || {};
-      return !!(Store.preferences.appLockEnabled && prefs[tab]);
-    }
-    function isPageUnlocked(tab) {
-      const exp = unlockedPages[tab];
-      if (!exp) return false;
-      if (exp === 'session') return true;
-      return Date.now() < exp;
-    }
-    function unlockPage(tab) {
-      const timeout = Store.preferences.authTimeout || 'session';
-      if (timeout === 'session') unlockedPages[tab] = 'session';
-      else if (timeout === '30s') unlockedPages[tab] = Date.now() + 30000;
-      else if (timeout === '1m') unlockedPages[tab] = Date.now() + 60000;
-      else if (timeout === '5m') unlockedPages[tab] = Date.now() + 300000;
-      else if (timeout === 'always') unlockedPages[tab] = Date.now() + 1000;
-      else unlockedPages[tab] = 'session';
-    }
-    function clearUnlockedPages() {
-      unlockedPages = {};
-    }
-
-    /* ── PRIVACY ── */
     function togglePrivacy() {
       privacyMode = !privacyMode;
       const btn = document.getElementById('privacy-btn');
@@ -1821,252 +2218,136 @@
       toast(privacyMode ? 'Privacy mode on' : 'Privacy mode off');
     }
 
-    // Auto-clear unlocked pages on backgrounding
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        const timeout = Store.preferences.authTimeout || 'session';
-        if (timeout === 'background' || timeout === 'always') {
-          clearUnlockedPages();
-        }
-      }
-    });
-
-    /* ── AI CHAT ── */
-    function openAI() {
-      haptic('medium');
-      aiChat = aiChat.slice(-40); // bound history
-      openSheet(`
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <div class="sheet-title" style="margin:0;text-align:left;">Ask Logostics</div>
-          <button onclick="clearAIChat()" style="background:var(--gray-850);border:1px solid var(--gray-700);color:var(--gray-400);padding:6px 10px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Clear</button>
-        </div>
-        <div id="ai-chat-log" style="max-height:55vh;overflow-y:auto;margin-bottom:12px;padding-right:4px;">
-          ${aiChat.length === 0 ? `
-            <div class="ai-chat-bubble ai-bubble-system">Ask about your money, goals, or say "take me to analytics".</div>
-            <div class="ai-chat-bubble ai-bubble-assistant">
-              Try:<br>
-              • "How much cash do I have?"<br>
-              • "How much have I spent this week?"<br>
-              • "Show my goals"<br>
-              • "Add $12 expense"
-            </div>
-          ` : aiChat.map(m => renderAIBubble(m)).join('')}
-        </div>
-        <form onsubmit="submitAI(event)" style="display:flex;gap:8px;">
-          <input class="field-input" id="ai-input" placeholder="Ask anything…" autocomplete="off" style="flex:1;">
-          <button type="submit" class="btn btn-green" style="width:auto;padding:14px 22px;">↑</button>
-        </form>
-      `);
-      setTimeout(() => {
-        const log = document.getElementById('ai-chat-log');
-        if (log) log.scrollTop = log.scrollHeight;
-        document.getElementById('ai-input')?.focus();
-      }, 100);
-    }
-
-    function renderAIBubble(m) {
-      if (m.role === 'user') {
-        return `<div class="ai-chat-bubble ai-bubble-user">${escapeHtml(m.text)}</div>`;
-      }
-      if (m.role === 'system') {
-        return `<div class="ai-chat-bubble ai-bubble-system">${escapeHtml(m.text)}</div>`;
-      }
-      let confirmHtml = '';
-      if (m.confirmAction) {
-        confirmHtml = `
-          <div class="ai-action-row">
-            <button class="ai-action-btn primary" onclick="executeAIConfirm(${m.id})">${escapeHtml(m.confirmAction.label)}</button>
-            <button class="ai-action-btn" onclick="dismissAIConfirm(${m.id})">Cancel</button>
-          </div>
-        `;
-      }
-      return `<div class="ai-chat-bubble ai-bubble-assistant">${escapeHtml(m.text).replace(/\n/g, '<br>')}${confirmHtml}</div>`;
-    }
-
-    async function submitAI(e) {
-      if (e) e.preventDefault();
-      const input = document.getElementById('ai-input');
-      const q = input.value.trim();
-      if (!q || aiThinking) return;
-      input.value = '';
-
-      aiChat.push({ role: 'user', text: q });
-      refreshAIChatLog();
-
-      aiThinking = true;
-      // Typing indicator
-      const log = document.getElementById('ai-chat-log');
-      if (log) {
-        const typing = document.createElement('div');
-        typing.id = 'ai-typing';
-        typing.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-        log.appendChild(typing);
-        log.scrollTop = log.scrollHeight;
-      }
-
-      try {
-        const response = await AIAgent.answer(q);
-        const msg = {
-          role: 'assistant',
-          text: response.reply,
-          id: Date.now() + Math.random(),
-          confirmAction: response.confirmAction || null
-        };
-        aiChat.push(msg);
-      } catch (err) {
-        aiChat.push({ role: 'assistant', text: 'Sorry, something went wrong.' });
-      } finally {
-        aiThinking = false;
-        document.getElementById('ai-typing')?.remove();
-        refreshAIChatLog();
-      }
-    }
-
-    function refreshAIChatLog() {
-      const log = document.getElementById('ai-chat-log');
-      if (!log) return;
-      log.innerHTML = aiChat.map(m => renderAIBubble(m)).join('');
-      log.scrollTop = log.scrollHeight;
-    }
-
-    async function executeAIConfirm(id) {
-      const m = aiChat.find(x => x.id === id);
-      if (!m || !m.confirmAction) return;
-      const action = m.confirmAction;
-      m.confirmAction = null;
-      refreshAIChatLog();
-      try {
-        const result = await action.execute();
-        aiChat.push({ role: 'assistant', text: result || 'Done.' });
-      } catch (e) {
-        aiChat.push({ role: 'assistant', text: 'Action failed.' });
-      }
-      refreshAIChatLog();
-    }
-    function dismissAIConfirm(id) {
-      const m = aiChat.find(x => x.id === id);
-      if (m) m.confirmAction = null;
-      aiChat.push({ role: 'system', text: 'Action cancelled.' });
-      refreshAIChatLog();
-    }
-    function clearAIChat() {
-      aiChat = [];
-      openAI();
-    }
-
-    /* ── NAV WITH PAGE PROTECTION ── */
-    async function switchTab(tab) {
-      // Check per-page protection
-      if (isPageProtected(tab) && !isPageUnlocked(tab)) {
-        pendingAuthSuccess = () => {
-          unlockPage(tab);
-          currentTab = tab;
-          document.querySelectorAll('.nav-item').forEach(el => {
-            el.classList.toggle('active', el.dataset.tab === tab);
-          });
-          haptic('light');
-          render();
-        };
-        await showAuthGate('Protected Area', `"${tab}" requires authentication.`);
-        return;
-      }
-      currentTab = tab;
-      document.querySelectorAll('.nav-item').forEach(el => {
-        el.classList.toggle('active', el.dataset.tab === tab);
-      });
-      haptic('light');
-      render();
-    }
-
-    /* ── RENDER ── */
-    function render() {
-      if (!authenticated) return;
-      const app = document.getElementById('app');
-      const views = { home: renderHome, activity: renderActivity, goals: renderGoals, analytics: renderAnalytics };
-      app.innerHTML = views[currentTab] ? views[currentTab]() : renderHome();
-      app.classList.toggle('privacy-blur', privacyMode);
-      try { sessionStorage.setItem('logostics_tab', currentTab); } catch (e) {}
-    }
-
-    /* ── HOME ── */
+    /* ── RENDER: HOME with configurable dashboard ── */
     function renderHome() {
       const snap = Store.getSnapshot();
-      const bal = snap.balance;
-      const est = Store.computePaycheckEstimate();
-      const proj = Store.computeProjectedBalance();
-      const planned = snap.recurringExpenses.filter(e => e.active !== false).reduce((s, e) => s + e.amount, 0);
-      const recent = snap.transactions.slice(0, 5);
-      const insights = Store.generateInsights();
+      const cfg = DashboardManager.getConfig();
+      const editMode = DashboardManager.isEditMode();
 
-      return `
-        <div class="container fade-in">
-          <div class="top-header">
-            <div class="brand">Logostics<span class="brand-dot"></span></div>
-            <div style="display:flex;gap:8px;">
-              <button class="icon-btn" onclick="openSiri()" title="App Intents">◉</button>
-              <button class="icon-btn" onclick="openSettings()" title="Settings">⚙</button>
-            </div>
-          </div>
-
+      const cards = {
+        hero: () => `
           <div class="hero">
             <div class="hero-label">Available Cash</div>
-            <div class="hero-amount" id="hero-amount">${fmt(bal)}</div>
+            <div class="hero-amount" id="hero-amount">${fmt(snap.balance)}</div>
             <div class="hero-status">
               <span class="status-dot"></span>
               <span>Updated ${timeAgo(snap.lastUpdated)}</span>
             </div>
           </div>
-
-          <div class="cash-card glass">
-            <div class="cash-top">
-              <div>
-                <div class="cash-main">${fmt(bal)}</div>
-                <div class="cash-main-label">Available</div>
+        `,
+        cashCard: () => {
+          const est = Store.computePaycheckEstimate();
+          const proj = Store.computeProjectedBalance();
+          const planned = snap.recurringExpenses.filter(e => e.active !== false).reduce((s, e) => s + e.amount, 0);
+          return `
+            <div class="cash-card glass">
+              <div class="cash-top">
+                <div>
+                  <div class="cash-main">${fmt(snap.balance)}</div>
+                  <div class="cash-main-label">Available</div>
+                </div>
+                <div class="cash-badge">+${fmt(est.takeHome)}</div>
               </div>
-              <div class="cash-badge">+${fmt(est.takeHome)}</div>
+              <div class="cash-rows">
+                <div class="cash-row"><span class="lbl">↑ Expected</span><span class="amt pos">+${fmt(est.takeHome)}</span></div>
+                <div class="cash-row"><span class="lbl">↓ Planned</span><span class="amt neg">−${fmt(planned)}</span></div>
+              </div>
+              <div class="cash-proj">
+                <span class="lbl">Projected</span>
+                <span class="amt">${fmt(proj)}</span>
+              </div>
             </div>
-            <div class="cash-rows">
-              <div class="cash-row"><span class="lbl">↑ Expected</span><span class="amt pos">+${fmt(est.takeHome)}</span></div>
-              <div class="cash-row"><span class="lbl">↓ Planned</span><span class="amt neg">−${fmt(planned)}</span></div>
-            </div>
-            <div class="cash-proj">
-              <span class="lbl">Projected</span>
-              <span class="amt">${fmt(proj)}</span>
-            </div>
-          </div>
-
+          `;
+        },
+        quickActions: () => `
           <div class="quick-grid">
             <button class="quick-btn primary" onclick="openAddIncome()"><span class="ico">↓</span><span class="lbl">Income</span></button>
             <button class="quick-btn" onclick="openAddExpense()"><span class="ico">↑</span><span class="lbl">Expense</span></button>
             <button class="quick-btn" onclick="switchTab('goals')"><span class="ico">◈</span><span class="lbl">Goals</span></button>
             <button class="quick-btn" onclick="openTransfer()"><span class="ico">⇄</span><span class="lbl">Transfer</span></button>
           </div>
-
-          <div class="section">
-            <div class="section-h"><span class="t-title">Insights</span></div>
-            <div class="stagger">
-              ${insights.slice(0, 3).map(i => `
-                <div class="insight" onclick="askAIAbout('${escapeHtml(i.txt.replace(/<[^>]*>/g, ''))}')">
-                  <span class="ico">${i.ico}</span>
-                  <span class="txt">${i.txt}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-h">
-              <span class="t-title">Recent</span>
-              <button onclick="switchTab('activity')" style="background:none;border:none;color:var(--gray-400);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">See All →</button>
-            </div>
-            ${recent.length === 0 ? `
-              <div class="empty">
-                <div class="empty-ico">◌</div>
-                <div class="empty-title">No activity yet</div>
-                <div class="empty-sub">Add your first transaction to start tracking your money.</div>
+        `,
+        insights: () => {
+          const insights = Store.generateInsights();
+          return `
+            <div class="section">
+              <div class="section-h"><span class="t-title">Insights</span></div>
+              <div class="stagger">
+                ${insights.slice(0, 3).map(i => `
+                  <div class="insight" onclick="askAIAbout('${escapeHtml(i.txt.replace(/<[^>]*>/g, ''))}')">
+                    <span class="ico">${i.ico}</span>
+                    <span class="txt">${i.txt}</span>
+                  </div>
+                `).join('')}
               </div>
-            ` : recent.map(t => renderTxItem(t)).join('')}
+            </div>
+          `;
+        },
+        recent: () => {
+          const recent = snap.transactions.slice(0, 5);
+          return `
+            <div class="section">
+              <div class="section-h">
+                <span class="t-title">Recent</span>
+                <button onclick="switchTab('activity')" style="background:none;border:none;color:var(--gray-400);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">See All →</button>
+              </div>
+              ${recent.length === 0 ? `
+                <div class="empty">
+                  <div class="empty-ico">◌</div>
+                  <div class="empty-title">No activity yet</div>
+                  <div class="empty-sub">Add your first transaction to start tracking.</div>
+                </div>
+              ` : recent.map(t => renderTxItem(t)).join('')}
+            </div>
+          `;
+        }
+      };
+
+      const order = cfg.order || ['hero', 'cashCard', 'quickActions', 'insights', 'recent'];
+      const hidden = new Set(cfg.hidden || []);
+
+      return `
+        <div class="container fade-in ${editMode ? 'edit-mode' : ''}" id="home-container">
+          <div class="top-header">
+            <div class="brand">Logostics<span class="brand-dot"></span></div>
+            <div style="display:flex;gap:8px;">
+              ${PatchNotes.hasUnseenVersion() ? `
+                <button class="icon-btn" onclick="openPatchNotes()" title="What's New" style="border-color:var(--green);color:var(--green);">✦</button>
+              ` : ''}
+              <button class="icon-btn" onclick="openSettings()" title="Settings">⚙</button>
+            </div>
           </div>
+
+          ${order.map(cardId => {
+            if (!cards[cardId]) return '';
+            const isHidden = hidden.has(cardId);
+            return `
+              <div class="dashboard-card" data-dash-card="${cardId}"
+                   style="${isHidden ? 'display:none;' : ''}"
+                   oncontextmenu="return false;">
+                ${editMode ? `
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 4px;">
+                    <span style="font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">${DashboardManager.CARD_LABELS[cardId] || cardId}</span>
+                    <button onclick="event.stopPropagation();DashboardManager.toggleCardVisibility('${cardId}');" style="background:var(--gray-850);border:1px solid var(--gray-700);color:var(--gray-300);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">
+                      ${isHidden ? 'Show' : 'Hide'}
+                    </button>
+                  </div>
+                ` : ''}
+                ${cards[cardId]()}
+              </div>
+            `;
+          }).join('')}
+
+          ${editMode ? `
+            <div class="edit-toolbar">
+              <button onclick="DashboardManager.exitEditMode()" class="primary">Done</button>
+              <button onclick="DashboardManager.saveConfig({ order: ['hero', 'cashCard', 'quickActions', 'insights', 'recent'], hidden: [], pinned: [] }); DashboardManager.exitEditMode();">Reset</button>
+            </div>
+          ` : `
+            <button onclick="DashboardManager.enterEditMode()" style="width:100%;margin-top:12px;padding:12px;background:transparent;border:1px dashed var(--gray-700);border-radius:14px;color:var(--gray-500);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">
+              ✎ Edit Dashboard
+            </button>
+          `}
         </div>
       `;
     }
@@ -2075,17 +2356,14 @@
       openAI();
       setTimeout(() => {
         const input = document.getElementById('ai-input');
-        if (input) {
-          input.value = text;
-          input.focus();
-        }
+        if (input) { input.value = text; input.focus(); }
       }, 200);
     }
 
     function renderTxItem(t) {
       const isInc = t.type === 'income';
       return `
-        <div class="activity-item" onclick="openTxDetail(${t.id})" oncontextmenu="return longPressTx(event, ${t.id})">
+        <div class="activity-item" data-tx-id="${t.id}" onclick="openTxDetail(${t.id})">
           <div class="activity-ico ${isInc ? 'income' : ''}">${isInc ? '↓' : '↑'}</div>
           <div class="activity-body">
             <div class="activity-name">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div>
@@ -2098,24 +2376,27 @@
       `;
     }
 
-    // Long press on a transaction → AI context menu
-    let longPressTimer = null;
-    function longPressTx(e, id) {
-      e.preventDefault();
+    // ── CONTEXT MENU (long press) ──
+    function openTxContextMenu(id) {
       const t = Store.getSnapshot().transactions.find(x => x.id === id);
-      if (!t) return false;
-      openAI();
-      setTimeout(() => {
-        const input = document.getElementById('ai-input');
-        if (input) {
-          input.value = `Explain my ${t.type === 'income' ? 'income' : 'expense'} of ${fmt(t.amount)} on ${fmtDate(t.date)} in category "${t.category}"`;
-          input.focus();
-        }
-      }, 200);
-      return false;
+      if (!t) return;
+      const isInc = t.type === 'income';
+      openSheet(`
+        <div class="sheet-title">${escapeHtml(t.description || (isInc ? 'Income' : 'Expense'))}</div>
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="font-size:36px;font-weight:700;letter-spacing:-0.03em;color:${isInc ? 'var(--green)' : 'var(--white)'};font-variant-numeric:tabular-nums;">
+            ${isInc ? '+' : '−'}${fmt(t.amount)}
+          </div>
+          <div style="font-size:13px;color:var(--gray-500);margin-top:6px;">${escapeHtml(t.category)} · ${fmtDate(t.date)}</div>
+        </div>
+        <button class="btn btn-secondary" onclick="closeSheet();openEditTx(${t.id})">✎ Edit</button>
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet();askAIAbout('Explain my ${t.type} of ${fmt(t.amount)} in category ${escapeHtml(t.category)}')">◈ Ask AI</button>
+        <button class="btn btn-danger" style="margin-top:8px;" onclick="closeSheet();confirmDeleteTx(${t.id})">✕ Delete</button>
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Cancel</button>
+      `);
     }
 
-    /* ── ACTIVITY ── */
+    // ── RENDER: ACTIVITY ──
     let activityFilter = { category: 'all', search: '' };
     function renderActivity() {
       const txns = Store.getTransactions(activityFilter);
@@ -2154,7 +2435,7 @@
             <div class="empty">
               <div class="empty-ico">◌</div>
               <div class="empty-title">No activity yet</div>
-              <div class="empty-sub">Add your first transaction to start tracking your money.</div>
+              <div class="empty-sub">Add your first transaction to start tracking.</div>
             </div>
           ` : Object.entries(groups).map(([date, items]) => `
             <div style="margin-bottom:20px;">
@@ -2175,7 +2456,7 @@
     }
     function setActivityCat(c) { activityFilter.category = c; haptic('light'); render(); }
 
-    /* ── GOALS ── */
+    // ── RENDER: GOALS ──
     function renderGoals() {
       const goals = Store.getGoals();
       return `
@@ -2195,9 +2476,8 @@
             <div class="stagger">
               ${goals.map(g => {
                 const p = Store.computeGoalProgress(g);
-                const active = p.pct > 0;
                 return `
-                  <div class="goal-card ${active ? 'active' : ''}" onclick="openGoalDetail(${g.id})">
+                  <div class="goal-card ${p.pct > 0 ? 'active' : ''}" onclick="openGoalDetail(${g.id})">
                     <div class="goal-head">
                       <div>
                         <div class="goal-name">${escapeHtml(g.name)}</div>
@@ -2213,9 +2493,6 @@
                     <div class="goal-stats">
                       <span>${fmt(p.remaining)} remaining</span><span class="hl">${p.pct}%</span>
                     </div>
-                    ${p.estimatedDate ? `
-                      <div class="goal-eta"><span>◷</span><span>Est. ${p.estimatedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span></div>
-                    ` : ''}
                   </div>
                 `;
               }).join('')}
@@ -2225,7 +2502,7 @@
       `;
     }
 
-    /* ── ANALYTICS ── */
+    // ── RENDER: ANALYTICS ──
     function renderAnalytics() {
       const snap = Store.getSnapshot();
       const inc = Store.computeTotalIncome(30);
@@ -2248,53 +2525,161 @@
         <div class="container fade-in">
           <div class="top-header"><div class="t-large">Analytics</div></div>
           <div class="stat-grid stagger">
-            <div class="stat" onclick="askAIAbout('Explain my 30-day income')"><div class="stat-val" style="color:var(--green);">${fmt(inc)}</div><div class="stat-lbl">Income · 30d</div></div>
-            <div class="stat" onclick="askAIAbout('Explain my 30-day spending')"><div class="stat-val" style="color:var(--gray-200);">${fmt(sp)}</div><div class="stat-lbl">Spending · 30d</div></div>
-            <div class="stat" onclick="askAIAbout('What is my savings rate?')"><div class="stat-val">${rate}%</div><div class="stat-lbl">Savings Rate</div></div>
-            <div class="stat" onclick="askAIAbout('What is my average transaction?')"><div class="stat-val">${fmt(avg)}</div><div class="stat-lbl">Avg Transaction</div></div>
+            <div class="stat"><div class="stat-val" style="color:var(--green);">${fmt(inc)}</div><div class="stat-lbl">Income · 30d</div></div>
+            <div class="stat"><div class="stat-val" style="color:var(--gray-200);">${fmt(sp)}</div><div class="stat-lbl">Spending · 30d</div></div>
+            <div class="stat"><div class="stat-val">${rate}%</div><div class="stat-lbl">Savings Rate</div></div>
+            <div class="stat"><div class="stat-val">${fmt(avg)}</div><div class="stat-lbl">Avg Transaction</div></div>
           </div>
-          <div class="chart-card" onclick="askAIAbout('Explain my weekly spending chart')" style="cursor:pointer;">
-            <h3>Weekly Spending · tap to ask AI</h3>
+          <div class="chart-card">
+            <h3>Weekly Spending</h3>
             <div style="display:flex;align-items:flex-end;justify-content:space-between;height:110px;gap:8px;">
               ${last7.map(d => `
                 <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
-                  <div style="width:100%;height:${Math.max(4, (d.value / maxV) * 84)}px;background:${d.value > 0 ? 'var(--green)' : 'var(--gray-800)'};border-radius:6px 6px 0 0;transition:height 0.5s var(--ease-out);"></div>
+                  <div style="width:100%;height:${Math.max(4, (d.value / maxV) * 84)}px;background:${d.value > 0 ? 'var(--green)' : 'var(--gray-800)'};border-radius:6px 6px 0 0;"></div>
                   <span style="font-size:10px;color:var(--gray-500);font-weight:700;">${d.label}</span>
                 </div>
               `).join('')}
             </div>
           </div>
-          <div class="chart-card" onclick="askAIAbout('What is my largest spending category?')" style="cursor:pointer;">
-            <h3>Top Category · tap to ask AI</h3>
+          <div class="chart-card">
+            <h3>Top Category</h3>
             ${lc.amount > 0 ? `
               <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span style="font-size:15px;font-weight:600;">${escapeHtml(lc.category)}</span>
-                <span style="font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;">${fmt(lc.amount)}</span>
+                <span style="font-size:22px;font-weight:700;">${fmt(lc.amount)}</span>
               </div>
-            ` : `<p style="color:var(--gray-500);font-size:14px;">No spending data yet.</p>`}
+            ` : `<p style="color:var(--gray-500);font-size:14px;">No spending yet.</p>`}
           </div>
-          ${snap.goals.length > 0 ? `
-            <div class="chart-card">
-              <h3>Goal Progress</h3>
-              ${snap.goals.map(g => {
-                const p = Store.computeGoalProgress(g);
-                return `
-                  <div style="margin-bottom:16px;">
-                    <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:8px;">
-                      <span>${g.emoji} ${escapeHtml(g.name)}</span>
-                      <span style="color:var(--gray-400);">${p.pct}%</span>
-                    </div>
-                    <div class="goal-bar" style="height:5px;margin:0;"><div class="goal-fill" style="width:${p.pct}%"></div></div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          ` : ''}
         </div>
       `;
     }
 
-    /* ── SHEETS ── */
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.tab === tab);
+      });
+      haptic('light');
+      render();
+    }
+
+    function render() {
+      if (!authenticated) return;
+      const app = document.getElementById('app');
+      // If locked, don't even render fresh content — keep showing redacted
+      if (AppLockManager.isLocked()) return;
+      const views = { home: renderHome, activity: renderActivity, goals: renderGoals, analytics: renderAnalytics };
+      app.innerHTML = views[currentTab] ? views[currentTab]() : renderHome();
+      app.classList.toggle('privacy-blur', privacyMode);
+      try { sessionStorage.setItem('logostics_tab', currentTab); } catch (e) {}
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  AI CHAT UI
+    // ═══════════════════════════════════════════════════════════
+    function openAI() {
+      haptic('medium');
+      aiChat = aiChat.slice(-40);
+      openSheet(`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div class="sheet-title" style="margin:0;text-align:left;">Ask Logostics</div>
+          <button onclick="clearAIChat()" style="background:var(--gray-850);border:1px solid var(--gray-700);color:var(--gray-400);padding:6px 10px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Clear</button>
+        </div>
+        <div id="ai-chat-log" style="max-height:55vh;overflow-y:auto;margin-bottom:12px;padding-right:4px;">
+          ${aiChat.length === 0 ? `
+            <div class="ai-chat-bubble ai-bubble-system">Ask about your money, goals, or say "take me to analytics".</div>
+          ` : aiChat.map(m => renderAIBubble(m)).join('')}
+        </div>
+        <form onsubmit="submitAI(event)" style="display:flex;gap:8px;">
+          <input class="field-input" id="ai-input" placeholder="Ask anything…" autocomplete="off" style="flex:1;">
+          <button type="submit" class="btn btn-green" style="width:auto;padding:14px 22px;">↑</button>
+        </form>
+      `);
+      setTimeout(() => {
+        const log = document.getElementById('ai-chat-log');
+        if (log) log.scrollTop = log.scrollHeight;
+        document.getElementById('ai-input')?.focus();
+      }, 100);
+    }
+
+    function renderAIBubble(m) {
+      if (m.role === 'user') return `<div class="ai-chat-bubble ai-bubble-user">${escapeHtml(m.text)}</div>`;
+      if (m.role === 'system') return `<div class="ai-chat-bubble ai-bubble-system">${escapeHtml(m.text)}</div>`;
+      let confirmHtml = '';
+      if (m.confirmAction) {
+        confirmHtml = `
+          <div class="ai-action-row">
+            <button class="ai-action-btn primary" onclick="executeAIConfirm(${m.id})">${escapeHtml(m.confirmAction.label)}</button>
+            <button class="ai-action-btn" onclick="dismissAIConfirm(${m.id})">Cancel</button>
+          </div>
+        `;
+      }
+      return `<div class="ai-chat-bubble ai-bubble-assistant">${escapeHtml(m.text).replace(/\n/g, '<br>')}${confirmHtml}</div>`;
+    }
+
+    async function submitAI(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('ai-input');
+      const q = input.value.trim();
+      if (!q || aiThinking) return;
+      input.value = '';
+      aiChat.push({ role: 'user', text: q });
+      refreshAIChatLog();
+      aiThinking = true;
+      const log = document.getElementById('ai-chat-log');
+      if (log) {
+        const typing = document.createElement('div');
+        typing.id = 'ai-typing';
+        typing.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+        log.appendChild(typing);
+        log.scrollTop = log.scrollHeight;
+      }
+      try {
+        const response = await AIAgent.answer(q);
+        aiChat.push({
+          role: 'assistant', text: response.reply,
+          id: Date.now() + Math.random(),
+          confirmAction: response.confirmAction || null
+        });
+      } catch (err) {
+        aiChat.push({ role: 'assistant', text: 'Sorry, something went wrong.' });
+      } finally {
+        aiThinking = false;
+        document.getElementById('ai-typing')?.remove();
+        refreshAIChatLog();
+      }
+    }
+    function refreshAIChatLog() {
+      const log = document.getElementById('ai-chat-log');
+      if (!log) return;
+      log.innerHTML = aiChat.map(m => renderAIBubble(m)).join('');
+      log.scrollTop = log.scrollHeight;
+    }
+    async function executeAIConfirm(id) {
+      const m = aiChat.find(x => x.id === id);
+      if (!m || !m.confirmAction) return;
+      const action = m.confirmAction;
+      m.confirmAction = null;
+      refreshAIChatLog();
+      try {
+        const result = await action.execute();
+        aiChat.push({ role: 'assistant', text: result || 'Done.' });
+      } catch (e) {
+        aiChat.push({ role: 'assistant', text: 'Action failed.' });
+      }
+      refreshAIChatLog();
+    }
+    function dismissAIConfirm(id) {
+      const m = aiChat.find(x => x.id === id);
+      if (m) m.confirmAction = null;
+      aiChat.push({ role: 'system', text: 'Action cancelled.' });
+      refreshAIChatLog();
+    }
+    function clearAIChat() { aiChat = []; openAI(); }
+
+    // ═══════════════════════════════════════════════════════════
+    //  SHEETS: ADD / EDIT / GOALS / SETTINGS
+    // ═══════════════════════════════════════════════════════════
     function openAddIncome() {
       openSheet(`
         <div class="sheet-title">Add Income</div>
@@ -2318,9 +2703,6 @@
       if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
       await Store.addTransaction({ type: 'income', amount: amt, description: desc || 'Income', category: cat });
       closeSheet(); haptic('success'); toast('Income added'); render();
-      if (Notification.permission === 'granted' && Store.preferences.notificationsEnabled) {
-        NotificationManager.send('Income logged', `${fmt(amt)} added to your balance.`);
-      }
     }
     function openAddExpense() {
       openSheet(`
@@ -2361,7 +2743,6 @@
             <button class="chip" onclick="pickChip(this)" data-emoji="▣">▣</button>
             <button class="chip" onclick="pickChip(this)" data-emoji="◆">◆</button>
             <button class="chip" onclick="pickChip(this)" data-emoji="●">●</button>
-            <button class="chip" onclick="pickChip(this)" data-emoji="▲">▲</button>
           </div>
         </div>
         <button class="btn btn-primary" onclick="submitGoal()">Create Goal</button>
@@ -2393,7 +2774,7 @@
           <button class="btn btn-secondary" onclick="closeSheet();openEditTx(${t.id})">Edit</button>
           <button class="btn btn-danger" onclick="confirmDeleteTx(${t.id})">Delete</button>
         </div>
-        <button class="btn btn-secondary" style="margin-top:8px;" onclick="askAIAbout('Explain my ${t.type} of ${fmt(t.amount)} in category ${t.category}')">Ask AI about this</button>
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet();askAIAbout('Explain my ${t.type} of ${fmt(t.amount)} in category ${escapeHtml(t.category)}')">Ask AI</button>
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
       `);
     }
@@ -2435,22 +2816,16 @@
       openSheet(`
         <div style="text-align:center;margin-bottom:28px;">
           <div style="font-size:52px;margin-bottom:10px;filter:grayscale(1);opacity:0.8;">${g.emoji}</div>
-          <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em;">${escapeHtml(g.name)}</div>
+          <div style="font-size:22px;font-weight:700;">${escapeHtml(g.name)}</div>
           <div style="font-size:14px;color:var(--gray-500);margin-top:4px;">${p.pct}% complete</div>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:22px;font-weight:700;margin-bottom:14px;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">
+        <div style="display:flex;justify-content:space-between;font-size:22px;font-weight:700;margin-bottom:14px;font-variant-numeric:tabular-nums;">
           <span>${fmt(g.current)}</span><span style="color:var(--gray-500);">${fmt(g.target)}</span>
         </div>
         <div class="goal-bar" style="height:10px;margin-bottom:20px;"><div class="goal-fill" style="width:${p.pct}%"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray-400);margin-bottom:24px;font-weight:500;">
           <span>${fmt(p.remaining)} remaining</span><span>${p.pct}%</span>
         </div>
-        ${p.estimatedDate ? `
-          <div class="insight" style="margin-bottom:20px;">
-            <span class="ico">◷</span>
-            <span class="txt">Estimated completion: <strong>${p.estimatedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</strong></span>
-          </div>
-        ` : ''}
         <div class="field">
           <label class="field-label">Add to goal</label>
           <div style="display:flex;gap:8px;">
@@ -2458,8 +2833,7 @@
             <button class="btn btn-green" style="width:auto;padding:14px 22px;" onclick="addToGoal(${g.id})">Add</button>
           </div>
         </div>
-        <button class="btn btn-secondary" onclick="askAIAbout('How is my ${escapeHtml(g.name)} goal doing?')">Ask AI about this goal</button>
-        <button class="btn btn-danger" style="margin-top:8px;" onclick="confirmDeleteGoal(${g.id})">Delete Goal</button>
+        <button class="btn btn-danger" onclick="confirmDeleteGoal(${g.id})">Delete Goal</button>
         <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
       `);
     }
@@ -2504,7 +2878,9 @@
       closeSheet(); haptic('success'); toast('Transferred'); render();
     }
 
-    /* ── SETTINGS ── */
+    // ═══════════════════════════════════════════════════════════
+    //  SETTINGS with real Auto-Lock options
+    // ═══════════════════════════════════════════════════════════
     async function openSettings() {
       const snap = Store.getSnapshot();
       const inc = snap.incomeSettings;
@@ -2515,22 +2891,11 @@
       const webauthn = await PlatformCapabilities.checkWebAuthn();
       const env = PlatformCapabilities.env;
       const share = PlatformCapabilities.checkShare();
-      const storage = await PlatformCapabilities.checkStorageDetail();
-      const net = PlatformCapabilities.checkNetwork();
+      const storage = PlatformCapabilities.checkStorage();
+      const lifecycle = PlatformCapabilities.checkPageLifecycle();
 
       openSheet(`
         <div class="sheet-title">Settings</div>
-
-        <div class="t-label" style="margin-bottom:10px;padding-left:4px;">Income</div>
-        <div class="field"><label class="field-label">Hourly Rate</label><input class="field-input" id="s-hourly" type="number" inputmode="decimal" value="${inc.hourlyRate}" placeholder="$0.00"></div>
-        <div class="field"><label class="field-label">Hours per Week</label><input class="field-input" id="s-hours" type="number" inputmode="decimal" value="${inc.hoursPerWeek}" placeholder="0"></div>
-        <div class="field"><label class="field-label">Withholding %</label><input class="field-input" id="s-withhold" type="number" inputmode="decimal" value="${inc.withholdingPct}" placeholder="20"></div>
-        <div class="insight" style="margin-bottom:24px;">
-          <span class="ico">↑</span>
-          <span class="txt">Estimated take-home: <strong>${fmt(est.takeHome)}</strong><br>
-            <span style="font-size:11.5px;color:var(--gray-500);">${fmt(est.hourlyRate)}/hr × ${est.hoursPerWeek} hrs − ${est.withholdingPct}% withholding</span>
-          </span>
-        </div>
 
         <div class="t-label" style="margin-bottom:10px;padding-left:4px;">Security</div>
         <div class="set-row" onclick="toggleAppLock()">
@@ -2539,56 +2904,57 @@
         </div>
         <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
           ${webauthn.available
-            ? 'Uses your device\'s real platform authenticator (Face ID, Touch ID, Windows Hello) via WebAuthn. Logostics never sees or stores biometric data.'
-            : 'Not available on this device: ' + escapeHtml(webauthn.reason)}
+            ? 'Uses your device\'s real platform authenticator via WebAuthn. Logostics never sees biometric data.'
+            : 'Not available: ' + escapeHtml(webauthn.reason)}
         </p>
+
         ${prefs.appLockEnabled ? `
-          <div class="t-label" style="margin:16px 0 10px;padding-left:4px;">Protected Areas</div>
+          <div class="t-label" style="margin:16px 0 10px;padding-left:4px;">Auto-Lock</div>
+          <div class="chips" style="margin-bottom:12px;">
+            ${[
+              ['off', 'Off'],
+              ['immediately', 'Immediately'],
+              ['leaving', 'Leaving App'],
+              ['15s', '15s'],
+              ['30s', '30s'],
+              ['1m', '1m'],
+              ['5m', '5m']
+            ].map(([v, l]) => `
+              <button class="chip ${prefs.autoLock === v ? 'selected' : ''}" onclick="setAutoLock('${v}')">${l}</button>
+            `).join('')}
+          </div>
+          <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
+            ${lifecycle.reason}
+          </p>
+
+          <div class="t-label" style="margin:16px 0 10px;padding-left:4px;">Protected Pages</div>
           ${['home', 'activity', 'goals', 'analytics'].map(page => `
             <div class="set-row" onclick="toggleProtected('${page}')">
               <div class="set-left"><span class="ico">◈</span> ${page.charAt(0).toUpperCase() + page.slice(1)}</div>
               <div class="toggle ${(prefs.protectedPages || {})[page] ? 'on' : ''}"></div>
             </div>
           `).join('')}
-          <div class="set-row static">
-            <div class="set-left"><span class="ico">◷</span> Auth Timeout</div>
-            <div class="set-right">${escapeHtml(prefs.authTimeout || 'session')}</div>
-          </div>
-          <div class="chips" style="margin-bottom:16px;">
-            ${['session', '30s', '1m', '5m', 'always'].map(t => `
-              <button class="chip ${prefs.authTimeout === t ? 'selected' : ''}" onclick="setAuthTimeout('${t}')">${t === 'session' ? 'Page only' : t === 'always' ? 'Always' : t}</button>
-            `).join('')}
-          </div>
+          <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">
+            Note: on web, protected pages use WebAuthn. On native, LocalAuthentication.
+          </p>
         ` : ''}
+
         <div class="set-row" onclick="togglePrivacy();closeSheet();">
           <div class="set-left"><span class="ico">👁</span> Privacy Mode</div>
           <div class="set-right">${privacyMode ? 'On' : 'Off'}</div>
-        </div>
-
-        <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">AI Assistant</div>
-        <div class="set-row" onclick="togglePreference('aiEnabled')">
-          <div class="set-left"><span class="ico">◈</span> AI Enabled</div>
-          <div class="toggle ${prefs.aiEnabled ? 'on' : ''}"></div>
-        </div>
-        <div class="set-row" onclick="openAI()">
-          <div class="set-left"><span class="ico">💬</span> Open AI Chat</div>
-          <div class="set-right">›</div>
         </div>
 
         <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">Notifications</div>
         <div class="set-row static">
           <div class="set-left"><span class="ico">◔</span> Browser Notifications</div>
           <div class="set-right">
-            ${notif.supported
-              ? `<span class="cap-badge ${notif.permission === 'granted' ? 'ok' : notif.permission === 'denied' ? 'no' : 'warn'}">${notif.permission}</span>`
-              : `<span class="cap-badge no">unsupported</span>`}
+            <span class="cap-badge ${notif.supported && notif.permission === 'granted' ? 'ok' : notif.supported ? 'warn' : 'no'}">
+              ${notif.supported ? notif.permission : 'unsupported'}
+            </span>
           </div>
         </div>
         ${notif.supported && notif.permission === 'default' ? `
           <button class="btn btn-secondary" style="margin-bottom:6px;" onclick="enableNotifications()">Enable Notifications</button>
-        ` : ''}
-        ${notif.supported && notif.permission === 'granted' ? `
-          <button class="btn btn-secondary" style="margin-bottom:6px;" onclick="sendTestNotification()">Send Test Notification</button>
         ` : ''}
         ${notif.requiresInstall ? `
           <p style="font-size:11.5px;color:var(--gray-500);padding:0 4px 12px;line-height:1.5;">${escapeHtml(notif.reason)}</p>
@@ -2616,8 +2982,12 @@
           <div class="set-right"><span class="cap-badge ${storage.indexedDB ? 'ok' : 'no'}">${storage.indexedDB ? 'available' : 'no'}</span></div>
         </div>
         <div class="set-row static">
-          <div class="set-left"><span class="ico">◔</span> Network</div>
-          <div class="set-right">${net.online ? 'online' : 'offline'}</div>
+          <div class="set-left"><span class="ico">◷</span> App State</div>
+          <div class="set-right" id="debug-app-state">${LifecycleManager.getState()}</div>
+        </div>
+        <div class="set-row static">
+          <div class="set-left"><span class="ico">🔒</span> Lock State</div>
+          <div class="set-right" id="debug-lock-state">${AppLockManager.isLocked() ? 'Locked' : 'Unlocked'}</div>
         </div>
 
         <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">Data</div>
@@ -2631,13 +3001,16 @@
         </div>
 
         <div class="t-label" style="margin:24px 0 10px;padding-left:4px;">About</div>
+        <div class="set-row" onclick="openPatchNotes()">
+          <div class="set-left"><span class="ico">✦</span> Patch Notes</div>
+          <div class="set-right">${PatchNotes.getCurrentVersion()} ›</div>
+        </div>
         <div class="set-row static">
           <div class="set-left"><span class="ico">◈</span> Logostics Finance</div>
-          <div class="set-right">v3.0 · Web</div>
+          <div class="set-right">v${PatchNotes.getCurrentVersion()}</div>
         </div>
 
-        <button class="btn btn-primary" style="margin-top:8px;" onclick="saveSettings()">Save Settings</button>
-        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
+        <button class="btn btn-secondary" style="margin-top:16px;" onclick="closeSheet()">Close</button>
       `);
     }
 
@@ -2645,7 +3018,7 @@
       const enabled = Store.preferences.appLockEnabled;
       if (!enabled) {
         const cap = await PlatformCapabilities.checkWebAuthn();
-        if (!cap.available) { toast('Cannot enable lock: ' + cap.reason); return; }
+        if (!cap.available) { toast('Cannot enable: ' + cap.reason); return; }
         const reg = await AuthManager.register();
         if (!reg.success) { toast('Registration failed: ' + reg.reason); return; }
         const cred = AuthManager.getCredential();
@@ -2653,7 +3026,7 @@
         toast('App lock enabled');
       } else {
         await Store.updatePreferences({ appLockEnabled: false, webAuthnCredential: null });
-        clearUnlockedPages();
+        AuthManager.setCredential(null);
         toast('App lock disabled');
       }
       openSettings();
@@ -2661,57 +3034,24 @@
 
     async function toggleProtected(page) {
       const prefs = Store.preferences.protectedPages || {};
-      const newVal = !prefs[page];
-      await Store.updatePreferences({
-        protectedPages: { ...prefs, [page]: newVal }
-      });
+      await Store.updatePreferences({ protectedPages: { ...prefs, [page]: !prefs[page] } });
       openSettings();
     }
 
-    async function setAuthTimeout(t) {
-      await Store.updatePreferences({ authTimeout: t });
-      clearUnlockedPages();
+    async function setAutoLock(mode) {
+      await Store.updatePreferences({ autoLock: mode });
       openSettings();
     }
 
-    async function togglePreference(key) {
-      const cur = Store.preferences[key];
-      await Store.updatePreferences({ [key]: !cur });
-      haptic('light');
-      openSettings();
-    }
-
-    async function saveSettings() {
-      const h = parseFloat(document.getElementById('s-hourly').value) || 0;
-      const hs = parseFloat(document.getElementById('s-hours').value) || 0;
-      const w = parseFloat(document.getElementById('s-withhold').value) || 20;
-      await Store.updateIncomeSettings({ hourlyRate: h, hoursPerWeek: hs, withholdingPct: w });
-      closeSheet(); haptic('success'); toast('Settings saved'); render();
-    }
-
-    function openSiri() {
-      openSheet(`
-        <div style="text-align:center;padding:12px 0 8px;">
-          <div class="t-title" style="margin-bottom:8px;">App Intents & Siri</div>
-          <div class="t-caption" style="max-width:300px;margin:0 auto 24px;line-height:1.5;">
-            The financial engine is structured to be driven by Apple's App Intents framework in a native build.
-          </div>
-        </div>
-        <div class="insight" style="border-color:var(--green);background:var(--green-glow);margin-bottom:16px;">
-          <span class="ico">✓</span>
-          <span class="txt"><strong>In a native iOS build</strong>, these actions will be exposed via App Intents and work with Siri, Shortcuts, and Spotlight:</span>
-        </div>
-        <div class="insight"><span class="ico">◉</span><span class="txt">"How much cash do I have?"</span></div>
-        <div class="insight"><span class="ico">◉</span><span class="txt">"Show my savings goal progress"</span></div>
-        <div class="insight"><span class="ico">◉</span><span class="txt">"Add a $12 expense"</span></div>
-        <div class="insight" style="margin-bottom:20px;"><span class="ico">◉</span><span class="txt">"What's my projected balance?"</span></div>
-        <div class="insight" style="border-color:var(--gray-700);">
-          <span class="ico">◔</span>
-          <span class="txt"><strong>On the web</strong>, Siri and App Intents are not available. Use the in-app AI assistant instead.</span>
-        </div>
-        <button class="btn btn-primary" style="margin-top:20px;" onclick="closeSheet();openAI();">Open AI Assistant</button>
-        <button class="btn btn-secondary" style="margin-top:8px;" onclick="closeSheet()">Close</button>
-      `);
+    async function enableNotifications() {
+      const result = await NotificationManager.requestPermission();
+      if (result.granted) {
+        await Store.updatePreferences({ notificationsEnabled: true });
+        toast('Notifications enabled');
+      } else {
+        toast(result.reason || 'Not enabled');
+      }
+      render();
     }
 
     function pickChip(el) {
@@ -2723,23 +3063,6 @@
       el.parentElement.querySelectorAll('.seg').forEach(s => s.classList.remove('active'));
       el.classList.add('active');
       haptic('light');
-    }
-
-    async function enableNotifications() {
-      const result = await NotificationManager.requestPermission();
-      if (result.granted) {
-        await Store.updatePreferences({ notificationsEnabled: true });
-        toast('Notifications enabled');
-        const sent = await NotificationManager.send('Logostics', 'Notifications are now enabled.');
-        if (!sent.sent) toast('Granted but failed: ' + sent.reason);
-      } else {
-        toast(result.reason || 'Not enabled');
-      }
-      render();
-    }
-    async function sendTestNotification() {
-      const sent = await NotificationManager.send('Logostics', 'Test notification — this is a real browser notification.');
-      toast(sent.sent ? 'Notification sent' : 'Not sent: ' + sent.reason);
     }
 
     function exportData() {
@@ -2756,20 +3079,70 @@
 
     async function resetAllData() {
       if (!confirm('Reset all data? This cannot be undone.')) return;
-      try { localStorage.removeItem('logostics_finance_prefs_v2'); } catch (e) {}
+      try { localStorage.removeItem('logostics_finance_prefs_v3'); } catch (e) {}
       try { indexedDB.deleteDatabase('LogosticsFinanceDB'); } catch (e) {}
       location.reload();
     }
 
-    /* ═══════════════════════════════════════════════════════════
-       SERVICE WORKER
-       ═══════════════════════════════════════════════════════════ */
+    // ═══════════════════════════════════════════════════════════
+    //  PATCH NOTES UI
+    // ═══════════════════════════════════════════════════════════
+    function openPatchNotes() {
+      const notes = PatchNotes.getAll();
+      const current = PatchNotes.getCurrentVersion();
+      PatchNotes.markSeen();
+      openSheet(`
+        <div class="sheet-title">Patch Notes</div>
+        ${notes.map(n => `
+          <div style="margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--gray-800);">
+            <div class="patch-version">${escapeHtml(n.version)} ${n.version === current ? '<span style="color:var(--green);font-size:11px;">• current</span>' : ''}</div>
+            <div class="patch-date">${escapeHtml(n.date)}</div>
+            <div style="font-size:14px;color:var(--white);margin-bottom:12px;">${escapeHtml(n.title)}</div>
+            ${n.new && n.new.length ? `
+              <div class="patch-section">
+                <div class="patch-section-title">New</div>
+                <ul>${n.new.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+            ${n.improved && n.improved.length ? `
+              <div class="patch-section">
+                <div class="patch-section-title">Improved</div>
+                <ul>${n.improved.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+            ${n.fixed && n.fixed.length ? `
+              <div class="patch-section">
+                <div class="patch-section-title">Fixed</div>
+                <ul>${n.fixed.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+            ${n.security && n.security.length ? `
+              <div class="patch-section">
+                <div class="patch-section-title">Security</div>
+                <ul>${n.security.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+            ${n.ios && n.ios.length ? `
+              <div class="patch-section">
+                <div class="patch-section-title">iOS</div>
+                <ul>${n.ios.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
+        <button class="btn btn-primary" onclick="closeSheet();render();">Done</button>
+      `);
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  SERVICE WORKER
+    // ═══════════════════════════════════════════════════════════
     async function registerServiceWorker() {
       if (!('serviceWorker' in navigator)) return null;
       if (!window.isSecureContext) return null;
       try {
         const swCode = `
-          const CACHE = 'logostics-v3';
+          const CACHE = 'logostics-v4';
           const SHELL = ['./'];
           self.addEventListener('install', (e) => {
             e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {}));
@@ -2826,13 +3199,18 @@
       }
     }
 
-    /* ═══════════════════════════════════════════════════════════
-       INIT
-       ═══════════════════════════════════════════════════════════ */
+    // ═══════════════════════════════════════════════════════════
+    //  INIT
+    // ═══════════════════════════════════════════════════════════
     async function init() {
+      DebugPanel.log('Init start');
       await Store.init();
       await registerServiceWorker();
-      Store.subscribe(() => { if (authenticated) render(); });
+      LifecycleManager.init();
+      AppLockManager.init();
+      GestureManager.init();
+
+      Store.subscribe(() => { if (authenticated && !AppLockManager.isLocked()) render(); });
 
       try {
         const savedTab = sessionStorage.getItem('logostics_tab');
@@ -2844,24 +3222,32 @@
         }
       } catch (e) {}
 
+      // Initial lock check
       if (Store.preferences.appLockEnabled && AuthManager.hasCredential()) {
-        await showAuthGate('Logostics is Locked', 'Authenticating…');
-      } else {
-        authenticated = true;
-        render();
+        AppLockManager.lock('startup');
+      }
+      authenticated = true;
+      render();
+
+      // Show "What's New" if new version
+      if (PatchNotes.hasUnseenVersion() && Store.preferences.lastSeenVersion) {
+        setTimeout(() => openPatchNotes(), 800);
+      } else if (!Store.preferences.lastSeenVersion) {
+        // First run, silently mark
+        PatchNotes.markSeen();
       }
 
       Object.assign(window, {
         switchTab, openAddIncome, openAddExpense, openAddGoal, openGoalDetail,
-        openTxDetail, openTransfer, openSettings, openSiri, openAI,
+        openTxDetail, openTransfer, openSettings, openAI, openPatchNotes,
         submitIncome, submitExpense, submitGoal, submitTransfer,
         submitEditTx, openEditTx, confirmDeleteTx, confirmDeleteGoal,
-        addToGoal, pickChip, pickSeg, closeSheet, saveSettings,
+        addToGoal, pickChip, pickSeg, closeSheet,
         exportData, resetAllData, togglePrivacy, enableNotifications,
-        doAuthenticate, skipLock, disableLockAndContinue, toggleAppLock,
-        sendTestNotification, onActivitySearch, setActivityCat,
+        toggleAppLock, toggleProtected, setAutoLock,
         askAIAbout, submitAI, executeAIConfirm, dismissAIConfirm, clearAIChat,
-        longPressTx, toggleProtected, setAuthTimeout, togglePreference
+        openTxContextMenu, setActivityCat, onActivitySearch,
+        DashboardManager, LifecycleManager, AppLockManager, PatchNotes, DebugPanel
       });
     }
 
@@ -2870,6 +3256,187 @@
 
     window.addEventListener('online', () => toast('Back online'));
     window.addEventListener('offline', () => toast('Offline — data still saves locally'));
+
+    // ═══════════════════════════════════════════════════════════
+    //  SWIFT / NATIVE FILES (documented below, not executed in browser)
+    // ═══════════════════════════════════════════════════════════
+    /*
+     * The following files are REQUIRED for the native iOS build.
+     * They are NOT executed by the browser. They must be added to the Xcode project
+     * when packaging Logostics as a native iOS app.
+     *
+     * ─── LogosticsApp.swift ───
+     *
+     * import SwiftUI
+     * import UserNotifications
+     *
+     * @main
+     * struct LogosticsApp: App {
+     *     @Environment(\.scenePhase) private var scenePhase
+     *     @StateObject private var appState = AppState()
+     *
+     *     var body: some Scene {
+     *         WindowGroup {
+     *             ContentView()
+     *                 .environmentObject(appState)
+     *                 .onChange(of: scenePhase) { newPhase in
+     *                     // Real iOS scene lifecycle → forwards to JS bridge
+     *                     switch newPhase {
+     *                     case .active:
+     *                         appState.scenePhase = "active"
+     *                         WebViewBridge.shared.sendScenePhase("active")
+     *                     case .inactive:
+     *                         appState.scenePhase = "inactive"
+     *                         WebViewBridge.shared.sendScenePhase("inactive")
+     *                     case .background:
+     *                         appState.scenePhase = "background"
+     *                         WebViewBridge.shared.sendScenePhase("background")
+     *                     @unknown default: break
+     *                     }
+     *                 }
+     *         }
+     *     }
+     * }
+     *
+     * ─── AppLockService.swift (LocalAuthentication) ───
+     *
+     * import LocalAuthentication
+     *
+     * final class AppLockService {
+     *     static let shared = AppLockService()
+     *
+     *     func authenticate(reason: String, completion: @escaping (Bool, String?) -> Void) {
+     *         let context = LAContext()
+     *         var error: NSError?
+     *         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
+     *             // Biometrics unavailable; fall back to device passcode policy
+     *             guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else {
+     *                 completion(false, error?.localizedDescription ?? "Authentication unavailable")
+     *                 return
+     *             }
+     *             evaluate(context: context, reason: reason, completion: completion)
+     *             return
+     *         }
+     *         evaluate(context: context, reason: reason, completion: completion)
+     *     }
+     *
+     *     private func evaluate(context: LAContext, reason: String, completion: @escaping (Bool, String?) -> Void) {
+     *         context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, error in
+     *             DispatchQueue.main.async {
+     *                 if success {
+     *                     completion(true, nil)
+     *                 } else {
+     *                     completion(false, error?.localizedDescription ?? "Authentication failed")
+     *                 }
+     *             }
+     *         }
+     *     }
+     * }
+     *
+     * ─── WidgetData.swift (Shared app group container) ───
+     *
+     * import Foundation
+     *
+     * struct WidgetSnapshot: Codable {
+     *     let balance: Double
+     *     let balanceVisible: Bool
+     *     let goals: [WidgetGoal]
+     *     let nextPaycheck: Double
+     *     let recentSpending: Double
+     *     let lastUpdated: Date
+     * }
+     *
+     * struct WidgetGoal: Codable {
+     *     let id: Int
+     *     let name: String
+     *     let current: Double
+     *     let target: Double
+     * }
+     *
+     * final class WidgetDataStore {
+     *     static let shared = WidgetDataStore()
+     *     private let suiteName = "group.com.logostics.finance"
+     *
+     *     func write(_ snapshot: WidgetSnapshot) {
+     *         guard let defaults = UserDefaults(suiteName: suiteName) else { return }
+     *         if let data = try? JSONEncoder().encode(snapshot) {
+     *             defaults.set(data, forKey: "widgetSnapshot")
+     *             WidgetCenter.shared.reloadAllTimelines()
+     *         }
+     *     }
+     *
+     *     func read() -> WidgetSnapshot? {
+     *         guard let defaults = UserDefaults(suiteName: suiteName),
+     *               let data = defaults.data(forKey: "widgetSnapshot"),
+     *               let snapshot = try? JSONDecoder().decode(WidgetSnapshot.self, from: data) else {
+     *             return nil
+     *         }
+     *         return snapshot
+     *     }
+     * }
+     *
+     * ─── LogosticsWidget.swift (WidgetKit) ───
+     *
+     * import WidgetKit
+     * import SwiftUI
+     *
+     * struct LogosticsWidgetEntry: TimelineEntry {
+     *     let date: Date
+     *     let snapshot: WidgetSnapshot?
+     * }
+     *
+     * struct LogosticsWidgetProvider: TimelineProvider {
+     *     func placeholder(in context: Context) -> LogosticsWidgetEntry {
+     *         LogosticsWidgetEntry(date: Date(), snapshot: nil)
+     *     }
+     *
+     *     func getSnapshot(in context: Context, completion: @escaping (LogosticsWidgetEntry) -> Void) {
+     *         completion(LogosticsWidgetEntry(date: Date(), snapshot: WidgetDataStore.shared.read()))
+     *     }
+     *
+     *     func getTimeline(in context: Context, completion: @escaping (Timeline<LogosticsWidgetEntry>) -> Void) {
+     *         let entry = LogosticsWidgetEntry(date: Date(), snapshot: WidgetDataStore.shared.read())
+     *         let next = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
+     *         completion(Timeline(entries: [entry], policy: .after(next)))
+     *     }
+     * }
+     *
+     * struct LogosticsWidgetEntryView: View {
+     *     var entry: LogosticsWidgetEntry
+     *
+     *     var body: some View {
+     *         VStack(alignment: .leading) {
+     *             Text("Logostics").font(.caption).foregroundStyle(.secondary)
+     *             if let snapshot = entry.snapshot, snapshot.balanceVisible {
+     *                 Text(String(format: "$%.2f", snapshot.balance))
+     *                     .font(.system(size: 28, weight: .bold))
+     *             } else {
+     *                 Text("Protected").font(.headline).foregroundStyle(.secondary)
+     *             }
+     *         }
+     *         .containerBackground(for: .widget) { Color.black }
+     *     }
+     * }
+     *
+     * @main
+     * struct LogosticsWidget: Widget {
+     *     let kind = "LogosticsWidget"
+     *     var body: some WidgetConfiguration {
+     *         StaticConfiguration(kind: kind, provider: LogosticsWidgetProvider()) { entry in
+     *             LogosticsWidgetEntryView(entry: entry)
+     *         }
+     *         .configurationDisplayName("Balance")
+     *         .description("Your current balance at a glance.")
+     *         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+     *     }
+     * }
+     *
+     * ─── Info.plist additions ───
+     * <key>NSFaceIDUsageDescription</key>
+     * <string>Logostics uses Face ID to protect your financial data.</string>
+     * <key>UIBackgroundModes</key>
+     * <array><string>fetch</string></array>
+     */
   </script>
 </body>
 </html>
