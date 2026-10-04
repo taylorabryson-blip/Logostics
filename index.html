@@ -19,7 +19,7 @@
 html{background:var(--bg);overscroll-behavior:none;-webkit-text-size-adjust:100%;height:100%}
 body{font-family:-apple-system,'SF Pro Display','SF Pro Text','Helvetica Neue',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;padding-top:var(--safe-top);padding-left:var(--safe-left);padding-right:var(--safe-right);overflow-x:hidden;width:100%;max-width:100vw;user-select:none;letter-spacing:-.01em;position:relative;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px);-webkit-user-select:none;-webkit-overflow-scrolling:touch;overscroll-behavior-y:none;touch-action:manipulation}
 body.noauth{padding-bottom:24px}
-body.noauth .bottom-nav,body.noauth .privacy-btn,body.noauth .ai-fab,body.noauth .social-fab{display:none}
+body.noauth .bottom-nav,body.noauth .privacy-btn,body.noauth .ai-fab{display:none}
 input,textarea{user-select:text;-webkit-user-select:text}
 .app-lock{position:fixed;inset:0;background:var(--bg);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px;animation:fade-in .2s ease}
 .app-lock.on{display:flex}
@@ -142,8 +142,6 @@ input,textarea{user-select:text;-webkit-user-select:text}
 .privacy-btn.active{background:var(--green);color:var(--on-accent);border-color:var(--green)}
 .ai-fab{position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom) + 16px);right:74px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;z-index:90;transition:all .25s var(--ease);background:var(--card);border:1px solid var(--gray-700);color:var(--text);font-family:inherit;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .ai-fab:active{transform:scale(.9)}
-.social-fab{position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom) + 16px);left:20px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;z-index:90;transition:all .25s var(--ease);background:var(--card);border:1px solid var(--gray-700);color:var(--text);font-family:inherit;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-.social-fab:active{transform:scale(.9)}
 .privacy-blur{filter:blur(14px);transition:filter .35s var(--ease);pointer-events:none;user-select:none}
 .fade-in{animation:fade-up .35s var(--ease-out)}
 @keyframes fade-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -298,6 +296,35 @@ input[type=range]{accent-color:var(--green)}
 .auth-sub{font-size:14px;color:var(--gray-500);text-align:center;margin-bottom:28px;line-height:1.5}
 .err{color:var(--red);font-size:13px;font-weight:600;margin:-6px 0 12px;min-height:16px}
 .progress-note{font-size:12px;color:var(--gray-500);line-height:1.5}
+
+/* ═══ iPHONE: glass, glass sliders, voice, Siri ═══ */
+:root{--glass-rgb:0,0,0;--g-blur:28px;--g-a:.62;--g-shine:.55}
+.iphone.glass-on .bottom-nav{background:rgba(var(--glass-rgb),var(--g-a));backdrop-filter:blur(var(--g-blur)) saturate(190%);-webkit-backdrop-filter:blur(var(--g-blur)) saturate(190%);border-top:1px solid rgba(255,255,255,calc(var(--g-shine)*.2));box-shadow:inset 0 1px 0 rgba(255,255,255,calc(var(--g-shine)*.16)),0 -10px 34px rgba(0,0,0,.28)}
+.iphone.glass-on .sheet{background:rgba(var(--glass-rgb),calc(var(--g-a) + .24));backdrop-filter:blur(var(--g-blur)) saturate(190%);-webkit-backdrop-filter:blur(var(--g-blur)) saturate(190%);border-top:1px solid rgba(255,255,255,calc(var(--g-shine)*.24));box-shadow:inset 0 1px 0 rgba(255,255,255,calc(var(--g-shine)*.2))}
+.iphone.glass-on .toast,.iphone.glass-on .ai-fab,.iphone.glass-on .privacy-btn,.iphone.glass-on .ptr,.iphone.glass-on .edit-toolbar{background:rgba(var(--glass-rgb),var(--g-a));backdrop-filter:blur(var(--g-blur)) saturate(190%);-webkit-backdrop-filter:blur(var(--g-blur)) saturate(190%);border:1px solid rgba(255,255,255,calc(var(--g-shine)*.24));box-shadow:inset 0 1px 0 rgba(255,255,255,calc(var(--g-shine)*.2)),0 8px 28px rgba(0,0,0,.3)}
+.glass-slider{--v:50%;-webkit-appearance:none;appearance:none;display:block;width:100%;height:40px;margin:0;background:transparent;outline:none;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:pan-y}
+.glass-slider::-webkit-slider-runnable-track{height:12px;border-radius:99px;background:linear-gradient(90deg,var(--green) 0,var(--green) var(--v),rgba(127,127,127,.28) var(--v));box-shadow:inset 0 1px 3px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08)}
+.glass-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:46px;height:28px;margin-top:-9px;border-radius:99px;border:1px solid rgba(255,255,255,.6);background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.44));-webkit-backdrop-filter:blur(8px) saturate(160%);backdrop-filter:blur(8px) saturate(160%);box-shadow:inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -3px 6px rgba(0,0,0,.14),0 4px 14px rgba(0,0,0,.4);transition:transform .18s var(--ease)}
+.glass-slider:active::-webkit-slider-thumb{transform:scale(1.14)}
+.glass-slider:focus-visible::-webkit-slider-thumb{outline:2px solid var(--green);outline-offset:2px}
+.glass-slider::-moz-range-track{height:12px;border-radius:99px;background:rgba(127,127,127,.28)}.glass-slider::-moz-range-progress{height:12px;border-radius:99px;background:var(--green)}
+.glass-slider::-moz-range-thumb{width:46px;height:28px;border-radius:99px;border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.7)}
+.gs{padding:12px 16px 4px;border-radius:14px;margin-bottom:6px;background:var(--card);border:1px solid var(--gray-800)}
+.gs.dim{opacity:.45;pointer-events:none}
+.gs-top{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:600}
+.gs-top b{color:var(--green);font-variant-numeric:tabular-nums;font-size:13px}
+.gs-note{font-size:11.5px;color:var(--gray-500);margin:-2px 0 4px;line-height:1.4}
+.gprev{position:relative;height:124px;border-radius:18px;overflow:hidden;margin-bottom:8px;background:linear-gradient(135deg,#ff7a59,#ff3d81 38%,#6a5cff 72%,#12c2e9);isolation:isolate}
+.gprev i{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);z-index:-1}
+.gprev .gp-glass{position:absolute;left:14px;right:14px;bottom:12px;height:56px;border-radius:20px;display:flex;align-items:center;justify-content:space-around;font-size:12px;font-weight:700;color:var(--text);background:rgba(var(--glass-rgb),var(--g-a));backdrop-filter:blur(var(--g-blur)) saturate(190%);-webkit-backdrop-filter:blur(var(--g-blur)) saturate(190%);border:1px solid rgba(255,255,255,calc(var(--g-shine)*.3));box-shadow:inset 0 1px 0 rgba(255,255,255,calc(var(--g-shine)*.3)),0 8px 24px rgba(0,0,0,.3)}
+.gprev.off .gp-glass{background:var(--card);backdrop-filter:none;-webkit-backdrop-filter:none;border-color:var(--gray-800);box-shadow:none}
+.mic-btn{width:50px;flex:none;border-radius:14px;border:1px solid var(--gray-800);background:var(--card);font-size:20px;color:var(--text);font-family:inherit}
+.mic-btn.rec{background:var(--red);border-color:var(--red);color:#fff;animation:micpulse 1s ease-in-out infinite}
+@keyframes micpulse{50%{transform:scale(1.08)}}
+.sr-code{font-family:ui-monospace,Menlo,monospace;font-size:11px;line-height:1.5;background:var(--gray-900);border:1px solid var(--gray-800);border-radius:10px;padding:10px;word-break:break-all;user-select:text;-webkit-user-select:text;margin:8px 0}
+.sr-card{border-radius:18px;padding:16px;margin-bottom:10px;background:var(--card);border:1px solid var(--gray-800)}
+.sr-card ol{margin:8px 0 0 18px;padding:0;font-size:13px;line-height:1.55;color:var(--gray-300)}
+@media (prefers-reduced-motion:reduce){.mic-btn.rec{animation:none}.glass-slider::-webkit-slider-thumb{transition:none}}
 </style>
 </head>
 <body>
@@ -307,7 +334,6 @@ input[type=range]{accent-color:var(--green)}
 <div id="app"></div>
 <button class="privacy-btn" id="privacy-btn" onclick="togglePrivacy()" title="Toggle privacy mode">👁</button>
 <button class="ai-fab" id="ai-fab" onclick="openAI()" title="Ask Logostics AI">◈</button>
-<button class="social-fab" onclick="switchTab('friends')" title="Friends">👥</button>
 <nav class="bottom-nav glass-deep" id="bottom-nav">
 <button class="nav-item active" data-tab="home" onclick="switchTab('home')"><span class="nav-ico">🏠</span><span class="nav-lbl">Home</span></button>
 <button class="nav-item" data-tab="friends" onclick="switchTab('friends')"><span class="nav-ico">👥</span><span class="nav-lbl">Friends</span><span class="notif-badge" id="req-badge" style="display:none">0</span></button>
@@ -785,7 +811,7 @@ protectedPages:{home:false,activity:false,goals:false,analytics:false},
 appearance:{theme:'dark',font:'system',accentColor:'#30d158',primaryColor:'#ffffff',bgColor:'#000000',cardColor:'#121212',btnColor:'#ffffff',textColor:'#ffffff',preset:'default'},
 aiEnabled:true,dashboard:{order:['hero','cashCard','quickActions','insights','recent'],hidden:[],pinned:[]},widgets:{balanceVisible:true,preferredGoalId:null,spendingCategory:'all',privacyOnLockScreen:true},
 notifCategories:{payday:{enabled:true},paycheckExpected:{enabled:true},savings:{enabled:true},movingGoalDeadline:{enabled:true,leadDays:7},movingGoalWeekly:{enabled:true,day:0},movingGoalProgress:{enabled:true,frequency:'weekly'},movingGoalBehind:{enabled:true},goalDeadline:{enabled:true},weeklyBudget:{enabled:false},dailySummary:{enabled:false,time:'20:00'},weeklySummary:{enabled:false,time:'18:00',day:0},bills:{enabled:true,leadDays:2},moneyOwed:{enabled:true,leadDays:1},aiInsights:{enabled:true},checkIn:{enabled:false,time:'12:00'}},
-lastSeenVersion:null,debts:[],gameScores:{},deviceInfo:{type:'unknown',os:'unknown',model:'unknown',appVersion:'3.2.0'}});
+lastSeenVersion:null,debts:[],gameScores:{},deviceInfo:{type:'unknown',os:'unknown',model:'unknown',appVersion:'3.3.0'}});
 const defaultIncome=()=>({hourlyRate:0,hoursPerWeek:0,overtimeHours:0,overtimeMultiplier:1.5,payFrequency:'weekly',withholdingPct:20,deductions:0,nextPayday:null,computed:null});
 let state={balance:0,transactions:[],paychecks:[],goals:[],recurringExpenses:[],incomeSettings:defaultIncome(),preferences:defaultPrefs(),lastUpdated:Date.now(),_listeners:[]};
 function merge(base,over){if(!over||typeof over!=='object')return base;Object.keys(over).forEach(k=>{const v=over[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&base[k]&&typeof base[k]==='object'&&!Array.isArray(base[k]))merge(base[k],v);else base[k]=v});return base}
@@ -810,7 +836,7 @@ function unload(){state.preferences=defaultPrefs();state.incomeSettings=defaultI
 function refreshView(){const id=me;state.transactions=master.transactions.filter(t=>t.ownerId===id).sort((a,b)=>new Date(b.date)-new Date(a.date));state.goals=master.goals.filter(g=>g.ownerId===id);state.paychecks=master.paychecks.filter(p=>p.ownerId===id);state.balance=state.transactions.reduce((s,t)=>t.type==='income'?s+t.amount:s-t.amount,0)}
 function detectDevice(){const ua=navigator.userAgent||'';const ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);let type='unknown',os='unknown',model='unknown';
 if(ios){type='ios';os='iOS';const m=ua.match(/(iPhone|iPad|iPod)/);model=m?m[1]:'iOS Device'}else if(/Android/i.test(ua)){type='android';os='Android';const m=ua.match(/;\s([^;]+)\sBuild/);model=m?m[1]:'Android Device'}else if(/Mac/.test(ua)){type='mac';os='macOS';model='Mac'}else if(/Win/.test(ua)){type='windows';os='Windows';model='PC'}else if(/Linux/.test(ua)){type='linux';os='Linux';model='Linux Device'}
-state.preferences.deviceInfo={type,os,model,appVersion:'3.2.0'}}
+state.preferences.deviceInfo={type,os,model,appVersion:'3.3.0'}}
 function loadUser(){const u=Accounts.current();if(!u){unload();return}adoptOrphans();state.preferences=merge(defaultPrefs(),JSON.parse(JSON.stringify(u.prefs||{})));state.incomeSettings=Object.assign(defaultIncome(),u.income||{});detectDevice();refreshView();_lastGoalCount=-1;AuthManager.setCredential(state.preferences.webAuthnCredential||null);state.lastUpdated=Date.now();housekeeping()}
 
 function savePrefs(){if(me)Social.saveUserSettings(state.preferences,state.incomeSettings)}
@@ -954,8 +980,9 @@ async function saveConfig(c){await Store.updatePreferences({dashboard:c})}
 return{getConfig,saveConfig,isEditMode:()=>edit,enterEditMode(){edit=true;render();toast('Edit mode — hide or show cards')},exitEditMode(){edit=false;render();toast('Layout saved')},async toggleCardVisibility(id){const c=getConfig();const h=new Set(c.hidden||[]);if(h.has(id))h.delete(id);else h.add(id);c.hidden=Array.from(h);await saveConfig(c);render()},CARD_LABELS:LABELS}})();
 
 const PatchNotes=(function(){
-const CURRENT='3.2.0';
-const NOTES=[{version:'3.2.0',date:'2026-10-04',title:'Photo & GIF Profiles, Budgets, iPhone Gestures',new:['Profile pictures: upload a photo or an animated GIF, move and zoom to fit, or pick an emoji, letters and a background color — friends see it everywhere','The assistant now tells you your budget: what you can spend per month, day, week and paycheck after goals and savings, with category caps — ask "what is my budget?" or "set my budget to $2000"','iPhone gestures (iPhone only): swipe from the left edge to go back, drag a sheet down to close it, swipe a row left to delete it, pull down to refresh, press and hold a transaction for options, and haptic taps'],improved:['Friends sync is built in to this app — nobody pastes a project address or key anymore; friends just open the link and make an account','Invite sheet shows your link and friend code','Fixed a project/key mismatch that made friends sync fail to connect']},{version:'3.1.0',date:'2026-10-04',title:'Cloud Friends, Paycheck Forecasts & Smarter AI',new:['Cloud sync: friends, requests, shared goals, group goals and announcements now work between different people and devices','Friends join with one tap on your invite link or a short invite code — no setup for them; the owner gets a guided checklist with plain-English fixes','Moving goals can be funded from your paychecks (% or $ per paycheck) and finish dates follow your real payday schedule from the Income Estimator','Income Estimator shows when each of your goals will finish','Goals can save per paycheck','Assistant rebuilt: forecasts, what-if scenarios, affordability, runway, spending and income by date or category, debts, friends, and confirmed actions like logging expenses or setting a paycheck plan'],improved:['Developer Menu is owner-only: the first account on your cloud database is the owner and everyone else is locked out','Passwords are hashed with PBKDF2 and never stored in the shared data','Usernames are unique across all devices']},
+const CURRENT='3.3.0';
+const NOTES=[{version:'3.3.0',date:'2026-10-04',title:'iPhone Pages, Glass & Siri',new:['iPhone: swipe left and right to move between Home, Friends, Goals, Activity, Alerts and Profile — or swipe on the tab bar','iPhone: new iPhone section in Settings with glass sliders (blur, tint, shine), swipe distance, and a switch for every gesture','iPhone: Siri & Shortcuts — say a phrase to ask the assistant a question, hear your balance, log an expense or open a page','iPhone: microphone button in Ask Logostics, with spoken answers'],improved:['Removed the floating Friends button (the tab bar and Home already have one); tap your friend code to copy it','On lists, drag a row slowly to delete it; a quick flick changes page','Fixed a crash when saving profile changes in viewers that add loop guards'],fixed:[]},
+{version:'3.2.0',date:'2026-10-04',title:'Photo & GIF Profiles, Budgets, iPhone Gestures',new:['Profile pictures: upload a photo or an animated GIF, move and zoom to fit, or pick an emoji, letters and a background color — friends see it everywhere','The assistant now tells you your budget: what you can spend per month, day, week and paycheck after goals and savings, with category caps — ask "what is my budget?" or "set my budget to $2000"','iPhone gestures (iPhone only): swipe from the left edge to go back, drag a sheet down to close it, swipe a row left to delete it, pull down to refresh, press and hold a transaction for options, and haptic taps'],improved:['Friends sync is built in to this app — nobody pastes a project address or key anymore; friends just open the link and make an account','Invite sheet shows your link and friend code','Fixed a project/key mismatch that made friends sync fail to connect']},{version:'3.1.0',date:'2026-10-04',title:'Cloud Friends, Paycheck Forecasts & Smarter AI',new:['Cloud sync: friends, requests, shared goals, group goals and announcements now work between different people and devices','Friends join with one tap on your invite link or a short invite code — no setup for them; the owner gets a guided checklist with plain-English fixes','Moving goals can be funded from your paychecks (% or $ per paycheck) and finish dates follow your real payday schedule from the Income Estimator','Income Estimator shows when each of your goals will finish','Goals can save per paycheck','Assistant rebuilt: forecasts, what-if scenarios, affordability, runway, spending and income by date or category, debts, friends, and confirmed actions like logging expenses or setting a paycheck plan'],improved:['Developer Menu is owner-only: the first account on your cloud database is the owner and everyone else is locked out','Passwords are hashed with PBKDF2 and never stored in the shared data','Usernames are unique across all devices']},
 {version:'3.0.0',date:'2026-10-03',title:'Real Social Platform',new:['Real accounts with unique, permanent friend codes','Full friend-request lifecycle (send, accept, decline, cancel, remove, block)','Mutual friends and suggestions from real relationships','Real profiles with avatar, banner, bio, status, achievements','Persistent notifications with live cross-tab delivery','Shared goals with privacy (private / friends / specific / group)','Group goals with owner controls and member contributions','Developer menu with real user tracking and announcements','Autosaving Income Estimator','Full theme and font customization that persists'],improved:['Goal completion dates now use real contribution, deadline and income data','Finance data is now stored per account']},
 {version:'2.0.0',date:'2026-10-02',title:'Social groundwork',new:['Friends tab','Notifications tab','Group goals']},
 {version:'1.8.0',date:'2026-10-01',title:'Friend Codes, Debts & Reminders',new:['Friend codes','Debt tracking','Games with friends']},
@@ -1323,7 +1350,7 @@ s.setProperty('--primary',a.primaryColor);s.setProperty('--bg',a.bgColor);s.setP
 s.setProperty('--glass',rgba(a.cardColor,.78));s.setProperty('--glass-deep',rgba(a.bgColor,.88));
 const g=isLight?LIGHT_G:DARK_G;Object.keys(g).forEach(k=>s.setProperty('--gray-'+k,g[k]));s.colorScheme=isLight?'light':'dark';
 document.body.style.fontFamily=(FONTS[a.font]||FONTS.system)[1];const m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',a.bgColor);
-try{localStorage.setItem('lg_theme',JSON.stringify(a))}catch(e){}}
+try{localStorage.setItem('lg_theme',JSON.stringify(a))}catch(e){}try{IP.apply(a)}catch(e){}}
 
 /* ═══ AUTH SCREEN ═══ */
 const cloudText=c=>c.state==='live'?'🟢 Cloud sync connected':c.state==='connecting'?'Connecting to cloud sync…':'🟠 Offline'+(c.err?' — '+c.err:'');
@@ -1487,13 +1514,13 @@ return`<div class="container fade-in"><div class="top-header"><div class="t-larg
 
 /* ═══ AI CHAT ═══ */
 const aiFmt=s=>escapeHtml(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-function openAI(){haptic('medium');aiChat=aiChat.slice(-40);openSheet(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="sheet-title" style="margin:0;text-align:left">Ask Logostics</div><button class="mini-btn" onclick="clearAIChat()">Clear</button></div><div id="ai-chat-log" style="max-height:55vh;overflow-y:auto;margin-bottom:12px;padding-right:4px"></div><form onsubmit="submitAI(event)" style="display:flex;gap:8px"><input class="field-input" id="ai-input" placeholder="Ask anything…" autocomplete="off" style="flex:1"><button type="submit" class="btn btn-green" style="width:auto;padding:14px 22px" onclick="submitAI(event)">↑</button></form>`);refreshAIChatLog();setTimeout(()=>{const i=document.getElementById('ai-input');if(i)i.focus()},100)}
+function openAI(){haptic('medium');aiChat=aiChat.slice(-40);openSheet(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="sheet-title" style="margin:0;text-align:left">Ask Logostics</div><button class="mini-btn" onclick="clearAIChat()">Clear</button></div><div id="ai-chat-log" style="max-height:55vh;overflow-y:auto;margin-bottom:12px;padding-right:4px"></div><form onsubmit="submitAI(event)" style="display:flex;gap:8px"><input class="field-input" id="ai-input" placeholder="Ask anything…" autocomplete="off" style="flex:1">${IP.micBtn()}<button type="submit" class="btn btn-green" style="width:auto;padding:14px 22px" onclick="submitAI(event)">↑</button></form>`);refreshAIChatLog();setTimeout(()=>{const i=document.getElementById('ai-input');if(i)i.focus()},100)}
 function renderAIBubble(m,last){if(m.role==='user')return`<div class="ai-chat-bubble ai-bubble-user">${escapeHtml(m.text)}</div>`;if(m.role==='system')return`<div class="ai-chat-bubble ai-bubble-system">${escapeHtml(m.text)}</div>`;
 const mx=m.bars&&m.bars.length?Math.max(...m.bars.map(b=>b.value)):0,bars=mx?`<div style="margin-top:10px">${m.bars.map(b=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px"><span style="width:70px;color:var(--gray-400)">${escapeHtml(b.label)}</span><div style="flex:1;height:8px;background:var(--gray-800);border-radius:4px;overflow:hidden"><div style="width:${Math.max(3,b.value/mx*100)}%;height:100%;background:var(--green)"></div></div><span style="width:64px;text-align:right;font-weight:600">${fmt(b.value)}</span></div>`).join('')}</div>`:'';
 const cf=m.confirm?`<div style="margin-top:10px;padding:10px 12px;border:1px solid var(--gray-700);border-radius:12px;font-size:13px;line-height:1.6">${m.confirm.lines.map(l=>escapeHtml(l)).join('<br>')}</div>${m.pending?`<div class="ai-action-row"><button class="ai-action-btn primary" onclick="aiConfirm(true)">Confirm</button><button class="ai-action-btn" onclick="aiConfirm(false)">Cancel</button></div>`:''}`:'';
 const ch=last&&m.chips&&m.chips.length?`<div class="ai-action-row">${m.chips.map((c,i)=>`<button class="ai-action-btn" onclick="aiChip(${i})">${escapeHtml(c.label)}</button>`).join('')}</div>`:'';
 return`<div class="ai-chat-bubble ai-bubble-assistant">${aiFmt(m.text)}${bars}${cf}${ch}</div>`}
-function aiPush(r,speak){aiChat.push({role:'assistant',text:r.reply,bars:r.bars||null,confirm:r.confirm||null,pending:!!r.confirm,chips:r.chips||[]});if(speak)SoundManager.aiResponse();if(r.refresh)render()}
+function aiPush(r,speak){aiChat.push({role:'assistant',text:r.reply,bars:r.bars||null,confirm:r.confirm||null,pending:!!r.confirm,chips:r.chips||[]});if(speak)SoundManager.aiResponse();try{IP.afterReply(r)}catch(e){}if(r.refresh)render()}
 async function submitAI(e,pre){if(e&&e.preventDefault)e.preventDefault();const input=document.getElementById('ai-input');const q=(pre!==undefined?pre:input&&input.value||'').trim();if(!q||aiThinking)return;if(input)input.value='';aiChat.forEach(m=>{if(m.pending)m.pending=false});aiChat.push({role:'user',text:q});refreshAIChatLog();aiThinking=true;
 try{aiPush(await AIAgent.answer(q),true)}catch(err){console.error(err);aiChat.push({role:'assistant',text:'Sorry, something went wrong reading your data.'})}finally{aiThinking=false;refreshAIChatLog()}}
 function aiChip(i){const m=[...aiChat].reverse().find(x=>x.role==='assistant'&&x.chips&&x.chips.length),c=m&&m.chips[i];if(!c)return;if(c.go){closeSheet();switchTab(c.go);return}if(c.open==='income'){closeSheet();openIncomeEstimator();return}submitAI(null,c.q)}
@@ -1714,8 +1741,10 @@ const GestureManager=(function(){
 const ACT=88,$=id=>document.getElementById(id),W=()=>window.innerWidth,H=()=>window.innerHeight,sheetOpen=()=>{const o=$('sheet-overlay');return!!(o&&o.classList.contains('on'))};
 const hist=[];let g=null,openRow=null,popping=false,noClickUntil=0,refreshing=false;
 const skip=el=>!!el.closest('input,textarea,select,[contenteditable],.crop,.leaflet-container,[data-nogesture]');
-const slide=(el,x,y,ms,done)=>{el.style.transition=`transform ${ms}ms cubic-bezier(.2,.8,.2,1),opacity ${ms}ms`;el.style.transform=`translate(${x}px,${y}px)`;setTimeout(()=>done&&done(),ms+20)};
+const RM=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches,P=k=>IPHONE&&IP.on(k),sens=()=>Math.min(.6,Math.max(.15,(IP.cfg().sens||33)/100)),pages=()=>[...document.querySelectorAll('.nav-item')].map(e=>e.dataset.tab).filter(Boolean);
+const slide=(el,x,y,ms,done)=>{if(RM)ms=Math.min(ms,40);el.style.transition=`transform ${ms}ms cubic-bezier(.2,.8,.2,1),opacity ${ms}ms`;el.style.transform=`translate(${x}px,${y}px)`;setTimeout(()=>done&&done(),ms+20)};
 const clear=el=>{el.style.transition='';el.style.transform='';el.style.opacity=''};
+function scrolledX(el){for(;el&&el!==document.body;el=el.parentElement){const s=getComputedStyle(el);if(/(auto|scroll)/.test(s.overflowX)&&el.scrollWidth>el.clientWidth+2)return true}return false}
 function scrolledInner(el,root){for(;el&&el!==root&&el!==document.body;el=el.parentElement){const s=getComputedStyle(el);if(/(auto|scroll)/.test(s.overflowY)&&el.scrollHeight>el.clientHeight&&el.scrollTop>0)return true}return false}
 const canBack=()=>sheetOpen()||(typeof DashboardManager!=='undefined'&&DashboardManager.isEditMode())||hist.length>0||currentTab!=='home';
 function back(){if(sheetOpen()){closeSheet();return}if(typeof DashboardManager!=='undefined'&&DashboardManager.isEditMode()){DashboardManager.exitEditMode();return}const prev=hist.pop();popping=true;try{switchTab(prev&&prev!==currentTab?prev:'home')}finally{popping=false}}
@@ -1725,22 +1754,28 @@ const KINDS={notif:id=>delNotif(id),goal:id=>confirmDeleteGoal(+id)};
 function rowAction(row){const t=row.getAttribute('data-tx-id');if(t)return{run:()=>confirmDeleteTx(parseInt(t))};const k=KINDS[row.getAttribute('data-swipe')],id=row.getAttribute('data-sid');return k&&id!==null?{run:()=>k(id)}:null}
 const actOf=row=>row.querySelector(':scope>.swipe-act');
 function closeRow(){if(!openRow)return;const r=openRow;openRow=null;slide(r,0,0,200,()=>{clear(r);const a=actOf(r);if(a)a.classList.remove('on')})}
+function pageTo(to,dir){const el=$('app');slide(el,-dir*W(),0,150,()=>{switchTab(to);el.style.transition='none';el.style.transform=`translateX(${dir*W()*.3}px)`;el.style.opacity='.5';void el.offsetWidth;slide(el,0,0,230,()=>clear(el))})}
 /* per-gesture behaviours */
 const begin={
 edge(){g.el=sheetOpen()?$('sheet'):$('app');const i=$('swipe-back-indicator');if(i)i.classList.add('on')},
 sheet(){g.el=$('sheet')},
 row(){const r=g.row;if(openRow&&openRow!==r)closeRow();g.el=r;g.base=openRow===r?-ACT:0;if(!actOf(r)){const a=document.createElement('div');a.className='swipe-act';a.textContent='Delete';r.appendChild(a)}},
+page(){g.el=$('app');g.list=pages();g.idx=g.list.indexOf(currentTab)},
 ptr(){let p=$('ptr');if(!p){p=document.createElement('div');p.id='ptr';p.className='ptr';p.innerHTML='<span class="ptr-ico">↓</span>';document.body.appendChild(p)}g.p=p;p.classList.remove('spin')}};
 const move={
 edge(dx){const x=Math.max(0,dx),el=g.el;el.style.transition='none';el.style.transform=`translateX(${x}px)`;if(el.id==='app')el.style.opacity=String(1-x/W()*.35)},
 sheet(dx,dy){const y=Math.max(0,dy),sh=g.el,ov=$('sheet-overlay');sh.style.transition='none';sh.style.transform=`translateY(${y}px)`;ov.style.opacity=String(Math.max(.2,1-y/(H()*.8)))},
 row(dx){const x=Math.max(-W(),Math.min(0,g.base+dx)),el=g.el,a=actOf(el);g.x_=x;el.style.transition='none';el.style.transform=`translateX(${x}px)`;if(a){a.classList.toggle('on',x<-2);a.style.width=Math.max(ACT,-x-8)+'px'}if(!g.full&&x<-W()*.55){g.full=true;haptic('medium')}else if(g.full&&x>-W()*.5)g.full=false},
+page(dx){const n=g.idx+(dx<0?1:-1),ok=n>=0&&n<g.list.length,x=ok?dx:dx*.22,el=g.el;el.style.transition='none';el.style.transform=`translateX(${x}px)`;el.style.opacity=String(1-Math.min(.35,Math.abs(x)/W()*.4))},
 ptr(dx,dy){const y=Math.min(130,dy*.5),p=g.p;g.y_=y;p.style.transition='none';p.style.transform=`translateY(${y-52}px)`;p.style.opacity=String(Math.min(1,y/46));p.firstChild.style.transform=`rotate(${Math.min(180,y/64*180)}deg)`;const app=$('app');app.style.transition='none';app.style.transform=`translateY(${y*.55}px)`;if(y>=64&&!g.armed){g.armed=true;haptic('light')}else if(y<64)g.armed=false}};
 const end={
-edge(){const i=$('swipe-back-indicator');if(i)i.classList.remove('on');const el=g.el,x=Math.max(0,g.dx||0);if((x>W()*.33||(g.vx>.55&&x>50))&&canBack()){haptic('light');slide(el,W(),0,170,()=>{back();if(el.id==='app'){el.style.transition='none';el.style.transform='translateX(-22%)';el.style.opacity='.6';void el.offsetWidth;slide(el,0,0,260,()=>clear(el))}else clear(el)})}else slide(el,0,0,220,()=>clear(el))},
+edge(){const i=$('swipe-back-indicator');if(i)i.classList.remove('on');const el=g.el,x=Math.max(0,g.dx||0);if((x>W()*sens()||(g.vx>.55&&x>50))&&canBack()){haptic('light');slide(el,W(),0,170,()=>{back();if(el.id==='app'){el.style.transition='none';el.style.transform='translateX(-22%)';el.style.opacity='.6';void el.offsetWidth;slide(el,0,0,260,()=>clear(el))}else clear(el)})}else slide(el,0,0,220,()=>clear(el))},
 sheet(){const sh=g.el,ov=$('sheet-overlay'),y=Math.max(0,g.dy||0);if(y>110||(g.vy>.7&&y>50)){haptic('light');slide(sh,0,H(),200,()=>{closeSheet();clear(sh);ov.style.opacity=''})}else{slide(sh,0,0,260,()=>clear(sh));ov.style.transition='opacity .25s';ov.style.opacity='';setTimeout(()=>{ov.style.transition=''},300)}},
-row(){const el=g.el,x=g.x_||0,a=rowAction(el);if(a&&(x<-W()*.55||(g.vx<-.9&&x<-ACT*1.2))){haptic('medium');slide(el,-W(),0,150,()=>{a.run();setTimeout(()=>{if(document.body.contains(el)){slide(el,0,0,220,()=>{clear(el);const c=actOf(el);if(c)c.classList.remove('on')})}},0)})}
+row(){const el=g.el,x=g.x_||0,a=rowAction(el),list=pages(),ni=list.indexOf(currentTab)+1;
+if(P('pages')&&openRow!==el&&g.vx<-1&&x<-30&&ni>0&&ni<list.length){slide(el,0,0,160,()=>{clear(el);const c=actOf(el);if(c)c.classList.remove('on')});pageTo(list[ni],1);return}
+if(a&&(x<-W()*.55||(g.vx<-.9&&x<-ACT*1.2))){haptic('medium');slide(el,-W(),0,150,()=>{a.run();setTimeout(()=>{if(document.body.contains(el)){slide(el,0,0,220,()=>{clear(el);const c=actOf(el);if(c)c.classList.remove('on')})}},0)})}
 else if(a&&x<-ACT*.45){slide(el,-ACT,0,200);openRow=el;const c=actOf(el);if(c)c.style.width=ACT+'px'}else{if(openRow===el)openRow=null;slide(el,0,0,200,()=>{clear(el);const c=actOf(el);if(c)c.classList.remove('on')})}},
+page(){const el=g.el,dx=g.dx||0,n=g.idx+(dx<0?1:-1),thr=Math.max(.12,sens()*.75)*W(),fast=Math.abs(g.vx)>.5&&g.vx*dx>0&&Math.abs(dx)>40;if(n>=0&&n<g.list.length&&(Math.abs(dx)>thr||fast)){const dir=dx<0?1:-1,to=g.list[n];slide(el,-dir*W(),0,150,()=>{switchTab(to);el.style.transition='none';el.style.transform=`translateX(${dir*W()*.3}px)`;el.style.opacity='.5';void el.offsetWidth;slide(el,0,0,230,()=>clear(el))})}else slide(el,0,0,220,()=>clear(el))},
 ptr(){const p=g.p,app=$('app');if(g.armed&&!refreshing){refreshing=true;p.classList.add('spin');p.style.transition='transform .2s';p.style.transform='translateY(14px)';slide(app,0,26,200);haptic('medium');refresh().finally(()=>{refreshing=false;p.classList.remove('spin');p.style.transition='transform .25s,opacity .25s';p.style.transform='translateY(-52px)';p.style.opacity='0';slide(app,0,0,240,()=>clear(app))})}else{p.style.transition='transform .22s,opacity .22s';p.style.transform='translateY(-52px)';p.style.opacity='0';slide(app,0,0,220,()=>clear(app))}}};
 async function refresh(){try{if(Cloud.on())await Promise.race([Cloud.reconnect(),new Promise(r=>setTimeout(r,6000))]);else await new Promise(r=>setTimeout(r,450))}catch(e){}render();haptic('success')}
 /* touch plumbing */
@@ -1748,15 +1783,17 @@ function onStart(e){if(e.touches.length!==1||!(e.target instanceof Element)){g=n
 if(openRow&&!openRow.contains(tg))closeRow();
 g={x:t.clientX,y:t.clientY,lx:t.clientX,ly:t.clientY,lt:Date.now(),vx:0,vy:0,dx:0,dy:0,mode:null};if(skip(tg)){g.mode='none';return}
 const open=sheetOpen(),sh=$('sheet');
-if(t.clientX<=22)g.cand='edge';
+if(t.clientX<=22&&P('back'))g.cand='edge';
 else if(open){if(sh&&sh.contains(tg)&&sh.scrollTop<=0&&!scrolledInner(tg,sh))g.cand='sheet'}
-else if(!AppLockManager.isLocked()&&me){const row=tg.closest('.activity-item[data-tx-id],[data-swipe]');if(row)g.row=row;if(window.scrollY<=0&&!scrolledInner(tg,document.body))g.cand='ptr';
-if(row&&row.hasAttribute('data-tx-id'))g.lp=setTimeout(()=>{if(g&&!g.mode){g.mode='none';noClickUntil=Date.now()+700;haptic('medium');openTxContextMenu(parseInt(row.getAttribute('data-tx-id')))}},500)}}
-function onMove(e){if(!g||g.mode==='none'||e.touches.length!==1)return;const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y,now=Date.now(),dt=Math.max(1,now-g.lt);g.vx=.6*g.vx+.4*(t.clientX-g.lx)/dt;g.vy=.6*g.vy+.4*(t.clientY-g.ly)/dt;g.lx=t.clientX;g.lt=now;g.dx=dx;g.dy=dy;
+else if(!AppLockManager.isLocked()&&me){const row=P('rows')?tg.closest('.activity-item[data-tx-id],[data-swipe]'):null,lrow=P('press')?tg.closest('.activity-item[data-tx-id]'):null;if(row)g.row=row;if(window.scrollY<=0&&!scrolledInner(tg,document.body)&&P('ptr'))g.cand='ptr';
+const edit=typeof DashboardManager!=='undefined'&&DashboardManager.isEditMode();g.page=P('pages')&&!edit&&pages().includes(currentTab)&&(!!tg.closest('#bottom-nav')||!scrolledX(tg));if(tg.closest('#bottom-nav')){g.row=null;g.cand=null}
+if(lrow)g.lp=setTimeout(()=>{if(g&&!g.mode){g.mode='none';noClickUntil=Date.now()+700;haptic('medium');openTxContextMenu(parseInt(lrow.getAttribute('data-tx-id')))}},500)}}
+function onMove(e){if(!g||g.mode==='none'||e.touches.length!==1)return;const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y,now=Date.now(),dt=Math.max(1,now-g.lt);g.vx=.6*g.vx+.4*(t.clientX-g.lx)/dt;g.vy=.6*g.vy+.4*(t.clientY-g.ly)/dt;g.lx=t.clientX;g.ly=t.clientY;g.lt=now;g.dx=dx;g.dy=dy;
 if(!g.mode){const ax=Math.abs(dx),ay=Math.abs(dy);if(ax<8&&ay<8)return;clearTimeout(g.lp);
 if(g.cand==='edge'&&dx>0&&ax>ay)g.mode='edge';
 else if(g.cand==='sheet'&&dy>0&&ay>ax*1.2)g.mode='sheet';
 else if(g.row&&ax>ay*1.2&&(dx<0||openRow===g.row)&&rowAction(g.row))g.mode='row';
+else if(g.page&&ax>=10&&ax>ay*1.35)g.mode='page';
 else if(g.cand==='ptr'&&dy>0&&ay>ax*1.2&&window.scrollY<=0&&!refreshing)g.mode='ptr';
 else{g.mode='none';return}begin[g.mode]()}
 if(e.cancelable)e.preventDefault();move[g.mode](dx,dy)}
@@ -1766,6 +1803,82 @@ function onClick(e){const t=e.target;if(!(t instanceof Element))return;const a=t
 if(Date.now()<noClickUntil||(openRow&&openRow.contains(t))){e.stopPropagation();e.preventDefault();if(openRow)closeRow()}}
 function init(){if(!IPHONE)return;document.addEventListener('touchstart',onStart,{passive:true});document.addEventListener('touchmove',onMove,{passive:false});document.addEventListener('touchend',onEnd);document.addEventListener('touchcancel',onCancel);document.addEventListener('click',onClick,true)}
 return{init,visit,back:()=>{if(IPHONE)back()},_state:()=>({hist:hist.slice(),openRow:!!openRow})}})();
+/* ═══ iPHONE-ONLY SETTINGS — glass look + sliders, gesture switches, voice input, Siri & Shortcuts links.
+   Everything is gated on IPHONE; Android, iPad and desktop never see or run any of it. ═══ */
+const IP=(function(){
+const DEF={glass:true,blur:28,tint:62,shine:55,sens:33,pages:true,back:true,rows:true,ptr:true,press:true,voice:true,speak:true,siriAuto:false};
+const live={};let pending=null,rec=null,spNext=false;
+const cfg=()=>Object.assign({},DEF,(typeof Store!=='undefined'&&Store.preferences&&Store.preferences.ip)||{},live);
+const on=k=>IPHONE&&cfg()[k]!==false&&!!cfg()[k];
+const num=(v,lo,hi,d)=>{v=Number(v);return isFinite(v)?Math.min(hi,Math.max(lo,v)):d};
+/* — glass — */
+function apply(a){const r=document.documentElement;try{r.classList.toggle('glass-on',IPHONE&&!!cfg().glass)}catch(e){}if(!IPHONE)return;
+let bg='#000000';try{bg=(a&&a.bgColor)||((Store.preferences||{}).appearance||{}).bgColor||JSON.parse(localStorage.getItem('lg_theme')||'{}').bgColor||bg}catch(e){}
+const c=cfg(),s=r.style,[R,G,B]=hexRGB(bg);s.setProperty('--glass-rgb',R+','+G+','+B);s.setProperty('--g-blur',num(c.blur,0,50,28)+'px');s.setProperty('--g-a',(.1+num(c.tint,0,100,62)/100*.85).toFixed(3));s.setProperty('--g-shine',(num(c.shine,0,100,55)/100).toFixed(2))}
+function set(k,v){const cur=Object.assign({},(Store.preferences&&Store.preferences.ip)||{});cur[k]=v;delete live[k];Store.updatePreferences({ip:cur});apply()}
+function toggle(k,where){set(k,!cfg()[k]);haptic('light');if(where==='siri')openSiri();else openSettings()}
+function reset(){Object.keys(live).forEach(k=>delete live[k]);Store.updatePreferences({ip:{}});apply();haptic('success');toast('iPhone settings reset');openSettings()}
+/* sliders: move the CSS instantly while dragging, save once when the finger lifts */
+const unit={blur:'px',tint:'%',shine:'%',sens:'%'};
+function liveSet(k,el){const v=Number(el.value),lo=Number(el.min),hi=Number(el.max);live[k]=v;el.style.setProperty('--v',((v-lo)/(hi-lo)*100)+'%');const t=document.getElementById('gs-v-'+k);if(t)t.textContent=v+(unit[k]||'');apply()}
+function commit(k,el){set(k,Number(el.value));haptic('light')}
+const slider=(k,label,lo,hi,note)=>{const v=num(cfg()[k],lo,hi,DEF[k]);return`<div class="gs ${k!=='sens'&&!cfg().glass?'dim':''}"><div class="gs-top"><span>${label}</span><b id="gs-v-${k}">${v}${unit[k]||''}</b></div><input class="glass-slider" type="range" min="${lo}" max="${hi}" step="1" value="${v}" style="--v:${(v-lo)/(hi-lo)*100}%" aria-label="${label}" oninput="IP.live('${k}',this)" onchange="IP.commit('${k}',this)">${note?`<div class="gs-note">${note}</div>`:''}</div>`};
+const sw=(k,ico,label,where)=>`<div class="set-row" onclick="IP.toggle('${k}'${where?",'"+where+"'":''})"><div class="set-left"><span class="ico">${ico}</span> ${label}</div><div class="toggle ${cfg()[k]?'on':''}"></div></div>`;
+function section(){if(!IPHONE)return'';const c=cfg();
+return`<div class="t-label" style="margin:16px 0 10px">iPhone</div>
+<div class="gprev ${c.glass?'':'off'}"><i style="width:70px;height:70px;left:18px;top:-18px"></i><i style="width:46px;height:46px;right:34px;top:20px;opacity:.7"></i><i style="width:90px;height:90px;right:-24px;bottom:30px;opacity:.5"></i><div class="gp-glass"><span>🏠 Home</span><span>🎯 Goals</span><span>🔔 Alerts</span></div></div>
+${sw('glass','🪟','Glass effects')}
+${slider('blur','Glass blur',0,50)}${slider('tint','Glass tint',0,100,'Lower = clearer, higher = more solid.')}${slider('shine','Glass shine',0,100,'The bright edge on the tab bar and sheets.')}
+${slider('sens','Swipe distance',15,60,'How far you drag before a swipe goes through.')}
+${sw('pages','↔','Swipe between pages')}<p class="progress-note" style="padding:0 4px 8px">On lists: drag a row slowly to delete it; a quick flick or a swipe on the tab bar changes page.</p>${sw('back','‹','Swipe back from the left edge')}${sw('rows','⌫','Swipe rows to delete')}${sw('ptr','↓','Pull down to refresh')}${sw('press','☝','Long-press for transaction menu')}${sw('voice','🎙','Voice input in Ask Logostics')}
+<div class="set-row" onclick="IP.openSiri()"><div class="set-left"><span class="ico">🗣</span> Siri & Shortcuts</div><div class="set-right">›</div></div>
+<button class="btn btn-secondary" style="margin-top:6px" onclick="IP.reset()">Reset iPhone settings</button>`}
+/* — voice input (Ask Logostics) — */
+const SR=typeof window!=='undefined'&&(window.SpeechRecognition||window.webkitSpeechRecognition);
+const canVoice=()=>IPHONE&&!!SR&&cfg().voice!==false;
+const micBtn=()=>canVoice()?`<button type="button" class="mic-btn" id="ai-mic" aria-label="Speak your question" onclick="IP.listen()">🎙</button>`:'';
+function micState(r){const b=document.getElementById('ai-mic');if(b)b.classList.toggle('rec',!!r)}
+function listen(){if(!canVoice())return;if(rec){try{rec.stop()}catch(e){}return}
+let final='';const r=new SR();rec=r;r.lang=navigator.language||'en-US';r.interimResults=true;r.maxAlternatives=1;r.continuous=false;
+r.onstart=()=>{micState(true);haptic('light')};
+r.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++){t+=e.results[i][0].transcript;if(e.results[i].isFinal)final=t}const inp=document.getElementById('ai-input');if(inp)inp.value=t};
+r.onerror=e=>{if(e&&(e.error==='not-allowed'||e.error==='service-not-allowed'))toast('Microphone or speech access is turned off for this site in iOS Settings');else if(e&&e.error==='no-speech')toast('Did not hear anything')};
+r.onend=()=>{rec=null;micState(false);const inp=document.getElementById('ai-input'),q=(final||(inp&&inp.value)||'').trim();if(q){spNext=cfg().speak!==false;submitAI(null,q)}};
+try{r.start()}catch(e){rec=null;micState(false)}}
+function say(text){try{if(!('speechSynthesis' in window))return;const t=String(text||'').replace(/\*\*/g,'').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'').replace(/\s+/g,' ').trim().slice(0,600);if(!t)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=navigator.language||'en-US';speechSynthesis.speak(u)}catch(e){}}
+function afterReply(r){if(spNext){spNext=false;say(r&&r.reply)}}
+/* — Siri & Shortcuts: links the Shortcuts app can open — */
+const base=()=>location.href.split('#')[0];
+const enc=encodeURIComponent;
+function readLink(){const h=String(location.hash||'');if(!/[#&]siri=/.test(h))return false;let p;try{p=new URLSearchParams(h.replace(/^#/,''))}catch(e){return false}const act=String(p.get('siri')||'').toLowerCase();if(!act)return false;
+const o={act};['q','type','amt','note','cat','name','speak'].forEach(k=>{if(p.has(k))o[k]=String(p.get(k)).slice(0,240)});pending=o;
+try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}return true}
+const TABS=['home','friends','goals','activity','notifications','profile','analytics'];
+const CATS={food:'food',eat:'food',lunch:'food',dinner:'food',coffee:'food',groceries:'food',shopping:'shopping',transport:'transport',gas:'transport',bills:'bills',fun:'entertainment',entertainment:'entertainment',health:'health'};
+function pump(){if(!pending||!me||(typeof AppLockManager!=='undefined'&&AppLockManager.isLocked()))return;const o=pending;pending=null;try{run(o)}catch(e){console.error(e);toast('Could not run that Siri command')}}
+function run(o){
+if(o.act==='ask'||o.act==='balance'){const q=o.act==='balance'?'what is my balance?':(o.q||'').trim();if(!q){openAI();return}openAI();spNext=o.speak==='1'||o.act==='balance';setTimeout(()=>submitAI(null,q),350);return}
+if(o.act==='tab'){const t=String(o.name||'').toLowerCase();if(TABS.includes(t))switchTab(t);else toast('Unknown page');return}
+if(o.act==='add'){const amt=parseFloat(o.amt),type=o.type==='income'?'income':'expense',note=(o.note||'').trim(),cat=type==='income'?(/gift/i.test(o.cat||'')?'gift':/pay/i.test(o.cat||'')?'paycheck':'other'):(CATS[String(o.cat||'').toLowerCase()]||CATS[note.split(/\s+/)[0].toLowerCase()]||'other');
+if(!(amt>0)){toast('Siri sent no amount');return}
+if(cfg().siriAuto){Store.addTransaction({type,amount:amt,description:note||(type==='income'?'Income':'Expense'),category:cat});haptic('success');toast((type==='income'?'Income':'Expense')+' added: '+fmt(amt));render();return}
+(type==='income'?openAddIncome:openAddExpense)();setTimeout(()=>{const pre=type==='income'?'in':'ex',a=document.getElementById(pre+'-amount'),d=document.getElementById(pre+'-desc');if(a)a.value=amt;if(d)d.value=note;const ch=document.querySelector('#'+pre+'-cats .chip[data-cat="'+cat+'"]');if(ch&&typeof pickChip==='function')pickChip(ch)},60);return}
+toast('Unknown Siri command')}
+function openSiri(){const b=base(),warn=location.protocol==='file:'?'<div class="social-card" style="font-size:13px;line-height:1.5;border-color:#ff9f0a">⚠ This copy is opened from a file. Shortcuts can only reach it from a real web address — open Logostics from its web link first, then come back here.</div>':'';
+const R=[
+['Ask Logostics','“Hey Siri, Ask Logostics” — say a question and get the answer spoken back.',['Dictate Text','URL Encode (Dictated Text)','Open URLs with the link below, adding the encoded text on the end'],b+'#siri=ask&speak=1&q='],
+['My balance','“Hey Siri, My balance” — reads out your balance.',['Open URLs with the link below'],b+'#siri=balance'],
+['Log expense','“Hey Siri, Log expense” — asks the amount and what it was for.',['Ask for Input (Number) → Amount','Ask for Input (Text) → Note','URL Encode (Note)','Open URLs with the link below, adding Amount after amt= and the encoded Note after note='],b+'#siri=add&type=expense&amt=&note='],
+['Open Goals','“Hey Siri, Open Goals” — jumps to a page. Use goals, friends, activity, notifications or profile.',['Open URLs with the link below'],b+'#siri=tab&name=goals']];
+openSheet(`<div class="sheet-title">Siri & Shortcuts</div>${warn}
+<p class="progress-note" style="line-height:1.55;margin-bottom:12px">Siri runs <b>Shortcuts</b>. Make one shortcut per phrase below, name it what you want to say, and it opens Logostics with the command. Nothing leaves your phone.</p>
+${R.map(r=>`<div class="sr-card"><div style="font-weight:700;font-size:15px">${escapeHtml(r[0])}</div><div class="progress-note" style="margin-top:2px">${escapeHtml(r[1])}</div><ol>${r[2].map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol><div class="sr-code">${escapeHtml(r[3])}</div><button class="mini-btn go" onclick="copyText(${escapeHtml(JSON.stringify(r[3]))},'Link copied')">Copy link</button></div>`).join('')}
+${sw('siriAuto','⚡','Add Siri expenses without asking','siri')}<p class="progress-note" style="padding:0 4px 10px">Off: Siri opens the Add Expense form filled in so you can check it first.</p>
+${sw('speak','🔊','Speak answers after a voice question','siri')}
+<div class="social-card" style="font-size:12.5px;line-height:1.55"><b>Good to know.</b> iOS opens Shortcut links in Safari, and a Home Screen app keeps its own separate data from Safari. For logging expenses, use the same one you normally use — add Logostics to the Home Screen from the Safari tab you use with Siri, or just use Safari. Speaking answers can be blocked by iOS until you tap the screen once.</div>
+<button class="btn btn-secondary" style="margin-top:6px" onclick="openSettings()">Back</button>`)}
+function init(){if(!IPHONE)return;apply();readLink();window.addEventListener('hashchange',()=>{if(readLink())pump()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)pump()})}
+return{cfg,on,apply,set,toggle,reset,live:liveSet,commit,section,canVoice,micBtn,listen,say,afterReply,openSiri,init,pump,_run:run,_read:readLink,_pending:()=>pending}})();
 
 /* ═══ RENDER CORE ═══ */
 let liveSheet=null,frTab='friends',frQuery='',notifFilter='all',lastTab=null,lastSig='',_rq=false,ggDraft={image:''},shDraft=null,afQuery='',afState=null,curA=null,curAU=null;
@@ -1776,7 +1889,7 @@ function checkAch(){if(!me)return;const s=Store.getSnapshot();Social.checkAchiev
 function render(){const app=document.getElementById('app');if(!app||AppLockManager.isLocked())return;document.body.classList.toggle('noauth',!me);clearAllMaps();
 if(!me){app.innerHTML=renderAuth();lastTab=null;updateBadges();return}
 const y=window.scrollY,same=lastTab===currentTab;const views={home:renderHome,friends:renderFriends,goals:renderGoals,activity:renderActivity,notifications:renderNotifications,profile:renderProfile,analytics:renderAnalytics};
-let html;try{html=(views[currentTab]||renderHome)()}catch(e){console.error(e);html=`<div class="container"><div class="empty"><div class="empty-ico">⚠</div><div class="empty-title">This screen hit an error</div><div class="empty-sub">${escapeHtml(e.message)}</div><button class="btn btn-primary" style="margin-top:20px" onclick="switchTab('home')">Go Home</button></div></div>`}app.innerHTML=html;lastTab=currentTab;app.classList.toggle('privacy-blur',privacyMode);try{sessionStorage.setItem('logostics_tab',currentTab)}catch(e){}
+let html;try{html=(views[currentTab]||renderHome)()}catch(e){console.error(e);html=`<div class="container"><div class="empty"><div class="empty-ico">⚠</div><div class="empty-title">This screen hit an error</div><div class="empty-sub">${escapeHtml(e.message)}</div><button class="btn btn-primary" style="margin-top:20px" onclick="switchTab('home')">Go Home</button></div></div>`}app.innerHTML=html;lastTab=currentTab;try{if(IP._pending())setTimeout(IP.pump,60)}catch(e){}app.classList.toggle('privacy-blur',privacyMode);try{sessionStorage.setItem('logostics_tab',currentTab)}catch(e){}
 if(same)window.scrollTo(0,y);if(currentTab==='goals')setTimeout(mountCardMaps,80);lastSig=dbSig();updateBadges();checkAch()}
 function scheduleRender(){if(_rq)return;_rq=true;raf(()=>{_rq=false;if(!me&&document.getElementById('au-user'))return;if(inField('#app'))return;render()})}
 function refreshLive(){const o=document.getElementById('sheet-overlay');if(!liveSheet||!o||!o.classList.contains('on')||inField('#sheet'))return;const sh=document.getElementById('sheet'),st=sh.scrollTop,f=liveSheet;f();liveSheet=f;sh.scrollTop=st}
@@ -1814,7 +1927,7 @@ else h=d.suggestions.length?d.suggestions.map(sugRow).join(''):frEmpty('✨','No
 if(frTab==='friends'&&!frQuery.trim()){h+=debtsHTML();const b=Social.blockedList();if(b.length)h+=`<div class="set-row" style="margin-top:18px" onclick="openBlocked()"><div class="set-left"><span class="ico">⛔</span> Blocked users</div><div class="set-right">${b.length} ›</div></div>`}return h}
 function renderFriends(){const d=frData(),cnt={friends:d.friends.length,online:d.online.length,offline:d.offline.length,requests:d.requests.length,sent:d.sent.length,suggestions:d.suggestions.length};
 return`<div class="container fade-in"><div class="top-header"><div class="t-large">Friends</div><div style="display:flex;gap:8px"><button class="icon-btn" onclick="openAddFriend()" style="background:var(--btn);color:var(--btn-text);border-color:var(--btn)">+</button></div></div>
-${cloudBanner()}<div class="social-card" style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div><div class="t-label" style="margin-bottom:8px">Your friend code</div><span class="friend-code">${escapeHtml(myCode())}</span></div><div style="display:flex;gap:6px"><button class="mini-btn" onclick="copyMyCode()">Copy</button><button class="mini-btn" onclick="shareMyCode()">Share</button></div></div>
+${cloudBanner()}<div class="social-card" style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div><div class="t-label" style="margin-bottom:8px">Your friend code</div><span class="friend-code" onclick="copyMyCode()" title="Tap to copy">${escapeHtml(myCode())}</span></div><div style="display:flex;gap:6px"><button class="mini-btn" onclick="shareMyCode()">Share</button></div></div>
 <div class="subtabs">${FR_TABS.map(([k,l])=>`<button class="subtab ${frTab===k?'active':''}" onclick="setFrTab('${k}')">${l}${cnt[k]?' ('+cnt[k]+')':''}</button>`).join('')}</div>
 ${['friends','online','offline'].includes(frTab)?`<div class="field"><input class="field-input" id="fr-search" placeholder="Search friends" value="${escapeHtml(frQuery)}" oninput="onFriendSearch(this.value)" autocomplete="off" style="padding:12px 16px;font-size:15px"></div>`:''}
 <div id="fr-list">${frListHTML()}</div></div>`}
@@ -2017,7 +2130,7 @@ function resetAppearance(){curA=Object.assign({},PRESETS.default,{font:'system'}
 
 /* ═══ SETTINGS ═══ */
 async function openSettings(){const ov=document.getElementById('sheet-overlay'),sh=document.getElementById('sheet'),st=ov&&ov.classList.contains('on')&&sh?sh.scrollTop:0;
-const prefs=Store.preferences,u=Accounts.current();if(!u)return;const notif=PlatformCapabilities.checkNotifications(),wa=await PlatformCapabilities.checkWebAuthn(),di=prefs.deviceInfo||{type:'unknown',os:'unknown',model:'unknown',appVersion:'3.2.0'},inc=Store.incomeSettings,adm=Admin.allowed();
+const prefs=Store.preferences,u=Accounts.current();if(!u)return;const notif=PlatformCapabilities.checkNotifications(),wa=await PlatformCapabilities.checkWebAuthn(),di=prefs.deviceInfo||{type:'unknown',os:'unknown',model:'unknown',appVersion:'3.3.0'},inc=Store.incomeSettings,adm=Admin.allowed();
 const cats=[['payday','Payday reminders'],['paycheckExpected','Paycheck expected'],['savings','Savings milestones'],['movingGoalDeadline','Moving goal deadline'],['movingGoalWeekly','Moving goal weekly'],['movingGoalProgress','Moving goal progress'],['movingGoalBehind','Moving goal behind-pace'],['goalDeadline','Goal deadline'],['weeklyBudget','Weekly budget'],['dailySummary','Daily summary'],['weeklySummary','Weekly summary'],['bills','Bill reminders'],['moneyOwed','Money owed'],['aiInsights','AI insights'],['checkIn','Check-in']];
 const tog=(key,ico,label)=>`<div class="set-row" onclick="togglePref('${key}')"><div class="set-left"><span class="ico">${ico}</span> ${label}</div><div class="toggle ${prefs[key]?'on':''}"></div></div>`;
 openSheet(`<div class="sheet-title">Settings</div>
@@ -2028,6 +2141,7 @@ ${adm?`<div class="t-label" style="margin-bottom:10px">Developer</div><div class
 <div class="t-label" style="margin:16px 0 10px">Device & App</div><div class="set-row static"><div class="set-left"><span class="ico">📱</span> Device</div><div class="set-right">${escapeHtml(di.model)} (${escapeHtml(di.os)})</div></div><div class="set-row static"><div class="set-left"><span class="ico">◈</span> App Version</div><div class="set-right">${escapeHtml(di.appVersion)}</div></div>
 <div class="t-label" style="margin:16px 0 10px">Security</div><div class="set-row" onclick="toggleAppLock()"><div class="set-left"><span class="ico">🔒</span> App Lock</div><div class="toggle ${prefs.appLockEnabled?'on':''}"></div></div><p class="progress-note" style="padding:0 4px 12px">${wa.available?'Uses your device authenticator via WebAuthn.':'Not available: '+escapeHtml(wa.reason||'')}</p>
 <div class="t-label" style="margin:16px 0 10px">Sound & Haptics</div>${tog('soundEnabled','🔊','Sound Effects')}${tog('hapticsEnabled','◉','Haptics')}
+${IPHONE?IP.section():''}
 <div class="t-label" style="margin:16px 0 10px">Notifications</div><div class="set-row static"><div class="set-left"><span class="ico">◔</span> Status</div><div class="set-right"><span class="cap-badge ${notif.supported&&notif.permission==='granted'?'ok':notif.supported?'warn':'no'}">${notif.supported?notif.permission:'unsupported'}</span></div></div>${notif.supported&&notif.permission==='default'?`<button class="btn btn-secondary" style="margin-bottom:6px" onclick="enableNotifications()">Enable Notifications</button>`:''}
 ${cats.map(([k,l])=>`<div class="set-row" onclick="toggleNotifCat('${k}')"><div class="set-left"><span class="ico">◈</span> ${l}</div><div class="toggle ${((prefs.notifCategories||{})[k]||{}).enabled?'on':''}"></div></div>`).join('')}
 <div class="t-label" style="margin:16px 0 10px">Data</div><div class="set-row" onclick="exportData()"><div class="set-left"><span class="ico">↑</span> Export My Data</div><div class="set-right">JSON ›</div></div><div class="set-row" onclick="resetMyData()"><div class="set-left"><span class="ico">×</span> Reset My Finance Data</div><div class="set-right">Delete ›</div></div>
@@ -2102,14 +2216,14 @@ window.addEventListener('error',ev=>showFatal(ev.message));window.addEventListen
 async function init(){
 try{const t=JSON.parse(localStorage.getItem('lg_theme')||'null');if(t)applyAppearance(t)}catch(e){}
 try{await Promise.race([Store.init(),new Promise(r=>setTimeout(r,4000))])}catch(e){console.error('Store init failed',e)}
-try{registerServiceWorker();LifecycleManager.init();AppLockManager.init();GestureManager.init()}catch(e){console.error(e)}
+try{registerServiceWorker();LifecycleManager.init();AppLockManager.init();GestureManager.init();IP.init()}catch(e){console.error(e)}
 try{await Promise.race([Cloud.boot(),new Promise(r=>setTimeout(r,9000))])}catch(e){console.error('Cloud boot failed',e)}
 try{Accounts.restore();if(me){Store.loadUser();applyAppearance();seedSeen()}}catch(e){console.error(e);me=null}
 Backend.subscribe(()=>{if(Cloud.on())return;reloadDB();migrateDB(db);Bus.emit('db',{local:false})});Bus.on('db',onDb);Bus.on('cloud',updateCloudStat);Store.subscribe(scheduleRender);
 try{const t=sessionStorage.getItem('logostics_tab');if(t&&['home','friends','goals','activity','notifications','profile','analytics'].includes(t))currentTab=t}catch(e){}
 document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.tab===currentTab));
 if(me&&Store.preferences.appLockEnabled&&AuthManager.hasCredential())AppLockManager.lock('startup');
-render();if(me){beat();if(PatchNotes.hasUnseenVersion()&&Store.preferences.lastSeenVersion)setTimeout(openPatchNotes,800);else if(!Store.preferences.lastSeenVersion)PatchNotes.markSeen()}
+render();try{IP.pump()}catch(e){}if(me){beat();if(PatchNotes.hasUnseenVersion()&&Store.preferences.lastSeenVersion)setTimeout(openPatchNotes,800);else if(!Store.preferences.lastSeenVersion)PatchNotes.markSeen()}
 setInterval(beat,30000);setInterval(presenceTick,20000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me){beat();scheduleRender()}});
 window.addEventListener('pagehide',()=>{Cloud.bye();if(me&&db.users[me]&&!Cloud.on()){try{commit(d=>{if(d.users[me])d.users[me].online=false},{kind:'presence'})}catch(e){}}});
