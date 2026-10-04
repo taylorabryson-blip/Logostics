@@ -311,8 +311,9 @@ input,textarea{user-select:text;-webkit-user-select:text}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 'use strict';
-/* Optional: paste your Firebase Realtime Database URL here to make friends/social work across devices. */
+/* Friends/social sync runs on a free Supabase project. CLOUD_URL (optional): your project URL, e.g. 'https://abcd.supabase.co', to skip the in-app setup. CLOUD_KEY: the project's publishable key (safe to ship in client code). */
 const CLOUD_URL='';
+const CLOUD_KEY='sb_publishable_tyaz3Ynes8AFu7YimRw7xQ_BbCSajC_';
 const KV={mem:{},get(k){try{const v=localStorage.getItem(k);if(v!==null)return v}catch(e){}return this.mem[k]===undefined?null:this.mem[k]},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}},del(k){delete this.mem[k];try{localStorage.removeItem(k)}catch(e){}}};
 const Platform=(function(){const ua=navigator.userAgent||'';const isIOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const isAndroid=/Android/i.test(ua);const isStandalone=window.matchMedia&&(window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true);const isNativeWrapper=!!(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.logostics);const isMobile=isIOS||isAndroid;let target='web';if(isIOS)target='ios';else if(isAndroid)target='android';
 const capabilities={notifications:typeof Notification!=='undefined',haptics:typeof navigator.vibrate==='function',speech:'speechSynthesis' in window,share:typeof navigator.share==='function',indexedDB:typeof indexedDB!=='undefined',localStorage:(function(){try{if(typeof localStorage==='undefined')return false;localStorage.setItem('__t__','1');localStorage.removeItem('__t__');return true}catch(e){return false}})(),webauthn:!!window.PublicKeyCredential,geolocation:'geolocation' in navigator,fetch:typeof fetch==='function'};
@@ -459,7 +460,7 @@ const lu=oldLocal(username),lg=!lu&&!KV.get('lg_dev_first')?legacy():null,lp=lu|
 let code=lp&&normCode(lp.friendCode);if(!code||!/^[A-Z0-9]{3}-[A-Z0-9]{4,6}$/.test(code)||Object.values(db.users).some(x=>x.friendCode===code))code=genCode(db,displayName);
 const t=nowISO();
 commit(d=>{d.users[id]=newUser(id,username,lu&&lu.displayName&&lu.username===username?lu.displayName:displayName,code,t,lp)},{kind:'register'});
-try{await Cloud.flush()}catch(e){return{ok:false,error:'The server rejected the new account: '+e.message+'. Check the database rules.'}}
+try{await Cloud.flush()}catch(e){return{ok:false,error:'The server rejected the new account: '+e.message+'. Run the setup SQL again in Supabase.'}}
 Cloud.setPriv(id,{prefs:lu?lu.prefs||null:lg?lg.prefs:null,income:lu?lu.income||null:lg?lg.income:null});
 if(lu){KV.set('lg_adopted_'+lu.id,id);if(typeof Store!=='undefined'&&Store.reown)Store.reown(lu.id,id)}
 await Cloud.claimOwner(id);
@@ -657,19 +658,25 @@ d.audit.unshift({id:genId('au_'),adminId:me,action:'announcement',target:o.targe
 if(count<0)return NO;if(!count)return{ok:false,error:'No recipients matched'};return{ok:true,count}}
 function audit(){if(!allowed())return NO;return{ok:true,log:db.audit.slice(0,50).map(a=>Object.assign({},a,{adminName:Social._nm(db.users[a.adminId])}))}}
 return{users,stats,detail,broadcast,audit,allowed}})();
-/* ═══ CLOUD SYNC — Firebase Realtime Database over REST + server-sent events ═══
-   Social data lives under s/…  (streamed to every device); passwords hashes live under auth/<username> (never streamed).
-   Finance data, preferences and income stay on the device. Local edits are applied instantly, then sent as one multi-path PATCH. */
+/* ═══ CLOUD SYNC — Supabase (Postgres) over REST, polled every few seconds ═══
+   One table, kv(path, value): social data lives under s/…  (readable by every device); credentials live under auth/<username>
+   (reachable only through a function, never listed). Writes go through kv_apply(), which is atomic and makes claims immutable.
+   Finance data, preferences and income stay on the device. Local edits are applied instantly, then sent in one batch. */
 const Cloud=(function(){
-const CFG='logostics_cloud_cfg',CACHE='logostics_cloud_cache',PRIV='logostics_priv_v1',PRIVATE=new Set(['salt','passHash','alg','roles','prefs','income']);
-function normURL(s){s=String(s||'').trim().replace(/\/+$/,'').replace(/\.json$/i,'');if(!s)return'';if(!/^https?:\/\//i.test(s))s='https://'+s;return/^https:\/\/[^\s/]+\.[a-z]+$|^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(s)?s:''}
-let lastUid=null,url=normURL(CLOUD_URL||KV.get(CFG)||''),tree={},es=null,pend={},ver=0,sending=false,flushT=0,rbT=0,cacheT=0,off=0,state=url?'connecting':'off',err='',lastEvt=0,sentAt=0,seenLA=0,retry=0,waiters=[],booted=false,bootP=null,pulling=false,wd=0;
+const CFG='logostics_cloud_cfg',CACHE='logostics_cloud_cache',PRIV='logostics_priv_v1',PRIVATE=new Set(['salt','passHash','alg','roles','prefs','income']),JKEY=/^(sb_publishable_|eyJ)[A-Za-z0-9_.\-]{10,}$/;
+function normURL(s){s=String(s||'').trim().replace(/[?#].*$/,'').replace(/\/(rest|auth|realtime|storage)\/v1.*$/,'').replace(/\/+$/,'');if(!s)return'';if(!/^https?:\/\//i.test(s))s='https://'+s;return/^https:\/\/[^\s/]+\.[a-z]{2,}$|^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(s)?s:''}
+const cfg=()=>{try{const c=JSON.parse(KV.get(CFG)||'null');return c&&typeof c==='object'?c:{}}catch(e){return{}}};
+let lastUid=null,url=normURL(CLOUD_URL||cfg().url||''),key=CLOUD_KEY||cfg().key||'',tree={},pend={},recent=new Map(),cursor=0,needFull=true,ver=0,sending=false,flushT=0,rbT=0,cacheT=0,off=0,state=url?'connecting':'off',err='',lastEvt=0,retry=0,waiters=[],booted=false,bootP=null,polling=false,wd=0;
+if(!JKEY.test(key))url='';
 if(url)db=blankDB();
 const emit=()=>Bus.emit('cloud',status());
 function status(){return{on:!!url,state,err,url,pending:Object.keys(pend).length,locked:!!CLOUD_URL,owner:ownerId()}}
 const ownerId=()=>{const o=tree.meta&&tree.meta.owner;return o&&o.uid||null};
-async function http(method,path,body,opt){opt=opt||{};const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),opt.timeout||12000);
-try{const r=await fetch(url+'/'+path+'.json',{method,body:body===undefined?undefined:JSON.stringify(body),signal:ctl.signal,keepalive:!!opt.keepalive});if(!r.ok){const e=new Error('HTTP '+r.status);e.status=r.status;throw e}return await r.json()}finally{clearTimeout(t)}}
+const hdr=k=>{const h={apikey:k||key,'content-type':'application/json'};if(/^eyJ/.test(k||key))h.authorization='Bearer '+(k||key);return h};
+async function api(method,path,body,opt){opt=opt||{};const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),opt.timeout||12000);
+try{const r=await fetch(url+'/rest/v1/'+path,{method,headers:hdr(),body:body===undefined?undefined:JSON.stringify(body),signal:ctl.signal,keepalive:!!opt.keepalive});if(!r.ok){const e=new Error('HTTP '+r.status);e.status=r.status;try{e.info=await r.json()}catch(x){}throw e}const tx=await r.text();return tx?JSON.parse(tx):null}finally{clearTimeout(t)}}
+const rpc=(fn,args,opt)=>api('POST','rpc/'+fn,args,opt);
+const ts=s=>{const n=Date.parse(String(s||'').replace(/(\.\d{3})\d+/,'$1'));return isNaN(n)?0:n};
 /* — tree ↔ db — */
 function setPath(root,path,v){const k=path.split('/').filter(Boolean),st=[root];let o=root;
 for(let i=0;i<k.length-1;i++){if(o[k[i]]===null||typeof o[k[i]]!=='object'){if(v===null||v===undefined)return;o[k[i]]={}}o=o[k[i]];st.push(o)}
@@ -698,60 +705,75 @@ const privAll=()=>{try{return JSON.parse(KV.get(PRIV)||'{}')}catch(e){return{}}}
 function mergePriv(){const p=privAll();Object.values(db.users).forEach(u=>{const x=p[u.id];if(x){u.prefs=x.prefs||null;u.income=x.income||null}})}
 function setPriv(id,o){const p=privAll();p[id]=Object.assign(p[id]||{},o);KV.set(PRIV,JSON.stringify(p));if(db.users[id])Object.assign(db.users[id],o)}
 /* — applying changes — */
-function reapply(){Object.keys(pend).forEach(p=>setPath(tree,p,pend[p].v))}
-function changed(){lastEvt=Date.now();const la=lastUid&&tree.users&&tree.users[lastUid]&&tree.users[lastUid].lastActive;
-if(typeof la==='number'&&la!==seenLA){seenLA=la;if(Date.now()-sentAt<9000)off=la-Date.now()}
-reapply();
-if(state!=='live'&&es&&es.readyState===1){state='live';err=''}
-if(!rbT)rbT=setTimeout(rebuild,30);
-if(!cacheT)cacheT=setTimeout(()=>{cacheT=0;try{KV.set(CACHE,JSON.stringify({url,tree}))}catch(e){}},4000)}
+function reapply(){const now=Date.now();recent.forEach((x,p)=>{if(now-x.t>4000)recent.delete(p);else setPath(tree,p,x.v)});Object.keys(pend).forEach(p=>setPath(tree,p,pend[p].v))}
+function changed(){lastEvt=Date.now();reapply();if(!rbT)rbT=setTimeout(rebuild,30);if(!cacheT)cacheT=setTimeout(()=>{cacheT=0;try{KV.set(CACHE,JSON.stringify({url,tree,cursor}))}catch(e){}},4000)}
 function rebuild(){rbT=0;try{db=fromTree(JSON.parse(JSON.stringify(tree)));migrateDB(db);mergePriv()}catch(e){console.error('Logostics: sync rebuild failed',e);return}Bus.emit('db',{remote:true});emit()}
 function local(ch){const keys=Object.keys(ch);if(!keys.length)return;
 keys.forEach(p=>{let v=ch[p];if(/^users\/[^/]+\/lastActive$/.test(p))v=new Date(Date.now()+off).toISOString();setPath(tree,p,v);pend[p]={v,n:++ver}});
 clearTimeout(flushT);flushT=setTimeout(send,30);emit()}
 const settle=e=>{waiters.splice(0).forEach(w=>{clearTimeout(w.t);e?w.rej(e):w.res()})};
-async function send(){if(sending||!url)return;const keys=Object.keys(pend);if(!keys.length){settle();return}
-sending=true;const body={},vs={};keys.forEach(p=>{vs[p]=pend[p].n;body[p]=/^users\/[^/]+\/lastActive$/.test(p)?{'.sv':'timestamp'}:pend[p].v});
-const lk=keys.find(p=>/^users\/[^/]+\/lastActive$/.test(p));if(lk){sentAt=Date.now();lastUid=lk.split('/')[1]}
-try{await http('PATCH','s',body);keys.forEach(p=>{if(pend[p]&&pend[p].n===vs[p])delete pend[p]});retry=0;err='';sending=false;if(Object.keys(pend).length)send();else{settle();emit()}}
-catch(e){sending=false;if(e.status>=400&&e.status<500){keys.forEach(p=>{if(pend[p]&&pend[p].n===vs[p])delete pend[p]});err=e.status===401||e.status===403?'The server refused a change (check the database rules)':'The server rejected a change';settle(new Error(err));emit();pull().catch(()=>{});if(Object.keys(pend).length)send()}
+const isObj=v=>v&&typeof v==='object'&&!Array.isArray(v)&&!('.sv' in v);
+function leaves(p,o,ops){for(const k in o){const v=o[k];if(v===null||v===undefined||!k||k.includes('/'))continue;const q=p+'/'+k;if(isObj(v))leaves(q,v,ops);else ops.push({k:'set',p:'s/'+q,v})}}
+function flatten(p,v,ops){if(v===null||v===undefined){ops.push({k:'del',p:'s/'+p});return}if(isObj(v)){ops.push({k:'del',p:'s/'+p});leaves(p,v,ops)}else ops.push({k:'set',p:'s/'+p,v})}
+async function send(){if(sending||!url)return;const keys=Object.keys(pend).filter(p=>!/^meta(\/|$)/.test(p));if(!keys.length){Object.keys(pend).forEach(p=>delete pend[p]);settle();return}
+sending=true;const ops=[],vs={},at={};keys.forEach(p=>{vs[p]=pend[p].n;if(/^users\/[^/]+\/lastActive$/.test(p)){at[p]=ops.length;ops.push({k:'set',p:'s/'+p,v:{'.sv':'timestamp'}})}else flatten(p,pend[p].v,ops)});
+const lk=keys.find(p=>p in at);if(lk)lastUid=lk.split('/')[1];const t0=Date.now();
+try{const res=[];for(let i=0;i<ops.length;i+=400){const r=await rpc('kv_apply',{ops:ops.slice(i,i+400)});if(Array.isArray(r))r.forEach((x,j)=>res[i+j]=x)}
+if(lk&&typeof res[at[lk]]==='number')off=res[at[lk]]-(t0+Date.now())/2;
+keys.forEach(p=>{if(pend[p]&&pend[p].n===vs[p]){recent.set(p,{v:pend[p].v,t:Date.now()});delete pend[p]}});retry=0;err='';sending=false;if(Object.keys(pend).length)send();else{settle();emit();setTimeout(tick,400)}}
+catch(e){sending=false;if(e.status>=400&&e.status<500){keys.forEach(p=>{if(pend[p]&&pend[p].n===vs[p])delete pend[p]});err=e.status===404||e.status===401||e.status===403?'Cloud setup looks incomplete — run the setup SQL again':'The server rejected a change';settle(new Error(err));emit();needFull=true;tick();if(Object.keys(pend).length)send()}
 else{state='offline';emit();setTimeout(send,Math.min(15000,1000*Math.pow(2,retry++)))}}}
 function flush(ms){return new Promise((res,rej)=>{if(!Object.keys(pend).length&&!sending)return res();const w={res,rej,t:setTimeout(()=>{waiters=waiters.filter(x=>x!==w);rej(new Error('timed out'))},ms||15000)};waiters.push(w);clearTimeout(flushT);flushT=setTimeout(send,0)})}
 /* — remote — */
-async function pull(path,timeout){if(!url)return;const p=path?'s/'+path:'s';const d=await http('GET',p,undefined,{timeout:timeout||12000});if(path)setPath(tree,path,d===undefined?null:d);else tree=d&&typeof d==='object'?d:{};changed();clearTimeout(rbT);rbT=0;rebuild()}
-const get=async path=>{try{const r=await http('GET',path);return r===undefined?null:r}catch(e){return undefined}};
-function onPut(e){let m;try{m=JSON.parse(e.data)}catch(x){return}const p=(m.path||'/').replace(/^\/+|\/+$/g,'');if(!p)tree=m.data&&typeof m.data==='object'?m.data:{};else setPath(tree,p,m.data===undefined?null:m.data);changed()}
-function onPatch(e){let m;try{m=JSON.parse(e.data)}catch(x){return}const p=(m.path||'/').replace(/^\/+|\/+$/g,'');Object.keys(m.data||{}).forEach(k=>setPath(tree,(p?p+'/':'')+k,m.data[k]));changed()}
-function connect(){if(!url||es||typeof EventSource==='undefined')return;
-try{es=new EventSource(url+'/s.json')}catch(e){es=null;return}
-es.addEventListener('put',onPut);es.addEventListener('patch',onPatch);es.addEventListener('keep-alive',()=>{lastEvt=Date.now()});
-es.addEventListener('open',()=>{state='live';err='';lastEvt=Date.now();retry=0;emit();send()});
-es.addEventListener('cancel',()=>{err='The server denied read access (check the database rules)';state='offline';closeES();emit()});
-es.addEventListener('error',()=>{state='offline';emit();if(es&&es.readyState===2){closeES();setTimeout(connect,Math.min(30000,2000*(++retry)))}})}
-function closeES(){if(es){try{es.close()}catch(e){}es=null}}
-function reconnect(){closeES();connect();send();pull().catch(()=>{})}
-function watch(){if(wd)return;wd=setInterval(()=>{if(!url||document.hidden)return;if(state!=='live'&&!pulling){pulling=true;pull(8000).then(()=>{if(!es)connect()}).catch(()=>{}).finally(()=>{pulling=false})}else if(Date.now()-lastEvt>80000)reconnect();if(Object.keys(pend).length&&!sending)send()},5000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&url&&Date.now()-lastEvt>20000)reconnect()});window.addEventListener('online',()=>{if(url)reconnect()});window.addEventListener('offline',()=>{state='offline';emit()})}
+async function rows(q,timeout){const out=[];let last=0;for(;;){const r=await api('GET','kv?select=path,value,deleted,seq,updated_at&path=like.s/*&'+q+(q?'&':'')+'seq=gt.'+last+'&order=seq.asc&limit=1000',undefined,{timeout});out.push(...r);if(r.length<1000||out.length>200000)break;last=r[r.length-1].seq}return out}
+async function pull(path,timeout){if(!url)return;const r=await rows('deleted=eq.false',timeout||12000),t={};let mx=0;r.forEach(x=>{setPath(t,x.path.slice(2),x.value);mx=Math.max(mx,ts(x.updated_at))});tree=t;cursor=mx;needFull=false;changed();clearTimeout(rbT);rbT=0;rebuild()}
+async function poll(timeout){const r=await rows('updated_at=gt.'+encodeURIComponent(new Date(Math.max(0,cursor-10000)).toISOString()),timeout);let mx=cursor;r.forEach(x=>{mx=Math.max(mx,ts(x.updated_at))});
+r.filter(x=>x.deleted).forEach(x=>setPath(tree,x.path.slice(2),null));r.filter(x=>!x.deleted).forEach(x=>setPath(tree,x.path.slice(2),x.value));cursor=mx;if(r.length)changed()}
+const get=async path=>{try{const r=await api('GET','kv?select=value&deleted=eq.false&path=eq.'+encodeURIComponent(path));return r&&r[0]?r[0].value:null}catch(e){return undefined}};
+async function tick(){if(!url||polling)return;polling=true;const was=state;try{if(needFull)await pull(8000);else await poll(8000);state='live';err='';retry=0;lastEvt=Date.now();if(Object.keys(pend).length&&!sending)send();if(was!=='live')emit()}catch(e){state='offline';if(was!=='offline')emit();retry++}finally{polling=false}}
+function reconnect(){tick();send()}
+function watch(){if(wd)return;const loop=()=>{wd=setTimeout(async()=>{await tick();loop()},document.hidden?10000:Math.min(15000,2500*(retry+1)))};loop();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&url)tick()});window.addEventListener('online',()=>{if(url)reconnect()});window.addEventListener('offline',()=>{state='offline';emit()})}
 /* — boot / configuration — */
-function applyHash(){const m=(location.hash||'').match(/[#&]cloud=([^&]+)/);if(!m||CLOUD_URL)return false;let u='';try{u=normURL(decodeURIComponent(m[1]))}catch(e){}try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}if(!u||u===url)return false;url=u;KV.set(CFG,u);KV.del(CACHE);state='connecting';return true}
+function applyHash(){const m=(location.hash||'').match(/[#&]cloud=([^&]+)/);if(!m||CLOUD_URL)return false;let u='',k='';try{u=candidates(decodeURIComponent(m[1]))[0]||'';const km=(location.hash||'').match(/[#&]key=([^&]+)/);k=km?decodeURIComponent(km[1]):''}catch(e){}try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+k=CLOUD_KEY||k||key;if(!u||!JKEY.test(k)||(u===url&&k===key))return false;url=u;key=k;KV.set(CFG,JSON.stringify({url,key}));KV.del(CACHE);state='connecting';needFull=true;return true}
 window.addEventListener('hashchange',()=>{if(applyHash())location.reload()});
 function boot(){if(bootP)return bootP;return bootP=(async()=>{
 applyHash();if(!url)return;
-try{const c=JSON.parse(KV.get(CACHE)||'null');if(c&&c.url===url&&c.tree){tree=c.tree;reapply();rebuild()}}catch(e){}
+try{const c=JSON.parse(KV.get(CACHE)||'null');if(c&&c.url===url&&c.tree){tree=c.tree;cursor=c.cursor||0;reapply();rebuild()}}catch(e){}
 try{await pull(7000);state='live'}catch(e){state='offline';err='Offline — showing saved data'}
-emit();connect();watch();booted=true})()}
-async function ready(){if(!url)return{ok:false,error:'Cloud sync is not set up'};if(!booted)await boot();if(state!=='live'){try{await pull(8000);state=es&&es.readyState===1?'live':state}catch(e){return{ok:false,error:'Cannot reach the cloud server. Check your connection and try again.'}}}return{ok:true}}
-async function test(u){const n=normURL(u);if(!n)return{ok:false,error:'Enter the full database URL, like https://your-project-default-rtdb.firebaseio.com'};
-try{const r=await fetch(n+'/auth.json?shallow=true',{signal:AbortSignal.timeout?AbortSignal.timeout(9000):undefined});if(r.status===404)return{ok:false,error:'That database URL was not found'};if(r.status===401||r.status===403){const r2=await fetch(n+'/s.json?shallow=true');if(!r2.ok)return{ok:false,error:'The database rules block access — paste the rules shown below'}}else if(!r.ok)return{ok:false,error:'Server answered '+r.status};return{ok:true,url:n}}catch(e){return{ok:false,error:'Could not reach that URL. Check it and your connection.'}}}
-async function configure(u){const t=await test(u);if(!t.ok)return t;KV.set(CFG,t.url);KV.del(CACHE);return t}
+emit();watch();booted=true;if(Object.keys(pend).length)send()})()}
+async function ready(){if(!url)return{ok:false,error:'Cloud sync is not set up'};if(!booted)await boot();if(state!=='live'){try{await pull(8000);state='live'}catch(e){return{ok:false,error:'Cannot reach the cloud server. Check your connection and try again.'}}}return{ok:true}}
+function candidates(s){s=String(s||'').trim().replace(/^["'<\s]+|["'>\s]+$/g,'');if(!s)return[];
+const m=s.match(/\/project\/([a-z0-9]{15,30})(?:[\/?#]|$)/i)||s.match(/^https?:\/\/([a-z0-9]{15,30})\.supabase\.(?:co|in)\b/i)||s.match(/^([a-z0-9]{15,30})$/i);
+if(m)return['https://'+m[1].toLowerCase()+'.supabase.co'];const n=normURL(s);return n?[n]:[]}
+async function netState(){if(navigator.onLine===false)return'offline';try{await fetch('https://www.gstatic.com/generate_204',{mode:'no-cors',cache:'no-store',signal:AbortSignal.timeout?AbortSignal.timeout(6000):undefined});return'ok'}catch(e){return'blocked'}}
+const E=(error,hint,x)=>Object.assign({ok:false,error,hint},x||{});
+async function test(u,k0){const raw=String(u||'').trim(),k=CLOUD_KEY||k0||key;if(!raw)return E('Type or paste your project address first.','input');
+if(/YOUR_PROJECT|your[-_ ]?project|example|xxxx|[<>]/i.test(raw))return E('That is just the example text. Use the address of your own Supabase project.','example');
+const cs=candidates(raw);if(!cs.length)return E('That does not look like a Supabase project address.','input');if(!JKEY.test(k))return E('This copy of the app has no Supabase key in it.','nokey');
+const c=cs[0],call=async(m,p,b)=>{try{return await fetch(c+'/rest/v1/'+p,{method:m,headers:hdr(k),body:b?JSON.stringify(b):undefined,cache:'no-store',signal:AbortSignal.timeout?AbortSignal.timeout(9000):undefined})}catch(e){return null}};
+let r=await call('GET','kv?select=path&limit=1');
+if(!r){const n=await netState();if(n==='offline')return E('You are offline. Connect to the internet and try again.','offline');if(n==='blocked')return E('This page is not allowed to use the internet.','sandbox');return E('No Supabase project answers at that address.','notfound',{url:c})}
+const info=await r.json().catch(()=>null),txt=JSON.stringify(info||'');
+if(r.status===401||r.status===403){return /api key|jwt|apikey/i.test(txt)?E('Supabase did not accept the app key for this project.','key',{url:c}):E('Supabase is blocking access to the table.','sql',{url:c})}
+if(r.status===404||/PGRST20[0-9]|42P01|schema cache/i.test(txt))return /PGRST205|42P01|schema cache|kv/i.test(txt)?E('The setup SQL has not been run yet.','sql',{url:c}):E('No Supabase project answers at that address.','notfound',{url:c});
+if(r.status>=500)return E('Supabase is not answering.','paused',{url:c});if(!r.ok)return E('Supabase answered with an error ('+r.status+').','server',{url:c});if(!Array.isArray(info))return E('No Supabase project answers at that address.','notfound',{url:c});
+const w=await call('POST','rpc/kv_apply',{ops:[{k:'set',p:'s/activity/__probe',v:1},{k:'del',p:'s/activity/__probe'}]});if(!w)return E('Lost the connection while testing.','net',{url:c});
+if(!w.ok)return w.status>=500?E('Supabase is not answering.','paused',{url:c}):E('The setup SQL is missing or out of date.','sql',{url:c});
+const wj=await w.json().catch(()=>null);if(!Array.isArray(wj))return E('The setup SQL is missing or out of date.','sql',{url:c});
+return{ok:true,url:c,key:k}}
+async function configure(u,k){const t=await test(u,k);if(!t.ok)return t;url=t.url;key=t.key;KV.set(CFG,JSON.stringify({url,key}));KV.del(CACHE);return t}
 function disconnect(){if(CLOUD_URL)return;KV.del(CFG);KV.del(CACHE)}
-const inviteLink=()=>url?location.href.split('#')[0]+'#cloud='+encodeURIComponent(url):'';
+const ref=()=>{const m=url.match(/^https:\/\/([a-z0-9]{15,30})\.supabase\.co$/i);return m?m[1]:url};
+const inviteLink=()=>url?location.href.split('#')[0]+'#cloud='+encodeURIComponent(ref())+(key&&key!==CLOUD_KEY?'&key='+encodeURIComponent(key):''):'';
+const inviteCode=()=>url?ref():'';
 /* — credentials & ownership — */
-const getAuth=async name=>{try{const r=await http('GET','auth/'+name);return r===undefined?null:r}catch(e){return undefined}};
-async function claim(name,rec){try{await http('PUT','auth/'+name,rec)}catch(e){if(!(e.status>=400&&e.status<500))return'error'}const cur=await getAuth(name);if(cur===undefined)return'error';return cur&&cur.uid===rec.uid?'ok':cur?'taken':'error'}
-async function claimOwner(uid){try{let o=await get('s/meta/owner');if(o===null)try{await http('PUT','s/meta/owner',{uid,at:nowISO()})}catch(e){}o=await get('s/meta/owner');if(o)setPath(tree,'meta/owner',o);changed();return o&&o.uid}catch(e){return null}}
-function bye(){if(!url||!me)return;try{fetch(url+'/s/users/'+me+'/online.json',{method:'PUT',body:'false',keepalive:true})}catch(e){}}
-return{on:()=>!!url,offset:()=>off,status,index,diff,local,boot,ready,flush,pull,get,getAuth,claim,claimOwner,ownerId,setPriv,mergePriv,test,configure,disconnect,inviteLink,bye,normURL,reconnect}})();
+const getAuth=async name=>{try{const r=await rpc('kv_get_auth',{n:name});return r===undefined?null:r}catch(e){return undefined}};
+async function claim(name,rec){try{const r=await rpc('kv_apply',{ops:[{k:'add',p:'auth/'+name,v:rec}]});if(r&&r[0]===true)return'ok'}catch(e){if(!(e.status>=400&&e.status<500))return'error'}const cur=await getAuth(name);if(cur===undefined)return'error';return cur&&cur.uid===rec.uid?'ok':cur?'taken':'error'}
+async function claimOwner(uid){try{await rpc('kv_apply',{ops:[{k:'add',p:'s/meta/owner',v:{uid,at:nowISO()}}]});const o=await get('s/meta/owner');if(o)setPath(tree,'meta/owner',o);changed();return o&&o.uid}catch(e){return null}}
+function bye(){if(!url||!me)return;try{fetch(url+'/rest/v1/rpc/kv_apply',{method:'POST',headers:hdr(),body:JSON.stringify({ops:[{k:'set',p:'s/users/'+me+'/online',v:false}]}),keepalive:true})}catch(e){}}
+return{on:()=>!!url,offset:()=>off,status,index,diff,local,boot,ready,flush,pull,get,getAuth,claim,claimOwner,ownerId,setPriv,mergePriv,test,configure,disconnect,inviteLink,inviteCode,candidates,bye,normURL,reconnect}})();
 /* ═══ STORE: per-user finance data + settings (single source of truth for finance) ═══ */
 const Store=(function(){
 const DB_NAME='LogosticsFinanceDB',DB_VERSION=3,FIN_KEY='logostics_fin_v1';
@@ -933,7 +955,7 @@ return{getConfig,saveConfig,isEditMode:()=>edit,enterEditMode(){edit=true;render
 
 const PatchNotes=(function(){
 const CURRENT='3.1.0';
-const NOTES=[{version:'3.1.0',date:'2026-10-04',title:'Cloud Friends, Paycheck Forecasts & Smarter AI',new:['Cloud sync: friends, requests, shared goals, group goals and announcements now work between different people and devices','Invite link: share one link and friends join the same network','Moving goals can be funded from your paychecks (% or $ per paycheck) and finish dates follow your real payday schedule from the Income Estimator','Income Estimator shows when each of your goals will finish','Goals can save per paycheck','Assistant rebuilt: forecasts, what-if scenarios, affordability, runway, spending and income by date or category, debts, friends, and confirmed actions like logging expenses or setting a paycheck plan'],improved:['Developer Menu is owner-only: the first account on your cloud database is the owner and everyone else is locked out','Passwords are hashed with PBKDF2 and never stored in the shared data','Usernames are unique across all devices']},
+const NOTES=[{version:'3.1.0',date:'2026-10-04',title:'Cloud Friends, Paycheck Forecasts & Smarter AI',new:['Cloud sync: friends, requests, shared goals, group goals and announcements now work between different people and devices','Friends join with one tap on your invite link or a short invite code — no setup for them; the owner gets a guided checklist with plain-English fixes','Moving goals can be funded from your paychecks (% or $ per paycheck) and finish dates follow your real payday schedule from the Income Estimator','Income Estimator shows when each of your goals will finish','Goals can save per paycheck','Assistant rebuilt: forecasts, what-if scenarios, affordability, runway, spending and income by date or category, debts, friends, and confirmed actions like logging expenses or setting a paycheck plan'],improved:['Developer Menu is owner-only: the first account on your cloud database is the owner and everyone else is locked out','Passwords are hashed with PBKDF2 and never stored in the shared data','Usernames are unique across all devices']},
 {version:'3.0.0',date:'2026-10-03',title:'Real Social Platform',new:['Real accounts with unique, permanent friend codes','Full friend-request lifecycle (send, accept, decline, cancel, remove, block)','Mutual friends and suggestions from real relationships','Real profiles with avatar, banner, bio, status, achievements','Persistent notifications with live cross-tab delivery','Shared goals with privacy (private / friends / specific / group)','Group goals with owner controls and member contributions','Developer menu with real user tracking and announcements','Autosaving Income Estimator','Full theme and font customization that persists'],improved:['Goal completion dates now use real contribution, deadline and income data','Finance data is now stored per account']},
 {version:'2.0.0',date:'2026-10-02',title:'Social groundwork',new:['Friends tab','Notifications tab','Group goals']},
 {version:'1.8.0',date:'2026-10-01',title:'Friend Codes, Debts & Reminders',new:['Friend codes','Debt tracking','Games with friends']},
@@ -1268,7 +1290,7 @@ function authModeNow(){const a=Accounts.accounts().length;return a||Cloud.on()?(
 function renderAuth(){const accts=Accounts.accounts(),cs=Cloud.status(),mode=authModeNow(),tabs=accts.length||cs.on,firstEver=cs.on&&!Object.keys(db.users).length;
 return`<div class="auth-wrap fade-in"><div class="auth-logo">Logostics<span class="brand-dot"></span></div><div class="auth-sub">${mode==='register'?'Create your account to start tracking goals and sharing progress with friends.':'Sign in to your account.'}</div>
 ${Platform.capabilities.localStorage?'':`<div class="err" style="text-align:center;margin-bottom:16px;line-height:1.5">⚠ This browser or preview is blocking local storage, so accounts cannot be saved. Open the file directly in Safari, Chrome or Firefox.</div>`}
-${cs.on?`<div class="progress-note" id="cloud-stat" style="text-align:center;margin-bottom:14px">${escapeHtml(cloudText(cs))}</div>`:`<div class="social-card" style="text-align:center;margin-bottom:18px"><div style="font-weight:600;margin-bottom:4px">Make friends work across devices</div><div class="progress-note" style="margin-bottom:10px">Connect free cloud sync so you and your friends can find each other. It takes about 2 minutes.</div><button class="btn btn-secondary" type="button" onclick="openCloudSetup()">Set up cloud sync</button></div>`}
+${cs.on?`<div class="progress-note" id="cloud-stat" style="text-align:center;margin-bottom:14px">${escapeHtml(cloudText(cs))}</div>`:`<div class="social-card" style="text-align:center;margin-bottom:18px"><div style="font-weight:600;margin-bottom:4px">Want friends?</div><div class="progress-note" style="margin-bottom:12px;line-height:1.5">Friends need one shared place to meet. Got an invite from a friend? Join in one step.</div><button class="btn btn-secondary" type="button" onclick="openJoinCloud()">I have an invite</button><button class="mini-btn" type="button" style="margin-top:10px" onclick="openCloudSetup()">I'm the owner — set it up</button></div>`}
 ${tabs?`<div class="segmented" style="margin-bottom:20px"><button class="seg ${mode==='login'?'active':''}" type="button" onclick="setAuthMode('login')">Sign in</button><button class="seg ${mode==='register'?'active':''}" type="button" onclick="setAuthMode('register')">Create account</button></div>`:''}
 <form id="auth-form" onsubmit="submitAuth(event)" autocomplete="on">
 <div class="field"><label class="field-label">Username</label><input class="field-input" id="au-user" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" placeholder="yourname" maxlength="20" onkeydown="authKey(event)"></div>
@@ -1284,31 +1306,115 @@ function authKey(e){if(e.key==='Enter'){e.preventDefault();submitAuth(e)}}
 async function submitAuth(e){if(e&&e.preventDefault)e.preventDefault();if(authBusy)return;const mode=authModeNow();const err=document.getElementById('auth-err'),btn=document.getElementById('au-btn');if(err)err.textContent='';authBusy=true;if(btn)btn.disabled=true;
 try{const r=mode==='register'?await Accounts.register({username:$v('au-user'),displayName:$v('au-name'),password:$v('au-pass')}):await Accounts.login($v('au-user'),$v('au-pass'));
 if(!r.ok){if(err)err.textContent=r.error;haptic('error');return}await onSignedIn(mode==='register',r)}catch(x){console.error(x);const m='Error: '+((x&&x.message)||x);const el=document.getElementById('auth-err');if(el)el.textContent=m;else toast(m)}finally{authBusy=false;const b=document.getElementById('au-btn');if(b)b.disabled=false}}
-async function onSignedIn(isNew,r){authMode=null;try{beat()}catch(e){}try{Store.loadUser();applyAppearance();seedSeen()}catch(x){console.error(x)}currentTab='home';try{sessionStorage.setItem('logostics_tab','home')}catch(e){}if(Store.preferences.appLockEnabled&&AuthManager.hasCredential())AppLockManager.lock('startup');render();const u=Accounts.current();toast(isNew&&r&&r.owner?'Welcome, owner — the Developer Menu is unlocked for you':(isNew?'Welcome, ':'Welcome back, ')+(u?u.displayName:''));haptic('success');SoundManager.success();if(isNew)PatchNotes.markSeen()}
+async function onSignedIn(isNew,r){authMode=null;try{beat()}catch(e){}try{Store.loadUser();applyAppearance();seedSeen()}catch(x){console.error(x)}currentTab='home';try{sessionStorage.setItem('logostics_tab','home')}catch(e){}if(Store.preferences.appLockEnabled&&AuthManager.hasCredential())AppLockManager.lock('startup');render();const u=Accounts.current();toast(isNew&&r&&r.owner?'Welcome, owner — the Developer Menu is unlocked for you':(isNew?'Welcome, ':'Welcome back, ')+(u?u.displayName:''));haptic('success');SoundManager.success();if(isNew)PatchNotes.markSeen();if(isNew&&r&&r.owner&&Cloud.on())setTimeout(()=>{if(!document.querySelector('#sheet-overlay.on')&&me)openInviteSheet()},1400)}
 function signOut(){if(!confirm('Sign out of this account?'))return;AIAgent.reset();aiChat=[];Accounts.logout();Store.unload();closeSheet();authMode='login';applyAppearance(JSON.parse(localStorage.getItem('lg_theme')||'null')||PRESETS.default);render();updateBadges()}
 
 /* ═══ CLOUD SYNC UI ═══ */
-const CLOUD_RULES='{"rules":{"s":{".read":true,"users":{".write":true},"requests":{".write":true},"friendships":{".write":true},"blocks":{".write":true},"notifs":{".write":true},"shares":{".write":true},"groups":{".write":true},"dismissed":{".write":true},"activity":{".write":true},"audit":{".write":true},"meta":{"owner":{".write":"!data.exists()"}}},"auth":{"$u":{".read":true,".write":"!data.exists()"}}}}';
+const CLOUD_SQL=`-- Logostics friends sync — run this ONCE in Supabase: SQL Editor → New query → paste → Run
+create sequence if not exists public.kv_seq;
+create table if not exists public.kv (
+  path text primary key,
+  value jsonb,
+  deleted boolean not null default false,
+  seq bigint not null default nextval('public.kv_seq'),
+  updated_at timestamptz not null default clock_timestamp()
+);
+create index if not exists kv_updated_idx on public.kv (updated_at);
+alter table public.kv enable row level security;
+drop policy if exists kv_read on public.kv;
+create policy kv_read on public.kv for select to anon, authenticated using (path like 's/%');
+revoke all on public.kv from anon, authenticated;
+grant select on public.kv to anon, authenticated;
+
+create or replace function public.kv_apply(ops jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare o jsonb; k text; p text; v jsonb; n int; sv boolean; res jsonb := '[]'::jsonb; parts text[];
+begin
+  if jsonb_typeof(ops) is distinct from 'array' or jsonb_array_length(ops) > 800 then raise exception 'bad request'; end if;
+  delete from public.kv where deleted and updated_at < now() - interval '3 days';
+  for o in select e from jsonb_array_elements(ops) e loop
+    k := o->>'k'; p := o->>'p'; v := o->'v'; sv := false;
+    if p is null or length(p) > 400 or p !~ '^(s|auth)(/[^/]{1,128}){1,8}$' then raise exception 'bad path'; end if;
+    if k = 'add' then
+      if v is null or jsonb_typeof(v) <> 'object' then raise exception 'bad value'; end if;
+      insert into public.kv (path, value, deleted, seq, updated_at) values (p, v, false, nextval('public.kv_seq'), clock_timestamp())
+        on conflict (path) do update set value = excluded.value, deleted = false, seq = excluded.seq, updated_at = excluded.updated_at where public.kv.deleted;
+      get diagnostics n = row_count;
+      res := res || to_jsonb(n > 0);
+      continue;
+    end if;
+    if p like 'auth/%' or p = 's/meta' or p like 's/meta/%' then raise exception 'protected path'; end if;
+    if k = 'set' then
+      if v is not null and jsonb_typeof(v) = 'object' and v ? '.sv' then v := to_jsonb((extract(epoch from clock_timestamp()) * 1000)::bigint); sv := true; end if;
+      if v is null or jsonb_typeof(v) in ('object', 'null') or octet_length(v::text) > 600000 then raise exception 'bad value'; end if;
+      parts := string_to_array(p, '/');
+      update public.kv set deleted = true, value = null, seq = nextval('public.kv_seq'), updated_at = clock_timestamp()
+        where not deleted and path in (select array_to_string(parts[1:g], '/') from generate_series(2, array_length(parts, 1) - 1) g);
+      insert into public.kv (path, value, deleted, seq, updated_at) values (p, v, false, nextval('public.kv_seq'), clock_timestamp())
+        on conflict (path) do update set value = excluded.value, deleted = false, seq = excluded.seq, updated_at = excluded.updated_at
+        where public.kv.deleted or public.kv.value is distinct from excluded.value;
+      res := res || case when sv then v else 'true'::jsonb end;
+    elsif k = 'del' then
+      update public.kv set deleted = true, value = null, seq = nextval('public.kv_seq'), updated_at = clock_timestamp()
+        where not deleted and (path = p or starts_with(path, p || '/'));
+      res := res || 'true'::jsonb;
+    else
+      raise exception 'bad op';
+    end if;
+  end loop;
+  return res;
+end $$;
+
+create or replace function public.kv_get_auth(n text) returns jsonb
+language sql security definer set search_path = public stable as $$
+  select value from public.kv where path = 'auth/' || n and not deleted limit 1 $$;
+
+revoke all on function public.kv_apply(jsonb) from public;
+revoke all on function public.kv_get_auth(text) from public;
+grant execute on function public.kv_apply(jsonb) to anon, authenticated;
+grant execute on function public.kv_get_auth(text) to anon, authenticated;`;
+const cloudEnvWarn=()=>{if(location.protocol==='file:')return'This copy is opened from a file, so the invite link only works on this device. Put the app on a web address first, then open it from there before inviting friends.';try{if(window.top!==window.self)return'This looks like a preview window. Previews often block the internet — if connecting fails, open the app in Safari, Chrome or Firefox.'}catch(e){return'This looks like a preview window. If connecting fails, open the app in Safari, Chrome or Firefox.'}return''};
+const warnBox=()=>{const w=cloudEnvWarn();return w?`<div class="social-card" style="font-size:13px;line-height:1.5;border-color:#ff9f0a">⚠ ${escapeHtml(w)}</div>`:''};
+function cloudHintHTML(r){const h={sandbox:'This page is not allowed to use the internet. Open the app in Safari, Chrome or Firefox (not inside a preview or chat window) and try again.',offline:'',example:'',input:'',net:'Check your internet and try again.',server:'Try again in a minute.',notfound:'Copy the address again from your Supabase dashboard (Project Settings → Data API → Project URL), or just copy your browser\'s address bar while you are inside your project. If a friend sent you a link, ask them to send it again.',sql:'In Supabase open <b>SQL Editor → New query</b>, paste the setup code, press <b>Run</b> (you should see "Success"), then press the button again.',key:'The key built into this app belongs to a different Supabase project. Use the project address that matches the key (Project Settings → API Keys).',nokey:'This copy of the app has no Supabase key inside it.',paused:'Free Supabase projects pause after a week without use. Open the Supabase dashboard, press <b>Restore project</b>, wait a minute, and try again.'}[r.hint]||'';
+return h?`<div class="progress-note" style="line-height:1.55;margin-bottom:10px">${h}</div>`+(r.hint==='sql'?`<button class="mini-btn go" type="button" onclick="copyText(CLOUD_SQL,'Setup code copied')">Copy the setup code</button>`:''):''}
+const csStep=(n,h)=>`<div style="display:flex;gap:12px;margin-bottom:14px"><div style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--green);color:#000;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">${n}</div><div style="font-size:13.5px;line-height:1.55">${h}</div></div>`;
+const csBox=(ph,label,fn)=>`<div class="field"><label class="field-label">${label}</label><input class="field-input" id="cs-url" placeholder="${ph}" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')${fn}"><div class="err" id="cs-err" style="min-height:0;margin:6px 0 4px"></div><div id="cs-help"></div></div>`;
 function openCloudSetup(){const c=Cloud.status();
-openSheet(`<div class="sheet-title">Cloud sync</div>
-<div class="social-card"><div style="font-weight:600;margin-bottom:6px">${escapeHtml(cloudText(c.on?c:{state:'off'}).replace('🟠 Offline','Not connected'))}</div><div class="progress-note">${c.on?'Database: '+escapeHtml(c.url.replace(/^https?:\/\//,'')):'Friends, requests, shared goals and announcements are stored in a free Firebase Realtime Database so every person and device sees the same data. Your money data never leaves your device.'}</div></div>
-${c.on?`<div class="btn-row" style="margin-top:12px"><button class="btn btn-secondary" onclick="shareInvite()">🔗 Share invite link</button>${c.locked?'':`<button class="btn btn-secondary" onclick="disconnectCloud()">Disconnect</button>`}</div><p class="progress-note" style="margin-top:10px">Send the invite link to friends. It opens this app already connected, so they only need to create an account.</p>`:`
-<div class="t-label" style="margin:18px 0 8px">One-time setup (free)</div>
-<ol class="progress-note" style="line-height:1.7;padding-left:18px;margin:0 0 12px"><li>Open <b>console.firebase.google.com</b> → <b>Add project</b> (turn off Analytics).</li><li><b>Build → Realtime Database → Create database</b> (any region, locked mode).</li><li>Open the <b>Rules</b> tab, paste the rules below and press <b>Publish</b>.</li><li>Copy the database URL from the <b>Data</b> tab and paste it here.</li></ol>
-<div class="field"><label class="field-label">Database URL</label><input class="field-input" id="cs-url" placeholder="https://your-project-default-rtdb.firebaseio.com" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')connectCloud()"><div class="err" id="cs-err"></div></div>
+if(c.on)return openInviteSheet();
+openSheet(`<div class="sheet-title">Set up friends</div>
+<p class="progress-note" style="line-height:1.55;margin-bottom:14px"><b>Only the owner does this, once</b> (about 2 minutes, free). Friends never see any of this — they just tap your invite link.</p>${warnBox()}
+${csStep(1,'<button class="mini-btn go" type="button" onclick="window.open(\'https://supabase.com/dashboard\',\'_blank\',\'noopener\')">Open Supabase ↗</button><br>Sign in and open your project (a free one is fine — <b>New project</b>, any name, wait about 2 minutes).')}
+${csStep(2,'Left menu: <b>SQL Editor → New query</b>. Paste the setup code and press <b>Run</b> — it should say "Success".<br><button class="mini-btn go" type="button" style="margin-top:8px" onclick="copyText(CLOUD_SQL,\'Setup code copied\')">Copy the setup code</button>')}
+${csStep(3,'While inside your project, <b>copy the address bar</b> at the top of your browser (or the <b>Project URL</b> from Project Settings → Data API) and paste it below.')}
+${csBox('Paste your project address','Your project','connectCloud()')}
 <button class="btn btn-primary" id="cs-btn" onclick="connectCloud()">Connect</button>
-<div class="t-label" style="margin:18px 0 8px">Rules to paste</div><textarea class="field-input" readonly rows="6" style="font-family:ui-monospace,monospace;font-size:11px;resize:none" onclick="this.select()">${escapeHtml(CLOUD_RULES)}</textarea><button class="mini-btn" style="margin-top:8px" onclick="copyText(CLOUD_RULES,'Rules copied')">Copy rules</button>
-<p class="progress-note" style="margin-top:14px">The first account created on a new database becomes its owner — the only account that can open the Developer Menu.</p>`}
-<button class="btn btn-secondary" style="margin-top:16px" onclick="closeSheet()">Close</button>`)}
-async function connectCloud(){const b=document.getElementById('cs-btn'),er=document.getElementById('cs-err');if(er)er.textContent='';if(b){b.disabled=true;b.textContent='Checking…'}
-const r=await Cloud.configure($v('cs-url'));if(!r.ok){if(er)er.textContent=r.error;if(b){b.disabled=false;b.textContent='Connect'}haptic('error');return}
-if(me&&!confirm('Switching to cloud sync signs you out. Your money data stays on this device — create your cloud account with the same username to keep using it.')){Cloud.disconnect();if(b){b.disabled=false;b.textContent='Connect'}return}
-toast('Connected');setTimeout(()=>location.reload(),400)}
+<p class="progress-note" style="margin-top:14px;line-height:1.55">Then create your account — the <b>first account becomes the owner</b> and the only one that can open the Developer Menu. The app will give you the invite link to send.</p>
+<button class="btn btn-secondary" style="margin-top:12px" onclick="closeSheet()">Close</button>`)}
+function openJoinCloud(){openSheet(`<div class="sheet-title">Join your friends</div>
+<p class="progress-note" style="line-height:1.55;margin-bottom:14px">Tap the invite link your friend sent you — or paste it here, or type the <b>invite code</b> they gave you.</p>${warnBox()}
+${csBox('Invite code or link','Invite code','connectCloud()')}
+<button class="btn btn-primary" id="cs-btn" onclick="connectCloud()">Join</button>
+<p class="progress-note" style="margin-top:14px;line-height:1.55">No invite? Ask whoever owns the app to open <b>Settings → Friends & Sync → Share invite</b>.</p>
+<button class="btn btn-secondary" style="margin-top:12px" onclick="closeSheet()">Close</button>`)}
+function openInviteSheet(){const c=Cloud.status(),l=Cloud.inviteLink(),code=Cloud.inviteCode();if(!c.on)return openCloudSetup();
+openSheet(`<div class="sheet-title">Invite friends</div>
+<div class="social-card" style="text-align:center"><div style="font-weight:600;margin-bottom:6px">${escapeHtml(cloudText(c))}</div><div class="progress-note">Send friends the link below. It opens the app already connected — they only make an account.</div></div>${warnBox().replace(/Put the app on a web address first[^<]*/,'Open the app from its web address before sharing.')}
+<button class="btn btn-primary" onclick="shareInvite()">🔗 Send invite link</button>
+<button class="btn btn-secondary" style="margin-top:8px" onclick="copyText(Cloud.inviteLink(),'Invite link copied')">Copy link</button>
+<div class="t-label" style="margin:18px 0 8px">Or give them this code</div>
+<div class="social-card" style="text-align:center;font-size:22px;font-weight:700;letter-spacing:.02em;word-break:break-all;user-select:all">${escapeHtml(code)}</div>
+<p class="progress-note" style="line-height:1.55">They open the app, tap <b>I have an invite</b> and type the code.</p>
+${c.locked?'':`<button class="btn btn-secondary" style="margin-top:12px" onclick="disconnectCloud()">Disconnect cloud sync</button>`}
+<button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Close</button>`)}
+async function connectCloud(){const b=document.getElementById('cs-btn'),er=document.getElementById('cs-err'),hp=document.getElementById('cs-help'),lbl=b?b.textContent:'Connect';if(er)er.textContent='';if(hp)hp.innerHTML='';if(b){b.disabled=true;b.textContent='Checking…'}
+const r=await Cloud.configure($v('cs-url'));if(!r.ok){if(er)er.textContent=r.error;if(hp)hp.innerHTML=cloudHintHTML(r);if(b){b.disabled=false;b.textContent=lbl}haptic('error');return}
+if(me&&!confirm('Switching to cloud sync signs you out. Your money data stays on this device — create your cloud account with the same username to keep using it.')){Cloud.disconnect();if(b){b.disabled=false;b.textContent=lbl}return}
+toast('Connected ✓');setTimeout(()=>location.reload(),400)}
 function disconnectCloud(){if(!confirm('Disconnect cloud sync? Friends will stop working until you reconnect. Your money data stays on this device.'))return;Cloud.disconnect();location.reload()}
-async function shareInvite(){const l=Cloud.inviteLink();if(!l)return;if(navigator.share){try{await navigator.share({title:'Logostics',text:'Join me on Logostics',url:l});return}catch(e){if(e&&e.name==='AbortError')return}}copyText(l,'Invite link copied')}
+async function shareInvite(){const l=Cloud.inviteLink();if(!l)return;const t=`Join me on Logostics! Tap this link: ${l}\nOr open the app, tap "I have an invite" and enter: ${Cloud.inviteCode()}`;if(navigator.share){try{await navigator.share({title:'Join me on Logostics',text:t});return}catch(e){if(e&&e.name==='AbortError')return}}copyText(t,'Invite copied')}
 let _cloudSig='';
 function updateCloudStat(){const c=Cloud.status(),sg=c.state+c.err+c.on;if(sg===_cloudSig)return;_cloudSig=sg;const el=document.getElementById('cloud-stat');if(el)el.textContent=cloudText(c);if(me)scheduleRender()}
-const cloudBanner=()=>{const c=Cloud.status();if(!c.on)return`<div class="social-card" style="display:flex;align-items:center;gap:10px"><div style="flex:1;font-size:13px;line-height:1.45"><b>Friends only work on this device.</b> Connect cloud sync so people on other devices can find and add you.</div><button class="mini-btn go" onclick="openCloudSetup()">Set up</button></div>`;if(c.state!=='live')return`<div class="social-card" style="font-size:13px;line-height:1.45"><b>${c.state==='connecting'?'Connecting…':'Offline'}</b> ${escapeHtml(c.err||'Your changes are saved and will sync when you are back online.')}</div>`;return''};
+const cloudBanner=()=>{const c=Cloud.status();if(!c.on)return`<div class="social-card" style="display:flex;align-items:center;gap:10px"><div style="flex:1;font-size:13px;line-height:1.45"><b>Friends only work on this device.</b> Have an invite from a friend? Join in one step.</div><div style="display:flex;flex-direction:column;gap:6px"><button class="mini-btn go" onclick="openJoinCloud()">Join</button><button class="mini-btn" onclick="openCloudSetup()">I'm the owner</button></div></div>`;if(c.state!=='live')return`<div class="social-card" style="font-size:13px;line-height:1.45"><b>${c.state==='connecting'?'Connecting…':'Offline'}</b> ${escapeHtml(c.err||'Your changes are saved and will sync when you are back online.')}</div>`;return''};
 
 /* ═══ HOME ═══ */
 function renderHome(){const snap=Store.getSnapshot(),cfg=DashboardManager.getConfig(),edit=DashboardManager.isEditMode();
@@ -1704,7 +1810,7 @@ const tog=(key,ico,label)=>`<div class="set-row" onclick="togglePref('${key}')">
 openSheet(`<div class="sheet-title">Settings</div>
 <div class="t-label" style="margin-bottom:10px">Your Profile</div><div class="social-card" style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${avHTML(Social.user(me),48,true)}<div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">${escapeHtml(u.displayName)}</div><div class="friend-status">@${escapeHtml(u.username)} · <span style="font-family:ui-monospace,monospace;color:var(--green);font-weight:700">${escapeHtml(u.friendCode)}</span></div></div><button class="mini-btn" onclick="copyMyCode()">Copy</button></div><div class="btn-row"><button class="btn btn-secondary" style="padding:10px;font-size:14px" onclick="closeSheet();openProfileEditor()">Edit Profile</button><button class="btn btn-secondary" style="padding:10px;font-size:14px" onclick="closeSheet();openCustomization()">🎨 Customize</button></div></div>
 ${adm?`<div class="t-label" style="margin-bottom:10px">Developer</div><div class="set-row" onclick="DevMenu.open()"><div class="set-left"><span class="ico">🛠</span> Developer Menu</div><div class="set-right">›</div></div>`:''}
-<div class="t-label" style="margin:16px 0 10px">Friends & Sync</div><div class="set-row" onclick="openCloudSetup()"><div class="set-left"><span class="ico">☁</span> Cloud sync</div><div class="set-right">${Cloud.on()?(Cloud.status().state==='live'?'Connected':'Offline'):'Not set up'} ›</div></div>${Cloud.on()?`<div class="set-row" onclick="shareInvite()"><div class="set-left"><span class="ico">🔗</span> Share invite link</div><div class="set-right">›</div></div>`:''}
+<div class="t-label" style="margin:16px 0 10px">Friends & Sync</div><div class="set-row" onclick="openCloudSetup()"><div class="set-left"><span class="ico">☁</span> Cloud sync</div><div class="set-right">${Cloud.on()?(Cloud.status().state==='live'?'Connected':'Offline'):'Not set up'} ›</div></div>${Cloud.on()?`<div class="set-row" onclick="openInviteSheet()"><div class="set-left"><span class="ico">🔗</span> Invite friends</div><div class="set-right">›</div></div>`:''}
 <div class="t-label" style="margin:16px 0 10px">Income</div><div class="set-row" onclick="closeSheet();openIncomeEstimator()"><div class="set-left"><span class="ico">💵</span> Income Estimator</div><div class="set-right">${inc.computed?fmt(inc.computed.monthlyNet)+'/mo':'Set up'} ›</div></div>
 <div class="t-label" style="margin:16px 0 10px">Device & App</div><div class="set-row static"><div class="set-left"><span class="ico">📱</span> Device</div><div class="set-right">${escapeHtml(di.model)} (${escapeHtml(di.os)})</div></div><div class="set-row static"><div class="set-left"><span class="ico">◈</span> App Version</div><div class="set-right">${escapeHtml(di.appVersion)}</div></div>
 <div class="t-label" style="margin:16px 0 10px">Security</div><div class="set-row" onclick="toggleAppLock()"><div class="set-left"><span class="ico">🔒</span> App Lock</div><div class="toggle ${prefs.appLockEnabled?'on':''}"></div></div><p class="progress-note" style="padding:0 4px 12px">${wa.available?'Uses your device authenticator via WebAuthn.':'Not available: '+escapeHtml(wa.reason||'')}</p>
