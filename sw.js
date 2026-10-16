@@ -2,8 +2,8 @@
    1) Makes the app open instantly and keep working with no connection (only the app's own files are cached; sign-in data, Supabase calls and music are never cached here).
    2) Receives real push notifications while the app is closed and opens the right screen when one is tapped.
    Bump VERSION whenever this file changes so phones pick up the new copy. */
-const VERSION = 'logostics-sw-3.5.0';
-const SHELL = ['./', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
+const VERSION = 'logostics-sw-4.0.0';
+const SHELL = ['./', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => Promise.all(SHELL.map((u) => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
@@ -21,6 +21,7 @@ function cacheable(req) {
   if (req.headers.has('range')) return false;
   const u = new URL(req.url);
   if (u.origin !== self.location.origin) return false;
+  if (/\/version\.json$/i.test(u.pathname)) return false;
   if (/\/(music|audio)\//i.test(u.pathname) || /\.(mp3|m4a|ogg|wav|mp4|webm)$/i.test(u.pathname)) return false;
   if (u.pathname.indexOf('/functions/') >= 0 || u.pathname.indexOf('/rest/') >= 0 || u.pathname.indexOf('/realtime/') >= 0) return false;
   return true;

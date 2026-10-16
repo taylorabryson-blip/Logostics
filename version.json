@@ -1,0 +1,11 @@
+{
+ "version": "4.0.0",
+ "build": "2026-10-16T17:38:04Z",
+ "title": "Logostics 4.0",
+ "notes": [
+  "Savings accounts, PDF statement import, a paycheck estimate that learns, and a plainer, more honest assistant",
+  "New: encrypted backups, notifications that work, and a short first-run tour"
+ ],
+ "announce": true,
+ "min": ""
+}
