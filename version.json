@@ -1,10 +1,10 @@
 {
- "version": "4.0.0",
- "build": "2026-10-16T17:38:04Z",
- "title": "Logostics 4.0",
+ "version": "4.1.0",
+ "build": "2026-10-18T17:08:19Z",
+ "title": "Logostics 4.1",
  "notes": [
-  "Savings accounts, PDF statement import, a paycheck estimate that learns, and a plainer, more honest assistant",
-  "New: encrypted backups, notifications that work, and a short first-run tour"
+  "Job profile with a 3D pay chart, shared paydays, themes you can import and share, and the Dynamic Island",
+  "New: auto-sort, a subscriptions calendar, income streams and friend-online alerts"
  ],
  "announce": true,
  "min": ""
