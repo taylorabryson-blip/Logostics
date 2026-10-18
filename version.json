@@ -1,11 +1,11 @@
 {
- "version": "4.1.0",
- "build": "2026-10-18T17:08:19Z",
- "title": "Logostics 4.1",
+ "version": "4.1.1",
+ "build": "2026-10-18T19:12:26Z",
+ "title": "Logostics 4.1.1",
  "notes": [
-  "Job profile with a 3D pay chart, shared paydays, themes you can import and share, and the Dynamic Island",
-  "New: auto-sort, a subscriptions calendar, income streams and friend-online alerts"
+  "Money in your savings now counts toward Available Cash",
+  "New: a round work picture for your job profile"
  ],
- "announce": true,
+ "announce": false,
  "min": ""
 }

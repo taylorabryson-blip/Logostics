@@ -1290,11 +1290,16 @@ html.lg-on:not(.lg-light):not(.a11y-contrast){--gray-500:#7d7d84;--gray-400:#9b9
 .jb-star{position:absolute;right:4px;top:2px;font-size:14px;color:#ffd60a;text-shadow:0 1px 3px rgba(0,0,0,.7)}
 .jb-add{display:flex;align-items:center;justify-content:center;cursor:pointer;text-align:center}
 .jb-rng .field-label{display:flex;justify-content:space-between;gap:10px}.jb-rng input[type=range]{width:100%;accent-color:var(--green)}
-.jb-pcard{cursor:pointer;margin-bottom:16px}.jb-pico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--gray-800);font-size:18px}
+.jb-pcard{cursor:pointer;margin-bottom:16px}.jb-pico{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--gray-800);font-size:18px;overflow:hidden;flex:none}.jb-pico img{width:100%;height:100%;object-fit:cover;display:block}
+.jb-hero-r{display:flex;align-items:center;gap:14px}.jb-hero-t{flex:1;min-width:0}
+.jb-pfp{position:relative;flex:none;display:block;cursor:pointer;border-radius:50%;-webkit-tap-highlight-color:transparent}.jb-pfp:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.jb-pfp-img{display:block;border-radius:50%;object-fit:cover;background:var(--gray-800);border:1px solid var(--gray-700)}.jb-pfp-ini{display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--gray-300);letter-spacing:.02em}
+.jb-pfp-cam{position:absolute;right:-2px;bottom:-2px;width:24px;height:24px;border-radius:50%;background:var(--green);color:#000;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;line-height:1;border:2px solid var(--gray-900,#000)}
+.jb-pf-row{display:flex;align-items:center;gap:14px}
 .fp-strip{padding:14px}.fp-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .fp-row{display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer;border-top:1px solid var(--gray-800)}.fp-row:first-of-type{border-top:none}
 .fp-when{font-size:13px;font-weight:700;color:var(--gray-300);white-space:nowrap}.fp-when.today{color:var(--green)}
-.fp-work{--jc:var(--green)}.fp-cover{width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none;border:1px solid var(--gray-800)}.fp-rs{font-size:13.5px;margin:12px 0 4px;color:var(--gray-300)}
+.fp-work{--jc:var(--green)}.fp-cover{width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none;border:1px solid var(--gray-800)}.fp-pfp{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--gray-700);background:var(--gray-800)}.fp-rs{font-size:13.5px;margin:12px 0 4px;color:var(--gray-300)}
 .fp-pay .pd-vis{display:flex;justify-content:center;margin:4px 0}
 
 /* ── Theme kit ── */
@@ -1315,6 +1320,8 @@ html.lg-on:not(.lg-light):not(.a11y-contrast){--gray-500:#7d7d84;--gray-400:#9b9
 .tk-bar-t{font-size:15px}.tk-bar-t span{color:var(--gray-300)}.tk-bar-s{font-size:12.5px;color:var(--gray-300);margin-top:2px}
 .tk-bar-n{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--gray-300)}.tk-bar-n li{margin:2px 0}
 .tk-bar-b{display:flex;gap:8px;margin-top:12px}.tk-b{flex:1;min-height:44px;border-radius:12px;border:1px solid var(--gray-700);background:var(--gray-850);color:var(--text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}.tk-b.go{background:var(--green);border-color:var(--green);color:var(--on-accent)}
+
+.hero-split{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:13px;font-weight:500;color:var(--gray-400);font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -1339,8 +1346,8 @@ html.lg-on:not(.lg-light):not(.a11y-contrast){--gray-500:#7d7d84;--gray-400:#9b9
 /* Friends/social sync runs on a free Supabase project. CLOUD_URL (optional): your project URL, e.g. 'https://abcd.supabase.co', to skip the in-app setup. CLOUD_KEY: the project's publishable key (safe to ship in client code). */
 const CLOUD_URL='https://pwsrrxtugjvnvstzbnps.supabase.co';
 const CLOUD_KEY='sb_publishable_tyaz3Ynes8AFu7YimRw7xQ_BbCSajC_';
-const APP_VERSION='4.1.0';
-const APP_BUILD='2026-10-18T17:08:19Z';
+const APP_VERSION='4.1.1';
+const APP_BUILD='2026-10-18T19:12:26Z';
 const KV={mem:{},get(k){try{const v=localStorage.getItem(k);if(v!==null)return v}catch(e){}return this.mem[k]===undefined?null:this.mem[k]},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}},del(k){delete this.mem[k];try{localStorage.removeItem(k)}catch(e){}}};
 /* iPhone/iPod only (iPad and desktop browsers are deliberately excluded): gates every touch gesture and iOS haptic */
 const IPHONE=/iPhone|iPod/.test(navigator.userAgent||'');try{document.documentElement.classList.toggle('iphone',IPHONE)}catch(e){}
@@ -1501,7 +1508,7 @@ function relation(o){if(!me||o===me)return'self';if(isBlocked(me,o))return'block
 const mutualIds=o=>{const mine=new Set(friendIds(me));return friendIds(o).filter(x=>mine.has(x)&&x!==me&&x!==o&&db.users[x]&&!blockedEither(me,x))};
 const codeVisOf=u=>{const p=u&&u.privacy||{};return['everyone','friends','hidden'].includes(p.codeVis)?p.codeVis:(p.showCode===false?'hidden':'everyone')};
 /* ── what a person may choose to show friends about work and pay. Everything coming back from the server is re-checked here, because the server is only a shared store.
-   Never published: pay amounts, hourly rates, hours logs, photos (apart from one small opt-in cover thumbnail). Pay is shown as dates; raises are shown as percentages only. ── */
+   Never published: pay amounts, hourly rates, hours logs, photos (apart from one small opt-in cover thumbnail and one small opt-in work picture). Pay is shown as dates; raises are shown as percentages only. ── */
 const YMD_RE=/^\d{4}-\d{2}-\d{2}$/;
 const okYmd=s=>{if(typeof s!=='string'||!YMD_RE.test(s))return false;const y=+s.slice(0,4),m=+s.slice(5,7),dd=+s.slice(8,10);if(y<1950||y>2100)return false;const t=new Date(y,m-1,dd,12);return t.getMonth()===m-1&&t.getDate()===dd};
 const cleanTxt=(s,n)=>[...String(s==null?'':s).replace(/[\u0000-\u001f\u007f<>]/g,'')].slice(0,n).join('').trim();
@@ -1514,8 +1521,9 @@ function cleanJob(j){if(!j||typeof j!=='object')return null;const title=cleanTxt
 const h=Number(j.hrs),hrs=isFinite(h)&&h>0&&h<=100?Math.round(h*10)/10:0;
 const raises=(Array.isArray(j.raises)?j.raises:[]).map(r=>r&&typeof r==='object'?{d:r.d,p:Math.round(Number(r.p)*10)/10}:null).filter(r=>r&&okYmd(r.d)&&isFinite(r.p)&&r.p!==0&&r.p>=-90&&r.p<=300).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0).slice(0,30);
 const cover=typeof j.cover==='string'&&j.cover.length<=30000&&JOB_COVER.test(j.cover)?j.cover:'';
-if(!title&&!employer&&!start&&!hrs&&!raises.length&&!cover)return null;
-return{title,employer,start,end,hrs,raises,cover,color:/^#[0-9a-f]{6}$/i.test(j.color||'')?String(j.color).toLowerCase():'',at:Number.isFinite(+j.at)?Math.max(0,Math.min(4102444800000,Math.floor(+j.at))):0}}
+const pfp=typeof j.pfp==='string'&&j.pfp.length<=30000&&JOB_COVER.test(j.pfp)?j.pfp:'';
+if(!title&&!employer&&!start&&!hrs&&!raises.length&&!cover&&!pfp)return null;
+return{title,employer,start,end,hrs,raises,cover,pfp,color:/^#[0-9a-f]{6}$/i.test(j.color||'')?String(j.color).toLowerCase():'',at:Number.isFinite(+j.at)?Math.max(0,Math.min(4102444800000,Math.floor(+j.at))):0}}
 function pub(u){if(!u)return null;const self=u.id===me;const cv=codeVisOf(u);const showCode=self||cv==='everyone'||(cv==='friends'&&isFriend(me,u.id));return{accent:/^#[0-9a-f]{6}$/i.test(u.accent||'')?u.accent:'',pbg:u.pbg||'',symbol:u.symbol||'',theme:u.theme||'default',codeVis:cv,id:u.id,username:u.username,displayName:nm(u),avatar:u.avatar||'◉',avatarBg:u.avatarBg||'',banner:u.banner||'',bio:u.bio||'',status:u.status||'online',statusMsg:u.statusMsg||'',createdAt:u.createdAt,lastActive:u.lastActive,presence:presenceOf(u),friendCode:showCode?u.friendCode:null,friendCount:friendIds(u.id).filter(x=>db.users[x]).length,mutual:self?[]:mutualIds(u.id),achievements:u.achievements||[],featured:u.featured||[],relation:relation(u.id),isSelf:self,privacy:u.privacy||{},pay:self||isFriend(me,u.id)?cleanPay(u.pay):null,job:self||isFriend(me,u.id)?cleanJob(u.job):null}}
 const user=id=>pub(db.users[id]);
 function pushNotif(d,n){if(n.to!==me){try{Bus.emit('notif:out',{type:n.type,to:n.to,ref:n.ref||null})}catch(e){}}d.notifs.unshift({id:genId('n_'),to:n.to,type:n.type,actor:n.actor||null,title:n.title,message:n.message||'',at:nowISO(),read:false,ref:n.ref||null,expiresAt:n.expiresAt||null});let c=0;d.notifs=d.notifs.filter(x=>{if(x.to!==n.to)return true;c++;return c<=150})}
@@ -2168,7 +2176,7 @@ aiEnabled:true,categories:[],learning:{categories:true},dashboard:{order:['hero'
 notifCategories:{payday:{enabled:true},paycheckExpected:{enabled:true},savings:{enabled:true},movingGoalDeadline:{enabled:true,leadDays:7},movingGoalWeekly:{enabled:true,day:0},movingGoalProgress:{enabled:true,frequency:'weekly'},movingGoalBehind:{enabled:true},goalDeadline:{enabled:true},weeklyBudget:{enabled:false},dailySummary:{enabled:false,time:'20:00'},weeklySummary:{enabled:false,time:'18:00',day:0},bills:{enabled:true,leadDays:2},moneyOwed:{enabled:true,leadDays:1},aiInsights:{enabled:true},checkIn:{enabled:false,time:'12:00'}},
 lastSeenVersion:null,debts:[],gameScores:{},deviceInfo:{type:'unknown',os:'unknown',model:'unknown',appVersion:APP_VERSION}});
 const defaultIncome=()=>({hourlyRate:0,hoursPerWeek:0,overtimeHours:0,overtimeMultiplier:1.5,payFrequency:'weekly',withholdingPct:20,deductions:0,nextPayday:null,computed:null});
-let state={balance:0,transactions:[],paychecks:[],goals:[],accounts:[],moves:[],allocs:[],payfb:[],imports:[],recurringExpenses:[],incomeSettings:defaultIncome(),preferences:defaultPrefs(),lastUpdated:Date.now(),_listeners:[]};
+let state={balance:0,saved:0,available:0,transactions:[],paychecks:[],goals:[],accounts:[],moves:[],allocs:[],payfb:[],imports:[],recurringExpenses:[],incomeSettings:defaultIncome(),preferences:defaultPrefs(),lastUpdated:Date.now(),_listeners:[]};
 function merge(base,over){if(!over||typeof over!=='object')return base;Object.keys(over).forEach(k=>{const v=over[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&base[k]&&typeof base[k]==='object'&&!Array.isArray(base[k]))merge(base[k],v);else base[k]=v});return base}
 
 function openDB(){return new Promise(resolve=>{if(!window.indexedDB||!window.isSecureContext){resolve(null);return}let req;try{req=indexedDB.open(DB_NAME,DB_VERSION)}catch(e){resolve(null);return}
@@ -2190,7 +2198,7 @@ function adoptOrphans(){const first=Cloud.on()?db.users[KV.get('lg_dev_first')]:
 
 function reown(from,to){COLL.forEach(k=>master[k].forEach(r=>{if(r.ownerId===from){r.ownerId=to;put(k,r)}}))}
 async function init(){await openDB();if(useIDB){master.transactions=await dbGetAll('transactions');master.goals=(await dbGetAll('goals')).map(g=>Object.assign({type:'standard'},g));master.paychecks=await dbGetAll('paychecks');for(const k of COLL.slice(3)){master[k]=await dbGetAll(k)}}else loadLS();adoptOrphans()}
-function unload(){state.preferences=defaultPrefs();state.incomeSettings=defaultIncome();state.transactions=[];state.goals=[];state.paychecks=[];state.accounts=[];state.moves=[];state.allocs=[];state.payfb=[];state.imports=[];state.balance=0}
+function unload(){state.preferences=defaultPrefs();state.incomeSettings=defaultIncome();state.transactions=[];state.goals=[];state.paychecks=[];state.accounts=[];state.moves=[];state.allocs=[];state.payfb=[];state.imports=[];state.balance=0;state.saved=0;state.available=0}
 /* ─ savings model ─ "cash" is the everyday balance; a savings account is real money set apart; a move is a transfer (never income or spending);
    an allocation reserves part of an account's money for a goal. Net worth = cash + every account (+ manual goal amounts not held in an account). */
 const acctOfTx=t=>t.account&&t.account!=='cash'&&master.accounts.some(a=>a.id===t.account&&a.ownerId===t.ownerId)?t.account:'cash';
@@ -2205,7 +2213,12 @@ const al={};state.allocs.forEach(a=>{if(!a.reversed)al[a.goalId]=(al[a.goalId]||
 state.goals=master.goals.filter(own).map(g=>{const a=rd(al[g.id]||0),m=Number(g.current)||0;return Object.assign({},g,{manual:m,allocated:a,current:rd(m+a)})});
 let cash=0;state.transactions.forEach(t=>{if(acctOfTx(t)==='cash')cash+=t.type==='income'?t.amount:-t.amount});
 state.moves.forEach(m=>{if(m.reversed)return;if(m.to==='cash')cash+=m.amount;if(m.from==='cash')cash-=m.amount});
-state.balance=rd(cash)}
+state.balance=rd(cash);
+/* money that sits in a savings (or other) account is still money you can use, so it counts toward "Available". Moving cash into savings is a transfer, so it never changes the total. */
+const ids=new Set(state.accounts.map(a=>String(a.id)));let sv=0;
+state.transactions.forEach(t=>{if(acctOfTx(t)!=='cash')sv+=t.type==='income'?t.amount:-t.amount});
+state.moves.forEach(m=>{if(m.reversed)return;if(m.to!==null&&m.to!==undefined&&ids.has(String(m.to)))sv+=m.amount;if(m.from!==null&&m.from!==undefined&&ids.has(String(m.from)))sv-=m.amount});
+state.saved=rd(sv);state.available=rd(cash+sv)}
 function detectDevice(){const ua=navigator.userAgent||'';const ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);let type='unknown',os='unknown',model='unknown';
 if(ios){type='ios';os='iOS';const m=ua.match(/(iPhone|iPad|iPod)/);model=m?m[1]:'iOS Device'}else if(/Android/i.test(ua)){type='android';os='Android';const m=ua.match(/;\s([^;]+)\sBuild/);model=m?m[1]:'Android Device'}else if(/Mac/.test(ua)){type='mac';os='macOS';model='Mac'}else if(/Win/.test(ua)){type='windows';os='Windows';model='PC'}else if(/Linux/.test(ua)){type='linux';os='Linux';model='Linux Device'}
 state.preferences.deviceInfo={type,os,model,appVersion:APP_VERSION}}
@@ -2214,9 +2227,9 @@ function loadUser(){const u=Accounts.current();if(!u){unload();return}adoptOrpha
 function savePrefs(){if(me)Social.saveUserSettings(state.preferences,state.incomeSettings);try{if(typeof FinSync!=='undefined')FinSync.touchSettings()}catch(e){}}
 function housekeeping(){if(_hk)return;_hk=setTimeout(()=>{_hk=null;if(!me)return;const gc=state.goals.length;if(gc!==_lastGoalCount){_lastGoalCount=gc;Social.setStats(gc)}Social.checkAchievements({txCount:state.transactions.length,goalCount:gc,goalsDone:state.goals.filter(g=>g.target>0&&g.current>=g.target).length})},50)}
 function notify(){state.lastUpdated=Date.now();savePrefs();pushWidgetData();state._listeners.forEach(fn=>{try{fn()}catch(e){}});housekeeping()}
-function pushWidgetData(){if(!NativeBridge.available)return;NativeBridge.updateWidgetData({balance:state.balance,balanceVisible:state.preferences.widgets.balanceVisible,privacyOnLockScreen:state.preferences.widgets.privacyOnLockScreen,goals:state.goals.map(g=>({id:g.id,name:g.name,current:g.current,target:g.target,type:g.type||'standard'})),preferredGoalId:state.preferences.widgets.preferredGoalId,nextPaycheck:computePaycheckEstimate().takeHome,recentSpending:computeTotalSpending(7),lastUpdated:state.lastUpdated})}
+function pushWidgetData(){if(!NativeBridge.available)return;NativeBridge.updateWidgetData({balance:state.available,cash:state.balance,savingsAccounts:state.saved,balanceVisible:state.preferences.widgets.balanceVisible,privacyOnLockScreen:state.preferences.widgets.privacyOnLockScreen,goals:state.goals.map(g=>({id:g.id,name:g.name,current:g.current,target:g.target,type:g.type||'standard'})),preferredGoalId:state.preferences.widgets.preferredGoalId,nextPaycheck:computePaycheckEstimate().takeHome,recentSpending:computeTotalSpending(7),lastUpdated:state.lastUpdated})}
 function subscribe(fn){state._listeners.push(fn);return()=>{state._listeners=state._listeners.filter(f=>f!==fn)}}
-function snapshot(){return{balance:state.balance,accounts:[...state.accounts],moves:[...state.moves],allocs:[...state.allocs],transactions:[...state.transactions],paychecks:[...state.paychecks],goals:[...state.goals],recurringExpenses:[...state.recurringExpenses],incomeSettings:Object.assign({},state.incomeSettings),preferences:JSON.parse(JSON.stringify(state.preferences)),lastUpdated:state.lastUpdated,storageMode:useIDB?'indexeddb':'localstorage'}}
+function snapshot(){return{balance:state.balance,saved:state.saved,available:state.available,accounts:[...state.accounts],moves:[...state.moves],allocs:[...state.allocs],transactions:[...state.transactions],paychecks:[...state.paychecks],goals:[...state.goals],recurringExpenses:[...state.recurringExpenses],incomeSettings:Object.assign({},state.incomeSettings),preferences:JSON.parse(JSON.stringify(state.preferences)),lastUpdated:state.lastUpdated,storageMode:useIDB?'indexeddb':'localstorage'}}
 
 /* ─ transactions: every field is checked, trimmed and capped before it is stored ─ */
 const cStr=(v,n)=>String(v==null?'':v).replace(/[\u0000-\u001f\u007f]/g,' ').replace(/\s+/g,' ').trim().slice(0,n);
@@ -2277,7 +2290,7 @@ function updatePreferences(p){state.preferences=Object.assign({},state.preferenc
 function computePaycheckEstimate(){const c=computeIncome();return{gross:c.grossPeriod,withholding:c.grossPeriod-c.netPeriod,takeHome:c.netPeriod,hourlyRate:state.incomeSettings.hourlyRate,hoursPerWeek:state.incomeSettings.hoursPerWeek,withholdingPct:state.incomeSettings.withholdingPct}}
 function availableWeekly(){let net=computeIncome().netWeekly;if(net<=0)net=IncomeEstimator.estimate().avgWeeklyIncome||0;if(net<=0)return 0;return Math.max(0,net-computeTotalSpending(28)/4)}
 function computeGoalProgress(g){if(g.type==='moving'){const c=MovingGoalCalculator.compute(g);return{pct:c.pct,remaining:c.remaining,estimatedDate:c.estimatedDate,weeksRemaining:c.estimatedWeeks!==null?Math.ceil(c.estimatedWeeks):null,weeklyRate:c.effectiveWeekly,basis:c.forecast.basis,status:c.status==='no-date'?'on-track':c.status,requiredWeekly:c.requiredWeekly,daysLeft:c.hasTargetDate?c.daysRemaining:null}}let rate=GoalMath.rate(g),basis='contribution';if(rate<=0){const av=availableWeekly();if(av>0){rate=av;basis='income'}}const e=GoalMath.est(g.current,g.target,rate,g.targetDate);return{pct:e.pct,remaining:e.remaining,estimatedDate:e.date,weeksRemaining:e.weeks,weeklyRate:rate,basis,status:e.status,requiredWeekly:e.requiredWeekly,daysLeft:e.daysLeft}}
-function computeProjectedBalance(){const est=computePaycheckEstimate();const planned=state.recurringExpenses.filter(e=>e.active!==false).reduce((s,e)=>s+(e.amount||0),0);return state.balance+est.takeHome-planned}
+function computeProjectedBalance(){const est=computePaycheckEstimate();const planned=state.recurringExpenses.filter(e=>e.active!==false).reduce((s,e)=>s+(e.amount||0),0);return state.available+est.takeHome-planned}
 function computeSpendingByCategory(days){days=days||7;const c=Date.now()-days*864e5;const by={};state.transactions.filter(t=>t.type==='expense'&&new Date(t.date).getTime()>=c).forEach(t=>{by[t.category]=(by[t.category]||0)+t.amount});return by}
 function computeTotalSpending(days){days=days||7;const c=Date.now()-days*864e5;return state.transactions.filter(t=>t.type==='expense'&&new Date(t.date).getTime()>=c).reduce((s,t)=>s+t.amount,0)}
 function computeTotalIncome(days){days=days||7;const c=Date.now()-days*864e5;return state.transactions.filter(t=>t.type==='income'&&new Date(t.date).getTime()>=c).reduce((s,t)=>s+t.amount,0)}
@@ -2292,7 +2305,7 @@ const moving=state.goals.find(g=>g.type==='moving');
 if(moving){const p=computeGoalProgress(moving);const dest=escapeHtml(moving.destination&&moving.destination.city||'your destination');out.push({ico:'⌖',txt:p.remaining>0?`<strong>${fmt(p.remaining)}</strong> left to move to <strong>${dest}</strong>.`:`You reached your moving goal for <strong>${dest}</strong>!`})}
 else if(state.goals.length){const g=state.goals[0];const p=computeGoalProgress(g);out.push(p.remaining>0?{ico:'→',txt:`<strong>${fmt(p.remaining)}</strong> away from "${escapeHtml(g.name)}".`}:{ico:'✓',txt:`"${escapeHtml(g.name)}" goal reached.`})}
 const owe=getDebts().filter(d=>d.direction==='owe').reduce((s,d)=>s+d.amount,0);if(owe>0)out.push({ico:'$',txt:`You owe <strong>${fmt(owe)}</strong> total.`});
-const proj=computeProjectedBalance();if(proj>state.balance)out.push({ico:'↑',txt:`Projected balance after next paycheck: <strong>${fmt(proj)}</strong>.`});
+const proj=computeProjectedBalance();if(proj>state.available)out.push({ico:'↑',txt:`Projected balance after next paycheck: <strong>${fmt(proj)}</strong>.`});
 if(!out.length)out.push({ico:'·',txt:'Add transactions to see insights.'});return out}
 
 function addDebt(d){const r={id:genId('debt_'),person:d.person,amount:Math.abs(d.amount),direction:d.direction,note:d.note||'',createdAt:new Date().toISOString(),lastReminded:null,reminderCount:0};state.preferences.debts.push(r);notify();return r}
@@ -2409,7 +2422,7 @@ return{init,restore,importPlan,importApply,mine,setMine,RESTORE_PREFS,loadUser,u
 addTransaction,addTransactions,updateTransaction,deleteTransaction,removeImport,validateTx,findDuplicate,addRec,updateRec,deleteRec,accountBalance,accountReserved,getTransactions,addGoal,updateGoal,deleteGoal,getGoals,addMovingGoal,getMovingGoals,getAllGoals,getGoal,saveImage,getImage,goalSnapshot,
 updateIncomeSettings,updatePreferences,computeIncome,computePaycheckEstimate,computeGoalProgress,computeProjectedBalance,computeSpendingByCategory,computeTotalSpending,computeTotalIncome,computeSavingsRate,computeAverageTransaction,computeLargestCategory,generateInsights,
 addDebt,removeDebt,getDebts,remindDebt,playGame,resetMyData,
-get balance(){return state.balance},get accounts(){return[...state.accounts]},get moves(){return[...state.moves]},get allocs(){return[...state.allocs]},get payfb(){return[...state.payfb]},get imports(){return[...state.imports]},get transactions(){return[...state.transactions]},get goals(){return[...state.goals]},get paychecks(){return[...state.paychecks]},get incomeSettings(){return Object.assign({},state.incomeSettings)},get preferences(){return state.preferences}}})();
+get balance(){return state.balance},get available(){return state.available},get savedTotal(){return state.saved},get accounts(){return[...state.accounts]},get moves(){return[...state.moves]},get allocs(){return[...state.allocs]},get payfb(){return[...state.payfb]},get imports(){return[...state.imports]},get transactions(){return[...state.transactions]},get goals(){return[...state.goals]},get paychecks(){return[...state.paychecks]},get incomeSettings(){return Object.assign({},state.incomeSettings)},get preferences(){return state.preferences}}})();
 
 /* ═══ INCOME ESTIMATOR ═══ */
 const IncomeEstimator=(function(){
@@ -2494,6 +2507,7 @@ return{getConfig,saveConfig,order,move,isEditMode:()=>edit,enterEditMode(){edit=
 const PatchNotes=(function(){
 const CURRENT=APP_VERSION;
 const NOTES=[
+{version:'4.1.1',date:'2026-10-18',title:'Savings count as available, and a picture for your job',new:['Work picture: give each job its own round picture (a logo, a uniform photo, anything). Add it from the Job profile or the Edit job screen, move and zoom to fit, and choose whether friends see it'],fixed:['Available Cash now includes money you keep in savings accounts, with a line under it showing how much is cash and how much is in savings. Moving cash into savings no longer makes your available cash drop']},
 {version:'4.1.0',date:'2026-10-18',title:'Job profile, shared paydays, themes & the Dynamic Island',new:['Job profile: your start date, every raise, average hours and photos, drawn as a real 3D chart you can spin, tilt, light and animate (Settings → Account → Job profile)','Share your payday with friends and see theirs: dates only, never an amount, and you choose what is shared. Job details can be shared a piece at a time, raises as percentages only','Dynamic Island: money added, a friend coming online, a payday, a big move in a stock you watch and finished goals appear in a pill at the top that opens up. Pick the animation, size, position and which events use it','Liquid Glass: a frosted, light-catching layer that works on top of any theme, colour or background','Themes & sharing: bring in colours from other apps (Base16, VS Code, CSS, a screenshot or a share code), keep up to 20 of your own, share one as a code, or try a friend’s accent colour. Every theme is previewed first and you can revert','Auto-sort files uncategorised transactions on this device, shows exactly what it will change, and can undo it','A subscriptions and bills calendar, and payday countdowns you can customise completely','Places and income streams: split what you earn between cash, bank, digital wallets and places you name','A heads-up when a friend comes online (both of you opt in), and live animation when a stock you watch moves a lot'],improved:['Alerts and notices use the Dynamic Island when it is on, and a plain banner when it is off','Job photos stay on your device; only a small cover thumbnail can be shared, and only if you switch it on']},
 {version:'4.0.0',date:'2026-10-16',title:'Savings, Statements, Backup & a calmer assistant',new:['Savings accounts with real balances: record where your money sits, move money between accounts and goals, and see what is saved versus what is only planned','Import a bank statement from a PDF: every row is shown for review before anything is added, duplicates and transfers are flagged, and an import can be undone','A paycheck estimate that learns from what you are really paid, and tells you how far off it has been','Goals that follow your real paychecks: a funding plan with an honest range instead of a single guess','Assistant: forecasts with a stated error range, “how did you get that number?”, a memory you can see and delete, and learning from your category corrections if you allow it. It is rules and arithmetic on your device, not a neural network','Notifications that work: payday, budget limits, bills and savings milestones, a switch for each kind, no duplicates, and system notifications only if you allow them','Encrypted backup: save everything on this device to a file that only your passphrase can open, and restore it on any device from Settings → Data & Accounts','A short first-run introduction for new accounts (skippable, and replayable from Settings → About)','Update alerts: a banner when a new version is ready, and a push notification when the app is closed (owner setup required)','Data sharing: usage statistics, learning performance and error reports are all off until you turn them on, each explained, with a way to delete what was shared'],improved:['Trips: the funding plan and budget stay; transport is Train, Bus, Car or Other','Money alerts and friend notifications no longer share an identifier, so tapping one always opens the right screen'],removed:['Flight tracking and arrival-time (ETA) features. Trip legs saved earlier as a flight still open and are shown as “Other”']},
 {version:'3.7.0',date:'2026-10-05',title:'Stocks, Fun, Profile & Desktop',new:['Stocks: Analytics → Stocks lets you search a company or ticker, keep a watchlist, and see price, daily change, a simple chart and whether the market is open — information only, no trading','Fun 🎮: a few mini-games and a drawing pad, opened from Home. No ads, no gambling','Rate Logostics: tell the app owner how it is going, from Settings → About','A fuller profile editor, and a new Device page that shows only what your iPhone, Android phone, Windows PC or Mac can really do','Windows and desktop browsers: sidebar layout, keyboard shortcuts, right-click menus, a small always-on-top mini window where the browser allows it','Pick a destination on a map, reuse places you have already saved, and a smarter funding forecast','Music from a location, and the first Logostics track'],improved:['Fewer gradients: Midnight is now a flat colour, and Solid stays truly flat','Unicode symbols for navigation, AI and status, emoji where they are friendlier: 🎮 Fun, 📍 places, 🎵 music, 📈 stocks, 🌎 travel','Logostics AI is always shown with ⬡'],fixed:['Copy SQL for notifications now copies the full script']},
@@ -2530,7 +2544,7 @@ return{requestPermission,send,checkAndFire}})();
 
 const WidgetBridge=(function(){
 const money=n=>Math.round((Number(n)||0)*100)/100;
-function buildPayload(){const inc=IncomeEstimator.estimate();const friends=me?Social.friends():[];return{schemaVersion:5,updatedAt:new Date().toISOString(),balance:money(Store.balance),weeklySpending:money(Store.computeTotalSpending(7)),savedThisWeek:money(Store.computeTotalIncome(7)-Store.computeTotalSpending(7)),goals:Store.getAllGoals().map(g=>({name:g.name,type:g.type||'standard',current:money(g.current),target:money(g.target),progress:g.target>0?g.current/g.target:0,remaining:money(Math.max(0,g.target-g.current)),deadline:g.targetDate||null})),income:{source:inc.source,avgPaycheck:inc.avgPaycheck,weeklyIncome:inc.avgWeeklyIncome,monthlyIncome:inc.avgMonthlyIncome,annualIncome:inc.annualIncome,payFrequency:inc.payFrequency},social:{friends:friends.map(f=>({id:f.id,name:f.displayName,online:f.presence!=='offline'})),debts:Store.getDebts().length}}}
+function buildPayload(){const inc=IncomeEstimator.estimate();const friends=me?Social.friends():[];return{schemaVersion:5,updatedAt:new Date().toISOString(),balance:money(Store.available),cash:money(Store.balance),savingsAccounts:money(Store.savedTotal),weeklySpending:money(Store.computeTotalSpending(7)),savedThisWeek:money(Store.computeTotalIncome(7)-Store.computeTotalSpending(7)),goals:Store.getAllGoals().map(g=>({name:g.name,type:g.type||'standard',current:money(g.current),target:money(g.target),progress:g.target>0?g.current/g.target:0,remaining:money(Math.max(0,g.target-g.current)),deadline:g.targetDate||null})),income:{source:inc.source,avgPaycheck:inc.avgPaycheck,weeklyIncome:inc.avgWeeklyIncome,monthlyIncome:inc.avgMonthlyIncome,annualIncome:inc.annualIncome,payFrequency:inc.payFrequency},social:{friends:friends.map(f=>({id:f.id,name:f.displayName,online:f.presence!=='offline'})),debts:Store.getDebts().length}}}
 return{buildPayload,getJSONString:p=>p?JSON.stringify(buildPayload(),null,2):JSON.stringify(buildPayload())}})();
 /* ═══ FINSYNC — one copy of this account's money data on the server, so any device (and the Home Screen app, which has its own empty storage) can restore it ═══
    Rules the code below keeps:
@@ -3993,14 +4007,14 @@ insights(){const out=[],now=PERIOD.days(7),prev={start:new Date(now.start-7*DAY)
 if(c!==null&&Math.abs(c)>=8)out.push(`Spending is ${c>0?'up':'down'} ${Math.abs(c)}% this week (${fmt(w)} vs ${fmt(pw)}).`);
 const m=PERIOD.days(30),ex=txs('expense',m),bc=byCat(ex),tot=sum(ex);if(bc.length)out.push(`${cname(bc[0][0])} is your biggest category: ${fmt(bc[0][1])} (${Math.round(bc[0][1]/tot*100)}% of 30-day spending). Trimming it 10% saves about ${fmt(bc[0][1]*.1)}/month.`);
 const i30=sum(txs('income',m));if(i30>0)out.push(`Over 30 days you kept ${$$(i30-tot)} of ${fmt(i30)} earned (${Math.round((i30-tot)/i30*100)}% savings rate).`);
-const ad=avgDaily(28);if(ad>0&&Store.balance>0)out.push(`Your balance covers ~${Math.round(Store.balance/ad)} days of spending${Store.balance/ad<30?' — building a buffer of 30+ days is a good next target':''}.`);
+const ad=avgDaily(28);if(ad>0&&Store.available>0)out.push(`Your balance covers ~${Math.round(Store.available/ad)} days of spending${Store.available/ad<30?' — building a buffer of 30+ days is a good next target':''}.`);
 {const bp=plan();if(bp.S>0&&bp.dom>=5){const pr=bp.spent/bp.dom*bp.dim;out.push(pr>bp.S?`At this pace you'll overshoot your ~${f0(bp.S)} monthly budget by ${f0(pr-bp.S)} — ask "what's my budget?" for category caps.`:`You're on pace to finish the month about ${f0(bp.S-pr)} under your ~${f0(bp.S)} budget.`)}}
 const rc=H.recurring();if(/Charges that look/.test(rc.reply))out.push('You have charges that look recurring — ask "show my subscriptions" to review them.');
 const gs=Store.getAllGoals().filter(g=>g.target>g.current);if(gs.length){const g=gs.find(y=>y.type==='moving')||gs[0],e=inc();if(g.type==='moving'){const f=MovingGoalCalculator.forecast(g);if(f.hasIncome&&f.perCheck>0){const more=Math.round(e.avgPaycheck*.05),g2=Object.assign({},g,{payPlan:{enabled:true,mode:'amount',value:f.perCheck+more}}),f2=MovingGoalCalculator.forecast(g2);const wk=f.finishDate&&f2.finishDate?Math.round((f.finishDate-f2.finishDate)/(7*DAY)):0;out.push(`"${gname(g)}" is on track for ${f.finishDate?dt(f.finishDate):'—'}${f.onTime===false?' (late for your target)':''}.`+(wk>0?` Adding just ${fmt(more)} more per paycheck (5%) finishes ${plural(wk,'week')} sooner.`:''))}}else{const p=Store.computeGoalProgress(g);if(p.estimatedDate)out.push(`"${g.name}" should finish around ${dt(p.estimatedDate)}.`)}}
 const owed=Store.getDebts().filter(d=>d.direction==='owed').reduce((s,d)=>s+d.amount,0);if(owed>0)out.push(`You're owed ${fmt(owed)} — a friendly reminder could get that back.`);
 Assist.watchLines().forEach(l=>out.push(l));
 return out.length?R('Here is what stands out:\n'+out.map(x=>'• '+x).join('\n'),{chips:Q('Where is my money going?','Compare to last period','When will I finish my goals?')}):R('Add a few transactions and goals and I will start spotting patterns for you.')},
-summary(x){const t=(x&&x.t)||'',w=/\bmonth\b/.test(t)&&!(x&&x.p)?PERIOD.month():x&&x.p&&x.p.kind!=='all'?x.p:PERIOD.days(7),lb=w.label==='in the last 7 days'?'This week':w.label[0].toUpperCase()+w.label.slice(1),i=sum(txs('income',w)),e=sum(txs('expense',w)),top=byCat(txs('expense',w))[0];let s=`${lb}: income ${fmt(i)}, spending ${fmt(e)} (${i>=e?'+':'−'}${fmt(Math.abs(i-e))} net). Balance **${$$(Store.balance)}**.`;if(top)s+=` Most went to ${top[0]} (${fmt(top[1])}).`;const g=Store.getAllGoals().find(y=>y.target>y.current);if(g)s+=' '+story(g);return R(s,{chips:Q('Give me insights','Compare to last period')})},
+summary(x){const t=(x&&x.t)||'',w=/\bmonth\b/.test(t)&&!(x&&x.p)?PERIOD.month():x&&x.p&&x.p.kind!=='all'?x.p:PERIOD.days(7),lb=w.label==='in the last 7 days'?'This week':w.label[0].toUpperCase()+w.label.slice(1),i=sum(txs('income',w)),e=sum(txs('expense',w)),top=byCat(txs('expense',w))[0];let s=`${lb}: income ${fmt(i)}, spending ${fmt(e)} (${i>=e?'+':'−'}${fmt(Math.abs(i-e))} net). Balance **${$$(Store.available)}**.`;if(top)s+=` Most went to ${top[0]} (${fmt(top[1])}).`;const g=Store.getAllGoals().find(y=>y.target>y.current);if(g)s+=' '+story(g);return R(s,{chips:Q('Give me insights','Compare to last period')})},
 help(){return R('I work on your real data, privately on this device. I can:\n• Answer: balance, spending by date or category, income, savings, paychecks, debts, friends\n• Forecast: "when will I finish my moving goal?", "how much per paycheck do I need?", "what if I save $200 per paycheck?"\n• Budget: "what is my budget?", "how much can I spend today?", "budget for food", "set my budget to $2000"\n• Decide: "can I afford $300?", "how long will my money last?"\n• Trips: "how much have we saved for our trip?", "who contributed the most?", "how much will gas cost?", "is it going to rain there?", "any holidays on my trip?"\n• Act (with your OK): "I spent $12 on lunch", "I got paid $812", "add $50 to my laptop goal", "save 25% of each paycheck for my move", "Sam owes me $20", "add friend ABC-1234"',{chips:Q('When will I finish my goals?','How much did I spend this month?','Give me insights')})},
 greet(){return R(Assist.greeting(),{chips:Q('Give me insights','When will I finish my goals?','What is my balance?')})}};
 /* ── the working behind an answer: used by the Assistant settings (just the answer · key numbers · every step) ──
@@ -4071,7 +4085,7 @@ return propose({type:'tx',tx},`Log this ${type}?`,[`${cname(type)}: ${fmt(a)}`,`
 return null}
 const cap1=s=>s[0].toUpperCase()+s.slice(1).toLowerCase();
 async function exec(a){switch(a.type){
-case'tx':{await Store.addTransaction(a.tx);SoundManager.success();const bal=Store.balance;return R(`Done — logged ${fmt(a.tx.amount)} ${a.tx.type}. Your balance is now **${$$(bal)}**.`,{refresh:1,chips:Q(a.tx.type==='expense'?'How much did I spend this month?':'When will I finish my goals?')})}
+case'tx':{await Store.addTransaction(a.tx);SoundManager.success();const bal=Store.available;return R(`Done — logged ${fmt(a.tx.amount)} ${a.tx.type}. Your balance is now **${$$(bal)}**.`,{refresh:1,chips:Q(a.tx.type==='expense'?'How much did I spend this month?':'When will I finish my goals?')})}
 case'goalAdd':{const g=Store.getGoal(a.id);if(!g)return R('I could not find that goal anymore.');const was=g.current>=g.target;await Store.updateGoal(a.id,{current:Math.max(0,g.current+a.amt)});const n=Store.getGoal(a.id);if(a.amt<0)return R(`Took ${fmt(-a.amt)} out of "${gname(g)}". `+story(n),{refresh:1});return R(`Added ${fmt(a.amt)} to "${gname(g)}". `+(!was&&n.current>=n.target?'You reached the goal! ✦':story(n)),{refresh:1})}
 case'plan':{await Store.updateGoal(a.id,{payPlan:a.plan});const n=Store.getGoal(a.id);return R((a.plan.enabled?'Plan saved. ':'Plan turned off. ')+story(n),{refresh:1})}
 case'goalNew':{const g=await Store.addGoal({name:a.name,target:a.target,current:0,targetDate:a.targetDate,contribution:0,frequency:'weekly'});return R(`Created "${g.name}" (${fmt(g.target)}). Tell me how much you'll save, e.g. "what if I save $50 per paycheck for ${g.name}", and I'll project a finish date.`,{refresh:1})}
@@ -4371,8 +4385,8 @@ const cloudBanner=()=>{const c=Cloud.status();if(!c.on)return`<div class="social
 /* ═══ HOME ═══ */
 function renderHome(){const snap=Store.getSnapshot(),cfg=DashboardManager.getConfig(),edit=DashboardManager.isEditMode();
 const cards={
-hero:()=>`<div class="hero"><div class="hero-label">Available Cash</div><div class="hero-amount" data-roll="${snap.balance}" data-rid="hero-bal">${fmt(snap.balance)}</div><div class="hero-status"><span class="status-dot"></span><span>Updated ${timeAgo(snap.lastUpdated)}</span></div></div>`,
-cashCard:()=>{const est=Store.computePaycheckEstimate(),inc=IncomeEstimator.estimate(),proj=Store.computeProjectedBalance();const planned=snap.recurringExpenses.filter(e=>e.active!==false).reduce((s,e)=>s+e.amount,0);return`<div class="cash-card glass"><div class="cash-top"><div><div class="cash-main" data-roll="${snap.balance}" data-rid="cash-main">${fmt(snap.balance)}</div><div class="cash-main-label">Available</div></div><div class="cash-badge">+${fmt(inc.nextPaycheck||est.takeHome)}</div></div><div class="cash-rows"><div class="cash-row"><span class="lbl">↑ Expected</span><span class="amt pos">+${fmt(est.takeHome)}</span></div><div class="cash-row"><span class="lbl">↓ Planned</span><span class="amt neg">−${fmt(planned)}</span></div></div><div class="cash-proj"><span class="lbl">Projected</span><span class="amt">${fmt(proj)}</span></div></div>`},
+hero:()=>`<div class="hero"><div class="hero-label">Available Cash</div><div class="hero-amount" data-roll="${snap.available}" data-rid="hero-bal">${fmt(snap.available)}</div>${snap.saved>0.004?`<div class="hero-split"><span>Cash ${fmt(snap.balance)}</span><span aria-hidden="true">·</span><span>In savings ${fmt(snap.saved)}</span></div>`:''}<div class="hero-status"><span class="status-dot"></span><span>Updated ${timeAgo(snap.lastUpdated)}</span></div></div>`,
+cashCard:()=>{const est=Store.computePaycheckEstimate(),inc=IncomeEstimator.estimate(),proj=Store.computeProjectedBalance();const planned=snap.recurringExpenses.filter(e=>e.active!==false).reduce((s,e)=>s+e.amount,0);return`<div class="cash-card glass"><div class="cash-top"><div><div class="cash-main" data-roll="${snap.available}" data-rid="cash-main">${fmt(snap.available)}</div><div class="cash-main-label">Available</div></div><div class="cash-badge">+${fmt(inc.nextPaycheck||est.takeHome)}</div></div><div class="cash-rows"><div class="cash-row"><span class="lbl">↑ Expected</span><span class="amt pos">+${fmt(est.takeHome)}</span></div><div class="cash-row"><span class="lbl">↓ Planned</span><span class="amt neg">−${fmt(planned)}</span></div></div><div class="cash-proj"><span class="lbl">Projected</span><span class="amt">${fmt(proj)}</span></div></div>`},
 quickActions:()=>{try{return HomeUI.quick()}catch(e){return `<div class="quick-grid"><button class="quick-btn primary" onclick="openAddIncome()"><span class="ico">↓</span><span class="lbl">Income</span></button><button class="quick-btn" onclick="openAddExpense()"><span class="ico">↑</span><span class="lbl">Expense</span></button><button class="quick-btn" onclick="switchTab('goals')"><span class="ico">◈</span><span class="lbl">Goals</span></button><button class="quick-btn" onclick="switchTab('friends')"><span class="ico">♧</span><span class="lbl">Friends</span></button></div>`}},
 paycheck:()=>DashCards.paycheck(),subs:()=>{try{return Subs.card()}catch(e){return''}},payday:()=>{try{return Payday.card()}catch(e){return''}},payacc:()=>PayUI.prompt(),budget:()=>DashCards.budget(),goals:()=>DashCards.goals(),savings:()=>DashCards.savings(),places:()=>{try{return Places.card()}catch(e){return''}},trip:()=>TripUI.dashCard(),
 insights:()=>AIUI.insights(),
@@ -4597,11 +4611,11 @@ function browse(){const u=Accounts.current();SymPick.open({title:'Profile pictur
 function savedAndRefresh(){refresh();toast('Profile picture updated')}
 function bg(c){apply({avatarBg:c});refresh()}
 function typed(v){clearTimeout(typedT);typedT=setTimeout(()=>{v=String(v).trim();if(!v)return;const seg=window.Intl&&Intl.Segmenter?[...new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(v)].map(s=>s.segment):[...v];const a=seg.slice(0,seg.every(x=>/[\p{L}\p{N}]/u.test(x))?2:1).join('');if(!a)return;apply({avatar:a});const p=document.getElementById('av-prev');if(p)p.innerHTML=avHTML(Social.user(me),112)},350)}
-async function pick(ev){const f=ev.target.files&&ev.target.files[0];ev.target.value='';if(!f)return;
+async function pick(ev,tgt){const f=ev.target.files&&ev.target.files[0];ev.target.value='';if(!f)return;
 if(!(f.type||'').startsWith('image/')&&!/\.(gif|jpe?g|png|webp|heic|heif)$/i.test(f.name||'')){toast('Please choose a photo or GIF');return}
 if(f.size>30e6){toast('That file is over 30 MB — pick a smaller one');return}
-let buf=null;try{const h=new Uint8Array(await f.slice(0,6).arrayBuffer());if(h[0]===71&&h[1]===73&&h[2]===70)buf=new Uint8Array(await f.arrayBuffer())}catch(e){}
-const url=URL.createObjectURL(f),img=new Image();img.onload=()=>{if(!img.naturalWidth||!img.naturalHeight){img.onerror();return}ed={url,img,buf,w:img.naturalWidth,h:img.naturalHeight,z:1,ox:0,oy:0};ed.s0=V/Math.min(ed.w,ed.h);crop()};
+let buf=null;if(!tgt){try{const h=new Uint8Array(await f.slice(0,6).arrayBuffer());if(h[0]===71&&h[1]===73&&h[2]===70)buf=new Uint8Array(await f.arrayBuffer())}catch(e){}}
+const url=URL.createObjectURL(f),img=new Image();img.onload=()=>{if(!img.naturalWidth||!img.naturalHeight){img.onerror();return}ed={url,img,buf,tgt:tgt||null,w:img.naturalWidth,h:img.naturalHeight,z:1,ox:0,oy:0};ed.s0=V/Math.min(ed.w,ed.h);crop()};
 img.onerror=()=>{URL.revokeObjectURL(url);toast('Could not read that file — try a JPG, PNG or GIF')};img.src=url}
 function crop(){openSheet(`<div class="sheet-title">Move and zoom</div>
 <div style="display:flex;justify-content:center"><div id="crop" class="crop"><img id="crop-img" src="${ed.url}" alt="" draggable="false"></div></div>
@@ -4616,12 +4630,14 @@ el.onpointermove=e=>{const p=P.get(e.pointerId);if(!p||!ed)return;const dx=e.cli
 el.onpointerup=el.onpointercancel=e=>{P.delete(e.pointerId)};el.addEventListener('wheel',e=>{e.preventDefault();zoom(ed.z*Math.exp(-e.deltaY*.002))},{passive:false})}
 function rect(){const s=ed.s0*ed.z,cs=V/s;return{cs,cx:Math.max(cs/2,Math.min(ed.w-cs/2,ed.w/2-ed.ox/s)),cy:Math.max(cs/2,Math.min(ed.h-cs/2,ed.h/2-ed.oy/s))}}
 function end(){if(ed){try{URL.revokeObjectURL(ed.url)}catch(e){}ed=null}}
-function cancel(){end();open()}
+function cancel(){const t=ed&&ed.tgt;end();if(t){try{t.back&&t.back()}catch(e){}return}open()}
+/* the same move-and-zoom picker for another picture (for example a job's picture). cfg:{title,size,max,done(dataUrl)->false|any,back()}; a still square JPEG is made, never a GIF */
+function pickFor(ev,cfg){return pick(ev,cfg||{})}
 async function save(){if(!ed)return;const b=document.getElementById('crop-save');if(b){b.disabled=true;b.textContent=ed.buf?'Optimizing GIF…':'Saving…'}await new Promise(r=>setTimeout(r,40));
-try{const c=rect();let d=null,lost=false;if(ed.buf){try{d=gif(ed.buf,c)}catch(e){console.warn('gif',e)}lost=!d&&gifParse(ed.buf).fr.length>1}if(!d)d=jpeg(ed.img,c,192);
+try{const c=rect();if(ed.tgt){const t=ed.tgt;let d='';for(const sz of[t.size||160,128,96]){d=jpeg(ed.img,c,sz);if(d.length<=(t.max||24000))break}end();let r=true;try{r=await t.done(d)}catch(e){console.error(e);r=false}if(r===false){toast('Could not save that picture')}try{t.back&&t.back()}catch(e){}return}let d=null,lost=false;if(ed.buf){try{d=gif(ed.buf,c)}catch(e){console.warn('gif',e)}lost=!d&&gifParse(ed.buf).fr.length>1}if(!d)d=jpeg(ed.img,c,192);
 const r=apply({avatar:d,avatarBg:''});end();if(r&&r.ok){openProfileEditor();savedFlag();toast(lost?'That GIF was too heavy to stay animated — saved as a still picture':'Profile picture updated')}else open()}
 catch(e){console.error(e);toast('Could not use that image');if(b){b.disabled=false;b.textContent='Use this picture'}}}
-return{src,valid,open,set,browse,bg,typed,pick,zoom,cancel,save,initials,COLORS,_t:{gifParse,gifEach,gifEnc,lzw,lzwEnc,mcut,gif,jpeg}}})();
+return{src,valid,open,set,browse,bg,typed,pick,pickFor,zoom,cancel,save,initials,COLORS,_t:{gifParse,gifEach,gifEnc,lzw,lzwEnc,mcut,gif,jpeg}}})();
 /* ═══ iPHONE GESTURES — everything here runs on iPhone/iPod only (IPHONE): edge-swipe back, sheet drag-to-dismiss,
    swipe-to-delete, pull-to-refresh, long-press menu, haptics, tab-bar scroll-to-top. Android and desktop never get any of it. ═══ */
 const iosTick=(()=>{let lab=null;const one=()=>{try{if(!lab){lab=document.createElement('label');lab.setAttribute('aria-hidden','true');lab.style.display='none';const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');lab.appendChild(i);document.head.appendChild(lab)}lab.click()}catch(e){}};
@@ -8579,7 +8595,7 @@ else{menu([{ico:'⧉',label:'Copy balance',run:()=>copy(money(Store.getSnapshot(
 const miniOK=()=>eligible()&&!!window.documentPictureInPicture&&typeof window.documentPictureInPicture.requestWindow==='function';
 function miniHTML(){const s=Store.getSnapshot(),hide=typeof privacyMode!=='undefined'&&privacyMode;let wk=0,trip='';try{wk=Store.computeTotalSpending(7)}catch(e){}
 try{const t=Trips.next&&Trips.next();if(t&&t.start){const d=Math.ceil((new Date(t.start+'T00:00:00')-Date.now())/864e5);if(d>=0){trip=`${t.name||t.destination||'Trip'} in ${d} day${d===1?'':'s'}`}}}catch(e){}
-return`<div class="mw-l">Available cash</div><div class="mw-v">${hide?'••••••':E(money(s.balance))}</div><div class="mw-s">${hide?'':E(money(wk))+' spent in 7 days'}</div>${trip?`<div class="mw-s">✈︎ ${E(trip)}</div>`:''}`}
+return`<div class="mw-l">Available cash</div><div class="mw-v">${hide?'••••••':E(money(s.available))}</div><div class="mw-s">${hide?'':E(money(wk))+' spent in 7 days'}</div>${trip?`<div class="mw-s">✈︎ ${E(trip)}</div>`:''}`}
 async function mini(){if(pip){try{pip.close()}catch(e){}return}
 if(!miniOK()){toast('The mini window needs Edge or Chrome on a computer');return}
 try{const w=await window.documentPictureInPicture.requestWindow({width:280,height:170});pip=w;
@@ -9769,7 +9785,8 @@ function snapshot(){
   const goals=Store.getAllGoals().filter(g=>g.target>0),saved=goals.reduce((a,g)=>a+(Number(g.current)||0),0);
   let ts=0;try{Trips.list().forEach(t=>{ts+=Trips.saved(t)})}catch(e){}
   let owed=0,owe=0;try{Store.getDebts().forEach(d=>{if(d.direction==='owed')owed+=Number(d.amount)||0;else if(d.direction==='owe')owe+=Number(d.amount)||0})}catch(e){}
-  const cash=r2(s.balance),sv=r2(saved+ts);
+  const cash=r2(s.available),sv=r2(saved+ts);
+  let netV=r2(cash+sv+owed-owe);try{netV=r2(Sav.summary().net+ts)}catch(e){}/* "cash" now includes money in savings accounts, so goals are not added on top a second time */
   let pay=null;try{const pd=IncomeEstimator.paydays(1),est=IncomeEstimator.estimate(),amt=est?(est.nextPaycheck||est.avgPaycheck||0):0;if(pd&&pd.length)pay={date:ymd(pd[0]),amt:r2(amt)}}catch(e){}
   const act=goals.filter(g=>g.current<g.target).sort((a,b)=>b.current/b.target-a.current/a.target).slice(0,3).map(g=>({n:clip(g.name,22),c:r2(g.current),t:r2(g.target)}));
   let trip=null;try{
@@ -9780,7 +9797,7 @@ function snapshot(){
   const tx=(s.transactions||[]).slice(0,6).map(t=>({n:clip(t.description||t.category||(t.type==='income'?'Income':'Expense'),22),a:r2(t.type==='income'?t.amount:-t.amount),d:ymd(new Date(t.date))}));
   /* with "balance visible" off, no amounts leave the app: only percentages and dates */
   const pct=(c,t)=>t>0?Math.round(Math.min(1,c/t)*100):0;
-  const d=vis?{v:1,at:new Date().toISOString(),hide:false,cash,savings:sv,net:r2(cash+sv+owed-owe),ng:goals.length,pay,goals:act,trip,bud,tx}
+  const d=vis?{v:1,at:new Date().toISOString(),hide:false,cash,savings:sv,net:netV,ng:goals.length,pay,goals:act,trip,bud,tx}
     :{v:1,at:new Date().toISOString(),hide:true,cash:null,savings:null,net:null,ng:goals.length,pay:pay?{date:pay.date,amt:null}:null,goals:act.map(g=>({n:g.n,c:pct(g.c,g.t),t:100})),trip:trip?Object.assign({},trip,{v:trip.b>0?pct(trip.v,trip.b):0,b:trip.b>0?100:0}):null,bud:null,tx:[]};
   return d;
 }
@@ -9955,7 +9972,7 @@ const colorRow=(k,label)=>{const a=apr();return`<div class="color-row"><span>${l
 const SOLIDS=['#000000','#0b0b0d','#1c1c1e','#2c2c2e','#f2f2f7','#ffffff'];
 const BGNOTE={solid:'One flat colour. Nothing is drawn on top of it.',gradient:'A soft, still gradient from your accent colour.',dynamic:'Gradient with slow moving light. Set Visual effects to None to keep it still.',image:'Your own photo. It stays on this device.'};
 function preview(){const s=Store.getSnapshot(),g=Store.getAllGoals().filter(g=>g.target>0)[0],p=g?Math.min(1,g.current/g.target):0;
-return`<div class="lk-prev" aria-label="Preview"><div class="lk-prev-top"><div><div class="hero-label" style="margin:0 0 6px">Preview · Available</div><div class="lk-bal">${fmt(s.balance)}</div></div>${Ring.svg(p,{size:54,id:'lk-pv',label:g?E(g.name)+' progress':'Goal progress'})}</div></div>`}
+return`<div class="lk-prev" aria-label="Preview"><div class="lk-prev-top"><div><div class="hero-label" style="margin:0 0 6px">Preview · Available</div><div class="lk-bal">${fmt(s.available)}</div></div>${Ring.svg(p,{size:54,id:'lk-pv',label:g?E(g.name)+' progress':'Goal progress'})}</div></div>`}
 function swatches(){const a=Object.assign({},PRESETS.default,Store.preferences.appearance||{}),cur=hex6(a.accentColor).toLowerCase();return`<div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0">${ACCENTS.map(c=>`<div class="color-swatch ${cur===c?'selected':''}" role="button" aria-label="Accent ${c}" style="background:${c}" onclick="LookUI.accent('${c}')"></div>`).join('')}</div>`}
 function dashList(){const cfg=DashboardManager.getConfig(),hid=new Set(cfg.hidden||[]),ord=DashboardManager.order();
 return ord.map((id,i)=>`<div class="set-row static" style="cursor:default"><div class="set-left"><span class="ico set-ico">▤</span> ${E(DashboardManager.CARD_LABELS[id]||id)}</div><div style="display:flex;gap:6px;align-items:center"><button class="mini-btn" ${i===0?'disabled':''} aria-label="Move up" onclick="LookUI.move('${id}',-1)">↑</button><button class="mini-btn" ${i===ord.length-1?'disabled':''} aria-label="Move down" onclick="LookUI.move('${id}',1)">↓</button><div class="toggle ${hid.has(id)?'':'on'}" role="switch" aria-label="Show ${E(DashboardManager.CARD_LABELS[id]||id)}" onclick="LookUI.vis('${id}')"></div></div></div>`).join('')}
@@ -11910,7 +11927,8 @@ return{host,controls,act,mount,sweep,cleanView,VIEW_DEF,get:id=>reg[id]||null,co
    Everything is typed in by the person; nothing is guessed. Estimates are labelled as estimates.
    Stored privately in the account's preferences ("jobs"), so it is part of backups and sync. Photos stay on this device (IndexedDB), never uploaded.
    Sharing is opt-in and field by field ("share" preference): friends can see dates and percentages, never pay amounts, rates or the hours log.
-   The only picture that can leave this device is one small cover thumbnail, and only if the person turns that on. ═══ */
+   The work picture (a small round picture for the job) is kept with the job, so it follows the account like the rest of the job details.
+   The only pictures that can leave this device are one small cover thumbnail and the small work picture, and only if the person turns each on. ═══ */
 const Jobs=(function(){
 const E=s=>escapeHtml(s),DAY=864e5,MAX_JOBS=6,MAX_PHOTOS=12,MAX_RAISES=30;
 const pad=n=>String(n).padStart(2,'0');
@@ -11927,12 +11945,14 @@ const today=()=>{const d=new Date();d.setHours(12,0,0,0);return d};
 const rid=()=>Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-3);
 const goodId=s=>/^[a-z0-9]{3,24}$/.test(s||'');
 const COLORS=['','#30d158','#0a84ff','#bf5af2','#ff9f0a','#ff375f','#64d2ff','#ffd60a'];
-const PRIVACY='Only your friends see this in Logostics. Logostics keeps everyone’s profiles in one shared store, so who can see it is enforced by the app, not by the server: share only what you’re happy for a friend to see. Pay amounts, hourly rates, your hours log and your photos are never shared.';
+const PRIVACY='Only your friends see this in Logostics. Logostics keeps everyone’s profiles in one shared store, so who can see it is enforced by the app, not by the server: share only what you’re happy for a friend to see. Pay amounts, hourly rates, your hours log and your photos are never shared (apart from the small cover photo and work picture, if you switch them on).';
+const PFP_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/]+={0,2}$/;
+const goodPfp=s=>typeof s==='string'&&s.length<=26000&&PFP_RE.test(s)?s:'';
 
 /* ── data ── */
 function cleanOne(j){if(!j||typeof j!=='object')return null;
   const o={id:goodId(j.id)?j.id:rid(),title:txt(j.title,40),employer:txt(j.employer,40),start:ok(j.start)?j.start:'',end:ok(j.end)?j.end:'',type:j.type==='salary'?'salary':'hourly',
-    startPay:r2(num(j.startPay,0,1e7,0)),hrs:Math.round(num(j.hrs,0,100,0)*10)/10,color:/^#[0-9a-f]{6}$/i.test(j.color||'')?String(j.color).toLowerCase():'',raises:[],hlog:[]};
+    startPay:r2(num(j.startPay,0,1e7,0)),hrs:Math.round(num(j.hrs,0,100,0)*10)/10,color:/^#[0-9a-f]{6}$/i.test(j.color||'')?String(j.color).toLowerCase():'',pfp:goodPfp(j.pfp),raises:[],hlog:[]};
   (Array.isArray(j.raises)?j.raises:[]).forEach(r=>{if(r&&ok(r.d)&&num(r.pay,0,1e7,0)>0)o.raises.push({id:goodId(r.id)?r.id:rid(),d:r.d,pay:r2(num(r.pay,0,1e7,0)),note:txt(r.note,60)})});
   o.raises.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);o.raises=o.raises.slice(-MAX_RAISES);
   const seen=new Set();(Array.isArray(j.hlog)?j.hlog:[]).forEach(h=>{if(h&&ok(h.w)&&!seen.has(h.w)&&isFinite(+h.h)){seen.add(h.w);o.hlog.push({w:h.w,h:Math.round(num(h.h,0,168,0)*10)/10})}});
@@ -11972,7 +11992,7 @@ async function putPhotos(){const p=S.photos;if(!p)return false;return LocalBlobs
 function ringSpec(p){return{kind:'ring',cards:p.list.map((x,i)=>({src:x.u,cap:x.c||'Photo '+(i+1)}))}}
 
 /* ── shared-with-friends settings (opt-in, field by field) ── */
-function shareCfg(){const s=(Store.preferences||{}).share||{},j=s.job||{};return{job:{on:j.on===true,id:goodId(j.id)?j.id:'',title:j.title!==false,start:j.start!==false,raises:j.raises!==false,hours:j.hours!==false,photo:j.photo===true}}}
+function shareCfg(){const s=(Store.preferences||{}).share||{},j=s.job||{};return{job:{on:j.on===true,id:goodId(j.id)?j.id:'',title:j.title!==false,start:j.start!==false,raises:j.raises!==false,hours:j.hours!==false,photo:j.photo===true,pfp:j.pfp===true}}}
 function saveShareJob(patch){const s=(Store.preferences||{}).share||{},j=Object.assign({},shareCfg().job,patch);Store.updatePreferences({share:Object.assign({},s,{job:j})});publish()}
 async function thumb(dataUrl){return new Promise(res=>{const im=new Image();im.onload=()=>{try{for(const [sz,q] of [[192,.62],[160,.5],[128,.4]]){const k=Math.min(1,sz/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));const x=c.getContext('2d');x.fillStyle='#000';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',q);if(u.length<=28000){res(u);return}}res('')}catch(e){res('')}};im.onerror=()=>res('');im.src=dataUrl})}
 /* what would be published right now (null = nothing) */
@@ -11981,6 +12001,7 @@ async function payload(){const sc=shareCfg().job;if(!sc.on)return null;const C=c
   if(sc.start){o.start=j.start;if(j.end)o.end=j.end}
   if(sc.hours){const a=hoursAvg(j);if(a)o.hrs=a.v}
   if(sc.raises){o.raises=steps(j).filter(s=>!s.start&&s.d&&s.p!==0).map(s=>({d:s.d,p:Math.round(s.p*10)/10}))}
+  if(sc.pfp&&j.pfp)o.pfp=j.pfp;
   if(sc.photo){let c='';try{const p=await loadPhotos(j.id);if(p.list.length)c=await thumb(p.list[p.cover].u)}catch(e){}
     if(!c){try{const cu=Social.user(me);c=cu&&cu.job&&cu.job.cover||''}catch(e){}}/* this device has no photos for it: keep what is already shown */
     if(c)o.cover=c}
@@ -11996,7 +12017,10 @@ const TABS=[['overview','Overview'],['raises','Raises'],['hours','Hours'],['phot
 const sheetEl=()=>document.getElementById('sheet');
 function put(html,keep){const sh=sheetEl(),top=keep&&sh?sh.scrollTop:0;openSheet(`<div id="jb-ctr">${html}</div>`,{silent:!!keep});if(top&&sh)sh.scrollTop=top}
 const stat=(v,l,sub)=>`<div class="stat"><div class="stat-val" style="font-size:${String(v).length>8?'17':'22'}px">${E(v)}</div><div class="stat-lbl">${E(l)}${sub?`<div class="jb-sub">${E(sub)}</div>`:''}</div></div>`;
-function head(j,C){return`<div class="jb-hero"><div class="jb-t">${E(j.title||'Untitled job')}</div>${j.employer?`<div class="jb-e">${E(j.employer)}</div>`:''}<div class="jb-chips">${(()=>{const t=tenure(j.start,j.end);return(t?`<span class="jb-chip">${E(t.text)}${j.end?'':' so far'}</span>`:'')+(j.start?`<span class="jb-chip">Since ${E(longD(j.start))}</span>`:'')+(j.end?`<span class="jb-chip">Ended ${E(longD(j.end))}</span>`:'')})()}</div></div>`}
+function ini(j){const w=String(j.employer||j.title||'').trim().split(/\s+/).filter(Boolean);return w.length?(w.length>1?w[0][0]+w[1][0]:w[0].slice(0,2)).toUpperCase():'▣'}
+/* the job's round picture; with no picture yet it shows the workplace's initials */
+function pfpHTML(j,size,cls){return j.pfp?`<img class="jb-pfp-img ${cls||''}" style="width:${size}px;height:${size}px" src="${E(j.pfp)}" alt="">`:`<span class="jb-pfp-img jb-pfp-ini ${cls||''}" style="width:${size}px;height:${size}px;font-size:${Math.round(size*.36)}px" aria-hidden="true">${E(ini(j))}</span>`}
+function head(j,C){return`<div class="jb-hero jb-hero-r"><label class="jb-pfp" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}" aria-label="${j.pfp?'Change':'Add'} work picture" title="${j.pfp?'Change':'Add'} work picture">${pfpHTML(j,72)}<span class="jb-pfp-cam" aria-hidden="true">${j.pfp?'✎':'＋'}</span><input type="file" accept="image/*" hidden onchange="Jobs.pfpFile(event)"></label><div class="jb-hero-t"><div class="jb-t">${E(j.title||'Untitled job')}</div>${j.employer?`<div class="jb-e">${E(j.employer)}</div>`:''}<div class="jb-chips">${(()=>{const t=tenure(j.start,j.end);return(t?`<span class="jb-chip">${E(t.text)}${j.end?'':' so far'}</span>`:'')+(j.start?`<span class="jb-chip">Since ${E(longD(j.start))}</span>`:'')+(j.end?`<span class="jb-chip">Ended ${E(longD(j.end))}</span>`:'')})()}</div></div></div>`}
 function picker(C,j){if(C.items.length<2)return'';return`<div class="field"><select class="field-input" aria-label="Which job" onchange="Jobs.pick(this.value)">${C.items.map(i=>`<option value="${E(i.id)}" ${i.id===j.id?'selected':''}>${E(i.title||'Untitled job')}${i.employer?' · '+E(i.employer):''}</option>`).join('')}</select></div>`}
 function empty(){put(`<button class="sheet-back" onclick="closeSheet()" aria-label="Close">‹ Close</button><div class="sheet-title">Job profile</div>
 <div class="empty" style="padding:8px 0 4px"><div class="empty-ico">▣</div><div class="empty-title">Add your job</div><div class="empty-sub">Keep your start date, every raise, your average hours and photos in one place, and watch your pay climb as a 3D chart you can turn and animate. You choose what, if anything, your friends can see.</div></div>
@@ -12073,7 +12097,7 @@ function vShare(j,C){const sc=shareCfg().job,pj=(sc.id&&find(sc.id,C))||find(C.p
   return`<p class="cf-msg" style="margin-top:0">Let friends see your work profile on your page. It’s off until you turn it on, and you pick every piece.</p>
 ${C.items.length>1?`<div class="field"><label class="field-label" for="jb-sh-job">Job to share</label><select class="field-input" id="jb-sh-job" onchange="Jobs.shareJob(this.value)">${C.items.map(i=>`<option value="${E(i.id)}" ${pj&&i.id===pj.id?'selected':''}>${E(i.title||'Untitled job')}${i.employer?' · '+E(i.employer):''}</option>`).join('')}</select></div>`:''}
 <div class="set-group">${SettingsUI.tg('◎','Share with friends',sc.on,"Jobs.shareFlip('on')",sc.on?'Your friends can see the parts switched on below.':'Nobody can see your job right now.')}</div>
-${sc.on?`<div class="t-label" style="margin:16px 0 6px">What friends can see</div><div class="set-group">${sw('title','T','Job title and workplace','“'+E(pj&&pj.title||'—')+(pj&&pj.employer?' at '+E(pj.employer):'')+'”')}${sw('start','▦','Start date and time on the job','Not your pay.')}${sw('raises','↗','Raises, as percentages','For example “+4.5%”, with the date. Never the amounts.')}${sw('hours','◷','Average hours a week','Just the number.')}${sw('photo','▣','A small cover photo','One tiny thumbnail of your cover photo leaves this device. Your other photos never do.')}</div>
+${sc.on?`<div class="t-label" style="margin:16px 0 6px">What friends can see</div><div class="set-group">${sw('title','T','Job title and workplace','“'+E(pj&&pj.title||'—')+(pj&&pj.employer?' at '+E(pj.employer):'')+'”')}${sw('start','▦','Start date and time on the job','Not your pay.')}${sw('raises','↗','Raises, as percentages','For example “+4.5%”, with the date. Never the amounts.')}${sw('hours','◷','Average hours a week','Just the number.')}${sw('pfp','◉','Work picture','The small round picture you chose for this job. Nothing else about your photos is shared.')}${sw('photo','▣','A small cover photo','One tiny thumbnail of your cover photo leaves this device. Your other photos never do.')}</div>
 <div class="t-label" style="margin:18px 0 8px">What friends will see</div><div id="jb-prev"><div class="progress-note" style="text-align:center;padding:14px">Loading preview…</div></div>`:''}
 <p class="fx-hint" style="margin-top:14px">${E(PRIVACY)}</p>
 <div class="set-group" style="margin-top:12px">${SettingsUI.row('⏳','Share my payday','','Payday.open()')}</div>`}
@@ -12103,6 +12127,7 @@ let draft=null;
 function edit(id){const C=cfg();draft=id==='new'?cleanOne({id:rid(),title:'',employer:'',start:'',type:'hourly',startPay:0,hrs:0}):cleanOne(find(id,C));if(!draft)return;draft._new=id==='new'||!find(id,C);draft._cur=!draft.end;form()}
 function form(){const d=draft,isNew=d._new;
   put(`<button class="sheet-back" onclick="Jobs.open()" aria-label="Back">‹ Back</button><div class="sheet-title">${isNew?'New job':'Edit job'}</div>
+<div class="field"><label class="field-label">Work picture (optional)</label><div class="jb-pf-row">${pfpHTML(d,64)}<div style="flex:1;min-width:0;display:flex;gap:8px;flex-wrap:wrap"><label class="mini-btn go" style="cursor:pointer">${d.pfp?'Change picture':'Choose a picture'}<input type="file" accept="image/*" hidden onchange="Jobs.pfpFile(event,true)"></label>${d.pfp?`<button type="button" class="mini-btn" onclick="Jobs.pfpClear()">Remove</button>`:''}</div></div><div class="fx-hint">A logo, a uniform photo, anything that says “work”. You’ll move and zoom it to fit the circle.</div></div>
 <div class="field"><label class="field-label" for="jb-f-title">Job title</label><input class="field-input" id="jb-f-title" maxlength="40" value="${E(d.title)}" placeholder="Barista, Stocker, Nurse…" oninput="Jobs.f('title',this.value)"></div>
 <div class="field"><label class="field-label" for="jb-f-emp">Workplace (optional)</label><input class="field-input" id="jb-f-emp" maxlength="40" value="${E(d.employer)}" placeholder="Where you work" oninput="Jobs.f('employer',this.value)"></div>
 <div class="field"><label class="field-label">You’re paid</label><div class="segmented" id="jb-f-type"><button type="button" class="seg ${d.type==='hourly'?'active':''}" onclick="Jobs.f('type','hourly',this)">By the hour</button><button type="button" class="seg ${d.type==='salary'?'active':''}" onclick="Jobs.f('type','salary',this)">A yearly salary</button></div></div>
@@ -12130,7 +12155,7 @@ function saveJob(){const d=draft;if(!d)return;const title=txt(d.title,40),emp=tx
   if(end&&start&&end<start)return flash('jb-f-err','The last day can’t be before the start date.');
   if(pay<0||pay>1e7)return flash('jb-f-err','Enter a starting pay between 0 and 10,000,000.');
   if(hrs<0||hrs>100)return flash('jb-f-err','Hours per week must be between 0 and 100.');
-  const C=cfg(),clean=cleanOne({id:d.id,title,employer:emp,start,end,type:d.type,startPay:pay,hrs,color:d.color,raises:(find(d.id,C)||{}).raises||[],hlog:(find(d.id,C)||{}).hlog||[]});
+  const C=cfg(),clean=cleanOne({id:d.id,title,employer:emp,start,end,type:d.type,startPay:pay,hrs,color:d.color,pfp:d.pfp,raises:(find(d.id,C)||{}).raises||[],hlog:(find(d.id,C)||{}).hlog||[]});
   if(C.items.length>=MAX_JOBS&&!find(d.id,C))return flash('jb-f-err','You can keep up to '+MAX_JOBS+' jobs.');
   const ix=C.items.findIndex(i=>i.id===clean.id);if(ix>=0)C.items[ix]=clean;else C.items.push(clean);if(!C.primary||!find(C.primary,C))C.primary=clean.id;
   save(C);S.id=clean.id;S.tab='overview';draft=null;try{haptic('success')}catch(e){}toast(d._new?'Job added':'Job saved');render()}
@@ -12138,6 +12163,12 @@ async function delJob(){const d=draft;if(!d)return;const C=cfg(),j=find(d.id,C);
   C.items=C.items.filter(i=>i.id!==j.id);if(C.primary===j.id)C.primary=(C.items[0]&&C.items[0].id)||'';try{await LocalBlobs.del(KEY(j.id))}catch(e){}
   const sc=shareCfg().job;if(sc.id===j.id)saveShareJob({id:''});
   save(C);if(S.id===j.id){S.id='';S.photos=null}draft=null;try{haptic('success')}catch(e){}toast('Job deleted');render()}
+/* — the work picture — */
+function pfpFile(ev,inForm){const el=ev&&ev.target;if(!el||!el.files||!el.files.length)return;
+  if(inForm){Avatar.pickFor(ev,{title:'Work picture',size:160,max:24000,done:d=>{if(draft&&d)draft.pfp=goodPfp(d);return !!(draft&&draft.pfp)},back:()=>{if(draft)form()}});return}
+  const id=(cur()||{}).id;
+  Avatar.pickFor(ev,{title:'Work picture',size:160,max:24000,done:d=>{const C=cfg(),j=find(id,C);if(!j||!goodPfp(d))return false;j.pfp=goodPfp(d);C.items[C.items.findIndex(i=>i.id===j.id)]=cleanOne(j);save(C);try{haptic('success')}catch(e){}toast('Work picture updated');return true},back:()=>{S.id=id||S.id;render()}})}
+function pfpClear(){if(!draft)return;draft.pfp='';try{haptic('select')}catch(e){}form()}
 /* — raises — */
 function editRaise(id){S.editRaise=id||'';render(true)}
 function prevPay(j,d,skip){let p=j.startPay;j.raises.forEach(r=>{if(r.d<d&&r.id!==skip)p=r.pay});return p}
@@ -12197,11 +12228,11 @@ function shareJob(id){saveShareJob({id:goodId(id)?id:''});render(true)}
 
 /* what the Profile page and settings show */
 function summary(){try{const C=cfg(),j=find(C.primary,C);if(!j)return{has:false,line:'Add your job'};const s=stats(j);return{has:true,id:j.id,line:(j.title||'Your job')+(s.ten?' · '+s.ten.text:'')+(s.steps.length>1?' · '+pct(s.total,true)+' since start':'')}}catch(e){return{has:false,line:'Add your job'}}}
-function card(){if(!me)return'';const s=summary();return`<div class="social-card jb-pcard" role="button" tabindex="0" onclick="Jobs.open()" onkeydown="if(event.key==='Enter')Jobs.open()"><div style="display:flex;align-items:center;gap:12px"><span class="jb-pico" aria-hidden="true">▣</span><div style="flex:1;min-width:0"><div style="font-weight:600">Job profile</div><div class="friend-status" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${E(s.line)}</div></div><span aria-hidden="true" style="color:var(--gray-500)">›</span></div></div>`}
+function card(){if(!me)return'';const s=summary();return`<div class="social-card jb-pcard" role="button" tabindex="0" onclick="Jobs.open()" onkeydown="if(event.key==='Enter')Jobs.open()"><div style="display:flex;align-items:center;gap:12px"><span class="jb-pico" aria-hidden="true">${(()=>{try{const C=cfg(),j=find(C.primary,C);return j&&j.pfp?`<img src="${E(j.pfp)}" alt="">`:'▣'}catch(e){return'▣'}})()}</span><div style="flex:1;min-width:0"><div style="font-weight:600">Job profile</div><div class="friend-status" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${E(s.line)}</div></div><span aria-hidden="true" style="color:var(--gray-500)">›</span></div></div>`}
 /* keep what friends see up to date: when the app starts, and when it comes back */
 function boot(){try{publish()}catch(e){}}
 
-return{open,tab:setTab,pick,scene,edit,f,saveJob,delJob,editRaise,calcRaise,saveRaise,delRaise,saveUsual,useIncome,logWeek,delWeek,addFiles,select,caption,setCover,delPhoto,v,flipV,resetView,shareFlip,shareJob,publish,boot,card,summary,cfg,find,
+return{open,tab:setTab,pick,scene,edit,f,pfpFile,pfpClear,pfpHTML,saveJob,delJob,editRaise,calcRaise,saveRaise,delRaise,saveUsual,useIncome,logWeek,delWeek,addFiles,select,caption,setCover,delPhoto,v,flipV,resetView,shareFlip,shareJob,publish,boot,card,summary,cfg,find,
   stats,steps,tenure,spanText,pct,hoursAvg,towerSpec,ringSpec,payload,shareCfg,cleanOne,shrink,thumb,loadPhotos,longD,shortD,PRIVACY,_s:()=>S}})();
 /* ═══ SHARING PAYDAY AND WORK WITH FRIENDS ═══
    PaySharing  publishes the person's own payday as a short list of upcoming dates (never an amount, never the pay rule), only when they switch it on.
@@ -12272,7 +12303,7 @@ function growth(j){const rs=j.raises||[];let idx=100;const bars=[{v:100,label:'S
 function towerSpec(j){const g=growth(j);let bars=g.bars;if(bars.length>10)bars=bars.slice(-10);return{kind:'tower',color:j.color||'',bars}}
 function workCard(j,o){o=o||{};const id=o.id||'fp-w',t=Jobs.tenure(j.start,j.end),g=growth(j),n=(j.raises||[]).length;
   const meta=[t?t.text+(j.end?' there':' so far'):'',j.start?'Since '+Jobs.longD(j.start):'',j.hrs?'About '+j.hrs+' h a week':''].filter(Boolean);
-  return`<div class="social-card fp-work" style="${j.color?'--jc:'+E(j.color):''}"><div style="display:flex;gap:12px;align-items:center">${j.cover?`<img class="fp-cover" src="${E(j.cover)}" alt="Cover photo">`:''}<div style="flex:1;min-width:0"><div class="jb-t" style="font-size:17px">${E(j.title||(j.employer?'Works at '+j.employer:'Work'))}</div>${j.title&&j.employer?`<div class="friend-status">${E(j.employer)}</div>`:''}</div></div>
+  return`<div class="social-card fp-work" style="${j.color?'--jc:'+E(j.color):''}"><div style="display:flex;gap:12px;align-items:center">${j.pfp?`<img class="fp-pfp" src="${E(j.pfp)}" alt="Work picture">`:''}<div style="flex:1;min-width:0"><div class="jb-t" style="font-size:17px">${E(j.title||(j.employer?'Works at '+j.employer:'Work'))}</div>${j.title&&j.employer?`<div class="friend-status">${E(j.employer)}</div>`:''}</div>${j.cover?`<img class="fp-cover" src="${E(j.cover)}" alt="Cover photo">`:''}</div>
 ${meta.length?`<div class="jb-chips" style="margin-top:10px">${meta.map(m=>`<span class="jb-chip">${E(m)}</span>`).join('')}</div>`:''}
 ${n?`<div class="fp-rs"><b>${n} raise${n===1?'':'s'}</b> · ${E(pct(g.total,true))} since the start</div>${Scene3D.host(id,{label:'3D chart of pay growth in percent',h:230})}${Scene3D.controls(id)}<div class="fx-hint" style="text-align:center">Growth in percent from their first pay. Drag to turn it.</div>`:''}</div>`}
 function mountWork(id,j){try{if(document.getElementById(id)&&(j.raises||[]).length)Scene3D.mount(id,towerSpec(j),Jobs.cfg().view)}catch(e){}}
