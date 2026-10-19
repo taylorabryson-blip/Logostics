@@ -1322,6 +1322,26 @@ html.lg-on:not(.lg-light):not(.a11y-contrast){--gray-500:#7d7d84;--gray-400:#9b9
 .tk-bar-b{display:flex;gap:8px;margin-top:12px}.tk-b{flex:1;min-height:44px;border-radius:12px;border:1px solid var(--gray-700);background:var(--gray-850);color:var(--text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}.tk-b.go{background:var(--green);border-color:var(--green);color:var(--on-accent)}
 
 .hero-split{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:13px;font-weight:500;color:var(--gray-400);font-variant-numeric:tabular-nums}
+
+/* 4.1.2 — subscription logos, "when & cash" box, recovery lists */
+.sb-logo{flex:none;border-radius:11px;object-fit:cover;display:inline-grid;place-items:center;line-height:1;background:var(--gray-800);border:1px solid var(--gray-800)}.sb-ic{border-color:transparent}
+.sb-lg-row{display:flex;align-items:center;gap:12px;margin-bottom:4px}.sb-lg-act{display:flex;gap:8px;flex-wrap:wrap}
+.sb-presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:8px;margin-top:12px}
+.sb-pre{height:44px;min-width:44px;border-radius:12px;border:1px solid var(--gray-700);background:var(--gray-900,transparent);color:var(--gray-300);display:grid;place-items:center;cursor:pointer;font:600 12px/1 inherit;padding:0;-webkit-tap-highlight-color:transparent}
+.sb-pre.on{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset;color:var(--green)}.sb-pre:focus-visible,.sb-tint:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.sb-tints{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}.sb-tint{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;opacity:.9}.sb-tint.on{border-color:var(--text);opacity:1;transform:scale(1.08)}
+.wn-head{width:100%;display:flex;align-items:center;gap:10px;background:var(--gray-900,transparent);border:1px solid var(--gray-800);border-radius:14px;padding:12px 14px;color:var(--text);font:inherit;cursor:pointer;text-align:left;min-height:46px}
+.wn-head span{font-size:13px;font-weight:600;color:var(--gray-400);flex:none}.wn-head b{flex:1;min-width:0;text-align:right;font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wn-head i{font-style:normal;color:var(--gray-500);flex:none}
+.wn-head[aria-expanded="true"] i{transform:rotate(180deg)}.wn-body{padding-top:12px}.wn-body[hidden]{display:none}
+.wn-cash{cursor:pointer;display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--gray-800);border-radius:14px;margin:0;-webkit-tap-highlight-color:transparent}.wn-cash:focus-visible{outline:2px solid var(--green);outline-offset:2px}.wn-cash .set-left{display:block;flex:1;min-width:0;font-weight:600}.wn-cash .fx-hint{margin-top:4px;font-weight:400;line-height:1.35}.wn-cash .toggle{flex:none}
+.rc-bar{display:flex;align-items:center;gap:8px;margin:8px 0}.rc-bar span{flex:1;font-size:13px;color:var(--gray-400)}
+.rc-list{max-height:44vh;overflow:auto;padding:0;-webkit-overflow-scrolling:touch}
+.rc-row{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border:0;border-bottom:1px solid var(--gray-800);background:none;color:var(--text);font:inherit;text-align:left;cursor:pointer;min-height:52px}.rc-row:last-child{border-bottom:0}
+.rc-chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--gray-600);display:grid;place-items:center;font-size:13px;font-weight:800;color:transparent;flex:none}.rc-row.on .rc-chk{background:var(--green);border-color:var(--green);color:#000}
+.rc-main{min-width:0;flex:1}.rc-main b{display:block;font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rc-main i{display:block;font-style:normal;font-size:12px;color:var(--gray-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc-amt{font-weight:700;font-variant-numeric:tabular-nums;flex:none}.rc-amt.pos{color:var(--green)}
+.gh-pill{display:inline-block;vertical-align:1px;margin-left:6px;padding:1px 7px;border-radius:999px;border:1px dashed var(--gray-600);color:var(--gray-400);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.activity-item.ghost .activity-amt{opacity:.55}.activity-item.ghost .activity-ico{opacity:.7;border-style:dashed}
 </style>
 </head>
 <body>
@@ -1346,8 +1366,8 @@ html.lg-on:not(.lg-light):not(.a11y-contrast){--gray-500:#7d7d84;--gray-400:#9b9
 /* Friends/social sync runs on a free Supabase project. CLOUD_URL (optional): your project URL, e.g. 'https://abcd.supabase.co', to skip the in-app setup. CLOUD_KEY: the project's publishable key (safe to ship in client code). */
 const CLOUD_URL='https://pwsrrxtugjvnvstzbnps.supabase.co';
 const CLOUD_KEY='sb_publishable_tyaz3Ynes8AFu7YimRw7xQ_BbCSajC_';
-const APP_VERSION='4.1.1';
-const APP_BUILD='2026-10-18T19:12:26Z';
+const APP_VERSION='4.1.2';
+const APP_BUILD='2026-10-19T08:46:40Z';
 const KV={mem:{},get(k){try{const v=localStorage.getItem(k);if(v!==null)return v}catch(e){}return this.mem[k]===undefined?null:this.mem[k]},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}},del(k){delete this.mem[k];try{localStorage.removeItem(k)}catch(e){}}};
 /* iPhone/iPod only (iPad and desktop browsers are deliberately excluded): gates every touch gesture and iOS haptic */
 const IPHONE=/iPhone|iPod/.test(navigator.userAgent||'');try{document.documentElement.classList.toggle('iphone',IPHONE)}catch(e){}
@@ -2179,30 +2199,78 @@ const defaultIncome=()=>({hourlyRate:0,hoursPerWeek:0,overtimeHours:0,overtimeMu
 let state={balance:0,saved:0,available:0,transactions:[],paychecks:[],goals:[],accounts:[],moves:[],allocs:[],payfb:[],imports:[],recurringExpenses:[],incomeSettings:defaultIncome(),preferences:defaultPrefs(),lastUpdated:Date.now(),_listeners:[]};
 function merge(base,over){if(!over||typeof over!=='object')return base;Object.keys(over).forEach(k=>{const v=over[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&base[k]&&typeof base[k]==='object'&&!Array.isArray(base[k]))merge(base[k],v);else base[k]=v});return base}
 
-function openDB(){return new Promise(resolve=>{if(!window.indexedDB||!window.isSecureContext){resolve(null);return}let req;try{req=indexedDB.open(DB_NAME,DB_VERSION)}catch(e){resolve(null);return}
+const IDB_WAIT=6000;let lateIdb=null,lateFn=null;
+function openDB(){return new Promise(resolve=>{let done=false;const fin=v=>{if(!done){done=true;resolve(v)}};if(!window.indexedDB||!window.isSecureContext){fin(null);return}let req;try{req=indexedDB.open(DB_NAME,DB_VERSION)}catch(e){fin(null);return}
 req.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('transactions')){const s=d.createObjectStore('transactions',{keyPath:'id',autoIncrement:true});s.createIndex('date','date');s.createIndex('type','type')}if(!d.objectStoreNames.contains('goals'))d.createObjectStore('goals',{keyPath:'id',autoIncrement:true});if(!d.objectStoreNames.contains('paychecks')){const s=d.createObjectStore('paychecks',{keyPath:'id',autoIncrement:true});s.createIndex('date','date')}if(!d.objectStoreNames.contains('images'))d.createObjectStore('images',{keyPath:'id'});if(!d.objectStoreNames.contains('social'))d.createObjectStore('social',{keyPath:'key'});['accounts','moves','allocs','payfb','imports'].forEach(n=>{if(!d.objectStoreNames.contains(n))d.createObjectStore(n,{keyPath:'id'})})};
-req.onsuccess=e=>{idb=e.target.result;useIDB=true;resolve(idb)};req.onerror=()=>{idb=null;resolve(null)};setTimeout(()=>{if(!idb)resolve(null)},2500)})}
+/* if the database answers after the app already started from this browser's local storage, the session stays on local storage (so what is on screen and what is saved never split in two) and whatever the late database holds is offered through the recovery check */
+req.onsuccess=e=>{if(done){lateIdb=e.target.result;try{lateFn&&lateFn(lateIdb)}catch(x){}return}idb=e.target.result;useIDB=true;fin(idb)};req.onerror=()=>{idb=null;fin(null)};setTimeout(()=>fin(null),IDB_WAIT)})}
 function tx(store,mode){if(!idb)return null;try{return idb.transaction(store,mode).objectStore(store)}catch(e){return null}}
-function dbPut(store,data){const s=tx(store,'readwrite');if(!s)return Promise.resolve(null);return new Promise(r=>{try{const q=s.put(data);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}})}
-function dbDelete(store,id){const s=tx(store,'readwrite');if(!s)return Promise.resolve();return new Promise(r=>{try{const q=s.delete(id);q.onsuccess=()=>r();q.onerror=()=>r()}catch(e){r()}})}
-function dbGetAll(store){const s=tx(store,'readonly');if(!s)return Promise.resolve([]);return new Promise(r=>{try{const q=s.getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>r([])}catch(e){r([])}})}
-function saveLS(){if(!Platform.capabilities.localStorage)return;try{localStorage.setItem(FIN_KEY,JSON.stringify(master))}catch(e){console.error('Logostics: finance save failed',e.message)}}
+let failWrites=false;/* test hook only */
+function dbPut(store,data){const s=failWrites?null:tx(store,'readwrite');if(!s)return Promise.resolve(null);return new Promise(r=>{try{const t=s.transaction;t.oncomplete=()=>r(true);t.onabort=()=>r(null);t.onerror=()=>r(null);s.put(data)}catch(e){r(null)}})}
+function dbDelete(store,id){const s=failWrites?null:tx(store,'readwrite');if(!s)return Promise.resolve(null);return new Promise(r=>{try{const t=s.transaction;t.oncomplete=()=>r(true);t.onabort=()=>r(null);t.onerror=()=>r(null);s.delete(id)}catch(e){r(null)}})}
+function dbGetAll(store){const s=tx(store,'readonly');if(!s)return Promise.resolve(null);return new Promise(r=>{try{const q=s.getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>r(null)}catch(e){r(null)}})}
+/* the browser can close a database connection behind the app's back (iOS does this after the app has been in the background). A write that finds the connection closed opens a new one and tries again. */
+function reopen(){return new Promise(res=>{let d=false;const fin=v=>{if(!d){d=true;res(v)}};if(failWrites||!window.indexedDB){fin(false);return}try{const old=idb,req=indexedDB.open(DB_NAME,DB_VERSION);req.onsuccess=e=>{try{if(old&&old!==e.target.result)old.close()}catch(x){}idb=e.target.result;useIDB=true;fin(true)};req.onerror=()=>fin(false);req.onblocked=()=>fin(false);setTimeout(()=>fin(false),4000)}catch(e){fin(false)}})}
+async function retry(fn){let r=await fn();if(r===null&&await reopen())r=await fn();return r}
+let warned=false;const warnOnce=()=>{if(warned)return;warned=true;try{toast('Couldn’t save to this device’s database. Your changes are kept in a backup copy and will be offered back next time Logostics opens.')}catch(e){}};
+function saveLS(withStrays){if(!Platform.capabilities.localStorage)return;try{let o=master;if(withStrays&&strays.transactions.length){const have=new Set(master.transactions.map(t=>String(t.id)));o=Object.assign({},master,{transactions:master.transactions.concat(strays.transactions.filter(t=>!have.has(String(t.id))))})}localStorage.setItem(FIN_KEY,JSON.stringify(o))}catch(e){console.error('Logostics: finance save failed',e.message);try{toast('This device is out of storage space for Logostics, so changes may not be saved. Make a backup from Settings → Backup.')}catch(x){}}}
 function loadLS(){try{const r=JSON.parse(localStorage.getItem(FIN_KEY)||'null');if(r){COLL.forEach(k=>{master[k]=Array.isArray(r[k])?r[k]:[]})}}catch(e){}}
-async function putRaw(store,rec){if(useIDB)await dbPut(store,rec);else saveLS()}
-async function delRaw(store,id){if(useIDB)await dbDelete(store,id);else saveLS()}
+async function putRaw(store,rec){if(store==='transactions')shadow.set(String(rec.id),rec);if(useIDB){const r=await retry(()=>dbPut(store,rec));if(r===null){saveLS(true);warnOnce()}}else saveLS()}
+async function delRaw(store,id,why){if(store==='transactions')trashAdd(id,why);if(useIDB){await retry(()=>dbDelete(store,id))}else saveLS()}
 /* every change to a record is also noted for the account sync (FinSync decides whether sync is on; it never reads or sends anything here) */
 async function put(store,rec){await putRaw(store,rec);try{if(typeof FinSync!=='undefined')FinSync.note(store,rec)}catch(e){}}
-async function del(store,id){await delRaw(store,id);try{if(typeof FinSync!=='undefined')FinSync.noteDel(store,id)}catch(e){}}
+async function del(store,id,why){await delRaw(store,id,why);try{if(typeof FinSync!=='undefined')FinSync.noteDel(store,id)}catch(e){}}
 const images={};
 function adoptOrphans(){const first=Cloud.on()?db.users[KV.get('lg_dev_first')]:Object.values(db.users).sort((a,b)=>a.createdAt<b.createdAt?-1:1)[0];if(!first)return;COLL.forEach(k=>master[k].forEach(r=>{if(!r.ownerId){r.ownerId=first.id;put(k,r)}}))}
 
 function reown(from,to){COLL.forEach(k=>master[k].forEach(r=>{if(r.ownerId===from){r.ownerId=to;put(k,r)}}))}
-async function init(){await openDB();if(useIDB){master.transactions=await dbGetAll('transactions');master.goals=(await dbGetAll('goals')).map(g=>Object.assign({type:'standard'},g));master.paychecks=await dbGetAll('paychecks');for(const k of COLL.slice(3)){master[k]=await dbGetAll(k)}}else loadLS();adoptOrphans()}
+/* ─ nothing a person recorded is ever simply gone ─
+   · the trash: every transaction that is removed (by the person, by an undone import, by a restore, by a sync from another device) is first copied into a trash on this device, kept a year, and can be put back from Settings → Backup → Recently removed
+   · strays: transactions found in this browser's other copy of the data (local storage vs the database) that the loaded data doesn't have
+   · orphans: transactions whose owner is not an account on this device any more (an account that was re-created, for example)
+   Putting records back never overwrites anything: it only adds. ─ */
+const shadow=new Map(),strays={transactions:[]};
+const TRASH_KEY='fin-trash:v1',TRASH_MAX=5000,TRASH_AGE=365*864e5;let trash=[],pend=[],trashLoaded=null,trashTimer=null;const PEND_KEY='lg_fin_trash_pend';
+function trashAdd(id,why){const r=shadow.get(String(id));shadow.delete(String(id));if(!r)return;try{const e={k:'transactions',id:r.id,ownerId:r.ownerId,at:Date.now(),why:String(why||'deleted'),rec:JSON.parse(JSON.stringify(r))};trash.push(e);pend.push(e)}catch(e){return}
+  /* a tiny copy is written right away, so closing the app a moment after a delete cannot lose the entry; the full list follows */
+  try{localStorage.setItem(PEND_KEY,JSON.stringify(pend.slice(-200)))}catch(e){}clearTimeout(trashTimer);trashTimer=setTimeout(trashFlush,150)}
+function trashLoad(){return trashLoaded||(trashLoaded=(async()=>{let list=[];try{const b=typeof LocalBlobs!=='undefined'?await LocalBlobs.get(TRASH_KEY):null;if(b&&Array.isArray(b.list))list=b.list}catch(e){}
+  for(const k of['lg_fin_trash',PEND_KEY]){try{const l=JSON.parse(localStorage.getItem(k)||'[]');if(Array.isArray(l))l.forEach(e=>{if(e&&e.rec&&!list.some(x=>x.id===e.id&&x.at===e.at))list.push(e)})}catch(e){}}
+  const mem=trash;trash=list.concat(mem.filter(m=>!list.some(x=>x.id===m.id&&x.at===m.at)));return trash})())}
+async function trashFlush(){trashTimer=null;await trashLoad();const now=Date.now();trash=trash.filter(e=>now-e.at<TRASH_AGE).slice(-TRASH_MAX);const snap=pend.splice(0);let ok=false;try{ok=typeof LocalBlobs!=='undefined'&&await LocalBlobs.set(TRASH_KEY,{v:1,list:trash})}catch(e){}
+  if(!ok){pend=snap.concat(pend);try{localStorage.setItem('lg_fin_trash',JSON.stringify(trash.slice(-300)))}catch(e){}return}
+  try{if(pend.length)localStorage.setItem(PEND_KEY,JSON.stringify(pend.slice(-200)));else localStorage.removeItem(PEND_KEY)}catch(e){}}
+const trashKey=e=>String(e.id)+'@'+e.at;
+async function trashList(){await trashLoad();return trash.filter(e=>e.ownerId===me).sort((a,b)=>b.at-a.at).map(e=>({key:trashKey(e),id:e.id,at:e.at,why:e.why,rec:JSON.parse(JSON.stringify(e.rec))}))}
+async function trashRestore(keys,o){await trashLoad();const want=new Set(keys||[]),pick=trash.filter(e=>e.ownerId===me&&want.has(trashKey(e)));if(!pick.length)return{ok:true,added:[]};
+  const r=await recoverTx(pick.map(e=>e.rec),{src:'trash',ghost:!!(o&&o.ghost)});if(!r.ok)return r;const done=new Set(pick.map(trashKey));trash=trash.filter(e=>!done.has(trashKey(e)));await trashFlush();return r}
+function orphans(){if(!me)return[];const known=new Set(Object.keys(typeof db!=='undefined'&&db&&db.users||{}));return master.transactions.filter(t=>t.ownerId&&t.ownerId!==me&&!known.has(t.ownerId)).map(t=>JSON.parse(JSON.stringify(t)))}
+/* add records found somewhere (restore point, other copy, trash …) to this account. Always adds; never changes or removes what is already here. A record keeps its id when that id is free. */
+async function recoverTx(list,o){o=o||{};if(!me)return{ok:false,added:[],error:'Sign in first.'};const used=new Set(master.transactions.map(t=>String(t.id))),out=[],now=new Date().toISOString();
+  for(const raw of list||[]){if(!raw||typeof raw!=='object')continue;const t=Object.assign({},raw,{amount:Math.abs(Number(raw.amount))});if(validateTx(Object.assign({type:'expense'},t)))continue;
+    const keep=raw.account,x=Object.assign({},t);delete x.account;const f=txFields(x);let id=raw.id;if(!trustId(id)||used.has(String(id)))id=newId();used.add(String(id));
+    const r=Object.assign({},raw,f,{id,ownerId:me,account:'cash',type:f.type||'expense',createdAt:raw.createdAt||now,recoveredAt:now,recoveredFrom:String(o.src||'').slice(0,40)});
+    if(!r.date)r.date=now;if(o.ghost)r.ghost=true;else if(r.ghost!==true)delete r.ghost;
+    const ac=master.accounts.find(a=>String(a.id)===String(keep)&&a.ownerId===me);if(ac)r.account=ac.id;out.push(r)}
+  out.forEach(r=>master.transactions.push(r));refreshView();for(const r of out)await put('transactions',r);if(out.length)notify();return{ok:true,added:out}}
+
+async function scanIdbInto(d){try{const all=await new Promise(r=>{try{const q=d.transaction('transactions','readonly').objectStore('transactions').getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>r([])}catch(e){r([])}});const have=new Set(master.transactions.map(t=>String(t.id)));const add=all.filter(t=>t&&typeof t==='object'&&t.id!=null&&!have.has(String(t.id))&&!strays.transactions.some(x=>String(x.id)===String(t.id)));if(add.length){strays.transactions=strays.transactions.concat(add);try{window.dispatchEvent(new CustomEvent('lg-strays'))}catch(e){}}}catch(e){}}
+const getAll=async st=>{let r=await dbGetAll(st);if(r===null&&await reopen())r=await dbGetAll(st);return r};
+async function init(){await openDB();strays.transactions=[];
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+  let T=null;if(useIDB){T=await getAll('transactions');if(T===null){useIDB=false;setTimeout(()=>{if(idb)scanIdbInto(idb)},4000)}}
+  if(useIDB){master.transactions=T;master.goals=((await getAll('goals'))||[]).map(g=>Object.assign({type:'standard'},g));master.paychecks=(await getAll('paychecks'))||[];for(const k of COLL.slice(3)){master[k]=(await getAll(k))||[]}
+    /* the browser's local-storage copy is only written when the database is unavailable; anything in it that the database doesn't have was saved in such a session */
+    try{const ls=JSON.parse(localStorage.getItem(FIN_KEY)||'null');if(ls&&Array.isArray(ls.transactions)){const have=new Set(master.transactions.map(t=>String(t.id)));strays.transactions=ls.transactions.filter(t=>t&&typeof t==='object'&&t.id!=null&&!have.has(String(t.id)))}}catch(e){}}
+  else{loadLS();lateFn=scanIdbInto;if(lateIdb)scanIdbInto(lateIdb)}
+  shadow.clear();master.transactions.forEach(t=>shadow.set(String(t.id),t));
+  try{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&trashTimer)trashFlush()});window.addEventListener('pagehide',()=>{if(trashTimer)trashFlush()})}catch(e){}
+  adoptOrphans()}
 function unload(){state.preferences=defaultPrefs();state.incomeSettings=defaultIncome();state.transactions=[];state.goals=[];state.paychecks=[];state.accounts=[];state.moves=[];state.allocs=[];state.payfb=[];state.imports=[];state.balance=0;state.saved=0;state.available=0}
 /* ─ savings model ─ "cash" is the everyday balance; a savings account is real money set apart; a move is a transfer (never income or spending);
    an allocation reserves part of an account's money for a goal. Net worth = cash + every account (+ manual goal amounts not held in an account). */
 const acctOfTx=t=>t.account&&t.account!=='cash'&&master.accounts.some(a=>a.id===t.account&&a.ownerId===t.ownerId)?t.account:'cash';
-function accountBalance(id){const uid=me;let v=0;master.moves.forEach(m=>{if(m.ownerId!==uid||m.reversed)return;if(m.to===id)v+=m.amount;if(m.from===id)v-=m.amount});master.transactions.forEach(t=>{if(t.ownerId!==uid)return;if(acctOfTx(t)===id)v+=t.type==='income'?t.amount:-t.amount});return rd(v)}
+function accountBalance(id){const uid=me;let v=0;master.moves.forEach(m=>{if(m.ownerId!==uid||m.reversed)return;if(m.to===id)v+=m.amount;if(m.from===id)v-=m.amount});master.transactions.forEach(t=>{if(t.ownerId!==uid||t.ghost)return;if(acctOfTx(t)===id)v+=t.type==='income'?t.amount:-t.amount});return rd(v)}
 function accountReserved(id){const uid=me;let v=0;master.allocs.forEach(a=>{if(a.ownerId===uid&&!a.reversed&&a.accountId===id)v+=a.amount});return rd(v)}
 function refreshView(){const id=me,own=r=>r.ownerId===id;
 state.transactions=master.transactions.filter(own).sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -2211,12 +2279,12 @@ state.moves=master.moves.filter(own).sort((a,b)=>String(b.date).localeCompare(St
 state.allocs=master.allocs.filter(own);state.payfb=master.payfb.filter(own).sort((a,b)=>String(a.payday).localeCompare(String(b.payday)));state.imports=master.imports.filter(own).sort((a,b)=>b.id-a.id);
 const al={};state.allocs.forEach(a=>{if(!a.reversed)al[a.goalId]=(al[a.goalId]||0)+a.amount});
 state.goals=master.goals.filter(own).map(g=>{const a=rd(al[g.id]||0),m=Number(g.current)||0;return Object.assign({},g,{manual:m,allocated:a,current:rd(m+a)})});
-let cash=0;state.transactions.forEach(t=>{if(acctOfTx(t)==='cash')cash+=t.type==='income'?t.amount:-t.amount});
+let cash=0;state.transactions.forEach(t=>{if(t.ghost)return;if(acctOfTx(t)==='cash')cash+=t.type==='income'?t.amount:-t.amount});
 state.moves.forEach(m=>{if(m.reversed)return;if(m.to==='cash')cash+=m.amount;if(m.from==='cash')cash-=m.amount});
 state.balance=rd(cash);
 /* money that sits in a savings (or other) account is still money you can use, so it counts toward "Available". Moving cash into savings is a transfer, so it never changes the total. */
 const ids=new Set(state.accounts.map(a=>String(a.id)));let sv=0;
-state.transactions.forEach(t=>{if(acctOfTx(t)!=='cash')sv+=t.type==='income'?t.amount:-t.amount});
+state.transactions.forEach(t=>{if(t.ghost)return;if(acctOfTx(t)!=='cash')sv+=t.type==='income'?t.amount:-t.amount});
 state.moves.forEach(m=>{if(m.reversed)return;if(m.to!==null&&m.to!==undefined&&ids.has(String(m.to)))sv+=m.amount;if(m.from!==null&&m.from!==undefined&&ids.has(String(m.from)))sv-=m.amount});
 state.saved=rd(sv);state.available=rd(cash+sv)}
 function detectDevice(){const ua=navigator.userAgent||'';const ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);let type='unknown',os='unknown',model='unknown';
@@ -2248,16 +2316,16 @@ if('tags' in t)o.tags=cTags(t.tags);if('recurring' in t)o.recurring=cRec(t.recur
 if('account' in t){const ac=master.accounts.find(a=>String(a.id)===String(t.account)&&a.ownerId===me);o.account=ac?ac.id:'cash'}
 if('date' in t&&t.date)o.date=new Date(t.date).toISOString();if('hasTime' in t)o.hasTime=!!t.hasTime;if('type' in t&&(t.type==='income'||t.type==='expense'))o.type=t.type;
 if('amount' in t)o.amount=rd(Math.abs(Number(t.amount)));if('currency' in t)o.currency=/^[A-Z]{3}$/.test(String(t.currency))?t.currency:'USD';
-if('source' in t)o.source=t.source==='pdf'?'pdf':'manual';if('importId' in t)o.importId=t.importId||null;if('confidence' in t)o.confidence=Math.max(0,Math.min(1,Number(t.confidence)||0));return o}
+if('ghost' in t)o.ghost=!!t.ghost;if('source' in t)o.source=t.source==='pdf'?'pdf':'manual';if('importId' in t)o.importId=t.importId||null;if('confidence' in t)o.confidence=Math.max(0,Math.min(1,Number(t.confidence)||0));return o}
 async function addTransaction(t){t=Object.assign({},t,{amount:Math.abs(Number(t.amount))});if(validateTx(Object.assign({type:'expense'},t)))return null;const f=txFields(t),now=new Date().toISOString();
-const r=Object.assign({id:newId(),ownerId:me,type:'expense',amount:0,category:'other',description:'',date:now,account:'cash',createdAt:now,hasTime:!t.date},f);if(!('date' in f))r.date=now;master.transactions.push(r);refreshView();await put('transactions',r);notify();return r}
+const r=Object.assign({id:newId(),ownerId:me,type:'expense',amount:0,category:'other',description:'',date:now,account:'cash',createdAt:now,hasTime:!t.date},f);if(!('date' in f))r.date=now;if(r.ghost!==true)delete r.ghost;master.transactions.push(r);refreshView();await put('transactions',r);notify();return r}
 async function addTransactions(list,meta){const out=[];const now=new Date().toISOString();for(let t of list||[]){t=Object.assign({},t,{amount:Math.abs(Number(t.amount))});if(validateTx(Object.assign({type:'expense'},t)))continue;const f=txFields(t);out.push(Object.assign({id:newId(),ownerId:me,type:'expense',amount:0,category:'other',description:'',date:now,account:'cash',createdAt:now,hasTime:false},f,meta||{}))}
 out.forEach(r=>master.transactions.push(r));refreshView();for(const r of out){await put('transactions',r);}if(out.length)notify();return out}
 async function updateTransaction(id,u){const i=master.transactions.findIndex(t=>t.id===id&&t.ownerId===me);if(i===-1)return null;u=u||{};const old=master.transactions[i];if(validateTx(u,true))return null;const f=txFields(u);
-const from={};Object.keys(f).forEach(k=>{if(JSON.stringify(f[k])!==JSON.stringify(old[k]))from[k]=old[k]===undefined?null:old[k]});if(!Object.keys(from).length)return old;
+if('ghost' in f&&!f.ghost&&!old.ghost)delete f.ghost;const from={};Object.keys(f).forEach(k=>{if(JSON.stringify(f[k])!==JSON.stringify(old[k]))from[k]=old[k]===undefined?null:old[k]});if(!Object.keys(from).length)return old;
 const upd=Object.assign({},old,f,{editedAt:new Date().toISOString(),edits:((old.edits||[]).concat([{at:new Date().toISOString(),from}])).slice(-12)});master.transactions[i]=upd;refreshView();await put('transactions',upd);notify();return upd}
-async function deleteTransaction(id){const i=master.transactions.findIndex(t=>t.id===id&&t.ownerId===me);if(i===-1)return false;master.transactions.splice(i,1);refreshView();await del('transactions',id);notify();return true}
-async function removeImport(importId){const gone=master.transactions.filter(t=>t.ownerId===me&&t.importId===importId);master.transactions=master.transactions.filter(t=>!(t.ownerId===me&&t.importId===importId));const im=master.imports.find(x=>x.id===importId&&x.ownerId===me);if(im){im.undone=new Date().toISOString();await put('imports',im)}refreshView();for(const t of gone){await del('transactions',t.id);}notify();return gone.length}
+async function deleteTransaction(id){const i=master.transactions.findIndex(t=>t.id===id&&t.ownerId===me);if(i===-1)return false;master.transactions.splice(i,1);refreshView();await del('transactions',id,'deleted');notify();return true}
+async function removeImport(importId){const gone=master.transactions.filter(t=>t.ownerId===me&&t.importId===importId);master.transactions=master.transactions.filter(t=>!(t.ownerId===me&&t.importId===importId));const im=master.imports.find(x=>x.id===importId&&x.ownerId===me);if(im){im.undone=new Date().toISOString();await put('imports',im)}refreshView();for(const t of gone){await del('transactions',t.id,'import-undone');}notify();return gone.length}
 function findDuplicate(t,ignoreId){const day=String(new Date(t.date||Date.now()).toDateString()),a=rd(Math.abs(Number(t.amount)||0)),d=cStr(t.description,120).toLowerCase();return state.transactions.find(x=>x.id!==ignoreId&&x.type===t.type&&Math.abs(x.amount-a)<.005&&new Date(x.date).toDateString()===day&&String(x.description||'').toLowerCase()===d)||null}
 /* the smaller record kinds (savings accounts, moves between accounts, goal allocations, paycheck feedback, import history) */
 const KINDS=['accounts','moves','allocs','payfb','imports'];
@@ -2313,7 +2381,7 @@ function removeDebt(id){state.preferences.debts=state.preferences.debts.filter(d
 const getDebts=()=>state.preferences.debts||[];
 function remindDebt(id){const d=getDebts().find(x=>x.id===id);if(!d)return;d.lastReminded=new Date().toISOString();d.reminderCount=(d.reminderCount||0)+1;notify();NotificationScheduler.send('$ Payment reminder',`Reminder: ${d.person} · ${fmt(d.amount)}`,'debt-reminder');toast('Reminder recorded for '+d.person)}
 function playGame(friendId,result){const g=state.preferences.gameScores;const s=g[friendId]||{wins:0,losses:0,lastPlayed:null};if(result==='win')s.wins++;else s.losses++;s.lastPlayed=new Date().toISOString();g[friendId]=s;notify();return s}
-async function resetMyData(){const mine=k=>master[k].filter(r=>r.ownerId===me);for(const k of COLL){for(const r of mine(k)){await del(k,r.id);}master[k]=master[k].filter(r=>r.ownerId!==me)}state.preferences=defaultPrefs();state.incomeSettings=defaultIncome();refreshView();notify()}
+async function resetMyData(){const mine=k=>master[k].filter(r=>r.ownerId===me);for(const k of COLL){for(const r of mine(k)){await del(k,r.id,'reset');}master[k]=master[k].filter(r=>r.ownerId!==me)}state.preferences=defaultPrefs();state.incomeSettings=defaultIncome();refreshView();notify()}
 
 /* ─ importing: first a dry run that says exactly what would happen (importPlan, changes nothing), then the write (importApply). Both only ever touch records owned by the signed-in account.
      · A record whose id is above 1e12 was made by this app's id generator, so the same id means the same record. Smaller ids (1, 2, 3…) are sequence numbers from older builds and mean nothing here, so those are matched by content.
@@ -2368,7 +2436,7 @@ function importPlan(d,o){o=o||{};if(!me||!d||typeof d!=='object')return{ok:false
 /* write a plan. Returns what was done, per kind, plus a check of the stored result against the plan. */
 async function importApply(plan,o){o=o||{};if(!me||!plan||!plan.ok)return{ok:false,error:'Nothing to restore.'};
   const added={},merged={},skipped={},d=o.data||{};COLL.forEach(k=>{added[k]=0;merged[k]=0;skipped[k]=plan.per[k].same+plan.per[k].dup+plan.per[k].conflict});
-  if(plan.mode==='replace'){for(const k of COLL){for(const r of master[k].filter(r=>r.ownerId===me))await del(k,r.id);master[k]=master[k].filter(r=>r.ownerId!==me)}state.preferences.debts=[];state.preferences.categories=[]}
+  if(plan.mode==='replace'){for(const k of COLL){for(const r of master[k].filter(r=>r.ownerId===me))await del(k,r.id,'replaced');master[k]=master[k].filter(r=>r.ownerId!==me)}state.preferences.debts=[];state.preferences.categories=[]}
   for(const k of COLL){for(const m of plan.items[k].merge){const i=master[k].findIndex(r=>String(r.id)===String(m.id)&&r.ownerId===me);if(i<0)continue;const rec=Object.assign({},m.rec,{ownerId:me});master[k][i]=rec;await put(k,rec);merged[k]++}
     for(const a of plan.items[k].add){const rec=Object.assign({},a.rec,{ownerId:me});master[k].push(rec);await put(k,rec);added[k]++}}
   const extra={debts:plan.extra.debts.length,categories:plan.extra.categories.length};
@@ -2390,7 +2458,7 @@ function mine(){const collections={};COLL.forEach(k=>{collections[k]=master[k].f
 /* put this account back exactly as a restore point recorded it: records the point doesn't have are removed, records it has are put back */
 async function setMine(s){if(!me||!s||!s.collections)return{ok:false,error:'That restore point can’t be read.'};let removed=0,restored=0;
   for(const k of COLL){const want=new Map((Array.isArray(s.collections[k])?s.collections[k]:[]).map(r=>[String(r.id),r]));
-    for(const r of master[k].filter(r=>r.ownerId===me)){if(!want.has(String(r.id))){master[k]=master[k].filter(x=>x!==r);await del(k,r.id);removed++}}
+    for(const r of master[k].filter(r=>r.ownerId===me)){if(!want.has(String(r.id))){master[k]=master[k].filter(x=>x!==r);await del(k,r.id,'restore-point');removed++}}
     for(const [id,r] of want){const rec=Object.assign({},r,{ownerId:me}),have=master[k].find(x=>String(x.id)===id&&x.ownerId===me);
       if(!have){master[k].push(rec);await put(k,rec);restored++}else if(JSON.stringify(have)!==JSON.stringify(rec)){master[k][master[k].indexOf(have)]=rec;await put(k,rec);restored++}}}
   RESTORE_PREFS.forEach(k=>{if(s.prefs&&s.prefs[k]!==undefined)state.preferences[k]=JSON.parse(JSON.stringify(s.prefs[k]));else if(state.preferences[k]!==undefined&&!(k in defaultPrefs()))delete state.preferences[k]});
@@ -2406,7 +2474,7 @@ const syncApi={
  all(uid){const o={};COLL.forEach(k=>{o[k]=master[k].filter(r=>r.ownerId===uid).map(clone)});return o},
  settings(){const p=clone(state.preferences);DEVICE_ONLY.forEach(k=>delete p[k]);return{prefs:p,income:clone(state.incomeSettings)}},
  async apply(rows){let n=0;for(const r of rows){const k=r.c;if(!COLL.includes(k)||!me)continue;const i=master[k].findIndex(x=>String(x.id)===String(r.id)&&x.ownerId===me);
-   if(r.x){if(i>=0){const rec=master[k][i];master[k].splice(i,1);await delRaw(k,rec.id);n++}continue}
+   if(r.x){if(i>=0){const rec=master[k][i];master[k].splice(i,1);await delRaw(k,rec.id,'sync');n++}continue}
    if(!r.d||typeof r.d!=='object'||r.d.id==null)continue;
    const rec=Object.assign({},r.d,{ownerId:me});if(k==='goals'&&!rec.type)rec.type='standard';
    if(i>=0)master[k][i]=rec;else master[k].push(rec);await putRaw(k,rec);n++}return n},
@@ -2418,7 +2486,7 @@ const syncApi={
  totals(){let inc=0,exp=0,n=0;master.transactions.forEach(t=>{if(t.ownerId!==me)return;n++;if(t.type==='income')inc+=Number(t.amount)||0;else exp+=Number(t.amount)||0});const c={};COLL.forEach(k=>{c[k]=master[k].filter(r=>r.ownerId===me).length});return{counts:c,income:rd(inc),expense:rd(exp)}}
 };
 
-return{init,restore,importPlan,importApply,mine,setMine,RESTORE_PREFS,loadUser,unload,subscribe,getSnapshot:snapshot,adopt:adoptOrphans,reown,sync:syncApi,
+return{_t:{closeIdb:()=>{try{idb&&idb.close()}catch(e){}},failWrites:b=>{failWrites=!!b}},init,restore,importPlan,importApply,mine,setMine,strays:()=>strays.transactions.map(t=>JSON.parse(JSON.stringify(t))),orphans,recoverTx,trashList,trashRestore,RESTORE_PREFS,loadUser,unload,subscribe,getSnapshot:snapshot,adopt:adoptOrphans,reown,sync:syncApi,
 addTransaction,addTransactions,updateTransaction,deleteTransaction,removeImport,validateTx,findDuplicate,addRec,updateRec,deleteRec,accountBalance,accountReserved,getTransactions,addGoal,updateGoal,deleteGoal,getGoals,addMovingGoal,getMovingGoals,getAllGoals,getGoal,saveImage,getImage,goalSnapshot,
 updateIncomeSettings,updatePreferences,computeIncome,computePaycheckEstimate,computeGoalProgress,computeProjectedBalance,computeSpendingByCategory,computeTotalSpending,computeTotalIncome,computeSavingsRate,computeAverageTransaction,computeLargestCategory,generateInsights,
 addDebt,removeDebt,getDebts,remindDebt,playGame,resetMyData,
@@ -2507,6 +2575,7 @@ return{getConfig,saveConfig,order,move,isEditMode:()=>edit,enterEditMode(){edit=
 const PatchNotes=(function(){
 const CURRENT=APP_VERSION;
 const NOTES=[
+{version:'4.1.2',date:'2026-10-19',title:'Nothing gets lost, ghost transactions, and subscription logos',new:['Ghost transactions: when you add income or an expense, open “When & cash” to set the exact date and time it happened and choose whether it counts toward your cash. Turn it off and it stays in your history and stats, marked “Ghost”, without moving your balance. You can flip it on any transaction from Edit','Subscription logos: pick a preset icon (streaming, music, phone, rent, fitness and more) and a color, or upload your own picture. On Auto, the name picks one for you','Recently removed: anything you delete, undo or lose to a sync is kept for a year and can be put back from Settings → Backup'],fixed:['Missing transactions: Logostics now looks through everything saved on this device (its other copy, restore points, older versions, accounts that were re-created) and asks if you want to bring back what it finds. Nothing is added without your yes, and it can be undone','The app now waits longer for the database to open on a slow start, and stays on one copy for the whole session, so a slow start can no longer split your records between two places']},
 {version:'4.1.1',date:'2026-10-18',title:'Savings count as available, and a picture for your job',new:['Work picture: give each job its own round picture (a logo, a uniform photo, anything). Add it from the Job profile or the Edit job screen, move and zoom to fit, and choose whether friends see it'],fixed:['Available Cash now includes money you keep in savings accounts, with a line under it showing how much is cash and how much is in savings. Moving cash into savings no longer makes your available cash drop']},
 {version:'4.1.0',date:'2026-10-18',title:'Job profile, shared paydays, themes & the Dynamic Island',new:['Job profile: your start date, every raise, average hours and photos, drawn as a real 3D chart you can spin, tilt, light and animate (Settings → Account → Job profile)','Share your payday with friends and see theirs: dates only, never an amount, and you choose what is shared. Job details can be shared a piece at a time, raises as percentages only','Dynamic Island: money added, a friend coming online, a payday, a big move in a stock you watch and finished goals appear in a pill at the top that opens up. Pick the animation, size, position and which events use it','Liquid Glass: a frosted, light-catching layer that works on top of any theme, colour or background','Themes & sharing: bring in colours from other apps (Base16, VS Code, CSS, a screenshot or a share code), keep up to 20 of your own, share one as a code, or try a friend’s accent colour. Every theme is previewed first and you can revert','Auto-sort files uncategorised transactions on this device, shows exactly what it will change, and can undo it','A subscriptions and bills calendar, and payday countdowns you can customise completely','Places and income streams: split what you earn between cash, bank, digital wallets and places you name','A heads-up when a friend comes online (both of you opt in), and live animation when a stock you watch moves a lot'],improved:['Alerts and notices use the Dynamic Island when it is on, and a plain banner when it is off','Job photos stay on your device; only a small cover thumbnail can be shared, and only if you switch it on']},
 {version:'4.0.0',date:'2026-10-16',title:'Savings, Statements, Backup & a calmer assistant',new:['Savings accounts with real balances: record where your money sits, move money between accounts and goals, and see what is saved versus what is only planned','Import a bank statement from a PDF: every row is shown for review before anything is added, duplicates and transfers are flagged, and an import can be undone','A paycheck estimate that learns from what you are really paid, and tells you how far off it has been','Goals that follow your real paychecks: a funding plan with an honest range instead of a single guess','Assistant: forecasts with a stated error range, “how did you get that number?”, a memory you can see and delete, and learning from your category corrections if you allow it. It is rules and arithmetic on your device, not a neural network','Notifications that work: payday, budget limits, bills and savings milestones, a switch for each kind, no duplicates, and system notifications only if you allow them','Encrypted backup: save everything on this device to a file that only your passphrase can open, and restore it on any device from Settings → Data & Accounts','A short first-run introduction for new accounts (skippable, and replayable from Settings → About)','Update alerts: a banner when a new version is ready, and a push notification when the app is closed (owner setup required)','Data sharing: usage statistics, learning performance and error reports are all off until you turn them on, each explained, with a way to delete what was shared'],improved:['Trips: the funding plan and budget stay; transport is Train, Bus, Car or Other','Money alerts and friend notifications no longer share an identifier, so tapping one always opens the right screen'],removed:['Flight tracking and arrival-time (ETA) features. Trip legs saved earlier as a flight still open and are shown as “Other”']},
@@ -2839,7 +2908,7 @@ function pick(head,names){for(const n of names){const i=head.indexOf(n);if(i>=0)
 function fromCSV(text,o){o=o||{};const P=parseCSV(text);if(P.rows.length<2)return fail('format','This isn’t a Logostics backup or export, and it doesn’t look like a bank CSV either (there are no rows of transactions in it), or the file is damaged.');
   let hi=0;for(let i=0;i<Math.min(8,P.rows.length);i++){const h=P.rows[i].map(hnorm);if(pick(h,HN.date)>=0&&(pick(h,HN.amount)>=0||pick(h,HN.debit)>=0||pick(h,HN.credit)>=0)){hi=i;break}hi=-1}
   if(hi<0)return fail('format','This isn’t a Logostics backup or export, and it doesn’t look like a bank CSV either. A CSV needs a header row with a date column and an amount (or debit and credit) column.');
-  const head=P.rows[hi].map(hnorm),ix={date:pick(head,HN.date),desc:pick(head,HN.desc),amount:pick(head,HN.amount),debit:pick(head,HN.debit),credit:pick(head,HN.credit),type:pick(head,HN.type),cat:pick(head,HN.cat),acct:pick(head,HN.acct)};
+  const head=P.rows[hi].map(hnorm),ix={date:pick(head,HN.date),desc:pick(head,HN.desc),amount:pick(head,HN.amount),debit:pick(head,HN.debit),credit:pick(head,HN.credit),type:pick(head,HN.type),cat:pick(head,HN.cat),acct:pick(head,HN.acct),cash:pick(head,['counts toward cash'])};
   /* day-first or month-first: decided by the whole file, month-first unless a value proves otherwise */
   let dmy=!!o.dmy;if(o.dmy===undefined){let a=0,b=0;P.rows.slice(hi+1,hi+400).forEach(r=>{const m=/^(\d{1,2})[\/.-](\d{1,2})[\/.-]\d{2,4}/.exec(String(r[ix.date]||'').trim());if(m){if(+m[1]>12)a++;if(+m[2]>12)b++}});dmy=a>0&&b===0}
   const R=res('csv-1','CSV file',1,blank()),flip=!!o.flip;let seen=0;
@@ -2850,7 +2919,7 @@ function fromCSV(text,o){o=o||{};const P=parseCSV(text);if(P.rows.length<2)retur
     if(!kind&&ix.type>=0){const t=String(g('type')).trim();if(T_INC.test(t)||/credit|deposit|income|refund|payment received/i.test(t))kind='income';else if(T_EXP.test(t)||/debit|withdraw|purchase|expense|payment|fee|charge|spend/i.test(t))kind='expense'}
     if(!kind&&isFinite(amt)&&amt!==0){kind=amt<0?'expense':'income';if(flip)kind=kind==='expense'?'income':'expense'}
     const unq=v=>String(v==null?'':v).replace(/^'(?=[=+\-@])/,''),desc=unq(g('desc')),rr=tx({type:kind,amount:isFinite(amt)?Math.abs(amt):NaN,date:g('date'),description:desc,category:unq(g('cat')),account:'cash'},{dmy,strictCat:true});
-    if(rr.rec){delete rr.rec.id;R.payload.collections.transactions.push(rr.rec)}else R.rejected.push({coll:'transactions',i:hi+1+j+1,why:rr.why,sample:sample(r.join(' | '))})});
+    if(rr.rec){delete rr.rec.id;if(ix.cash>=0&&/^\s*(no|false|0|n)\s*$/i.test(String(g('cash'))))rr.rec.ghost=true;R.payload.collections.transactions.push(rr.rec)}else R.rejected.push({coll:'transactions',i:hi+1+j+1,why:rr.why,sample:sample(r.join(' | '))})});
   R.stats.csv={rows:seen,delim:P.delim==='\t'?'tab':P.delim,dmy,flip,cols:{date:ix.date>=0,desc:ix.desc>=0,amount:ix.amount>=0,debit:ix.debit>=0,credit:ix.credit>=0,type:ix.type>=0,cat:ix.cat>=0}};
   if(ix.debit<0&&ix.credit<0&&ix.type<0)R.notes.push('This file has one amount column, so '+(flip?'positive amounts are read as spending and negative as income':'negative amounts are read as spending and positive as income')+'. If that’s backwards, switch it below.');
   if(/\d[\/.-]\d/.test(String((P.rows[hi+1]||[])[ix.date]||'')))R.notes.push('Dates were read as '+(dmy?'day/month/year':'month/day/year')+'.');
@@ -2889,8 +2958,8 @@ async function exportDoc(p){const c=checksOf(p),doc={format:'logostics-export',f
 
 /* transactions as a spreadsheet file */
 const csvCell=v=>{let s=v==null?'':String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return/[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
-function toCSV(list){const cols=['date','type','amount','category','description','merchant','account','notes','tags','id'];
-  const lines=[cols.join(',')];(list||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))).forEach(t=>{lines.push([String(t.date||'').slice(0,10),t.type,Number(t.amount).toFixed(2),t.category,t.description,t.merchant,t.account,t.notes,(t.tags||[]).join(' '),t.id].map(csvCell).join(','))});return lines.join('\r\n')+'\r\n'}
+function toCSV(list){const cols=['date','type','amount','category','description','merchant','account','notes','tags','id'],gh=(list||[]).some(t=>t&&t.ghost);/* a column for ghost transactions is added only when there are some, so other exports are unchanged */if(gh)cols.push('counts_toward_cash');
+  const lines=[cols.join(',')];(list||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))).forEach(t=>{const row=[String(t.date||'').slice(0,10),t.type,Number(t.amount).toFixed(2),t.category,t.description,t.merchant,t.account,t.notes,(t.tags||[]).join(' '),t.id];if(gh)row.push(t.ghost?'no':'yes');lines.push(row.map(csvCell).join(','))});return lines.join('\r\n')+'\r\n'}
 
 return{parse,fromObject,fromCSV,parseCSV,exportDoc,toCSV,checksOf,digest,toISO,num,goodId,MAX_BYTES,COLS}})();
 /* ═══ DATAOPS — the safe way to bring data in.
@@ -3245,7 +3314,7 @@ const amtOk=a=>{a=Number(a);return isFinite(a)&&a>0&&a<=1e9};
 const nm=a=>a==='cash'?'Cash':a===null||a===undefined?'Outside':((Store.accounts.find(x=>String(x.id)===String(a))||{}).name||'Account');
 /* balances from lists, so a change can be tried out before it is saved */
 function calc(o){o=o||{};const accts=o.accounts||Store.accounts,moves=o.moves||Store.moves,allocs=o.allocs||Store.allocs,txs=o.txs||Store.transactions,ids=new Set(accts.map(a=>a.id)),bal={cash:0},res={};
-  accts.forEach(a=>{bal[a.id]=0});txs.forEach(t=>{const k=t.account&&ids.has(t.account)?t.account:'cash';bal[k]+=t.type==='income'?t.amount:-t.amount});
+  accts.forEach(a=>{bal[a.id]=0});txs.forEach(t=>{if(t.ghost)return;const k=t.account&&ids.has(t.account)?t.account:'cash';bal[k]+=t.type==='income'?t.amount:-t.amount});
   moves.forEach(m=>{if(m.reversed)return;if(m.to!==null&&m.to in bal)bal[m.to]+=m.amount;if(m.from!==null&&m.from in bal)bal[m.from]-=m.amount});
   allocs.forEach(a=>{if(!a.reversed&&a.accountId in bal)res[a.accountId]=(res[a.accountId]||0)+a.amount});
   Object.keys(bal).forEach(k=>{bal[k]=r2(bal[k])});Object.keys(res).forEach(k=>{res[k]=r2(res[k])});return{bal,res}}
@@ -4020,7 +4089,7 @@ greet(){return R(Assist.greeting(),{chips:Q('Give me insights','When will I fini
 /* ── the working behind an answer: used by the Assistant settings (just the answer · key numbers · every step) ──
    Each entry recomputes the same figures the handler used and describes them; nothing here changes the answer itself. */
 const EXPL={
-balance(x,r){const inc=sum(txs('income')),exp=sum(txs('expense')),bal=Store.balance,adj=r2(bal-(inc-exp)),ad=avgDaily(28),m30=sum(txs('income',PERIOD.days(30))),e30=sum(txs('expense',PERIOD.days(30)));
+balance(x,r){const inc=sum(txs('income').filter(t=>!t.ghost)),exp=sum(txs('expense').filter(t=>!t.ghost)),bal=Store.balance,adj=r2(bal-(inc-exp)),ad=avgDaily(28),m30=sum(txs('income',PERIOD.days(30))),e30=sum(txs('expense',PERIOD.days(30)));
   const adjTxt=Math.abs(adj)>=.005?` ${adj>=0?'+':'−'} ${fmt(Math.abs(adj))} (starting balance and money moved ${adj>=0?'out of':'into'} savings)`:'';
   return{how:{plain:'I added up everything you’ve logged as income, took away everything you’ve logged as spending, and adjusted for any money moved to or from savings.',numbers:`${fmt(inc)} income − ${fmt(exp)} spending${adjTxt} = ${$$(bal)}`,steps:[`Income logged so far: ${fmt(inc)}.`,`Spending logged so far: ${fmt(exp)}.`,`Difference: ${$$(inc-exp)}.`,Math.abs(adj)>=.005?`Adjustment for your starting balance and money moved ${adj>=0?'out of':'into'} savings: ${adj>=0?'+':'−'}${fmt(Math.abs(adj))}.`:'No adjustments for savings moves or a starting balance.',`Your balance: ${$$(bal)}.`]},
   teach:'Your balance here is your everyday cash: money you’ve logged coming in, minus money going out, adjusted for what you’ve moved into or out of savings accounts.',
@@ -4247,7 +4316,7 @@ function authKey(e){if(e.key==='Enter'){e.preventDefault();submitAuth(e)}}
 async function submitAuth(e){if(e&&e.preventDefault)e.preventDefault();if(authBusy)return;const mode=authModeNow();const err=document.getElementById('auth-err'),btn=document.getElementById('au-btn');if(err)err.textContent='';authBusy=true;if(btn)btn.disabled=true;
 try{const r=mode==='register'?await Accounts.register({username:$v('au-user'),displayName:$v('au-name'),password:$v('au-pass')}):await Accounts.login($v('au-user'),$v('au-pass'));
 if(!r.ok){if(r.restore){const u=$v('au-user'),p=$v('au-pass');authMode='register';render();const a=document.getElementById('au-user'),c=document.getElementById('au-pass'),e2=document.getElementById('auth-err');if(a)a.value=u;if(c)c.value=p;if(e2)e2.textContent='This server doesn’t have that account — it may have been reset. Tap Create account again with the same username and it will be restored here.';haptic('warning');return}if(err)err.textContent=r.error;haptic('error');return}await onSignedIn(mode==='register',r)}catch(x){console.error(x);const m='Error: '+((x&&x.message)||x);const el=document.getElementById('auth-err');if(el)el.textContent=m;else toast(m)}finally{authBusy=false;const b=document.getElementById('au-btn');if(b)b.disabled=false}}
-async function onSignedIn(isNew,r){authMode=null;try{beat()}catch(e){}try{await SyncUI.onSignIn()}catch(e){console.error(e)}try{Store.loadUser();applyAppearance();seedSeen()}catch(x){console.error(x)}currentTab=(function(){try{return NavUI.startTab()}catch(e){return'home'}})();try{sessionStorage.setItem('logostics_tab',currentTab)}catch(e){}authNotice='';try{Gate.start()}catch(e){}try{Notify.boot()}catch(e){}try{Jobs.boot();PaySharing.boot();ThemeKit.boot()}catch(e){}try{Telemetry.session()}catch(e){}render();const u=Accounts.current();toast(isNew&&r&&r.owner?'Welcome, owner — the Developer Menu is unlocked for you':(isNew?'Welcome, ':'Welcome back, ')+(u?u.displayName:''));haptic('success');SoundManager.success();if(isNew)PatchNotes.markSeen();try{Onboard.start(!!isNew)}catch(e){}setTimeout(()=>{try{if(me)SecUI.offer()}catch(e){}},isNew?2600:1600);setTimeout(()=>{try{SyncUI.maybeAsk();SyncUI.installedHint()}catch(e){}},5200);if(isNew&&r&&r.owner&&Cloud.on())setTimeout(()=>{if(!document.querySelector('#sheet-overlay.on')&&me)openInviteSheet()},1400)}
+async function onSignedIn(isNew,r){authMode=null;try{beat()}catch(e){}try{await SyncUI.onSignIn()}catch(e){console.error(e)}try{Store.loadUser();applyAppearance();seedSeen()}catch(x){console.error(x)}currentTab=(function(){try{return NavUI.startTab()}catch(e){return'home'}})();try{sessionStorage.setItem('logostics_tab',currentTab)}catch(e){}authNotice='';try{Gate.start()}catch(e){}try{Notify.boot()}catch(e){}try{Jobs.boot();PaySharing.boot();ThemeKit.boot()}catch(e){}try{Rescue.boot()}catch(e){}try{Telemetry.session()}catch(e){}render();const u=Accounts.current();toast(isNew&&r&&r.owner?'Welcome, owner — the Developer Menu is unlocked for you':(isNew?'Welcome, ':'Welcome back, ')+(u?u.displayName:''));haptic('success');SoundManager.success();if(isNew)PatchNotes.markSeen();try{Onboard.start(!!isNew)}catch(e){}setTimeout(()=>{try{if(me)SecUI.offer()}catch(e){}},isNew?2600:1600);setTimeout(()=>{try{SyncUI.maybeAsk();SyncUI.installedHint()}catch(e){}},5200);if(isNew&&r&&r.owner&&Cloud.on())setTimeout(()=>{if(!document.querySelector('#sheet-overlay.on')&&me)openInviteSheet()},1400)}
 function signOutNow(notice){try{Push.forget()}catch(e){}try{Trips.reset();Widgets.reset()}catch(e){}AIAgent.reset();aiChat=[];try{Music.stop();Roll.reset()}catch(e){}try{Gate.stop();Lock.reset()}catch(e){}try{Notify.stop()}catch(e){}try{FinSync.forget()}catch(e){}Accounts.logout();Store.unload();closeSheet();authMode='login';authNotice=notice||'';applyAppearance(JSON.parse(localStorage.getItem('lg_theme')||'null')||PRESETS.default);render();updateBadges()}
 async function signOut(){const ok=await Confirm.ask({title:'Sign out?',msg:'You’ll need your password to sign back in on this device.',ok:'Sign out',danger:true});if(ok){try{await Promise.race([Push.forget(),new Promise(r=>setTimeout(r,3000))])}catch(e){}signOutNow()}}
 
@@ -4396,7 +4465,7 @@ return`<div class="container home fade-in ${edit?'edit-mode':''}"><div class="to
 ${edit?'':Push.card()}<div class="home-cols">${order.map((id,ix)=>{if(!cards[id])return'';const h=hidden.has(id);if(h&&!edit)return'';const body=cards[id]();if(!body&&!edit)return'';return`<div class="dashboard-card" style="--i:${ix};${h?'opacity:.35':''}">${edit?`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 4px"><span class="t-label">${DashboardManager.CARD_LABELS[id]||id}</span><span style="display:flex;gap:6px"><button class="mini-btn" aria-label="Move up" onclick="event.stopPropagation();LookUI.move('${id}',-1)">↑</button><button class="mini-btn" aria-label="Move down" onclick="event.stopPropagation();LookUI.move('${id}',1)">↓</button><button class="mini-btn" onclick="event.stopPropagation();DashboardManager.toggleCardVisibility('${id}')">${h?'Show':'Hide'}</button></span></div>`:''}${body||'<div class="progress-note" style="padding:6px 4px">Nothing to show yet</div>'}</div>`}).join('')}</div>
 ${edit?'':Rating.card()}${edit?`<div class="edit-toolbar"><button onclick="DashboardManager.exitEditMode()" class="primary">Done</button></div>`:`<button onclick="DashboardManager.enterEditMode()" style="width:100%;margin-top:12px;padding:12px;background:transparent;border:1px dashed var(--gray-700);border-radius:14px;color:var(--gray-500);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer">✎ Edit Dashboard</button>`}</div>`}
 function askAIAbout(t){openAI();setTimeout(()=>{const i=document.getElementById('ai-input');if(i){i.value=t;i.focus()}},200)}
-function renderTxItem(t){const inc=t.type==='income';return`<div class="activity-item" data-tx-id="${t.id}" role="button" tabindex="0" onclick="openTxDetail(${t.id})" onkeydown="if(event.key==='Enter'&&event.target===this){openTxDetail(${t.id})}"><div class="activity-ico ${inc?'income':''}">${inc?'↓':'↑'}</div><div class="activity-body"><div class="activity-name">${escapeHtml(t.description||(inc?'Income':'Expense'))}</div><div class="activity-meta"><span>${escapeHtml(Cats.label(t.category))}</span><span>·</span><span>${fmtDate(t.date)}</span>${t.recurring?'<span title="Repeats">↻</span>':''}${t.notes?'<span title="Has a note">✎</span>':''}</div></div><div class="activity-amt ${inc?'pos':'neg'}">${inc?'+':'−'}${fmt(t.amount)}</div></div>`}
+function renderTxItem(t){const inc=t.type==='income';return`<div class="activity-item${t.ghost?' ghost':''}" data-tx-id="${t.id}" role="button" tabindex="0" onclick="openTxDetail(${t.id})" onkeydown="if(event.key==='Enter'&&event.target===this){openTxDetail(${t.id})}"><div class="activity-ico ${inc?'income':''}">${inc?'↓':'↑'}</div><div class="activity-body"><div class="activity-name">${escapeHtml(t.description||(inc?'Income':'Expense'))}${t.ghost?' <span class="gh-pill" title="Recorded, but doesn’t change your cash">Ghost</span>':''}</div><div class="activity-meta"><span>${escapeHtml(Cats.label(t.category))}</span><span>·</span><span>${fmtDate(t.date)}</span>${t.recurring?'<span title="Repeats">↻</span>':''}${t.notes?'<span title="Has a note">✎</span>':''}</div></div><div class="activity-amt ${inc?'pos':'neg'}">${inc?'+':'−'}${fmt(t.amount)}</div></div>`}
 function openTxContextMenu(id){const t=Store.getSnapshot().transactions.find(x=>x.id===id);if(!t)return;const inc=t.type==='income';openSheet(`<div class="sheet-title">${escapeHtml(t.description||(inc?'Income':'Expense'))}</div><div style="text-align:center;margin-bottom:24px"><div style="font-size:36px;font-weight:700;letter-spacing:-.03em;color:${inc?'var(--green)':'var(--text)'}">${inc?'+':'−'}${fmt(t.amount)}</div><div style="font-size:13px;color:var(--gray-500);margin-top:6px">${escapeHtml(Cats.label(t.category))} · ${fmtDate(t.date)}</div></div><button class="btn btn-secondary" onclick="closeSheet();openEditTx(${t.id})">✎ Edit</button><button class="btn btn-danger" style="margin-top:8px" onclick="closeSheet();confirmDeleteTx(${t.id})">✕ Delete</button><button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Cancel</button>`)}
 
 /* ═══ ACTIVITY + ANALYTICS ═══ */
@@ -4430,10 +4499,10 @@ function refreshAIChatLog(){const l=document.getElementById('ai-chat-log');if(!l
 function clearAIChat(){aiChat=[];AIAgent.reset();openAI()}
 
 /* ═══ INCOME / EXPENSE FORMS ═══ */
-function openAddIncome(){openSheet(`<div class="sheet-title">Add Income</div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="in-amount" type="number" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label class="field-label">Source</label><input class="field-input" id="in-desc" placeholder="Paycheck, gift…"></div><div class="field"><label class="field-label">Category</label><div class="chips" id="in-cats">${FinUI.chips('income','paycheck','addincome')}</div></div>${typeof Streams!=='undefined'?Streams.picker():''}<button class="btn btn-primary" onclick="submitIncome()">Add Income</button><button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Cancel</button>`)}
-async function submitIncome(){const amt=parseFloat($v('in-amount')),desc=$v('in-desc'),cat=(document.querySelector('#in-cats .chip.selected')||{dataset:{}}).dataset.cat||'other';if(!amt||amt<=0){toast('Enter a valid amount');return}const sid=typeof Streams!=='undefined'?Streams.selected():'';let shared=0,said=false;if(sid){const r=await Streams.log(sid,amt,{desc:desc||'Income',cat});if(!r.ok){toast(r.error||'Couldn’t add that');return}shared=r.moved.length;if(r.failed.length){said=true;toast('Added; '+r.failed.length+' transfer'+(r.failed.length===1?'':'s')+' didn’t go through')}}else await Store.addTransaction({type:'income',amount:amt,description:desc||'Income',category:cat});try{Assist.learnFromEntry(desc,cat,'income')}catch(e){}closeSheet();haptic(cat==='paycheck'?'paycheck':'success');SoundManager.income();if(!said)toast(shared?'Income added and shared out':'Income added');render()}
-function openAddExpense(){openSheet(`<div class="sheet-title">Add Expense</div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="ex-amount" type="number" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label class="field-label">Description</label><input class="field-input" id="ex-desc" placeholder="Coffee, groceries…"></div><div class="field"><label class="field-label">Category</label><div class="chips" id="ex-cats">${FinUI.chips('expense','food','addexpense')}</div></div><button class="btn btn-primary" onclick="submitExpense()">Add Expense</button><button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Cancel</button>`)}
-async function submitExpense(){const amt=parseFloat($v('ex-amount')),desc=$v('ex-desc'),cat=(document.querySelector('#ex-cats .chip.selected')||{dataset:{}}).dataset.cat||'other';if(!amt||amt<=0){toast('Enter a valid amount');return}await Store.addTransaction({type:'expense',amount:amt,description:desc||'Expense',category:cat});try{Assist.learnFromEntry(desc,cat,'expense')}catch(e){}closeSheet();haptic('success');SoundManager.spending();toast('Expense added');render()}
+function openAddIncome(){openSheet(`<div class="sheet-title">Add Income</div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="in-amount" type="number" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label class="field-label">Source</label><input class="field-input" id="in-desc" placeholder="Paycheck, gift…"></div><div class="field"><label class="field-label">Category</label><div class="chips" id="in-cats">${FinUI.chips('income','paycheck','addincome')}</div></div>${FinUI.whenBox('in')}${typeof Streams!=='undefined'?Streams.picker():''}<button class="btn btn-primary" onclick="submitIncome()">Add Income</button><button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Cancel</button>`)}
+async function submitIncome(){const amt=parseFloat($v('in-amount')),desc=$v('in-desc'),cat=(document.querySelector('#in-cats .chip.selected')||{dataset:{}}).dataset.cat||'other';if(!amt||amt<=0){toast('Enter a valid amount');return}const w=FinUI.whenRead('in');if(w.error){toast(w.error);return}const sid=typeof Streams!=='undefined'&&!w.ghost?Streams.selected():'';let shared=0,said=false;if(sid){const r=await Streams.log(sid,amt,{desc:desc||'Income',cat});if(!r.ok){toast(r.error||'Couldn’t add that');return}shared=r.moved.length;if(r.failed.length){said=true;toast('Added; '+r.failed.length+' transfer'+(r.failed.length===1?'':'s')+' didn’t go through')}}else await Store.addTransaction(Object.assign({type:'income',amount:amt,description:desc||'Income',category:cat},w.tx));try{Assist.learnFromEntry(desc,cat,'income')}catch(e){}closeSheet();haptic(cat==='paycheck'?'paycheck':'success');SoundManager.income();if(!said)toast(w.ghost?'Added — not counted in your cash':shared?'Income added and shared out':'Income added');render()}
+function openAddExpense(){openSheet(`<div class="sheet-title">Add Expense</div><div class="field"><label class="field-label">Amount</label><input class="field-input" id="ex-amount" type="number" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label class="field-label">Description</label><input class="field-input" id="ex-desc" placeholder="Coffee, groceries…"></div><div class="field"><label class="field-label">Category</label><div class="chips" id="ex-cats">${FinUI.chips('expense','food','addexpense')}</div></div>${FinUI.whenBox('ex')}<button class="btn btn-primary" onclick="submitExpense()">Add Expense</button><button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Cancel</button>`)}
+async function submitExpense(){const amt=parseFloat($v('ex-amount')),desc=$v('ex-desc'),cat=(document.querySelector('#ex-cats .chip.selected')||{dataset:{}}).dataset.cat||'other';if(!amt||amt<=0){toast('Enter a valid amount');return}const w=FinUI.whenRead('ex');if(w.error){toast(w.error);return}await Store.addTransaction(Object.assign({type:'expense',amount:amt,description:desc||'Expense',category:cat},w.tx));try{Assist.learnFromEntry(desc,cat,'expense')}catch(e){}closeSheet();haptic('success');SoundManager.spending();toast(w.ghost?'Added — not counted in your cash':'Expense added');render()}
 function openTxDetail(id){FinUI.detail(id)}
 function openEditTx(id){FinUI.edit(id)}
 async function submitEditTx(id){return FinUI.save(id)}
@@ -9096,11 +9165,25 @@ const RECL=Object.fromEntries(REC.filter(r=>r[0]));
 function chips(kind,cur,id){const list=Cats.all({kind});if(cur&&!list.some(c=>c.id===cur))list.push(Cats.get(cur));
   return list.map(c=>`<button type="button" class="chip ${c.id===cur?'selected':''}" data-cat="${E(c.id)}" onclick="pickChip(this)"><span class="emoji" style="color:${c.color}">${E(c.sym)}</span>${E(c.name)}</button>`).join('')+`<button type="button" class="chip fx-newchip" onclick="FinUI.newCat('${kind}','${id||''}')">＋ New</button>`}
 const picked=sel=>(document.querySelector(sel+' .chip.selected')||{dataset:{}}).dataset.cat||'';
+
+/* ───────── when it happened, and whether it counts toward cash ─────────
+   A "ghost" transaction is recorded with its real date and time and stays in history, search and spending stats, but it never moves the cash or available balance. */
+const DAYN=d=>new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+function cashRow(p,on){return`<div class="set-row wn-cash" id="${p}-cash-row" role="switch" tabindex="0" aria-checked="${on?'true':'false'}" onclick="FinUI.cashFlip('${p}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();FinUI.cashFlip('${p}')}"><div class="set-left">Counts toward my cash<div class="fx-hint">Turn this off for something that really happened but shouldn’t change the balance you see. It stays in your history and stats and is marked “Ghost”.</div></div><div class="toggle ${on?'on':''}" id="${p}-cash" aria-hidden="true"></div></div>`}
+function whenBox(p){const t=dayOf(new Date().toISOString());return`<div class="field wn-box"><button type="button" class="wn-head" id="${p}-wn-btn" aria-expanded="false" onclick="FinUI.whenOpen('${p}')"><span>When &amp; cash</span><b id="${p}-wn-sum">Today · counts toward cash</b><i aria-hidden="true">▾</i></button><div class="wn-body" id="${p}-wn-body" hidden><div class="field-row"><div class="field"><label class="field-label" for="${p}-date">Date</label><input class="field-input" id="${p}-date" type="date" value="${t}" onchange="FinUI.whenSum('${p}')"></div><div class="field"><label class="field-label" for="${p}-time">Time <span class="fx-opt">optional</span></label><input class="field-input" id="${p}-time" type="time" onchange="FinUI.whenSum('${p}')"></div></div>${cashRow(p,true)}</div></div>`}
+function whenOpen(p){const b=document.getElementById(p+'-wn-body'),h=document.getElementById(p+'-wn-btn');if(!b)return;const open=b.hidden;b.hidden=!open;if(h)h.setAttribute('aria-expanded',open?'true':'false');if(open)haptic('select')}
+function cashOn(p){const e=document.getElementById(p+'-cash');return e?e.classList.contains('on'):true}
+function cashFlip(p){const e=document.getElementById(p+'-cash'),r=document.getElementById(p+'-cash-row');if(!e)return;e.classList.toggle('on');if(r)r.setAttribute('aria-checked',e.classList.contains('on')?'true':'false');haptic('select');whenSum(p)}
+function whenSum(p){const el=document.getElementById(p+'-wn-sum');if(!el)return;const day=$v(p+'-date'),time=$v(p+'-time'),iso=fromParts(day,time),today=dayOf(new Date().toISOString());
+  el.textContent=(!iso?'Pick a date':day===today?'Today':DAYN(iso))+(time?' · '+new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):'')+' · '+(cashOn(p)?'counts toward cash':'not in cash')}
+/* the date, time and cash switch of an add form, as the fields a new transaction takes */
+function whenRead(p){if(!document.getElementById(p+'-date'))return{tx:{},ghost:false};const day=$v(p+'-date'),time=$v(p+'-time'),ghost=!cashOn(p),today=dayOf(new Date().toISOString());
+  if(day===today&&!time)return{tx:ghost?{ghost:true}:{},ghost};const iso=fromParts(day,time);if(!iso)return{error:'Pick a valid date.'};return{tx:Object.assign({date:iso,hasTime:!!time},ghost?{ghost:true}:{}),ghost}}
 /* ───────── transaction detail ───────── */
 function detail(id){const t=Store.getSnapshot().transactions.find(x=>x.id===id);if(!t)return;const inc=t.type==='income',c=Cats.get(t.category),acct=t.account&&t.account!=='cash'?(Store.accounts.find(a=>a.id===t.account)||{}).name:'';
   const row=(k,v)=>v?`<div class="fx-kv"><span>${k}</span><b>${v}</b></div>`:'';
   openSheet(`<div style="text-align:center;margin-bottom:22px"><div style="font-size:44px;font-weight:700;letter-spacing:-.04em;color:${inc?'var(--green)':'var(--text)'}">${inc?'+':'−'}${fmt(t.amount)}</div><div style="font-size:14px;color:var(--gray-500);margin-top:6px;font-weight:500">${E(t.description||(inc?'Income':'Expense'))}</div><div style="font-size:12px;color:var(--gray-600);margin-top:4px">${E(c.name)} · ${fmtDate(t.date)}</div></div>
-<div class="fx-card">${row('Category',`${symDot(c,22)} ${E(c.name)}`)}${row('Merchant',E(t.merchant))}${row('Date',E(fmtDateLong(t.date))+(t.hasTime?' · '+E(new Date(t.date).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})):''))}${row('Account',E(acct||'Cash'))}${row('Repeats',t.recurring?E(RECL[t.recurring.every]||''):'')}${row('Tags',(t.tags||[]).map(g=>'<span class="fx-tag">#'+E(g)+'</span>').join(' '))}${row('Notes',E(t.notes))}${row('Source',t.source==='pdf'?'Imported from a PDF statement'+(t.confidence!==undefined&&t.confidence<.8?' · check this one':''):'')}${t.editedAt?row('Edited',E(fmtDate(t.editedAt))+` · <a href="#" onclick="event.preventDefault();FinUI.history(${t.id})">what changed</a>`):''}</div>
+<div class="fx-card">${row('Category',`${symDot(c,22)} ${E(c.name)}`)}${row('Merchant',E(t.merchant))}${row('Date',E(fmtDateLong(t.date))+(t.hasTime?' · '+E(new Date(t.date).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})):''))}${row('Account',E(acct||'Cash'))}${row('Counts toward cash',t.ghost?'No — just for the record':'')}${row('Brought back',t.recoveredAt?E(fmtDate(t.recoveredAt)):'')}${row('Repeats',t.recurring?E(RECL[t.recurring.every]||''):'')}${row('Tags',(t.tags||[]).map(g=>'<span class="fx-tag">#'+E(g)+'</span>').join(' '))}${row('Notes',E(t.notes))}${row('Source',t.source==='pdf'?'Imported from a PDF statement'+(t.confidence!==undefined&&t.confidence<.8?' · check this one':''):'')}${t.editedAt?row('Edited',E(fmtDate(t.editedAt))+` · <a href="#" onclick="event.preventDefault();FinUI.history(${t.id})">what changed</a>`):''}</div>
 <div class="btn-row"><button class="btn btn-secondary" onclick="closeSheet();openEditTx(${t.id})">Edit</button><button class="btn btn-danger" onclick="confirmDeleteTx(${t.id})">Delete</button></div><button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Close</button>`)}
 function history(id){const t=Store.getSnapshot().transactions.find(x=>x.id===id);if(!t)return;const NAMES={description:'Description',merchant:'Merchant',notes:'Notes',tags:'Tags',recurring:'Repeats',category:'Category',account:'Account',date:'Date',type:'Type',amount:'Amount',hasTime:'Time shown'};
   const show=(k,v)=>v===null||v===undefined||v===''?'nothing':k==='amount'?f2(v):k==='category'?Cats.label(v):k==='date'?fmtDateLong(v):k==='tags'?(v.length?v.join(', '):'none'):k==='recurring'?(v&&RECL[v.every]||'none'):k==='account'?(v==='cash'?'Cash':(Store.accounts.find(a=>a.id===v)||{}).name||'an account'):String(v);
@@ -9116,6 +9199,7 @@ function edit(id){const t=Store.getSnapshot().transactions.find(x=>x.id===id);if
 <div class="field"><label class="field-label">Category</label><div class="chips" id="e-cats">${chips(t.type,t.category,t.id)}</div><div class="fx-suggest" id="e-sug"></div></div>
 <div class="field-row"><div class="field"><label class="field-label">Date</label><input class="field-input" id="e-date" type="date" value="${dayOf(t.date)}"></div><div class="field"><label class="field-label">Time <span class="fx-opt">optional</span></label><input class="field-input" id="e-time" type="time" value="${t.hasTime?timeOf(t.date):''}"></div></div>
 <div class="field"><label class="field-label">Account</label><select class="field-input" id="e-acct"><option value="cash" ${!t.account||t.account==='cash'?'selected':''}>Cash</option>${accts.map(a=>`<option value="${a.id}" ${a.id===t.account?'selected':''}>${E(a.name)}${a.archived?' (archived)':''}</option>`).join('')}</select></div>
+<div class="field">${cashRow('e',!t.ghost)}</div>
 <div class="field"><label class="field-label">Repeats</label><select class="field-input" id="e-rec">${REC.map(r=>`<option value="${r[0]}" ${((t.recurring&&t.recurring.every)||'')===r[0]?'selected':''}>${r[1]}</option>`).join('')}</select><div class="fx-hint">Marks this as a repeating charge for your insights. Other entries are not touched.</div></div>
 <div class="field"><label class="field-label">Notes <span class="fx-opt">optional</span></label><textarea class="field-input" id="e-notes" maxlength="500" rows="3">${E(t.notes||'')}</textarea></div>
 <div class="field"><label class="field-label">Tags <span class="fx-opt">comma separated</span></label><input class="field-input" id="e-tags" maxlength="120" value="${E((t.tags||[]).join(', '))}" placeholder="work, trip, reimbursable"></div>
@@ -9129,7 +9213,7 @@ let _busy=false;
 async function save(id){if(_busy)return;const err=m=>{const e=document.getElementById('e-err');if(e)e.textContent=m||''};err('');const t=Store.getSnapshot().transactions.find(x=>x.id===id);if(!t)return closeSheet();
   const amt=parseFloat($v('e-amount')),ty=(document.querySelector('#e-type .seg.active')||{dataset:{}}).dataset.t||'expense',day=$v('e-date'),time=$v('e-time'),iso=fromParts(day,time);
   if(!iso)return err('Pick a valid date.');
-  const patch={amount:amt,description:$v('e-desc'),merchant:$v('e-merchant'),type:ty,category:picked('#e-cats')||t.category,date:iso,hasTime:!!time,account:$v('e-acct')==='cash'||!$v('e-acct')?'cash':+$v('e-acct'),notes:$v('e-notes'),tags:$v('e-tags'),recurring:$v('e-rec')?{every:$v('e-rec'),since:t.recurring&&t.recurring.since||dayOf(iso)}:null};
+  const patch={amount:amt,description:$v('e-desc'),merchant:$v('e-merchant'),type:ty,category:picked('#e-cats')||t.category,date:iso,hasTime:!!time,account:$v('e-acct')==='cash'||!$v('e-acct')?'cash':+$v('e-acct'),ghost:!cashOn('e'),notes:$v('e-notes'),tags:$v('e-tags'),recurring:$v('e-rec')?{every:$v('e-rec'),since:t.recurring&&t.recurring.since||dayOf(iso)}:null};
   let bad=Store.validateTx(patch,true);if(bad)return err(bad);
   /* if the date's day is unchanged, keep the original time of day so an edit doesn't silently move it */
   if(!time&&dayOf(t.date)===day){patch.date=t.date;patch.hasTime=t.hasTime}
@@ -9207,7 +9291,7 @@ function insights(){const txs=Store.transactions,A=Ins.analyze(txs,{days:insDays
   const notes=A.notes.length?`<div class="progress-note" style="margin:8px 4px 0">${A.notes.map(E).join(' ')}</div>`:'';
   return hdr+topCard+trend+rec+mer+odd+mo+opp+notes}
 function drill(id){analyticsView='activity';activityFilter.category=id;activityFilter.search='';haptic('light');render()}
-return{detail,history,edit,typeChanged,suggest,useSuggestion,save,newCat,newCatSave,newCatBack,pickOne,cats,catMove,catArchive,catEdit,catSave,catDelete,catDeleteGo,symTyped,pickCol,applySuggestion,applyAll,toggleLearn,forget,insights,setDays,drill,chips,symDot,dayOf,fromParts,REC,RECL,f2}})();
+return{whenBox,whenOpen,whenSum,whenRead,cashRow,cashFlip,cashOn,detail,history,edit,typeChanged,suggest,useSuggestion,save,newCat,newCatSave,newCatBack,pickOne,cats,catMove,catArchive,catEdit,catSave,catDelete,catDeleteGo,symTyped,pickCol,applySuggestion,applyAll,toggleLearn,forget,insights,setDays,drill,chips,symDot,dayOf,fromParts,REC,RECL,f2}})();
 /* ═══ BANK STATEMENT IMPORT (PDF) — choose, read on this device, review and correct, then import ═══
    The PDF is read in the browser with pdf.js (vendor/pdf.min.mjs, loaded only when you import). It is never uploaded anywhere.
    Nothing is saved until "Import" is pressed; Cancel at any point leaves every record exactly as it was.
@@ -10720,7 +10804,8 @@ async function unseal(text,pass){let f;try{f=JSON.parse(text)}catch(e){throw{cod
   return{payload:o,head:h}}
 
 /* ── what goes in ── */
-const PREF_KEYS=['currency','appearance','look','logo','quickActions','startTab','dashboard','widgets','notifCategories','learning','assistant','aiMem','aiGames','aiFb','aiStats','fcstLog','monthlyBudget','gameScores','funBest','stocks','hapticsEnabled','soundEnabled','sfxVolume','musicEnabled','musicVolume','musicTrack','music','ip','notify','aiEnabled'];
+/* the same list the importer and restore points use, so a file backup carries everything a restore point does (subscriptions, jobs, streams …) */
+const PREF_KEYS=Store.RESTORE_PREFS.slice();
 function gather(){const s=Store.getSnapshot(),P=s.preferences||{},collections={};
   COL.forEach(k=>{collections[k]=(k==='payfb'?Store.payfb:k==='imports'?Store.imports:s[k]||[]).map(r=>{const c=Object.assign({},r);return c})});
   const prefs={};PREF_KEYS.forEach(k=>{if(P[k]!==undefined)prefs[k]=P[k]});
@@ -10750,7 +10835,7 @@ function open(){if(!Accounts.current()){toast('Sign in to back up this account')
 <div class="bk-card"><div class="bk-k">What a backup contains</div><div class="bk-v" id="bk-has">${E(countLine(c))}</div><div class="bk-s">Plus your debts, custom categories, settings and trips. Not included: your sign-in, friends, shared goals and vacations (those are kept on the server), and photos.</div></div>
 ${lb?`<div class="bk-note">Last backup from this device: <b>${E(new Date(lb.at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))}</b></div>`:`<div class="bk-note warn">You haven’t made a backup from this device yet.</div>`}
 ${can()?'':'<div class="lk-err" style="display:block">This browser can’t do encryption here, so backups are turned off. Try a current Safari, Chrome or Edge, with the app opened over https.</div>'}
-<div class="btn-col"><button class="btn btn-primary" ${can()?'':'disabled'} onclick="Backup.create()">Create a backup</button><button class="btn btn-secondary" onclick="Backup.restoreScreen()">Restore or import from a file</button><button class="btn btn-secondary" onclick="Backup.recover()">Find older data on this device</button>${DataOps.points().length?`<button class="btn btn-secondary" onclick="Backup.points()">Restore points (${DataOps.points().length})</button>`:''}</div>
+<div class="btn-col"><button class="btn btn-primary" ${can()?'':'disabled'} onclick="Backup.create()">Create a backup</button><button class="btn btn-secondary" onclick="Backup.restoreScreen()">Restore or import from a file</button><button class="btn btn-secondary" onclick="Rescue.open()">Find missing transactions</button><button class="btn btn-secondary" onclick="Rescue.trash()">Recently removed</button><button class="btn btn-secondary" onclick="Backup.recover()">Find older data on this device</button>${DataOps.points().length?`<button class="btn btn-secondary" onclick="Backup.points()">Restore points (${DataOps.points().length})</button>`:''}</div>
 <p class="bk-fine">Keep the file somewhere safe (a cloud drive, or emailed to yourself). If you forget the passphrase, nobody — including us — can open it.</p></div>`)}
 
 function create(){busy=false;blobText=null;
@@ -10939,6 +11024,155 @@ return{open,create,make,save,finish,meter,restoreScreen,picked,unlock,setMode,se
   seal,unseal,gather,counts,rate,can}})();
 /* “Export my data” (kept under its old name) */
 function exportData(){return Backup.exportJSON()}
+/* ═══ RESCUE — a transaction that was ever saved on this device is never simply gone.
+   It looks for transactions that exist somewhere on this device but are not in the list the person sees, and ASKS before bringing any back:
+     · "copy"   — the browser's other copy of the data (local storage vs the database; they can split when the database is slow to open)
+     · "orphan" — records whose owner is no longer an account on this device (an account that was re-created)
+     · "point"  — restore points saved on this device
+     · "legacy" — older Logostics builds that stored data in this browser
+     · "found"  — any other storage of this site that holds transaction-shaped records
+   Records the person removed on purpose live in a separate "Recently removed" list (kept a year) and are never offered here.
+   Bringing records back only ADDS them (a restore point is saved first, so it can be undone). Nothing is changed or deleted by looking.
+   Records owned by another account on this device are never offered. ═══ */
+const Rescue=(function(){
+const E=s=>escapeHtml(s);const DB_PRIMARY='LogosticsFinanceDB',DB_BLOBS='logostics-local',DB_LEGACY='LogosticsDB';
+const LAB={copy:'A saved copy on this device',orphan:'An account that no longer exists here',point:'A restore point',legacy:'An older version of Logostics',found:'Other data stored by this site'};
+const money=n=>'$'+Math.abs(Number(n)||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const trust=id=>{const n=Number(id);return isFinite(n)&&n>1e12};
+const day=d=>{const x=new Date(d);return isFinite(x.getTime())?x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate():''};
+const sig=t=>[t.type==='income'?'i':'e',Math.round(Math.abs(Number(t.amount)||0)*100),day(t.date),String(t.description||'').toLowerCase().replace(/\s+/g,' ').trim().slice(0,60)].join('|');
+const sinceT=Date.parse('1990-01-01');
+const withTimeout=(p,ms)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(null),ms))]);
+const knownUsers=()=>{try{return new Set(Object.keys(db&&db.users||{}))}catch(e){return new Set()}};
+/* a record may be offered to this account when it is ours, or when its owner is not an account here at all */
+const offerable=(t,known)=>!t.ownerId||t.ownerId===me||!known.has(t.ownerId);
+
+/* does this object look like a transaction? (an amount, a date, and a word or a type) */
+function likeTx(o){if(!o||typeof o!=='object'||Array.isArray(o))return false;const a=Number(o.amount!==undefined?o.amount:o.amt);if(!isFinite(a)||a===0||Math.abs(a)>1e9)return false;
+  const d=o.date!==undefined?o.date:o.createdAt!==undefined?o.createdAt:o.timestamp!==undefined?o.timestamp:o.ts!==undefined?o.ts:o.when;if(d===undefined||d===null||d==='')return false;const t=new Date(d).getTime();if(!isFinite(t)||t<sinceT||t>Date.now()+3660*864e5)return false;
+  const ty=String(o.type||'').toLowerCase();return ty==='income'||ty==='expense'||typeof o.category==='string'||typeof o.description==='string'||typeof o.merchant==='string'||typeof o.name==='string'}
+/* find arrays of transaction-like records anywhere inside a parsed value */
+function walk(v,depth,out,cnt){if(!v||typeof v!=='object'||depth>4||cnt.n++>30000)return;
+  if(Array.isArray(v)){let n=0,objs=0;for(let i=0;i<v.length&&i<5000;i++){const x=v[i];if(x&&typeof x==='object'&&!Array.isArray(x)){objs++;if(likeTx(x))n++}}if(n&&n>=objs/2){out.push(v.filter(likeTx));return}v.slice(0,300).forEach(x=>walk(x,depth+1,out,cnt));return}
+  Object.keys(v).slice(0,300).forEach(k=>walk(v[k],depth+1,out,cnt))}
+/* records from places that don't use this app's own format are read through the same translator the importer uses */
+async function foreign(arr){try{const R=await Migrate.fromObject({transactions:arr,goals:[]});if(R&&R.ok&&R.payload&&R.payload.collections&&Array.isArray(R.payload.collections.transactions))return R.payload.collections.transactions}catch(e){}return[]}
+
+function openExisting(name){return new Promise(res=>{let made=false;try{const r=indexedDB.open(name);r.onupgradeneeded=()=>{made=true;try{r.transaction.abort()}catch(e){}};r.onsuccess=()=>res(r.result);r.onerror=()=>{if(made){try{indexedDB.deleteDatabase(name)}catch(e){}}res(null)};r.onblocked=()=>res(null)}catch(e){res(null)}})}
+function rows(db,store){return new Promise(res=>{try{const q=db.transaction(store,'readonly').objectStore(store).getAll();q.onsuccess=()=>res((q.result||[]).slice(0,20000));q.onerror=()=>res([])}catch(e){res([])}})}
+
+/* ── gathering: each source returns {src,label,list} ── */
+async function gather(o){o=o||{};const out=[],known=knownUsers(),add=(src,label,list)=>{list=(list||[]).filter(t=>t&&typeof t==='object'&&offerable(t,known));if(list.length)out.push({src,label,list})};
+  try{add('copy',LAB.copy,Store.strays())}catch(e){}
+  try{add('orphan',LAB.orphan,Store.orphans())}catch(e){}
+  try{for(const p of DataOps.points()){const s=await withTimeout(LocalBlobs.get(p.key),3000);const l=s&&s.mine&&s.mine.collections&&s.mine.collections.transactions;if(Array.isArray(l))add('point','Restore point · '+new Date(p.at).toLocaleDateString('en-US',{month:'short',day:'numeric'}),l)}}catch(e){}
+  if(o.quick)return out;
+  try{const sc=await withTimeout(DataOps.scan(),8000);(sc||[]).forEach(f=>{const l=f.parsed&&f.parsed.payload&&f.parsed.payload.collections&&f.parsed.payload.collections.transactions;if(Array.isArray(l))add('legacy',f.label,l)})}catch(e){}
+  /* any other record shaped like a transaction in this site's local storage … */
+  try{const keys=[];for(let i=0;i<localStorage.length&&i<400;i++)keys.push(localStorage.key(i));
+    for(const k of keys){if(!k||k==='logostics_fin_v1'||k==='logostics_finance_minimal_v1'||/^lg_rp_|^lg_rescue|^lg_fin_trash$/.test(k))continue;let raw=null;try{raw=localStorage.getItem(k)}catch(e){}if(!raw||raw.length<30||raw.length>6e6||(raw[0]!=='{'&&raw[0]!=='['))continue;
+      let v=null;try{v=JSON.parse(raw)}catch(e){continue}const arrs=[];walk(v,0,arrs,{n:0});for(const a of arrs){const native=a.some(x=>x&&x.ownerId&&trust(x.id)&&(x.type==='income'||x.type==='expense'));add('found',LAB.found,native?a:await foreign(a))}}}catch(e){}
+  /* … and in every other database this site has made */
+  try{if(typeof indexedDB!=='undefined'&&indexedDB.databases){const names=((await withTimeout(indexedDB.databases(),3000))||[]).map(d=>d.name).filter(n=>n&&n!==DB_PRIMARY&&n!==DB_BLOBS&&n!==DB_LEGACY).slice(0,12);
+    for(const n of names){const d=await withTimeout(openExisting(n),3000);if(!d)continue;try{for(const s of Array.from(d.objectStoreNames).slice(0,30)){const r=await withTimeout(rows(d,s),4000)||[],arrs=[];walk(r,0,arrs,{n:0});for(const a of arrs){const native=a.some(x=>x&&x.ownerId&&trust(x.id)&&(x.type==='income'||x.type==='expense'));add('found',LAB.found,native?a:await foreign(a))}}}finally{try{d.close()}catch(e){}}}}}catch(e){}
+  return out}
+
+/* ── scanning: what is missing, once duplicates across sources and what is already here are taken out ── */
+const igKey=()=>'lg_rescue_ig_'+me,snKey=()=>'lg_rescue_sn_'+me;
+const igSet=()=>{try{const l=JSON.parse(localStorage.getItem(igKey())||'[]');return new Set(Array.isArray(l)?l:[])}catch(e){return new Set()}};
+const idKey=t=>t.id==null?'':sig(t)+'#'+t.id;
+async function scan(o){o=o||{};if(!me)return{items:[],total:0,by:[],income:0,expense:0,first:null,last:null};
+  const src=await gather({quick:!!o.quick}),have=Store.transactions,have_ids=new Set(have.filter(t=>trust(t.id)).map(t=>String(t.id)));
+  let gone=new Set();const goneSig=new Map();try{(await Store.trashList()).forEach(e=>{if(!e.rec)return;if(trust(e.rec.id))gone.add(String(e.rec.id));const s=sig(e.rec);goneSig.set(s,(goneSig.get(s)||0)+1)})}catch(e){}
+  const cur=new Map();have.forEach(t=>{const s=sig(t);cur.set(s,(cur.get(s)||0)+1)});
+  /* for each look-alike group take the largest count any one source has (the same coffee in two sources is one coffee), and take back only what the list is short of */
+  const groups=new Map();
+  src.forEach(g=>{const per=new Map();g.list.forEach(t=>{if(!t||!isFinite(Number(t.amount))||Number(t.amount)<=0)return;if(trust(t.id)&&(have_ids.has(String(t.id))||gone.has(String(t.id))))return;const s=sig(t);(per.get(s)||per.set(s,[]).get(s)).push(t)});
+    per.forEach((arr,s)=>{const G=groups.get(s)||{recs:[],srcs:new Set()};G.srcs.add(g.label);if(arr.length>G.recs.length)G.recs=arr;groups.set(s,G)})});
+  const ig=igSet(),items=[];
+  groups.forEach((G,s)=>{if(ig.has(s))return;const need=G.recs.length-(cur.get(s)||0)-(goneSig.get(s)||0);if(need<=0)return;G.recs.slice(0,need).forEach((t,i)=>items.push({key:s+'#'+i,sig:s,rec:t,srcs:Array.from(G.srcs)}))});
+  items.sort((a,b)=>new Date(b.rec.date)-new Date(a.rec.date));
+  const by={};items.forEach(x=>{const l=x.srcs[0];by[l]=(by[l]||0)+1});
+  let inc=0,exp=0,first=null,last=null;items.forEach(x=>{const a=Math.abs(Number(x.rec.amount)||0);if(x.rec.type==='income')inc+=a;else exp+=a;const t=new Date(x.rec.date).getTime();if(isFinite(t)){if(first===null||t<first)first=t;if(last===null||t>last)last=t}});
+  return{items:items.slice(0,o.limit||5000),total:Math.min(items.length,o.limit||5000),by:Object.keys(by).map(k=>({label:k,n:by[k]})),income:Math.round(inc*100)/100,expense:Math.round(exp*100)/100,first,last,scanned:src.reduce((n,g)=>n+g.list.length,0)}}
+
+/* ── bringing them back ── */
+async function restore(items,o){o=o||{};if(!me)return{ok:false,error:'Sign in first.'};items=(items||[]).filter(x=>x&&x.rec);if(!items.length)return{ok:true,added:0};
+  const pt=await DataOps.point('Before bringing back '+items.length+' transaction'+(items.length===1?'':'s'));
+  const r=await Store.recoverTx(items.map(x=>x.rec),{src:(items[0].srcs&&items[0].srcs[0]||'found').slice(0,40),ghost:!!o.ghost});if(!r.ok)return r;
+  try{Telemetry.event('rescue.restore',{n:r.added.length,g:o.ghost?1:0})}catch(e){}
+  try{localStorage.removeItem(snKey())}catch(e){}
+  return{ok:true,added:r.added.length,point:pt,ghost:!!o.ghost}}
+function ignore(items){try{const s=igSet();(items||[]).forEach(x=>s.add(x.sig));localStorage.setItem(igKey(),JSON.stringify(Array.from(s).slice(-3000)))}catch(e){}}
+
+/* ── screens ── */
+let S={res:null,sel:new Set(),from:'prompt'};
+const I=id=>document.getElementById(id);
+const when=r=>r.first===null?'':(()=>{const f=new Date(r.first),l=new Date(r.last),o={month:'short',day:'numeric',year:'numeric'};return f.toDateString()===l.toDateString()?f.toLocaleDateString('en-US',o):f.toLocaleDateString('en-US',o)+' – '+l.toLocaleDateString('en-US',o)})();
+const lines=r=>r.by.map(b=>`<div class="fx-kv"><span>${E(b.label)}</span><b>${b.n}</b></div>`).join('');
+function summary(r){return`<div class="bk-card"><div class="bk-k">Found</div><div class="bk-v">${r.total} transaction${r.total===1?'':'s'}</div><div class="bk-s">${E(money(r.income))} in · ${E(money(r.expense))} out${when(r)?' · '+E(when(r)):''}</div></div><div class="fx-card" style="margin:10px 0">${lines(r)}</div>`}
+function prompt(r,from){S={res:r,sel:new Set(r.items.map(x=>x.key)),from:from||'prompt'};
+  openSheet(`<div id="rc-ctr"><div class="sheet-title">Bring back ${r.total} transaction${r.total===1?'':'s'}?</div>
+<p class="sheet-sub">Logostics found transactions that are saved on this device but aren’t in your list. Nothing has been changed. They may be ones you deleted on purpose, so it’s your call.</p>
+${summary(r)}
+<p class="progress-note" style="margin:0 0 12px">Bringing them back adds them to your list and your cash. If you’d rather keep them as a record only, choose the second button. You can undo this from Restore points.</p>
+<div class="btn-col"><button class="btn btn-primary" onclick="Rescue.go(false)">Bring them back</button><button class="btn btn-secondary" onclick="Rescue.go(true)">Bring back, but don’t change my cash</button><button class="btn btn-secondary" onclick="Rescue.review()">Review them one by one</button><button class="btn btn-secondary" onclick="Rescue.later()">Not now</button></div></div>`)}
+function review(){const r=S.res;if(!r)return;const show=r.items.slice(0,400);
+  openSheet(`<div id="rc-ctr"><div class="sheet-title">Choose what to bring back</div>
+<div class="rc-bar"><span id="rc-n">${S.sel.size} of ${r.total} selected</span><button type="button" class="mini-btn" onclick="Rescue.all(true)">All</button><button type="button" class="mini-btn" onclick="Rescue.all(false)">None</button></div>
+<div class="fx-card rc-list">${show.map(x=>{const t=x.rec,inc=t.type==='income';return`<button type="button" class="rc-row ${S.sel.has(x.key)?'on':''}" role="checkbox" aria-checked="${S.sel.has(x.key)}" data-k="${E(x.key)}" onclick="Rescue.tog(this)"><span class="rc-chk" aria-hidden="true">✓</span><span class="rc-main"><b>${E(t.description||(inc?'Income':'Expense'))}</b><i>${E(new Date(t.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))} · ${E(x.srcs[0])}</i></span><span class="rc-amt ${inc?'pos':''}">${inc?'+':'−'}${E(money(t.amount))}</span></button>`}).join('')}</div>
+${r.total>show.length?`<p class="progress-note">Showing the newest ${show.length}. “All” includes the other ${r.total-show.length}.</p>`:''}
+<div class="btn-col" style="margin-top:12px"><button class="btn btn-primary" id="rc-go" onclick="Rescue.go(false,true)">Bring back selected</button><button class="btn btn-secondary" onclick="Rescue.go(true,true)">Bring back, but don’t change my cash</button><button class="btn btn-secondary" onclick="Rescue.hide()">Don’t offer the selected again</button><button class="btn btn-secondary" onclick="Rescue.prompt2()">Back</button></div></div>`)}
+function prompt2(){if(S.res)prompt(S.res,S.from)}
+function tog(el){const k=el.getAttribute('data-k');if(!k)return;if(S.sel.has(k))S.sel.delete(k);else S.sel.add(k);el.classList.toggle('on',S.sel.has(k));el.setAttribute('aria-checked',S.sel.has(k)?'true':'false');const n=I('rc-n');if(n&&S.res)n.textContent=S.sel.size+' of '+S.res.total+' selected';haptic('select')}
+function all(on){if(!S.res)return;S.sel=new Set(on?S.res.items.map(x=>x.key):[]);review()}
+function chosen(sel){const r=S.res;if(!r)return[];return sel?r.items.filter(x=>S.sel.has(x.key)):r.items}
+async function go(ghost,sel){const list=chosen(sel);if(!list.length){toast('Nothing selected');return}
+  const b=I('rc-go');if(b)b.disabled=true;
+  const r=await restore(list,{ghost});if(!r.ok){toast(r.error||'Couldn’t bring them back');return}
+  haptic('success');try{render()}catch(e){}
+  openSheet(`<div id="rc-ctr"><div class="sheet-title">Brought back ${r.added}</div>
+<p class="sheet-sub">${r.added} transaction${r.added===1?' is':'s are'} back in your list${r.ghost?', marked “Ghost” so your cash stays as it was':''}. ${r.point?'A restore point was saved first, so you can undo this.':''}</p>
+<div class="btn-col">${r.point?`<button class="btn btn-secondary" onclick="Rescue.undo('${E(r.point.key)}')">Undo</button>`:''}<button class="btn btn-primary" onclick="closeSheet()">Done</button></div></div>`)}
+async function undo(key){const r=await DataOps.undo(key);if(r&&r.ok){toast('Undone');try{render()}catch(e){}closeSheet()}else toast(r&&r.error||'Couldn’t undo')}
+function hide(){const l=chosen(true);if(!l.length){toast('Nothing selected');return}ignore(l);toast('Won’t be offered again');closeSheet()}
+function later(){try{localStorage.setItem(snKey(),JSON.stringify({until:Date.now()+2*864e5,n:S.res?S.res.total:0}))}catch(e){}closeSheet()}
+
+/* the screen in Settings → Backup: look now, and say plainly when nothing is missing */
+async function open(){if(!me){toast('Sign in first');return}
+  openSheet(`<div id="rc-ctr"><div class="sheet-title">Find missing transactions</div><p class="sheet-sub" role="status">Looking through everything this site has saved on this device…</p><div class="sy-spin" style="margin:18px auto"></div></div>`);
+  let r=null;try{r=await scan()}catch(e){console.error(e)}if(!I('rc-ctr'))return;
+  if(r&&r.total){prompt(r,'settings');return}
+  openSheet(`<div id="rc-ctr"><div class="sheet-title">Nothing is missing</div><p class="sheet-sub">${r&&r.scanned?`Looked through ${r.scanned.toLocaleString()} saved records on this device. Every transaction in them is already in your list.`:'Nothing else is saved on this device that isn’t already in your list.'}</p>
+<div class="bk-note">If you deleted something on purpose or by mistake, it’s kept for a year under <b>Recently removed</b>.</div>
+<div class="btn-col"><button class="btn btn-secondary" onclick="Rescue.trash()">Recently removed</button><button class="btn btn-secondary" onclick="Backup.open()">Back</button></div></div>`)}
+
+/* ── recently removed ── */
+const WHY={deleted:'Deleted',['import-undone']:'Import undone',replaced:'Replaced by a restore','restore-point':'Removed by going back','sync':'Removed by a sync',reset:'Data reset'};
+let T={list:[],sel:new Set()};
+async function trash(){if(!me){toast('Sign in first');return}let list=[];try{list=await Store.trashList()}catch(e){}T={list,sel:new Set()};drawTrash()}
+function drawTrash(){const L=T.list,show=L.slice(0,300);
+  openSheet(`<div id="rc-ctr"><div class="sheet-title">Recently removed</div>
+<p class="sheet-sub">Every transaction removed from this account on this device is kept here for a year, whether you deleted it, undid an import, or a sync removed it. Choose some to put back.</p>
+${L.length?`<div class="rc-bar"><span id="rc-tn">${T.sel.size} of ${L.length} selected</span><button type="button" class="mini-btn" onclick="Rescue.tAll(true)">All</button><button type="button" class="mini-btn" onclick="Rescue.tAll(false)">None</button></div>
+<div class="fx-card rc-list">${show.map(e=>{const t=e.rec,inc=t.type==='income';return`<button type="button" class="rc-row ${T.sel.has(e.key)?'on':''}" role="checkbox" aria-checked="${T.sel.has(e.key)}" data-k="${E(e.key)}" onclick="Rescue.tTog(this)"><span class="rc-chk" aria-hidden="true">✓</span><span class="rc-main"><b>${E(t.description||(inc?'Income':'Expense'))}</b><i>${E(new Date(t.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))} · ${E(WHY[e.why]||'Removed')} ${E(new Date(e.at).toLocaleDateString('en-US',{month:'short',day:'numeric'}))}</i></span><span class="rc-amt ${inc?'pos':''}">${inc?'+':'−'}${E(money(t.amount))}</span></button>`}).join('')}</div>${L.length>show.length?`<p class="progress-note">Showing the newest ${show.length} of ${L.length}.</p>`:''}`:'<div class="empty" style="padding:22px 0"><div class="empty-ico">◌</div><div class="empty-title">Nothing removed</div><div class="empty-sub">Transactions you delete will wait here for a year.</div></div>'}
+<div class="btn-col" style="margin-top:12px">${L.length?`<button class="btn btn-primary" onclick="Rescue.tGo(false)">Put selected back</button><button class="btn btn-secondary" onclick="Rescue.tGo(true)">Put back, but don’t change my cash</button>`:''}<button class="btn btn-secondary" onclick="Backup.open()">Back</button></div></div>`)}
+function tTog(el){const k=el.getAttribute('data-k');if(T.sel.has(k))T.sel.delete(k);else T.sel.add(k);el.classList.toggle('on',T.sel.has(k));el.setAttribute('aria-checked',T.sel.has(k)?'true':'false');const n=I('rc-tn');if(n)n.textContent=T.sel.size+' of '+T.list.length+' selected';haptic('select')}
+function tAll(on){T.sel=new Set(on?T.list.map(e=>e.key):[]);drawTrash()}
+async function tGo(ghost){const keys=Array.from(T.sel);if(!keys.length){toast('Nothing selected');return}
+  const r=await Store.trashRestore(keys,{ghost:!!ghost});
+  if(!r||!r.ok){toast(r&&r.error||'Couldn’t put them back');return}haptic('success');toast('Put back '+r.added.length);try{render()}catch(e){}trash()}
+
+/* ── when the app starts: look quietly, and ask only if something is missing ── */
+let timer=null,tries=0,checked=0;
+async function check(force){if(!me||document.body.classList.contains('is-locked'))return;if(!force&&Date.now()-checked<60e3)return;
+  const sh=I('sheet-overlay');if(sh&&sh.classList.contains('on')){if(tries++<6){clearTimeout(timer);timer=setTimeout(()=>check(force),20e3)}return}
+  /* the cheap look (copies, orphans, restore points) runs every start; the wide search through all local storage and databases runs about once a day */
+  checked=Date.now();const fk='lg_rescue_full_'+me;let lastFull=0;try{lastFull=+localStorage.getItem(fk)||0}catch(e){}const wide=force||Date.now()-lastFull>864e5;let r=null;try{r=await scan({quick:!wide});if(wide)localStorage.setItem(fk,String(Date.now()))}catch(e){console.error(e)}if(!r||!r.total)return;
+  let sn=null;try{sn=JSON.parse(localStorage.getItem(snKey())||'null')}catch(e){}if(sn&&sn.until>Date.now()&&r.total<=sn.n&&!force)return;
+  const sh2=I('sheet-overlay');if(sh2&&sh2.classList.contains('on')||document.body.classList.contains('is-locked'))return;prompt(r,'auto')}
+function boot(){if(!me)return;clearTimeout(timer);tries=0;timer=setTimeout(()=>check(false),5000);if(!boot.w){boot.w=1;try{window.addEventListener('lg-strays',()=>{clearTimeout(timer);timer=setTimeout(()=>check(true),1500)})}catch(e){}}}
+return{open,scan,gather,restore,prompt,prompt2,review,tog,all,go,undo,hide,later,trash,tTog,tAll,tGo,check,boot,likeTx,walk,sig,ignore}})();
 /* ═══ AUTO-SORT — file transactions into categories for you, on this device ═══
    How it decides (nothing leaves the device, no outside model is called):
      1. a merchant you corrected before            ("you filed Dutch Bros under Coffee")
@@ -11049,8 +11283,50 @@ const parse=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(s||''));if(!m)ret
 const sod=d=>{const x=new Date(d);x.setHours(12,0,0,0);return x};
 const today=()=>sod(new Date());
 const cfg=()=>{const c=(Store.preferences||{}).subs;return{items:Array.isArray(c&&c.items)?c.items:[],ignore:Array.isArray(c&&c.ignore)?c.ignore:[]}};
-const save=c=>Store.updatePreferences({subs:{items:c.items.slice(0,200),ignore:c.ignore.slice(0,200)}});
+const save=c=>Store.updatePreferences({subs:{items:c.items.slice(0,200).map(cleanItem),ignore:c.ignore.slice(0,200)}});
 const mkey=t=>{try{return Cats.merchantKey(t)}catch(e){return''}};
+/* ── logos: a picture the person uploads, or one of a set of plain preset icons (drawn here, not brand marks). With neither, the name picks a preset (“Netflix” → streaming video) and failing that the category symbol shows. ── */
+const PALETTE=['#e5484d','#ff9f0a','#ffd60a','#30d158','#64d2ff','#0a84ff','#bf5af2','#ff375f','#8e8e93'];
+const ICONS=[
+{id:'tv',n:'Streaming video',c:'#e5484d',kw:/netflix|hulu|disney|hbo|\bmax\b|prime video|peacock|paramount|apple tv|youtube|crunchyroll|stream|\btv\b|video|cable/i,p:'<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>'},
+{id:'music',n:'Music',c:'#30d158',kw:/spotify|apple music|pandora|tidal|deezer|soundcloud|music|radio/i,p:'<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>'},
+{id:'game',n:'Games',c:'#bf5af2',kw:/xbox|playstation|nintendo|steam|game|gaming|twitch|roblox|fortnite/i,p:'<rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 10v5M4.5 12.5h5"/><circle cx="16" cy="11" r="1"/><circle cx="18.5" cy="14" r="1"/>'},
+{id:'cloud',n:'Cloud storage',c:'#64d2ff',kw:/icloud|dropbox|google one|onedrive|cloud|storage|backblaze/i,p:'<path d="M7 18a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5 4.5 4.5 0 0 1 17.5 18z"/>'},
+{id:'phone',n:'Phone plan',c:'#0a84ff',kw:/verizon|t-mobile|tmobile|at&t|att\b|mint|cricket|visible|phone|mobile|wireless|cellular/i,p:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>'},
+{id:'wifi',n:'Internet',c:'#0a84ff',kw:/comcast|xfinity|spectrum|internet|wifi|wi-fi|fiber|broadband|cox\b/i,p:'<path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/>'},
+{id:'home',n:'Rent & home',c:'#ff9f0a',kw:/rent|mortgage|hoa|landlord|apartment|lease|housing|home/i,p:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'},
+{id:'bolt',n:'Electric & energy',c:'#ffd60a',kw:/electric|power|energy|utility|utilities|pg&e|gas bill|solar/i,p:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'},
+{id:'drop',n:'Water & waste',c:'#64d2ff',kw:/water|sewer|trash|waste|garbage/i,p:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>'},
+{id:'car',n:'Car',c:'#8e8e93',kw:/\bcar\b|auto|vehicle|toll|parking|dmv|registration|oil change/i,p:'<path d="M4 15v-4l2-5h12l2 5v4"/><path d="M3 15h18v3H3zM6 18v2M18 18v2M4 11h16"/>'},
+{id:'gym',n:'Fitness',c:'#ff375f',kw:/gym|fitness|planet fitness|peloton|yoga|crossfit|workout|pilates/i,p:'<path d="M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12"/>'},
+{id:'news',n:'News & reading',c:'#8e8e93',kw:/news|times|post\b|journal|magazine|medium|substack|newsletter|economist/i,p:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'},
+{id:'book',n:'Books & learning',c:'#ff9f0a',kw:/audible|kindle|book|course|duolingo|learn|masterclass|school|tuition|class\b|coursera/i,p:'<path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3zM21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/>'},
+{id:'bag',n:'Shopping & membership',c:'#ff9f0a',kw:/amazon|prime\b|costco|walmart|target|member|club|box\b|subscribe/i,p:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>'},
+{id:'spark',n:'AI & apps',c:'#bf5af2',kw:/chatgpt|openai|claude|gemini|copilot|midjourney|\bai\b|software|adobe|notion|figma|canva|github|\bapp\b|apps/i,p:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/>'},
+{id:'lock',n:'Security & VPN',c:'#30d158',kw:/vpn|nord|1password|lastpass|bitwarden|security|antivirus|norton|mcafee|password/i,p:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'},
+{id:'mail',n:'Email & websites',c:'#0a84ff',kw:/email|mail\b|domain|hosting|godaddy|namecheap|squarespace|wix|website/i,p:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'},
+{id:'heart',n:'Health & insurance',c:'#ff375f',kw:/health|insurance|dental|vision|medical|pharmacy|therapy|doctor|prescription|medicare/i,p:'<path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/>'},
+{id:'food',n:'Food & delivery',c:'#ff9f0a',kw:/doordash|uber eats|grubhub|hellofresh|meal|food|dine|restaurant|coffee|snack|grocer/i,p:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10"/>'},
+{id:'trip',n:'Travel & rides',c:'#64d2ff',kw:/uber|lyft|train|bus\b|metro|transit|flight|airline|travel|hotel|airbnb/i,p:'<path d="M2 14l20-8-6 16-4-7z"/>'},
+{id:'pet',n:'Pets',c:'#ffd60a',kw:/\bpet\b|\bvet\b|dog|\bcat\b|chewy|rover/i,p:'<circle cx="6" cy="10" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="10" r="1.6"/><path d="M12 12c-3 0-5 3-5 5.5 0 1.7 1.5 2.5 3 2 .8-.3 1.3-.5 2-.5s1.2.2 2 .5c1.5.5 3-.3 3-2 0-2.5-2-5.5-5-5.5z"/>'},
+{id:'kid',n:'Family & kids',c:'#ff375f',kw:/\bkid|child|daycare|baby|family|diaper|nanny/i,p:'<circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/>'},
+{id:'bank',n:'Bank, cards & loans',c:'#30d158',kw:/\bbank|\bfee\b|loan|credit|\bcard\b|interest|affirm|klarna|payment plan/i,p:'<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>'},
+{id:'gift',n:'Giving & gifts',c:'#bf5af2',kw:/donat|charity|tithe|\bgift|patreon|church/i,p:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8c-3 0-5-1-5-3s3-2 5 3c2-5 5-5 5-3s-2 3-5 3z"/>'},
+{id:'cal',n:'Other bill',c:'#8e8e93',kw:null,p:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'}];
+const ICON_BY=Object.fromEntries(ICONS.map(i=>[i.id,i]));
+const iconId=v=>typeof v==='string'&&ICON_BY[v]?v:'';
+const goodTint=v=>typeof v==='string'&&PALETTE.indexOf(v)>=0?v:'';
+const LOGO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/]+={0,2}$/;
+const goodLogo=v=>typeof v==='string'&&v.length<=12000&&LOGO_RE.test(v)?v:'';
+const MAXLOGOS=12;
+function suggest(name){const n=String(name||'');if(!n)return null;for(const i of ICONS){if(i.kw&&i.kw.test(n))return i}return null}
+function iconFor(i){const id=iconId(i.icon);return id?ICON_BY[id]:suggest(i.name)}
+function svg(ic,px){return`<svg viewBox="0 0 24 24" width="${px}" height="${px}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic.p}</svg>`}
+function logoHTML(i,size){size=size||38;const lg=goodLogo(i.logo);if(lg)return`<img class="sb-logo" style="width:${size}px;height:${size}px" src="${E(lg)}" alt="">`;
+  const ic=iconFor(i);if(ic){const col=goodTint(i.tint)||ic.c;return`<span class="sb-logo sb-ic" style="width:${size}px;height:${size}px;background:${rgba(col,.18)};color:${col}" aria-hidden="true">${svg(ic,Math.round(size*.56))}</span>`}
+  const cat=Cats.get(i.cat||'subscriptions');return`<span class="sb-logo sb-ic" style="width:${size}px;height:${size}px;background:${rgba(cat.color,.18)};color:${cat.color};font-size:${Math.round(size*.42)}px;font-weight:700" aria-hidden="true">${E(cat.sym)}</span>`}
+function cleanItem(i){const o=Object.assign({},i);const ic=iconId(o.icon),t=goodTint(o.tint),l=goodLogo(o.logo);delete o.icon;delete o.tint;delete o.logo;if(ic)o.icon=ic;if(t)o.tint=t;if(l)o.logo=l;return o}
+
 /* the k-th charge from an anchor date (k may be negative). Months keep the anchor's day of the month, shortened where a month is shorter (31st → 28th). */
 function nth(anchor,every,k){const a=sod(anchor);if(every==='weekly'||every==='biweekly'){const d=new Date(a);d.setDate(d.getDate()+(every==='weekly'?7:14)*k);return d}
   const step=every==='yearly'?12:every==='quarterly'?3:1,mo=a.getMonth()+step*k,y=a.getFullYear()+Math.floor(mo/12),m=((mo%12)+12)%12,dim=new Date(y,m+1,0).getDate();return new Date(y,m,Math.min(a.getDate(),dim),12,0,0)}
@@ -11079,7 +11355,7 @@ function events(now){const out=[];try{const t=sod(now||new Date());list().forEac
 let V={view:'cal',y:0,m:0,sel:''};
 function open(view){const n=new Date();V.view=view||V.view||'cal';if(!V.y){V.y=n.getFullYear();V.m=n.getMonth()}if(!V.sel)V.sel=ymd(n);paint()}
 function chip(i){return`<span class="sb-dot" style="background:${E((Cats.get(i.cat)||{}).color||'#8e8e93')}"></span>`}
-function rowHTML(i){const cat=Cats.get(i.cat||'subscriptions');return`<div class="sb-row ${i.active===false?'off':''}"><span class="fx-sym" style="background:${rgba(cat.color,.18)};color:${cat.color}">${E(cat.sym)}</span><div class="sb-main" ${i.detected?'':`onclick="Subs.edit('${E(i.id)}')"`}><div class="fx-nm">${E(i.name)}${i.detected?' <span class="fx-tag">detected</span>':''}${i.active===false?' <span class="fx-tag">paused</span>':''}</div><div class="fx-sub">${E(money(i.amount))} · ${E((EVERY.find(x=>x[0]===i.every)||[0,''])[1].toLowerCase())}${i.next?' · next '+E(new Date(parse(i.next)).toLocaleDateString('en-US',{month:'short',day:'numeric'}))+' ('+E(dueText(i.daysTo))+')':''}${i.detected?' · seen '+i.count+' times':''}</div></div>${i.detected?`<div class="sb-act"><button class="mini-btn go" type="button" onclick="Subs.track('${E(i.key)}')">Track</button><button class="mini-btn" type="button" aria-label="Not a subscription: ${E(i.name)}" onclick="Subs.dismiss('${E(i.key)}')">✕</button></div>`:`<div class="sb-amt">${E(money(i.amount))}</div>`}</div>`}
+function rowHTML(i){const cat=Cats.get(i.cat||'subscriptions');return`<div class="sb-row ${i.active===false?'off':''}">${logoHTML(i,38)}<div class="sb-main" ${i.detected?'':`onclick="Subs.edit('${E(i.id)}')"`}><div class="fx-nm">${E(i.name)}${i.detected?' <span class="fx-tag">detected</span>':''}${i.active===false?' <span class="fx-tag">paused</span>':''}</div><div class="fx-sub">${E(money(i.amount))} · ${E((EVERY.find(x=>x[0]===i.every)||[0,''])[1].toLowerCase())}${i.next?' · next '+E(new Date(parse(i.next)).toLocaleDateString('en-US',{month:'short',day:'numeric'}))+' ('+E(dueText(i.daysTo))+')':''}${i.detected?' · seen '+i.count+' times':''}</div></div>${i.detected?`<div class="sb-act"><button class="mini-btn go" type="button" onclick="Subs.track('${E(i.key)}')">Track</button><button class="mini-btn" type="button" aria-label="Not a subscription: ${E(i.name)}" onclick="Subs.dismiss('${E(i.key)}')">✕</button></div>`:`<div class="sb-amt">${E(money(i.amount))}</div>`}</div>`}
 function paint(){const sh=document.getElementById('sheet'),st=sh&&document.getElementById('sheet-overlay').classList.contains('on')?sh.scrollTop:0;
   const T=totals(),L=list(),mine=L.filter(i=>!i.detected),det=L.filter(i=>i.detected);
   const body=V.view==='cal'?calHTML():listHTML(mine,det);
@@ -11107,9 +11383,17 @@ function step(d){V.m+=d;if(V.m<0){V.m=11;V.y--}if(V.m>11){V.m=0;V.y++}haptic('se
 function pickDay(k){V.sel=k;haptic('select');paint()}
 
 /* ── adding, editing ── */
-function edit(id){const it=id?cfg().items.find(x=>x.id===id):null,i=it||{id:'',name:'',amount:'',every:'monthly',anchor:ymd(today()),cat:'subscriptions',remind:'day',note:'',active:true};
+let FD=null;
+function edit(id){const it=id?cfg().items.find(x=>x.id===id):null;FD=it?Object.assign({},it):{id:'',name:'',amount:'',every:'monthly',anchor:ymd(today()),cat:'subscriptions',remind:'day',note:'',active:true};FD._new=!it;FD.icon=iconId(FD.icon);FD.tint=goodTint(FD.tint);FD.logo=goodLogo(FD.logo);editView()}
+/* the typed fields are kept in the draft before anything re-draws the form (picking a picture opens a crop screen) */
+function grab(){if(!FD||!document.getElementById('sb-name'))return;FD.name=$v('sb-name');FD.amount=$v('sb-amt');FD.every=$v('sb-every');FD.anchor=$v('sb-date');FD.cat=$v('sb-cat');FD.remind=$v('sb-rem')}
+function editView(){const i=FD,it=!i._new,on=i.logo?'__logo':i.icon||'';
   openSheet(`<div class="sheet-title">${it?'Edit subscription':'Add a subscription or bill'}</div>
-<div class="field"><label class="field-label" for="sb-name">Name</label><input class="field-input" id="sb-name" maxlength="40" value="${E(i.name)}" placeholder="Netflix, Rent, Phone plan…"></div>
+<div class="field"><label class="field-label" for="sb-name">Name</label><input class="field-input" id="sb-name" maxlength="40" value="${E(i.name)}" placeholder="Netflix, Rent, Phone plan…" oninput="Subs.nameTyped()"></div>
+<div class="field"><label class="field-label">Logo</label><div class="sb-lg-row"><span id="sb-lg-prev">${logoHTML(i,52)}</span><div class="sb-lg-act"><label class="mini-btn go" style="cursor:pointer">${i.logo?'Change picture':'Upload a picture'}<input type="file" accept="image/*" hidden onchange="Subs.logoFile(event)"></label><button type="button" class="mini-btn" id="sb-lg-rm" onclick="Subs.logoClear()" ${i.logo?'':'hidden'}>Remove picture</button></div></div>
+<div class="sb-presets" role="radiogroup" aria-label="Preset icons"><button type="button" class="sb-pre sb-auto ${on===''?'on':''}" role="radio" aria-checked="${on===''}" data-i="" onclick="Subs.pickIcon('')">Auto</button>${ICONS.map(ic=>`<button type="button" class="sb-pre ${on===ic.id?'on':''}" role="radio" aria-checked="${on===ic.id}" data-i="${ic.id}" aria-label="${E(ic.n)}" title="${E(ic.n)}" onclick="Subs.pickIcon('${ic.id}')">${svg(ic,22)}</button>`).join('')}</div>
+<div class="sb-tints" role="group" aria-label="Icon color">${PALETTE.map(c=>`<button type="button" class="sb-tint ${i.tint===c?'on':''}" data-c="${c}" style="background:${c}" aria-label="Color ${c}" onclick="Subs.pickTint('${c}')"></button>`).join('')}</div>
+<div class="fx-hint">Pick an icon, or upload your own picture. On Auto, the name chooses one (“Netflix” gets the streaming icon).</div></div>
 <div class="field"><label class="field-label" for="sb-amt">Amount</label><input class="field-input" id="sb-amt" type="number" inputmode="decimal" min="0" step="0.01" value="${i.amount===''?'':E(i.amount)}" placeholder="0.00"></div>
 <div class="field"><label class="field-label" for="sb-every">How often</label><select class="field-input" id="sb-every">${EVERY.map(e=>`<option value="${e[0]}" ${e[0]===i.every?'selected':''}>${e[1]}</option>`).join('')}</select></div>
 <div class="field"><label class="field-label" for="sb-date">A charge date</label><input class="field-input" id="sb-date" type="date" value="${E(i.anchor)}"><div class="fx-hint">Any date it was, or will be, charged. Later dates follow from it.</div></div>
@@ -11120,12 +11404,21 @@ ${it?`<div class="set-row" onclick="Subs.flip('${E(i.id)}')"><div class="set-lef
 <button class="btn btn-primary" onclick="Subs.saveForm('${E(i.id)}')">${it?'Save':'Add'}</button>
 ${it?`<button class="btn btn-danger" style="margin-top:8px" onclick="Subs.remove('${E(i.id)}')">Delete</button>`:''}
 <button class="btn btn-secondary" style="margin-top:8px" onclick="Subs.open()">Cancel</button>`);setTimeout(()=>{const n=document.getElementById('sb-name');if(n&&!n.value)n.focus()},120)}
+function syncLogo(){if(!FD)return;const p=document.getElementById('sb-lg-prev');if(p)p.innerHTML=logoHTML(FD,52);const on=FD.logo?'__logo':FD.icon||'';document.querySelectorAll('.sb-pre').forEach(b=>{const o=(b.getAttribute('data-i')||'')===on;b.classList.toggle('on',o);b.setAttribute('aria-checked',o?'true':'false')});document.querySelectorAll('.sb-tint').forEach(b=>b.classList.toggle('on',b.getAttribute('data-c')===FD.tint));const rm=document.getElementById('sb-lg-rm');if(rm)rm.hidden=!FD.logo}
+function pickIcon(id){if(!FD)return;grab();FD.icon=iconId(id);if(FD.icon)FD.logo='';syncLogo();haptic('select')}
+function pickTint(c){if(!FD)return;grab();FD.tint=FD.tint===c?'':goodTint(c);syncLogo();haptic('select')}
+function nameTyped(){if(!FD)return;FD.name=$v('sb-name');if(!FD.icon&&!FD.logo)syncLogo()}
+function logoClear(){if(!FD)return;grab();FD.logo='';syncLogo();haptic('light')}
+function logoFile(ev){if(!FD)return;const el=ev&&ev.target;if(!el||!el.files||!el.files.length)return;grab();
+  Avatar.pickFor(ev,{title:'Logo',size:112,max:9000,done:d=>{const g=goodLogo(d);if(!g||!FD)return false;FD.logo=g;FD.icon='';return true},back:()=>{if(FD)editView()}})}
 const $v=id=>{const e=document.getElementById(id);return e?e.value:''};
-async function saveForm(id){const name=$v('sb-name').replace(/\s+/g,' ').trim(),amt=Number($v('sb-amt')),every=$v('sb-every'),date=$v('sb-date'),err=m=>{const e=document.getElementById('sb-err');if(e)e.textContent=m};
+async function saveForm(id){grab();const name=String(FD.name||'').replace(/\s+/g,' ').trim(),amt=Number(FD.amount),every=FD.every,date=FD.anchor,err=m=>{const e=document.getElementById('sb-err');if(e)e.textContent=m};
   if(!name)return err('Give it a name.');if(!(amt>0&&amt<1e7))return err('Enter an amount greater than zero.');if(!MULT[every])return err('Pick how often it is charged.');if(!parse(date))return err('Pick a date.');
-  const c=cfg(),rec={id:id||'s'+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36),name:name.slice(0,40),amount:Math.round(amt*100)/100,every,anchor:date,cat:$v('sb-cat')||'subscriptions',remind:$v('sb-rem')||'day',key:mkey(name),active:true};
+  const c=cfg();if(FD.logo&&c.items.filter(x=>x.logo&&x.id!==id).length>=MAXLOGOS)return err('You can add up to '+MAXLOGOS+' of your own pictures. The preset icons don’t count.');
+  const rec={id:id||'s'+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36),name:name.slice(0,40),amount:Math.round(amt*100)/100,every,anchor:date,cat:FD.cat||'subscriptions',remind:FD.remind||'day',key:mkey(name),active:true};
+  if(FD.icon)rec.icon=FD.icon;if(FD.tint)rec.tint=FD.tint;if(FD.logo)rec.logo=FD.logo;
   const ix=c.items.findIndex(x=>x.id===id);if(ix>=0){rec.active=c.items[ix].active!==false;c.items[ix]=rec}else{if(c.items.length>=200)return err('That’s the maximum (200).');c.items.push(rec)}
-  await save(c);dcache.n=-1;haptic('success');V.sel=ymd(nextOn(parse(date),every,today())||parse(date));{const d=parse(V.sel);V.y=d.getFullYear();V.m=d.getMonth()}toast(ix>=0?'Saved':'Added “'+rec.name+'”');open();try{render()}catch(e){}}
+  await save(c);FD=null;dcache.n=-1;haptic('success');V.sel=ymd(nextOn(parse(date),every,today())||parse(date));{const d=parse(V.sel);V.y=d.getFullYear();V.m=d.getMonth()}toast(ix>=0?'Saved':'Added “'+rec.name+'”');open();try{render()}catch(e){}}
 async function flip(id){const c=cfg(),i=c.items.find(x=>x.id===id);if(!i)return;i.active=i.active===false;await save(c);haptic('select');edit(id)}
 async function remove(id){const c=cfg(),i=c.items.find(x=>x.id===id);if(!i)return;if(!(await Confirm.ask({title:'Delete “'+i.name+'”?',msg:'It leaves the calendar. Transactions you already logged are not touched.',ok:'Delete',danger:true})))return;c.items=c.items.filter(x=>x.id!==id);await save(c);dcache.n=-1;haptic('success');open()}
 /* a detected one becomes the person's own, anchored on its last real charge */
@@ -11135,8 +11428,8 @@ async function unignore(){const c=cfg();c.ignore=[];await save(c);dcache.n=-1;pa
 
 /* ── Home card: what is coming out in the next week or so ── */
 function card(){if(!me)return'';const L=list().filter(i=>i.active!==false&&i.next&&i.daysTo<=14&&!(i.detected&&i.daysTo>7)).slice(0,3);if(!L.length)return'';const T=totals();
-  return`<div class="section"><div class="section-h"><span class="t-title">Coming up</span><button onclick="Subs.open('cal')" style="background:none;border:none;color:var(--gray-400);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Calendar →</button></div><div class="fx-card sb-card">${L.map(i=>`<div class="sb-row" onclick="Subs.open('cal')"><span class="sb-dd ${i.daysTo<=1?'soon':''}"><b>${i.daysTo===0?'Today':i.daysTo===1?'1d':i.daysTo+'d'}</b></span><div class="sb-main"><div class="fx-nm">${E(i.name)}</div><div class="fx-sub">${E(new Date(parse(i.next)).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}))}${i.detected?' · detected':''}</div></div><div class="sb-amt">${E(money(i.amount))}</div></div>`).join('')}${T.n7?`<div class="sb-foot">${E(money(T.next7))} due in the next 7 days</div>`:''}</div></div>`}
-return{open,paint,step,pickDay,edit,saveForm,flip,remove,track,dismiss,unignore,list,totals,month,between,nth,nextOn,detected,events,card,all,_ymd:ymd}})();
+  return`<div class="section"><div class="section-h"><span class="t-title">Coming up</span><button onclick="Subs.open('cal')" style="background:none;border:none;color:var(--gray-400);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Calendar →</button></div><div class="fx-card sb-card">${L.map(i=>`<div class="sb-row" onclick="Subs.open('cal')"><span class="sb-dd ${i.daysTo<=1?'soon':''}"><b>${i.daysTo===0?'Today':i.daysTo===1?'1d':i.daysTo+'d'}</b></span>${logoHTML(i,32)}<div class="sb-main"><div class="fx-nm">${E(i.name)}</div><div class="fx-sub">${E(new Date(parse(i.next)).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}))}${i.detected?' · detected':''}</div></div><div class="sb-amt">${E(money(i.amount))}</div></div>`).join('')}${T.n7?`<div class="sb-foot">${E(money(T.next7))} due in the next 7 days</div>`:''}</div></div>`}
+return{open,paint,step,pickDay,edit,saveForm,pickIcon,pickTint,nameTyped,logoFile,logoClear,logoHTML,suggest,ICONS,PALETTE,flip,remove,track,dismiss,unignore,list,totals,month,between,nth,nextOn,detected,events,card,all,_ymd:ymd}})();
 /* ═══ PAYDAY COUNTDOWN — fully custom ═══
    Any number of countdowns. Each has its own name, symbol, colour, schedule, way of counting and look:
      schedule   follows my income settings · every week on a day · every N days from a date · twice a month · once a month · the last working day of the month · one fixed date
@@ -12550,7 +12843,7 @@ Store.subscribe(()=>{try{Look.sync()}catch(e){}});Backend.subscribe(()=>{if(Clou
 try{const t=sessionStorage.getItem('logostics_tab');if(t&&['home','goals','analytics','friends','settings','notifications','profile'].includes(t))currentTab=t;else if(me)currentTab=NavUI.startTab()}catch(e){}
 navSync();
 if(me){Lock.startup();Gate.start();try{Notify.boot()}catch(e){}try{Telemetry.session()}catch(e){}try{Onboard.start(false)}catch(e){}}
-render();try{AndroidX.init();Music.boot();Rating.boot();AutoSort.boot();Stocks.boot();Jobs.boot();PaySharing.boot();ThemeKit.boot();LaunchAction.check()}catch(e){console.error(e)}try{IP.pump()}catch(e){}try{VacUI.boot();if(me)Vac.touch()}catch(e){console.error(e)}if(me){beat();if(PatchNotes.hasUnseenVersion()&&Store.preferences.lastSeenVersion)setTimeout(openPatchNotes,800);else if(!Store.preferences.lastSeenVersion)PatchNotes.markSeen()}
+render();try{AndroidX.init();Music.boot();Rating.boot();AutoSort.boot();Stocks.boot();Jobs.boot();PaySharing.boot();ThemeKit.boot();LaunchAction.check()}catch(e){console.error(e)}try{Rescue.boot()}catch(e){console.error(e)}try{IP.pump()}catch(e){}try{VacUI.boot();if(me)Vac.touch()}catch(e){console.error(e)}if(me){beat();if(PatchNotes.hasUnseenVersion()&&Store.preferences.lastSeenVersion)setTimeout(openPatchNotes,800);else if(!Store.preferences.lastSeenVersion)PatchNotes.markSeen()}
 setInterval(beat,30000);setInterval(presenceTick,20000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me){beat();scheduleRender()}});
 window.addEventListener('pagehide',()=>{Cloud.bye();if(me&&db.users[me]&&!Cloud.on()){try{commit(d=>{if(d.users[me])d.users[me].online=false},{kind:'presence'})}catch(e){}}});

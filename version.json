@@ -1,10 +1,11 @@
 {
- "version": "4.1.1",
- "build": "2026-10-18T19:12:26Z",
- "title": "Logostics 4.1.1",
+ "version": "4.1.2",
+ "build": "2026-10-19T08:46:40Z",
+ "title": "Logostics 4.1.2",
  "notes": [
-  "Money in your savings now counts toward Available Cash",
-  "New: a round work picture for your job profile"
+  "Ghost transactions: set the date and time, and choose whether it counts toward your cash",
+  "Subscription logos and preset icons",
+  "Missing transactions are found and offered back; deleted ones are kept for a year"
  ],
  "announce": false,
  "min": ""
