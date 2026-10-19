@@ -1,11 +1,12 @@
 {
- "version": "4.1.3",
- "build": "2026-10-19T19:22:06Z",
- "title": "Logostics 4.1.3",
+ "version": "4.1.4",
+ "build": "2026-10-19T20:41:03Z",
+ "title": "Logostics 4.1.4",
  "notes": [
-  "Quick sign-in key and a dev key for the owner",
-  "Stocks widget for the home screen",
-  "Ghost entries show instantly; music starts with the app; Chromebooks and laptops recognized"
+  "Privacy mode hides only money amounts",
+  "Particle backgrounds in Appearance",
+  "Smarter \u201ccan I afford this?\u201d answers",
+  "Owner can remove ratings"
  ],
  "announce": false,
  "min": ""
