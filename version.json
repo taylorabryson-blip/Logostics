@@ -1,12 +1,11 @@
 {
- "version": "4.1.4",
- "build": "2026-10-19T20:41:03Z",
- "title": "Logostics 4.1.4",
+ "version": "4.1.5",
+ "build": "2026-10-21T08:04:55Z",
+ "title": "Logostics 4.1.5",
  "notes": [
-  "Privacy mode hides only money amounts",
-  "Particle backgrounds in Appearance",
-  "Smarter \u201ccan I afford this?\u201d answers",
-  "Owner can remove ratings"
+  "Fix the amount in any place, including Everyday cash",
+  "Undo a correction from the history",
+  "Income streams show what went through them"
  ],
  "announce": false,
  "min": ""
