@@ -1,14 +1,13 @@
 {
- "version": "4.1.6",
- "build": "2026-10-24T19:17:39Z",
- "title": "Logostics 4.1.6",
+ "version": "4.1.8",
+ "build": "2026-10-24T19:48:13Z",
+ "title": "Logostics 4.1.8",
  "notes": [
-  "Daily check-in notifications",
-  "Things I need: a grocery list",
-  "Photos on transactions",
-  "Company logos and new icons",
-  "Activity by month, with search and filters",
-  "Puter AI for harder questions"
+  "Puter AI can add to your list, log spending and more",
+  "Widgets for your list, bills, spending, places, debts and income",
+  "Company logos in Stocks",
+  "A This month card in Analytics",
+  "New tab bar icons"
  ],
  "announce": false,
  "min": ""
