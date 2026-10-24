@@ -1,11 +1,14 @@
 {
- "version": "4.1.5",
- "build": "2026-10-21T08:04:55Z",
- "title": "Logostics 4.1.5",
+ "version": "4.1.6",
+ "build": "2026-10-24T19:17:39Z",
+ "title": "Logostics 4.1.6",
  "notes": [
-  "Fix the amount in any place, including Everyday cash",
-  "Undo a correction from the history",
-  "Income streams show what went through them"
+  "Daily check-in notifications",
+  "Things I need: a grocery list",
+  "Photos on transactions",
+  "Company logos and new icons",
+  "Activity by month, with search and filters",
+  "Puter AI for harder questions"
  ],
  "announce": false,
  "min": ""
