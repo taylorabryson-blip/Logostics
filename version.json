@@ -1,13 +1,14 @@
 {
- "version": "4.1.8",
- "build": "2026-10-24T19:48:13Z",
- "title": "Logostics 4.1.8",
+ "version": "4.1.9",
+ "build": "2026-10-29T02:43:37Z",
+ "title": "Logostics 4.1.9",
  "notes": [
-  "Puter AI can add to your list, log spending and more",
-  "Widgets for your list, bills, spending, places, debts and income",
-  "Company logos in Stocks",
-  "A This month card in Analytics",
-  "New tab bar icons"
+  "Apple theme in four titanium finishes",
+  "Weeks and exact dates in Activity",
+  "AI that finds your spending patterns",
+  "22 new voices, read aloud automatically",
+  "Add a friend\u2019s job in one tap",
+  "32 fonts and 6 new background effects"
  ],
  "announce": false,
  "min": ""

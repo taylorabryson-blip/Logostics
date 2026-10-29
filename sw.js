@@ -2,7 +2,7 @@
    1) Makes the app open instantly and keep working with no connection (only the app's own files are cached; sign-in data, Supabase calls and music are never cached here).
    2) Receives real push notifications while the app is closed and opens the right screen when one is tapped.
    Bump VERSION whenever this file changes so phones pick up the new copy. */
-const VERSION = 'logostics-sw-4.1.8';
+const VERSION = 'logostics-sw-4.1.9';
 const SHELL = ['./', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
@@ -29,7 +29,7 @@ function cacheable(req) {
 
 // company logos (Logo.dev / Google favicons): kept in their own cache across versions so they show offline and load instantly
 const LOGOS = 'lgx-logos-v1';
-function isLogo(req) { if (req.method !== 'GET') return false; const u = new URL(req.url); return u.hostname === 'img.logo.dev' || (u.hostname === 'www.google.com' && u.pathname === '/s2/favicons') || /^t\d\.gstatic\.com$/.test(u.hostname); }
+function isLogo(req) { if (req.method !== 'GET') return false; const u = new URL(req.url); return u.hostname === 'img.logo.dev' || (u.hostname === 'www.google.com' && u.pathname === '/s2/favicons') || u.hostname === 'icons.duckduckgo.com' || /^t\d\.gstatic\.com$/.test(u.hostname); }
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (isLogo(req)) {
