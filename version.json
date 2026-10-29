@@ -1,14 +1,14 @@
 {
- "version": "4.1.9",
- "build": "2026-10-29T02:43:37Z",
- "title": "Logostics 4.1.9",
+ "version": "4.2.0",
+ "build": "2026-10-29T19:59:54Z",
+ "title": "Logostics 4.2.0",
  "notes": [
-  "Apple theme in four titanium finishes",
-  "Weeks and exact dates in Activity",
-  "AI that finds your spending patterns",
-  "22 new voices, read aloud automatically",
-  "Add a friend\u2019s job in one tap",
-  "32 fonts and 6 new background effects"
+  "An assistant that can do almost anything in the app",
+  "Every iPhone colour from 11 to 18 Pro, dark or light",
+  "IOUs with due dates and reminders",
+  "Work schedule from a photo for better paycheck estimates",
+  "A cleaner Analytics with a time slider",
+  "Money sounds, six new backgrounds, calendar reminders"
  ],
  "announce": false,
  "min": ""
