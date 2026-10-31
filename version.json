@@ -1,14 +1,14 @@
 {
- "version": "4.2.0",
- "build": "2026-10-29T19:59:54Z",
- "title": "Logostics 4.2.0",
+ "version": "4.2.1",
+ "build": "2026-10-31T21:45:46Z",
+ "title": "Logostics 4.2.1",
  "notes": [
-  "An assistant that can do almost anything in the app",
-  "Every iPhone colour from 11 to 18 Pro, dark or light",
-  "IOUs with due dates and reminders",
-  "Work schedule from a photo for better paycheck estimates",
-  "A cleaner Analytics with a time slider",
-  "Money sounds, six new backgrounds, calendar reminders"
+  "Find anything: search every feature from Home or Settings",
+  "Logostics AI answers everything, and / shows quick commands",
+  "Paid from: pick the account an expense comes out of",
+  "Read a schedule or receipt from a photo",
+  "Edit Home made simple, plus build your own widgets",
+  "Planets, Android and CSS backgrounds; themes that look different"
  ],
  "announce": false,
  "min": ""

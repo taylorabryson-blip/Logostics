@@ -2,8 +2,8 @@
    1) Makes the app open instantly and keep working with no connection (only the app's own files are cached; sign-in data, Supabase calls and music are never cached here).
    2) Receives real push notifications while the app is closed and opens the right screen when one is tapped.
    Bump VERSION whenever this file changes so phones pick up the new copy. */
-const VERSION = 'logostics-sw-4.2.0';
-const SHELL = ['./', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'];
+const VERSION = 'logostics-sw-4.2.1';
+const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-maskable-512.png', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => Promise.all(SHELL.map((u) => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
@@ -27,6 +27,9 @@ function cacheable(req) {
   return true;
 }
 
+// libraries and fonts the app loads from public CDNs (maps, fonts, PDF reader, text recognition): kept across versions for offline use
+const CDN = 'lgx-cdn-v1';
+function isCdn(req) { if (req.method !== 'GET') return false; const h = new URL(req.url).hostname; return h === 'unpkg.com' || h === 'cdn.jsdelivr.net' || h === 'cdnjs.cloudflare.com' || h === 'fonts.googleapis.com' || h === 'fonts.gstatic.com' || h === 'js.puter.com'; }
 // company logos (Logo.dev / Google favicons): kept in their own cache across versions so they show offline and load instantly
 const LOGOS = 'lgx-logos-v1';
 function isLogo(req) { if (req.method !== 'GET') return false; const u = new URL(req.url); return u.hostname === 'img.logo.dev' || (u.hostname === 'www.google.com' && u.pathname === '/s2/favicons') || u.hostname === 'icons.duckduckgo.com' || u.hostname === 'icon.horse' || /^t\d\.gstatic\.com$/.test(u.hostname); }
@@ -36,15 +39,24 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(caches.open(LOGOS).then((c) => c.match(req).then((hit) => hit || fetch(req).then((res) => { if (res && (res.ok || res.type === 'opaque')) c.put(req, res.clone()).catch(() => {}); return res; }).catch(() => hit || Response.error()))));
     return;
   }
+  if (isCdn(req)) {
+    e.respondWith(caches.open(CDN).then((c) => c.match(req).then((hit) => { const net = fetch(req).then((res) => { if (res && (res.ok || res.type === 'opaque')) c.put(req, res.clone()).catch(() => {}); return res; }).catch(() => hit || Response.error()); return hit || net; })));
+    return;
+  }
   if (!cacheable(req)) return;
   if (req.mode === 'navigate') {
     // pages: network first so updates arrive, cached copy when offline
-    e.respondWith(
-      fetch(req).then((res) => {
-        if (res && res.status === 200 && res.type === 'basic') { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)).catch(() => {}); }
-        return res;
-      }).catch(() => caches.match(req).then((m) => m || caches.match('./') || caches.match('index.html')).then((m) => m || new Response('Offline', { status: 503, headers: { 'content-type': 'text/plain' } })))
-    );
+    // a weak signal can hang for a minute: after 4 seconds the saved copy is shown instead (the fresh one is still saved for next time)
+    const cached = () => caches.match(req, { ignoreSearch: true }).then((m) => m || caches.match('./') ).then((m) => m || caches.match('index.html')).then((m) => m || new Response('<!doctype html><meta name=viewport content="width=device-width"><body style="font:16px system-ui;background:#000;color:#fff;padding:40px;text-align:center">You’re offline. Open Logostics once while connected and it will work offline after that.</body>', { status: 503, headers: { 'content-type': 'text/html' } }));
+    const net = fetch(req).then((res) => {
+      if (res && res.status === 200 && res.type === 'basic') { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)).catch(() => {}); }
+      return res;
+    });
+    e.respondWith(new Promise((resolve) => {
+      let done = false; const fin = (r) => { if (!done) { done = true; resolve(r); } };
+      const t = setTimeout(() => { cached().then((m) => { if (m && m.status !== 503) fin(m); }); }, 4000);
+      net.then((r) => { clearTimeout(t); fin(r); }).catch(() => { clearTimeout(t); cached().then(fin); });
+    }));
     return;
   }
   // everything else: instant from cache, refreshed in the background
