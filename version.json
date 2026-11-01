@@ -1,14 +1,12 @@
 {
- "version": "4.3.0",
- "build": "2026-11-01T16:28:37Z",
- "title": "Logostics 4.3.0",
+ "version": "4.4.0",
+ "build": "2026-11-01T19:37:23Z",
+ "title": "Logostics 4.4.0",
  "notes": [
-  "Work: hold Home to switch between Finance and Work",
-  "Find real jobs near you and see your local job market",
-  "Track applications, follow-ups and interviews",
-  "Scan a posted schedule \u2014 it finds your row by your name",
-  "Build a resume and export PDF or Word",
-  "End a job without losing any pay history"
+  "Connect Gmail in Work \u2192 Applications (optional, read-only)",
+  "Employer replies update your applications \u2014 or wait for your OK",
+  "Fewer buttons, solid pop-up cards, Liquid Glass + card opacity together",
+  "A Finance \u21c4 Work pop-up with a buzz, and new notification icons"
  ],
  "announce": false,
  "min": ""
