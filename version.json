@@ -1,12 +1,12 @@
 {
- "version": "4.4.1",
- "build": "2026-11-02T21:22:00Z",
- "title": "Logostics 4.4.0",
+ "version": "4.4.2",
+ "build": "2026-11-02T21:59:47Z",
+ "title": "Logostics 4.4.2",
  "notes": [
-  "Connect Gmail in Work \u2192 Applications (optional, read-only)",
-  "Employer replies update your applications \u2014 or wait for your OK",
-  "Fewer buttons, solid pop-up cards, Liquid Glass + card opacity together",
-  "A Finance \u21c4 Work pop-up with a buzz, and new notification icons"
+  "Find jobs fills itself in with real listings near you",
+  "Windows: Retro 95 look, Pipes and Mystify backgrounds",
+  "Chromebook: Paper look and Shelf waves",
+  "Linux: Terminal look, 3D mode, Wireframe and your own SVG background"
  ],
  "announce": false,
  "min": ""
