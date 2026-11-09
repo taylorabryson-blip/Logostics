@@ -2,8 +2,8 @@
    1) Makes the app open instantly and keep working with no connection (only the app's own files are cached; sign-in data, Supabase calls and music are never cached here).
    2) Receives real push notifications while the app is closed and opens the right screen when one is tapped.
    Bump VERSION whenever this file changes so phones pick up the new copy. */
-const VERSION = 'logostics-sw-4.4.2';
-const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-maskable-512.png', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'];
+const VERSION = 'logostics-sw-4.5.0';
+const SHELL = ['./', 'index.html', 'app.js?v=4.5.0', 'manifest.webmanifest', 'icons/icon-maskable-512.png', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => Promise.all(SHELL.map((u) => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));

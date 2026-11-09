@@ -1,12 +1,13 @@
 {
- "version": "4.4.2",
- "build": "2026-11-02T21:59:47Z",
- "title": "Logostics 4.4.2",
+ "version": "4.5.0",
+ "build": "2026-11-09T05:43:06Z",
+ "title": "Logostics 4.5.0",
  "notes": [
-  "Find jobs fills itself in with real listings near you",
-  "Windows: Retro 95 look, Pipes and Mystify backgrounds",
-  "Chromebook: Paper look and Shelf waves",
-  "Linux: Terminal look, 3D mode, Wireframe and your own SVG background"
+  "Draw is now a real drawing app — any colour, brushes, shapes, gallery",
+  "Work check-ins: when to call or email, with the number right there",
+  "Your assistant knows its name and gender; more ways to customize it",
+  "Not working? Your old job moves to Past jobs and the AI stops saying you work there",
+  "Opens faster"
  ],
  "announce": false,
  "min": ""
