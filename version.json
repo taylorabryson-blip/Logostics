@@ -1,13 +1,13 @@
 {
- "version": "4.5.0",
- "build": "2026-11-09T05:43:06Z",
- "title": "Logostics 4.5.0",
+ "version": "4.6.0",
+ "build": "2026-11-15T22:09:30Z",
+ "title": "Logostics 4.6.0",
  "notes": [
-  "Draw is now a real drawing app — any colour, brushes, shapes, gallery",
-  "Work check-ins: when to call or email, with the number right there",
-  "Your assistant knows its name and gender; more ways to customize it",
-  "Not working? Your old job moves to Past jobs and the AI stops saying you work there",
-  "Opens faster"
+  "Find jobs shows everyday local jobs first, with pay on almost every listing",
+  "Tap Apply and it’s saved — one tap marks it Applied when you’re back",
+  "Pay comparison: which job gets you to your goal fastest",
+  "Drawing: layers, eyedropper, saved colours, account gallery",
+  "A much smarter built-in assistant"
  ],
  "announce": false,
  "min": ""
