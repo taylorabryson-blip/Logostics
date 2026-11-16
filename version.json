@@ -1,13 +1,11 @@
 {
- "version": "4.6.0",
- "build": "2026-11-15T22:09:30Z",
- "title": "Logostics 4.6.0",
+ "version": "4.6.1",
+ "build": "2026-11-16T01:07:10Z",
+ "title": "Logostics 4.6.1",
  "notes": [
-  "Find jobs shows everyday local jobs first, with pay on almost every listing",
-  "Tap Apply and it’s saved — one tap marks it Applied when you’re back",
-  "Pay comparison: which job gets you to your goal fastest",
-  "Drawing: layers, eyedropper, saved colours, account gallery",
-  "A much smarter built-in assistant"
+  "Find jobs searches your exact neighbourhood, ZIP or street — closest jobs first",
+  "Quick picks show real restaurant, fast food and retail jobs near you",
+  "Starting pay and top pay on applications"
  ],
  "announce": false,
  "min": ""
