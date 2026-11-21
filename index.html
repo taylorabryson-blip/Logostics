@@ -2008,6 +2008,89 @@ html.skin-paper .ai-fab,html.skin-paper .privacy-btn{background:#fff!important;c
 .cfx-matrix{color:#33ff66!important;font-family:ui-monospace,Menlo,monospace!important;letter-spacing:-.02em!important;text-shadow:0 0 8px rgba(51,255,102,.6);animation:cfxNe 4s infinite}
 .cfx-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cfx-opt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;border-radius:16px;border:1px solid rgba(127,127,127,.2);background:var(--card,rgba(127,127,127,.08));color:inherit;font:inherit;cursor:pointer;overflow:hidden}.cfx-opt b{font-size:24px;font-weight:800;letter-spacing:-.03em;white-space:nowrap}.cfx-opt small{opacity:.6}.cfx-opt.on{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
 @media (prefers-reduced-motion:reduce){.fl-c,.fl-add,.cfx-shimmer,.cfx-glow,.cfx-neon,.cfx-rainbow,.cfx-pulse,.cfx-wave i,.cfx-float,.cfx-matrix{animation:none!important}}
+
+/* ═══ 4.8.0 cash styles: every style takes a colour (--fc): its own, your theme, or any ═══ */
+.cfx-c.cfx-shimmer{background-image:linear-gradient(100deg,var(--text,#fff) 30%,var(--fc) 45%,#fff 50%,var(--text,#fff) 62%)}
+.cfx-c.cfx-glow{color:var(--text)!important;text-shadow:0 0 14px color-mix(in srgb,var(--fc) 75%,transparent),0 0 30px color-mix(in srgb,var(--fc) 35%,transparent);animation:cfxGlC 2.6s ease-in-out infinite}
+@keyframes cfxGlC{50%{text-shadow:0 0 6px color-mix(in srgb,var(--fc) 40%,transparent),0 0 14px color-mix(in srgb,var(--fc) 20%,transparent)}}
+.cfx-c.cfx-neon{text-shadow:0 0 4px #fff,0 0 10px var(--fc),0 0 22px var(--fc),0 0 40px color-mix(in srgb,var(--fc) 70%,#000)}
+.cfx-c.cfx-gold{background-image:linear-gradient(180deg,color-mix(in srgb,var(--fc) 25%,#fff),var(--fc) 45%,color-mix(in srgb,var(--fc) 62%,#000) 55%,color-mix(in srgb,var(--fc) 55%,#fff));filter:drop-shadow(0 2px 6px color-mix(in srgb,var(--fc) 35%,transparent))}
+.cfx-c.cfx-matrix{color:var(--fc)!important;text-shadow:0 0 8px color-mix(in srgb,var(--fc) 60%,transparent)}
+.cfx-c:is(.cfx-none,.cfx-pulse,.cfx-wave,.cfx-float,.cfx-bounce,.cfx-type){color:var(--fc)!important}
+.cfx-c.cfx-rainbow{background-image:linear-gradient(90deg,var(--fc),color-mix(in srgb,var(--fc) 50%,#fff),color-mix(in srgb,var(--fc) 60%,#ff5f6d),color-mix(in srgb,var(--fc) 60%,#3bb2ff),var(--fc))}
+/* the new ones */
+.cfx-fire{--f:var(--fc,#ff7a00);background:linear-gradient(0deg,color-mix(in srgb,var(--f) 70%,#600) 0%,var(--f) 35%,color-mix(in srgb,var(--f) 35%,#ffe600) 65%,#fff8d6 100%) 0 0/100% 200%;-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--f) 55%,transparent));animation:cfxFi 1.4s ease-in-out infinite alternate}
+@keyframes cfxFi{0%{background-position:0 0;filter:drop-shadow(0 -1px 6px color-mix(in srgb,var(--f) 50%,transparent))}50%{filter:drop-shadow(0 -3px 12px color-mix(in srgb,var(--f) 70%,transparent))}100%{background-position:0 100%;filter:drop-shadow(0 -2px 8px color-mix(in srgb,var(--f) 55%,transparent))}}
+.cfx-ice{--f:var(--fc,#7fdcff);background:linear-gradient(160deg,#fff 10%,color-mix(in srgb,var(--f) 40%,#fff) 35%,var(--f) 55%,color-mix(in srgb,var(--f) 70%,#003a80) 90%);-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--f) 60%,transparent)) drop-shadow(0 1px 0 rgba(255,255,255,.5))}
+.cfx-holo{--f:var(--fc,#b18cff);background:linear-gradient(110deg,#ff9ff3,#feca57 18%,#48dbfb 36%,var(--f) 54%,#ff9ff3 72%,#1dd1a1 90%) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;animation:cfxSh 4s linear infinite;filter:saturate(1.2) drop-shadow(0 0 6px color-mix(in srgb,var(--f) 40%,transparent))}
+.cfx-chrome{--f:var(--fc,#8fa3b8);background:linear-gradient(180deg,#fff 0%,#e9eef3 30%,#7d8a97 49%,#2c333a 51%,color-mix(in srgb,var(--f) 70%,#fff) 80%,#fff 100%);-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+.cfx-glitch{--f:var(--fc,#00e5ff);display:inline-block;color:var(--text)!important;text-shadow:2px 0 color-mix(in srgb,var(--f) 85%,transparent),-2px 0 rgba(255,0,80,.85);animation:cfxGi 2.4s steps(1) infinite}
+@keyframes cfxGi{0%,100%{transform:none;text-shadow:2px 0 color-mix(in srgb,var(--f) 85%,transparent),-2px 0 rgba(255,0,80,.85)}8%{transform:translate(-2px,1px) skewX(-8deg);text-shadow:-3px 0 var(--f),3px 0 #ff0050}10%{transform:translate(2px,-1px);text-shadow:4px 0 var(--f),-4px 0 #ff0050}12%{transform:none}55%{transform:translateX(1px) skewX(6deg);text-shadow:-2px 1px var(--f),2px -1px #ff0050}57%{transform:none}}
+.cfx-outline{--f:var(--fc,var(--green));color:transparent!important;-webkit-text-fill-color:transparent;-webkit-text-stroke:1.6px var(--f);filter:drop-shadow(0 0 8px color-mix(in srgb,var(--f) 45%,transparent))}
+.cfx-retro{--f:var(--fc,var(--green));color:var(--text)!important;text-shadow:1px 1px 0 var(--f),2px 2px 0 var(--f),3px 3px 0 color-mix(in srgb,var(--f) 80%,#000),4px 4px 0 color-mix(in srgb,var(--f) 65%,#000),5px 5px 10px rgba(0,0,0,.45)}
+.cfx-sparkle{--f:var(--fc,#ffe680);position:relative;display:inline-block;background:linear-gradient(100deg,var(--text,#fff) 30%,var(--f) 45%,#fff 50%,var(--text,#fff) 62%) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;animation:cfxSh 3.4s linear infinite}
+.cfx-sparkle::before,.cfx-sparkle::after{content:'✦';position:absolute;font-size:.36em;color:var(--f);-webkit-text-fill-color:var(--f);text-shadow:0 0 6px var(--f);pointer-events:none;animation:cfxSp 1.8s ease-in-out infinite}
+.cfx-sparkle::before{top:-.18em;right:-.3em}.cfx-sparkle::after{bottom:.02em;left:-.28em;font-size:.26em;animation-delay:.9s}
+@keyframes cfxSp{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1) rotate(90deg)}}
+.cfx-bounce i{display:inline-block;font-style:normal;animation:cfxBo 1.8s cubic-bezier(.3,0,.3,1) infinite;animation-delay:var(--d);transform-origin:50% 100%}
+@keyframes cfxBo{0%,40%,100%{transform:none}10%{transform:translateY(-9px) scale(1.04,.96)}20%{transform:translateY(0) scale(1.08,.9)}28%{transform:translateY(-2px)}}
+.cfx-type i{font-style:normal;opacity:0;animation:cfxTy 5s steps(1) infinite;animation-delay:var(--d)}
+.cfx-type::after{content:'';display:inline-block;width:.07em;height:.82em;margin-left:.05em;vertical-align:-.04em;background:currentColor;animation:cfxCu .9s steps(1) infinite}
+@keyframes cfxTy{0%{opacity:0}2%,80%{opacity:1}96%,100%{opacity:0}}@keyframes cfxCu{50%{opacity:0}}
+.cfx-cols{display:flex;flex-wrap:wrap;gap:8px}
+.cfx-sw{width:36px;height:36px;border-radius:50%;border:2px solid transparent;background:var(--sw);cursor:pointer;padding:0;box-shadow:inset 0 0 0 1px rgba(127,127,127,.3)}
+.cfx-sw.on{border-color:var(--text);box-shadow:inset 0 0 0 3px var(--bg)}
+.cfx-sw-l{width:auto;height:36px;border-radius:999px;display:inline-flex;align-items:center;gap:7px;padding:0 12px 0 6px;background:rgba(127,127,127,.15);color:inherit;font:inherit;font-size:13px;font-weight:700;box-shadow:none;position:relative}
+.cfx-sw-l i{width:22px;height:22px;border-radius:50%;background:var(--sw,conic-gradient(#ff5f6d,#ffc371,#47e891,#3bb2ff,#b56cff,#ff5f6d))}
+.cfx-sw-l.on{border-color:var(--green);box-shadow:none}
+.cfx-sw-pick input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.cfx-opt b{max-width:100%;overflow:visible}
+.tp-a-ed{flex:0 0 auto;padding:9px 12px;display:inline-flex;align-items:center;justify-content:center}
+.qa-row{display:flex;align-items:center;justify-content:space-between;gap:8px}.qa-ctl{display:flex;gap:6px}
+@media (prefers-reduced-motion:reduce){.cfx-fire,.cfx-holo,.cfx-glitch,.cfx-sparkle,.cfx-sparkle::before,.cfx-sparkle::after,.cfx-bounce i,.cfx-type::after{animation:none!important}.cfx-type i{animation:none!important;opacity:1}}
+html.anim-off :is(.cfx-fire,.cfx-holo,.cfx-glitch,.cfx-sparkle,.cfx-sparkle::before,.cfx-sparkle::after,.cfx-bounce i,.cfx-type::after){animation:none!important}html.anim-off .cfx-type i{animation:none!important;opacity:1}
+
+/* ═══ 4.8.0 Finance ⇄ Work: hold half a second → a bubble pops, a panel swipes across, you're on the other side ═══ */
+.md-hold{position:fixed;z-index:9998;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;color:#fff;background:var(--sw,#5e8bff);box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 0 6px color-mix(in srgb,var(--sw,#5e8bff) 25%,transparent);transform:translateY(0) scale(.2);opacity:0;transition:transform .5s cubic-bezier(.2,.9,.3,1.2),opacity .18s}
+.md-hold.on{transform:translateY(-62px) scale(1);opacity:1}
+.md-hold.pop{transition:transform .2s cubic-bezier(.3,1.6,.5,1),opacity .2s .08s;transform:translateY(-62px) scale(1.45);opacity:0}
+.md-hold svg{width:28px;height:28px}
+.md-hold::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:3px solid rgba(255,255,255,.85);clip-path:inset(0 0 0 0);-webkit-mask:conic-gradient(#000 var(--p,0%),transparent 0);mask:conic-gradient(#000 var(--p,0%),transparent 0)}
+.md-sw{position:fixed;inset:0;z-index:9997;pointer-events:none;overflow:hidden}
+.md-sw-panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;background:radial-gradient(90% 60% at 50% 40%,color-mix(in srgb,var(--sw) 55%,#000) 0%,color-mix(in srgb,var(--sw) 18%,#000) 70%,#000 100%);transform:translateX(calc(var(--dir) * 102%));will-change:transform;box-shadow:0 0 60px rgba(0,0,0,.5)}
+.md-sw-panel .md-sw-ic{width:76px;height:76px;border-radius:24px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);transform:scale(.6);opacity:0}
+.md-sw-panel .md-sw-ic svg{width:40px;height:40px}
+.md-sw-panel b{font-size:30px;font-weight:800;letter-spacing:-.03em;opacity:0;transform:translateY(8px)}
+.md-sw-panel small{font-size:14px;opacity:0;color:rgba(255,255,255,.7)}
+.md-sw.go .md-sw-panel{animation:mdSwIn .34s cubic-bezier(.22,.9,.24,1) forwards}
+.md-sw.go .md-sw-ic{animation:mdSwIc .38s .12s cubic-bezier(.3,1.5,.5,1) forwards}
+.md-sw.go b,.md-sw.go small{animation:mdSwTx .3s .18s ease-out forwards}
+.md-sw.out .md-sw-panel{animation:mdSwOut .36s cubic-bezier(.6,0,.3,1) forwards}
+@keyframes mdSwIn{from{transform:translateX(calc(var(--dir) * 102%))}to{transform:none}}
+@keyframes mdSwOut{from{transform:none}to{transform:translateX(calc(var(--dir) * -102%))}}
+@keyframes mdSwIc{to{transform:none;opacity:1}}@keyframes mdSwTx{to{transform:none;opacity:1}}
+.md-enter{animation:mdEnter .42s cubic-bezier(.2,.8,.2,1)}
+@keyframes mdEnter{from{transform:translateX(calc(var(--dir,1) * 36px));opacity:.2}to{transform:none;opacity:1}}
+
+/* ═══ 4.8.0 Work feels like its own app: its own colour, glow, cards and header ═══ */
+body.mode-work #look-bg{background:radial-gradient(110% 55% at 85% -8%,rgba(var(--acc-rgb),.24),transparent 60%),radial-gradient(80% 50% at 0% 105%,rgba(var(--acc-rgb),.10),transparent 60%),linear-gradient(180deg,color-mix(in srgb,var(--bg) 88%,rgb(var(--acc-rgb))) 0%,var(--bg) 45%)}
+body.mode-work .wk .top-header .t-large{font-size:30px;letter-spacing:-.035em;display:flex;align-items:center;gap:8px}
+body.mode-work .wk .top-header .t-large::before{content:'';width:12px;height:12px;border-radius:4px;background:var(--green);box-shadow:0 0 12px rgba(var(--acc-rgb),.8)}
+body.mode-work .wk-card{border-radius:14px;border-color:rgba(var(--acc-rgb),.18);background:linear-gradient(180deg,rgba(var(--acc-rgb),.07),transparent 70%),rgba(var(--card-rgb),.92);box-shadow:0 1px 0 rgba(255,255,255,.04) inset}
+body.mode-work .wk-ct{text-transform:uppercase;letter-spacing:.08em;font-size:11.5px;color:rgb(var(--acc-rgb))}
+body.mode-work .wk-tabs{background:rgba(127,127,127,.12);border-radius:14px;padding:4px;gap:2px}
+body.mode-work .wk-tabs .subtab{border:0;background:transparent;border-radius:10px;color:var(--gray-400)}
+body.mode-work .wk-tabs .subtab.active{background:var(--green);color:var(--on-accent);box-shadow:0 4px 14px rgba(var(--acc-rgb),.35)}
+body.mode-work .tp{background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 80%,rgb(var(--acc-rgb))) 0%,color-mix(in srgb,var(--bg,#000) 88%,transparent) 100%)}
+body.mode-work .tp .tp-job{box-shadow:inset 0 0 0 1px rgba(var(--acc-rgb),.3)}
+body.mode-work .tp-a{background:rgba(var(--acc-rgb),.16);color:var(--text)}
+body.mode-work #bottom-nav{box-shadow:inset 0 1px 0 rgba(var(--acc-rgb),.35)}
+body.mode-work #bottom-nav .nav-item.active,body.mode-work #bottom-nav .nav-item[aria-current="page"]{color:var(--green)}
+body.mode-work .mini-btn.go,body.mode-work .btn-primary{background:var(--green);color:var(--on-accent)}
+.cfx-money{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 0;border:0;border-radius:14px;padding:12px 14px;background:rgba(127,127,127,.12);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.cfx-tg{flex:none;width:46px;height:28px;border-radius:99px;background:rgba(127,127,127,.35);position:relative;transition:background .2s}.cfx-tg::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.cfx-money.on .cfx-tg{background:var(--green)}.cfx-money.on .cfx-tg::after{transform:translateX(18px)}
+.ap-mine{position:relative}.ap-mine input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
 </style>
 </head>
 <body>
@@ -2027,6 +2110,6 @@ html.skin-paper .ai-fab,html.skin-paper .privacy-btn{background:#fff!important;c
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)"><div class="sheet" id="sheet" onclick="event.stopPropagation()"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
 <div class="celebration-overlay" id="celebration-overlay"><div class="celebration-burst" id="celebration-burst">✓</div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-<script src="app.js?v=4.7.1"></script>
+<script src="app.js?v=4.8.0"></script>
 </body>
 </html>
