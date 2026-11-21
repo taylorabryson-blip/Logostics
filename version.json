@@ -1,15 +1,10 @@
 {
- "version": "4.7.0",
- "build": "2026-11-21T21:50:18Z",
- "title": "Logostics 4.7.0",
+ "version": "4.7.1",
+ "build": "2026-11-21T22:02:56Z",
+ "title": "Logostics 4.7.1",
  "notes": [
-  "Your cash and your job pinned to the top",
-  "Shift clock with live earnings",
-  "Shifts to your goals",
-  "Company research for where you work",
-  "Your cards in 3D",
-  "Hired date, first day and duties for your resume",
-  "Work profile that updates itself"
+  "Your cards float above your balance on Home",
+  "Animate your cash: Shimmer, Glow, Neon, Gold, Rainbow and more"
  ],
  "announce": false,
  "min": ""

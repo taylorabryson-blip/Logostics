@@ -1925,11 +1925,11 @@ html.skin-paper .ai-fab,html.skin-paper .privacy-btn{background:#fff!important;c
 /* 4.7.0 pinned top bar */
 .tp{position:sticky;top:0;z-index:40;margin:0 -20px 14px;padding:calc(env(safe-area-inset-top,0px) + 8px) 20px 12px;background:color-mix(in srgb,var(--bg,#000) 86%,transparent);-webkit-backdrop-filter:blur(22px) saturate(1.3);backdrop-filter:blur(22px) saturate(1.3);border-bottom:1px solid transparent;transition:padding .25s,border-color .25s}
 .tp.tp-small{border-bottom-color:rgba(127,127,127,.18);padding-bottom:8px}
-.tp-row{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:10px}
+.tp-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:10px}
 .tp-cash,.tp-job{display:flex;flex-direction:column;justify-content:center;text-align:left;border:1px solid rgba(127,127,127,.18);background:var(--card,rgba(127,127,127,.08));color:inherit;font:inherit;border-radius:20px;padding:12px 14px;cursor:pointer;min-width:0;transition:transform .15s,padding .25s}
 .tp-cash:active,.tp-job:active{transform:scale(.97)}
 .tp-cash small{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.6}
-.tp-cash b{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.05;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .25s}
+.tp-cash b{font-size:var(--cfs,34px);font-weight:800;letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap;transition:font-size .25s;align-self:flex-start;max-width:100%}
 .tp-cash span{font-size:12px;opacity:.6;margin-top:2px}
 .tp-job{flex-direction:row;align-items:center;gap:10px}
 .tp-job .wk-logo{flex:0 0 auto}
@@ -1943,7 +1943,7 @@ html.skin-paper .ai-fab,html.skin-paper .privacy-btn{background:#fff!important;c
 .tp-a{flex:1 0 auto;border:0;border-radius:999px;padding:9px 14px;font:inherit;font-size:13.5px;font-weight:700;background:rgba(127,127,127,.15);color:inherit;cursor:pointer;white-space:nowrap}
 .tp-a.tp-a-go{background:var(--green);color:#fff}.tp-a.tp-a-on{background:var(--green);color:#fff;animation:tpGlow 2s infinite}
 @keyframes tpGlow{0%,100%{box-shadow:0 0 0 0 rgba(48,209,88,.5)}50%{box-shadow:0 0 0 6px rgba(48,209,88,0)}}
-.tp.tp-small .tp-cash,.tp.tp-small .tp-job{padding:8px 12px}.tp.tp-small .tp-cash b{font-size:24px}.tp.tp-small .tp-cash span,.tp.tp-small .tp-cash small{display:none}
+.tp.tp-small .tp-cash,.tp.tp-small .tp-job{padding:8px 12px}.tp.tp-small .tp-cash b{font-size:calc(var(--cfs,34px)*.7)}.tp.tp-small .tp-cash span,.tp.tp-small .tp-cash small{display:none}
 .tp.tp-small .tp-acts{max-height:0;margin-top:0;opacity:0;pointer-events:none}
 @media (min-width:700px){.tp{margin:0 -32px 14px;padding-left:32px;padding-right:32px}}
 /* shift clock */
@@ -1988,6 +1988,26 @@ html.skin-paper .ai-fab,html.skin-paper .privacy-btn{background:#fff!important;c
 .wp-ask{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}.wp-ask span{font-weight:600;font-size:14px}
 .wp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.wp-stats div{text-align:center;padding:8px 4px;border-radius:12px;background:rgba(127,127,127,.08)}.wp-stats div:last-child{cursor:pointer}.wp-stats b{display:block;font-size:16px}.wp-stats small{opacity:.6;font-size:11px}
 .wp-sk{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.wp-sk span{font-size:12px;padding:5px 10px;border-radius:999px;background:rgba(48,209,88,.12);color:var(--green);font-weight:600}
+/* floating cards over the balance */
+.fl-wrap{position:relative;height:128px;margin:4px 0 6px;display:flex;justify-content:center;cursor:pointer;perspective:900px}
+.fl-c{position:absolute;top:8px;width:172px;left:50%;margin-left:calc(-86px + (var(--i) - (var(--n) - 1)/2)*52px);transform:rotate(calc((var(--i) - (var(--n) - 1)/2)*9deg));z-index:calc(10 - var(--i));animation:flFloat 4.2s ease-in-out infinite;animation-delay:calc(var(--i)*-1.3s);transform-origin:50% 120%}
+.fl-c .wc3-card{pointer-events:none}.fl-c .wc3-face{border-radius:12px;box-shadow:0 14px 30px rgba(0,0,0,.45)}.fl-c .wc3-front{padding:10px 12px}.fl-c .wc3-top b{font-size:12px}.fl-c .wc3-top span{font-size:8px}.fl-c .wc3-chip{width:24px;height:18px;border-radius:4px}.fl-c .wc3-num{font-size:11px;margin:6px 0 3px}.fl-c .wc3-bot{font-size:8px}.fl-c .wc3-net{font-size:11px}
+@keyframes flFloat{0%,100%{translate:0 0;rotate:0deg}50%{translate:0 -9px;rotate:1.5deg}}
+.fl-wrap:active .fl-c{animation-play-state:paused;filter:brightness(1.1)}
+.fl-add{margin:6px auto 0;padding:16px 30px!important;border:2px dashed rgba(127,127,127,.4);background:none;color:inherit;font:inherit;font-weight:700;border-radius:16px;padding:22px 34px;cursor:pointer;animation:flFloat 4s ease-in-out infinite;height:fit-content}.fl-add span{color:var(--green);font-size:18px}
+/* cash styles */
+.cfx-shimmer{background:linear-gradient(100deg,var(--text,#fff) 30%,#9cf7b6 45%,#fff 50%,var(--text,#fff) 62%) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;animation:cfxSh 3s linear infinite}
+@keyframes cfxSh{to{background-position:-250% 0}}
+.cfx-glow{text-shadow:0 0 14px rgba(48,209,88,.75),0 0 30px rgba(48,209,88,.35);animation:cfxGl 2.6s ease-in-out infinite}@keyframes cfxGl{50%{text-shadow:0 0 6px rgba(48,209,88,.4),0 0 14px rgba(48,209,88,.2)}}
+.cfx-neon{color:#fff!important;text-shadow:0 0 4px #fff,0 0 10px #0ff,0 0 22px #0ff,0 0 40px #08f;animation:cfxNe 3.2s infinite}@keyframes cfxNe{0%,19%,22%,62%,64%,100%{opacity:1}20%,63%{opacity:.55}}
+.cfx-gold{background:linear-gradient(180deg,#fff6c9,#f5c542 45%,#b8860b 55%,#ffe58a);-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 6px rgba(245,197,66,.35))}
+.cfx-rainbow{background:linear-gradient(90deg,#ff5f6d,#ffc371,#47e891,#3bb2ff,#b56cff,#ff5f6d) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;animation:cfxSh 5s linear infinite}
+.cfx-pulse{display:inline-block;animation:cfxPu 1.6s ease-in-out infinite;transform-origin:left center}@keyframes cfxPu{0%,40%,100%{transform:scale(1)}10%{transform:scale(1.06)}25%{transform:scale(1.03)}}
+.cfx-wave i{display:inline-block;font-style:normal;animation:cfxWa 1.6s ease-in-out infinite;animation-delay:var(--d)}@keyframes cfxWa{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.cfx-float{display:inline-block;animation:cfxFl 3s ease-in-out infinite}@keyframes cfxFl{50%{transform:translateY(-4px)}}
+.cfx-matrix{color:#33ff66!important;font-family:ui-monospace,Menlo,monospace!important;letter-spacing:-.02em!important;text-shadow:0 0 8px rgba(51,255,102,.6);animation:cfxNe 4s infinite}
+.cfx-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cfx-opt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;border-radius:16px;border:1px solid rgba(127,127,127,.2);background:var(--card,rgba(127,127,127,.08));color:inherit;font:inherit;cursor:pointer;overflow:hidden}.cfx-opt b{font-size:24px;font-weight:800;letter-spacing:-.03em;white-space:nowrap}.cfx-opt small{opacity:.6}.cfx-opt.on{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
+@media (prefers-reduced-motion:reduce){.fl-c,.fl-add,.cfx-shimmer,.cfx-glow,.cfx-neon,.cfx-rainbow,.cfx-pulse,.cfx-wave i,.cfx-float,.cfx-matrix{animation:none!important}}
 </style>
 </head>
 <body>
@@ -2007,6 +2027,6 @@ html.skin-paper .ai-fab,html.skin-paper .privacy-btn{background:#fff!important;c
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)"><div class="sheet" id="sheet" onclick="event.stopPropagation()"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
 <div class="celebration-overlay" id="celebration-overlay"><div class="celebration-burst" id="celebration-burst">✓</div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-<script src="app.js?v=4.7.0"></script>
+<script src="app.js?v=4.7.1"></script>
 </body>
 </html>
