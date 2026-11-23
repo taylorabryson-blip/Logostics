@@ -1,10 +1,10 @@
 {
- "version": "4.8.3",
- "build": "2026-11-23T22:49:42Z",
- "title": "Logostics 4.8.3",
+ "version": "4.8.4",
+ "build": "2026-11-23T23:19:00Z",
+ "title": "Logostics 4.8.4",
  "notes": [
-  "Tap your job: Overview and Edit, with everything in one place",
-  "The 3D pay chart is now stacks of cash"
+  "Live stock prices for everything on screen",
+  "Job database, and Overview + Edit on jobs, goals, applications, cards and dates"
  ],
  "announce": false,
  "min": ""
