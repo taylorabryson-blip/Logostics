@@ -1,10 +1,10 @@
 {
- "version": "4.8.2",
- "build": "2026-11-23T19:31:18Z",
- "title": "Logostics 4.8.2",
+ "version": "4.8.3",
+ "build": "2026-11-23T22:49:42Z",
+ "title": "Logostics 4.8.3",
  "notes": [
-  "One-tap Google / Apple / Outlook calendar, important dates, faster job entry",
-  "Privacy mode stays on across devices; Smooth mode for slower computers"
+  "Tap your job: Overview and Edit, with everything in one place",
+  "The 3D pay chart is now stacks of cash"
  ],
  "announce": false,
  "min": ""

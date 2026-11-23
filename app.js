@@ -3,8 +3,8 @@
 /* Friends/social sync runs on a free Supabase project. CLOUD_URL (optional): your project URL, e.g. 'https://abcd.supabase.co', to skip the in-app setup. CLOUD_KEY: the project's publishable key (safe to ship in client code). */
 const CLOUD_URL='https://pwsrrxtugjvnvstzbnps.supabase.co';
 const CLOUD_KEY='sb_publishable_tyaz3Ynes8AFu7YimRw7xQ_BbCSajC_';
-const APP_VERSION='4.8.2';
-const APP_BUILD='2026-11-23T19:31:18Z';
+const APP_VERSION='4.8.3';
+const APP_BUILD='2026-11-23T22:49:42Z';
 const KV={mem:{},get(k){try{const v=localStorage.getItem(k);if(v!==null)return v}catch(e){}return this.mem[k]===undefined?null:this.mem[k]},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}},del(k){delete this.mem[k];try{localStorage.removeItem(k)}catch(e){}}};
 /* iPhone/iPod only (iPad and desktop browsers are deliberately excluded): gates every touch gesture and iOS haptic */
 const IPHONE=/iPhone|iPod/.test(navigator.userAgent||'');try{document.documentElement.classList.toggle('iphone',IPHONE)}catch(e){}
@@ -1275,6 +1275,7 @@ return{getConfig,saveConfig,order,move,isEditMode:()=>edit,enterEditMode(){try{D
 const PatchNotes=(function(){
 const CURRENT=APP_VERSION;
 const NOTES=[
+{version:'4.8.3',date:'2026-11-23',title:'Job profile: Overview and Edit',new:['Tap your job anywhere — the bar at the top, My jobs, Overview — and its profile opens with everything about it.','The job profile has just two tabs: Overview (pay, raises, the 3D chart, address with Google/Apple Maps, phone, dates, hours, this week’s shifts, what you do there, what’s coming up) and Edit (the job, its raises, and the extras).','The 3D pay chart is now stacks of cash — bills with a paper band and a $ on top. Blocks, Pillars and Round are still in 3D chart look.'],improved:['Your employer’s logo shows on the job profile when you haven’t added a picture.']},
 {version:'4.8.2',date:'2026-11-23',title:'Faster, smoother, on your calendar',new:['Add to calendar in one tap — Google Calendar, Apple Calendar or Outlook. No file to download.','Important dates on your schedule: orientation, uniform pickup, a drug test, a shift swap — saved with your schedule and one tap into your calendar.','Add a whole week of shifts to your calendar at once.','Add a job in one line: “Cashier at McDonald’s, $15/hr, started March 3” fills in the whole form and finds the address.','Quick picks for job titles, pay and start dates; employer suggestions as you type; Enter jumps to the next box.','Smooth mode: if a computer can’t keep up, Logostics turns off blur and moving effects so it doesn’t freeze. Change it in Customize.'],fixed:['Privacy mode no longer switches itself off when you use another device — settings now sync one by one, and the newest change wins.','Less work for the server: presence updates only while the app is open, and the widget refreshes less often.']},
 {version:'4.8.1',date:'2026-11-23',title:'Work addresses',new:['Every job now needs its work address. Tap “Find it for me” and Logostics finds that employer near you, nearest first, and fills in the address, phone and website.','Look it up yourself in Google Maps or Apple Maps from the job form.','Tick “This number doesn’t work” when a work phone is wrong or dead.','Your job menu shows the address (opens Google Maps), Apple Maps directions, and a tap-to-call phone.'],improved:['Work shows a reminder when a job is missing its address.']},
 {version:'4.8.0',date:'2026-11-21',title:'Work feels like its own app',new:['Hold Home for half a second to jump between Finance and Work: a bubble pops up, then the screen swipes across to the other side.','Work has its own look and colour (Indigo by default). Change it with the ✎ at the end of the quick actions.','Quick actions are yours: tap ✎ to add, remove or reorder them. Clock in and Style are no longer there by default.','10 new cash styles: Fire, Ice, Holo, Chrome, Glitch, Outline, 3D, Sparkle, Bounce and Typewriter.','Every cash style can match your theme or use any colour you pick.','Falling money background: bills and coins fall, and the more money you have, the more there is. Turn it on in Cash style.','Apple theme: pick your own finish colour and accent colour.','Resume: “Find all my skills” pulls job skills, people skills, computer skills, certificates and languages from your jobs, duties, school, volunteering and profile.'],improved:['“Add my jobs” on your resume also adds the skills it finds.']},
@@ -11482,12 +11483,12 @@ return{page,parse,sanitize,apply,keep,revert,recover,boot,save,rename,dup,del,us
 const Scene3D=(function(){
 const E=s=>escapeHtml(s),D2R=Math.PI/180,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),NS='http://www.w3.org/2000/svg',W=360,H=270;
 const SPEED={off:0,slow:9,normal:20,fast:42};
-const VIEW_DEF={spin:'normal',dir:1,tilt:32,depth:45,rise:true,pulse:true,light:40,shape:'block',labels:true,color:'accent',scale:'true'};
-const VIEW_ENUM={spin:Object.keys(SPEED),shape:['block','pillar','round'],color:['accent','growth','job'],scale:['true','zoom']};
+const VIEW_DEF={spin:'normal',dir:1,tilt:32,depth:45,rise:true,pulse:true,light:40,shape:'cash',labels:true,color:'accent',scale:'true'};
+const VIEW_ENUM={spin:Object.keys(SPEED),shape:['cash','block','pillar','round'],color:['accent','growth','job'],scale:['true','zoom']};
 const num=(v,lo,hi,d)=>{v=Number(v);return isFinite(v)?clamp(Math.round(v),lo,hi):d};
 function cleanView(v){v=v&&typeof v==='object'?v:{};const o=Object.assign({},VIEW_DEF);
   if(VIEW_ENUM.spin.indexOf(v.spin)>=0)o.spin=v.spin;o.dir=v.dir===-1?-1:1;o.tilt=num(v.tilt===undefined?VIEW_DEF.tilt:v.tilt,8,70,VIEW_DEF.tilt);o.depth=num(v.depth===undefined?VIEW_DEF.depth:v.depth,0,100,VIEW_DEF.depth);o.light=num(v.light===undefined?VIEW_DEF.light:v.light,0,359,VIEW_DEF.light);
-  o.rise=v.rise!==false;o.pulse=v.pulse!==false;o.labels=v.labels!==false;if(VIEW_ENUM.shape.indexOf(v.shape)>=0)o.shape=v.shape;if(VIEW_ENUM.color.indexOf(v.color)>=0)o.color=v.color;if(VIEW_ENUM.scale.indexOf(v.scale)>=0)o.scale=v.scale;return o}
+  o.rise=v.rise!==false;o.pulse=v.pulse!==false;o.labels=v.labels!==false;if(VIEW_ENUM.shape.indexOf(v.shape)>=0)o.shape=v.shape==='block'&&!v.sv?'cash':v.shape;if(v.sv)o.sv=1;if(VIEW_ENUM.color.indexOf(v.color)>=0)o.color=v.color;if(VIEW_ENUM.scale.indexOf(v.scale)>=0)o.scale=v.scale;return o}
 
 /* ── the maths ── */
 const toHex=a=>'#'+a.map(n=>clamp(Math.round(n),0,255).toString(16).padStart(2,'0')).join('');
@@ -11513,7 +11514,7 @@ const pts=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
 const accentHex=()=>{try{const v=getComputedStyle(document.documentElement).getPropertyValue('--green').trim();if(/^#[0-9a-f]{6}$/i.test(v))return v.toLowerCase()}catch(e){}return'#30d158'};
 const still=()=>{try{return Look.still()}catch(e){return false}};
 const efficient=()=>{try{return Look.eff()}catch(e){return false}};
-const reg={};
+const reg={};let CASHN=0;
 const mk=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);if(attrs)Object.keys(attrs).forEach(k=>e.setAttribute(k,attrs[k]));if(parent)parent.appendChild(e);return e};
 
 /* ── one live scene ── */
@@ -11528,14 +11529,16 @@ function create(host,spec,viewIn){
       const rr=Math.max(2.1,n*.5);spec.cards.forEach((c,i)=>{const g=mk('g',{class:'s3-card'}),poly=mk('polygon',{class:'s3-cardb'},g);let img=null;if(c.src){img=mk('image',{width:100,height:70,preserveAspectRatio:'xMidYMid slice'},g);img.setAttribute('href',c.src)}else{mk('rect',{width:100,height:70,class:'s3-ph'},g)}
         const sh=mk('polygon',{class:'s3-shade'},g);objs.push({i,g,poly,img,sh,a:i/n*Math.PI*2,rr,cap:c.cap||''});objG.appendChild(g)});
       capEl=mk('text',{x:W/2,y:H-10,class:'s3-cap','text-anchor':'middle'},lblG);return}
-    const bars=spec.bars,n=bars.length,round=view.shape==='round',bw=view.shape==='pillar'?.5:.78,bd=bw,sp=bw*1.5,tw=n*sp;R=Math.hypot(tw/2+.4,bd/2+.5);Hh=3.1;
+    const bars=spec.bars,n=bars.length,round=view.shape==='round',cash=view.shape==='cash',bw=view.shape==='pillar'?.5:cash?.92:.78,bd=cash?.44:bw,sp=bw*(cash?1.35:1.5),tw=n*sp;R=Math.hypot(tw/2+.4,bd/2+.5);Hh=3.1;
     floor={kind:'slab',x0:-tw/2-.4,x1:tw/2+.4,z0:-bd/2-.5,z1:bd/2+.5,faces:[mk('polygon',{class:'s3-slab'},floorG),mk('polygon',{class:'s3-slab s3-slab2'},floorG),mk('polygon',{class:'s3-slab s3-slab3'},floorG)],base:mk('path',{class:'s3-base'},floorG)};
     const vals=bars.map(b=>Number(b.v)||0),hi=Math.max.apply(null,vals.concat([1e-9])),lo=Math.min.apply(null,vals);
     bars.forEach((b,i)=>{const x=(i-(n-1)/2)*sp,t=n>1?i/(n-1):1,h=view.scale==='zoom'?(hi===lo?1.9:.75+2.35*((vals[i]-lo)/(hi-lo))):(hi<=0?1.9:Math.max(.12,2.95*vals[i]/hi));
-      let col=b.color&&/^#[0-9a-f]{6}$/i.test(b.color)?b.color:acc;if(view.color==='growth')col=mixc(mixc(acc,'#8e8e93',.62),acc,t);else if(view.color==='job')col=spec.color&&/^#[0-9a-f]{6}$/i.test(spec.color)?spec.color:acc;
+      let col=b.color&&/^#[0-9a-f]{6}$/i.test(b.color)?b.color:cash&&view.color==='accent'?'#4f9f60':acc;if(view.color==='growth')col=mixc(mixc(acc,'#8e8e93',.62),acc,t);else if(view.color==='job')col=spec.color&&/^#[0-9a-f]{6}$/i.test(spec.color)?spec.color:acc;
       const g=mk('g',{class:'s3-bar'}),faces=(round?prismFaces(x,0,bw*.55,0,1,18):boxFaces(x-bw/2,0,-bd/2,x+bw/2,1,bd/2)).map(f=>({f,el:mk('polygon',{class:'s3-f'},g)}));
       const sh=mk('polygon',{class:'s3-sh'},shG),vt=mk('text',{class:'s3-v','text-anchor':'middle'},lblG),dt=mk('text',{class:'s3-d','text-anchor':'middle'},lblG);vt.textContent=b.label||'';dt.textContent=b.sub||'';
-      objs.push({i,g,faces,sh,vt,dt,x,h,col,bw,bd,round,last:i===n-1});objG.appendChild(g)});
+      let cx=null;if(cash){if(!svg.querySelector('pattern')){const df=mk('defs',{},svg),pid='s3c'+(++CASHN),pt=mk('pattern',{id:pid,width:4,height:2.6,patternUnits:'userSpaceOnUse'},df);mk('rect',{width:4,height:.9,fill:'rgba(255,255,255,.30)'},pt);svg.dataset.pid=pid}
+        cx={ov:[0,1,2,3].map(()=>mk('polygon',{class:'s3-cov',fill:'url(#'+svg.dataset.pid+')'},g)),strap:[0,1,2,3].map(()=>mk('polygon',{class:'s3-strap'},g)),dl:mk('text',{class:'s3-dl','text-anchor':'middle','dominant-baseline':'central'},g)};cx.dl.textContent='$'}
+      objs.push({i,g,faces,sh,vt,dt,x,h,col,bw,bd,round,cx,last:i===n-1});objG.appendChild(g)});
     ping=mk('polygon',{class:'s3-ping'},shG)}
   function grow(o){if(spec.kind==='ring')return 1;const rise=view.rise&&st.riseT<99?clamp((st.riseT-o.i*.09)/.7,0,1):1;return rise>=1?1:Math.max(.001,backOut(rise))}
   function extPts(){const o=[];if(spec.kind==='ring'){for(let k=0;k<16;k++){const a=k/16*Math.PI*2;o.push([Math.cos(a)*R,0,Math.sin(a)*R],[Math.cos(a)*(R-.5),2.0,Math.sin(a)*(R-.5)])}return o}
@@ -11566,6 +11569,10 @@ function create(host,spec,viewIn){
         if(h<=.003){o.g.setAttribute('display','none');o.sh.setAttribute('display','none');o.vt.setAttribute('display','none');o.dt.setAttribute('display','none');o.z=-1e9;return}o.g.removeAttribute('display');
         const F=o.round?prismFaces(o.x,0,bw*.55,0,h,18):boxFaces(o.x-bw/2,0,-o.bd*pulse/2,o.x+bw/2,h,o.bd*pulse/2);
         o.faces.forEach((e,k)=>{const f=F[k],q=f.v.map(p=>Q(p,c)),show=area(q)<0;e.el.setAttribute('display',show?'':'none');if(show){vis++;e.el.setAttribute('points',pts(q));const boost=f.k==='top'&&o.last&&view.pulse&&!still()?.10+.08*Math.sin(st.t*3.2):0;e.el.style.fill=shadeHex(o.col,f.n,L,boost)}});
+        if(o.cx){/* a stack of bills: paper edges on the sides, a paper band round the middle, a $ on top */
+          for(let k=0;k<4;k++){const q=F[k].v.map(p=>Q(p,c)),show=area(q)<0;o.cx.ov[k].setAttribute('display',show?'':'none');if(show)o.cx.ov[k].setAttribute('points',pts(q))}
+          const SB=boxFaces(o.x-bw/2-.025,h*.42,-o.bd*pulse/2-.025,o.x+bw/2+.025,h*.58,o.bd*pulse/2+.025);for(let k=0;k<4;k++){const q=SB[k].v.map(p=>Q(p,c)),show=h>.22&&area(q)<0;o.cx.strap[k].setAttribute('display',show?'':'none');if(show){o.cx.strap[k].setAttribute('points',pts(q));o.cx.strap[k].style.fill=shadeHex('#ece0b2',SB[k].n,L,0)}}
+          const tq=F[4].v.map(p=>Q(p,c));if(area(tq)<0){const a=Q([o.x-bw/2,h,0],c),b=Q([o.x+bw/2,h,0],c),m=Q([o.x,h,0],c),fs=clamp(Math.hypot(b[0]-a[0],b[1]-a[1])*.42,6,22);o.cx.dl.setAttribute('x',m[0].toFixed(1));o.cx.dl.setAttribute('y',m[1].toFixed(1));o.cx.dl.setAttribute('font-size',fs.toFixed(1));o.cx.dl.style.fill=shadeHex(o.col,[0,1,0],L,-.38);o.cx.dl.removeAttribute('display')}else o.cx.dl.setAttribute('display','none')}
         const sx=-L[0]*h*.42,sz=-L[2]*h*.42,fp=o.round?prismFaces(o.x+sx,sz,o.bw*.55,0,0,14)[14].v:[[o.x-o.bw/2+sx,0,o.bd/2+sz],[o.x+o.bw/2+sx,0,o.bd/2+sz],[o.x+o.bw/2+sx,0,-o.bd/2+sz],[o.x-o.bw/2+sx,0,-o.bd/2+sz]];
         o.sh.setAttribute('points',pts(fp.map(p=>Q(p,c))));o.sh.removeAttribute('display');o.z=rot([o.x,h/2,0],c)[2];
         const top=Q([o.x,h,0],c),fl=Q([o.x,0,o.bd/2+.28],c);o.va=[top[0],top[1]-8];o.da=[fl[0],fl[1]+9];o.lz=top[2];o.lon=view.labels&&grow(o)>.85;items.push(o)});
@@ -11673,7 +11680,7 @@ function stats(j,now){now=now||today();const st=steps(j).filter(s=>!s.d||(parse(
 const pct=(p,sign)=>(sign&&p>0?'+':p<0?'−':'')+Math.abs(p).toFixed(Math.abs(p)>=10?0:1).replace(/\.0$/,'')+'%';
 const mon=n=>'$'+Math.abs(Number(n)||0).toFixed(Math.abs(n)>=1000?0:2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 const payText=(n,t)=>mon(n)+(t==='salary'?' / yr':' / hr');
-const barLabel=(n,t)=>t==='salary'&&n>=1000?'$'+(Math.round(n/100)/10).toString().replace(/\.0$/,'')+'k':'$'+(Math.abs(n)>=100?Math.round(n).toString():n.toFixed(2).replace(/0$/,'').replace(/\.$/,''));
+const barLabel=(n,t)=>t==='salary'&&n>=1000?'$'+(Math.round(n/100)/10).toString().replace(/\.0$/,'')+'k':'$'+(Math.abs(n)>=100?Math.round(n).toString():(n%1?n.toFixed(2):String(n)));
 
 /* ── 3D specs ── */
 function towerSpec(j){let st=steps(j);const cut=st.length>10;if(cut)st=st.slice(-10);
@@ -11706,19 +11713,21 @@ async function doPub(){if(pubBusy){pubAgain=true;return}pubBusy=true;try{if(!me)
     if(strip(have)!==strip(w)){const r=Social.updateProfile({job:want});return r}}catch(e){}finally{pubBusy=false;if(pubAgain){pubAgain=false;publish()}}}
 
 /* ── drawing ── */
-const TABS=[['overview','Overview'],['raises','Raises'],['hours','Hours'],['photos','Photos'],['view','3D'],['share','Share']];
+const TABS=[['overview','Overview'],['edit','Edit'],['raises','Raises'],['hours','Hours'],['photos','Photos'],['view','3D'],['share','Share']];
 const sheetEl=()=>document.getElementById('sheet');
 function put(html,keep){const sh=sheetEl(),top=keep&&sh?sh.scrollTop:0;openSheet(`<div id="jb-ctr">${html}</div>`,{silent:!!keep});if(top&&sh)sh.scrollTop=top}
 const stat=(v,l,sub)=>`<div class="stat"><div class="stat-val" style="font-size:${String(v).length>8?'17':'22'}px">${E(v)}</div><div class="stat-lbl">${E(l)}${sub?`<div class="jb-sub">${E(sub)}</div>`:''}</div></div>`;
 function ini(j){const w=String(j.employer||j.title||'').trim().split(/\s+/).filter(Boolean);return w.length?(w.length>1?w[0][0]+w[1][0]:w[0].slice(0,2)).toUpperCase():'▣'}
 /* the job's round picture; with no picture yet it shows the workplace's initials */
 function pfpHTML(j,size,cls){return j.pfp?`<img class="jb-pfp-img ${cls||''}" style="width:${size}px;height:${size}px" src="${E(j.pfp)}" alt="">`:`<span class="jb-pfp-img jb-pfp-ini ${cls||''}" style="width:${size}px;height:${size}px;font-size:${Math.round(size*.36)}px" aria-hidden="true">${E(ini(j))}</span>`}
-function head(j,C){return`<div class="jb-hero jb-hero-r"><label class="jb-pfp" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}" aria-label="${j.pfp?'Change':'Add'} work picture" title="${j.pfp?'Change':'Add'} work picture">${pfpHTML(j,72)}<span class="jb-pfp-cam" aria-hidden="true">${j.pfp?'✎':'＋'}</span><input type="file" accept="image/*" hidden onchange="Jobs.pfpFile(event)"></label><div class="jb-hero-t"><div class="jb-t">${E(j.title||'Untitled job')}</div>${j.employer?`<div class="jb-e">${E(j.employer)}</div>`:''}<div class="jb-chips">${(()=>{const t=tenure(j.start,j.end);return(t?`<span class="jb-chip">${E(t.text)}${j.end?'':' so far'}</span>`:'')+(j.start?`<span class="jb-chip">Since ${E(longD(j.start))}</span>`:'')+(j.end?`<span class="jb-chip">Ended ${E(longD(j.end))}</span>`:'')})()}</div></div></div>`}
+function head(j,C){return`<div class="jb-hero jb-hero-r"><label class="jb-pfp" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}" aria-label="${j.pfp?'Change':'Add'} work picture" title="${j.pfp?'Change':'Add'} work picture">${j.pfp?pfpHTML(j,72):(()=>{try{return`<span class="jb-pfp-lg">${Work.logo(j.employer||j.title,72)}</span>`}catch(e){return pfpHTML(j,72)}})()}<span class="jb-pfp-cam" aria-hidden="true">${j.pfp?'✎':'＋'}</span><input type="file" accept="image/*" hidden onchange="Jobs.pfpFile(event)"></label><div class="jb-hero-t"><div class="jb-t">${E(j.title||'Untitled job')}</div>${j.employer?`<div class="jb-e">${E(j.employer)}</div>`:''}<div class="jb-chips">${(()=>{const t=tenure(j.start,j.end);return(t?`<span class="jb-chip">${E(t.text)}${j.end?'':' so far'}</span>`:'')+(j.start?`<span class="jb-chip">Since ${E(longD(j.start))}</span>`:'')+(j.end?`<span class="jb-chip">Ended ${E(longD(j.end))}</span>`:'')})()}</div></div></div>`}
 function picker(C,j){if(C.items.length<2)return'';return`<div class="field"><select class="field-input" aria-label="Which job" onchange="Jobs.pick(this.value)">${C.items.map(i=>`<option value="${E(i.id)}" ${i.id===j.id?'selected':''}>${E(i.title||'Untitled job')}${i.employer?' · '+E(i.employer):''}</option>`).join('')}</select></div>`}
 function empty(){put(`<button class="sheet-back" onclick="closeSheet()" aria-label="Close">‹ Close</button><div class="sheet-title">Job profile</div>
 <div class="empty" style="padding:8px 0 4px"><div class="empty-ico">▣</div><div class="empty-title">Add your job</div><div class="empty-sub">Keep your start date, every raise, your average hours and photos in one place, and watch your pay climb as a 3D chart you can turn and animate. You choose what, if anything, your friends can see.</div></div>
 <button class="btn btn-primary" onclick="Jobs.edit('new')">Add a job</button><button class="btn btn-secondary" style="margin-top:8px" onclick="JobBoard.browse()">Copy a shared job</button><button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Not now</button>`)}
-function tabs(){return`<div class="subtabs jb-tabs" role="tablist">${TABS.map(([k,l])=>`<button type="button" role="tab" aria-selected="${S.tab===k}" class="subtab ${S.tab===k?'active':''}" onclick="Jobs.tab('${k}')">${l}</button>`).join('')}</div>`}
+const VIS=[['overview','Overview'],['edit','Edit']];
+function tabs(){const on=S.tab==='overview'?'overview':'edit';return`<div class="segmented jb-tabs2" role="tablist">${VIS.map(([k,l])=>`<button type="button" role="tab" aria-selected="${on===k}" class="seg ${on===k?'active':''}" onclick="Jobs.tab('${k}')">${l}</button>`).join('')}</div>${S.tab!=='overview'&&S.tab!=='edit'?`<button class="sheet-back" style="position:static;margin:2px 0 8px" onclick="Jobs.tab('edit')">‹ Back to Edit</button>`:''}`}
+function tabsOld(){return`<div class="subtabs jb-tabs" role="tablist">${TABS.map(([k,l])=>`<button type="button" role="tab" aria-selected="${S.tab===k}" class="subtab ${S.tab===k?'active':''}" onclick="Jobs.tab('${k}')">${l}</button>`).join('')}</div>`}
 
 function vOverview(j,C){const s=stats(j),t=s.ten;
   const rows=[];if(s.lastRaiseAt)rows.push(['Last raise',longD(s.lastRaiseAt)+(s.sinceRaise?' · '+spanText(s.sinceRaise)+' ago':'')]);
@@ -11729,8 +11738,24 @@ function vOverview(j,C){const s=stats(j),t=s.ten;
 <div class="stat-grid">${stat(s.cur>0?payText(s.cur,j.type):'—','Pay now')}${stat(s.steps.length>1?pct(s.total,true):'—','Since you started')}${stat(String(s.count),s.count===1?'Raise':'Raises')}${stat(s.avg?s.avg.v+' h':'—','Hours a week',s.avg?(s.avg.src==='log'?'average of '+s.avg.n+' logged':'what you told us'):'')}</div>
 ${s.steps.length?`${Scene3D.host('jb-s-tower',{label:'3D chart of your pay after each raise',h:290})}${Scene3D.controls('jb-s-tower')}<div class="fx-hint" style="text-align:center">${E(towerSpec(j).cut?'The latest 10 pay steps. ':'')}Bars start at zero, so heights are to scale. Drag to turn it.</div>`:`<div class="social-card"><div class="progress-note" style="text-align:center">Add your starting pay and your raises to see your pay grow in 3D.</div><button class="btn btn-primary" style="margin-top:10px" onclick="Jobs.edit('${E(j.id)}')">Add starting pay</button></div>`}
 ${rows.length?`<div class="fx-card" style="margin-top:14px">${rows.map(r=>`<div class="fx-row"><div class="fx-nm" style="font-weight:500">${E(r[0])}</div><div style="font-weight:600;text-align:right">${r[1]}</div></div>`).join('')}</div>`:''}
-<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-secondary" style="flex:1" onclick="Jobs.edit('${E(j.id)}')">Edit job</button>${C.items.length<MAX_JOBS?`<button class="btn btn-secondary" style="flex:1" onclick="Jobs.edit('new')">＋ Another job</button>`:''}</div>`}
+${details(j,C)}`}
 
+/* Overview: everything about the job on one screen */
+function details(j,C){const s=stats(j),row=(l,v,act)=>`<div class="fx-row jb-dr" ${act?`role="button" tabindex="0" onclick="${act}"`:''}><div class="fx-nm" style="font-weight:500">${l}</div><div class="jb-dv">${v}</div></div>`;const R=[];
+  if(j.addr)R.push(row('Address',E(j.addr)+`<div class="jb-mapb"><button type="button" class="mini-btn" onclick="event.stopPropagation();Jobs.mapsGo('${j.id}','g')">Google Maps</button><button type="button" class="mini-btn" onclick="event.stopPropagation();Jobs.mapsGo('${j.id}','a')">Apple Maps</button></div>`));else R.push(row('Address','<span class="jb-miss">Add it ›</span>',`Jobs.tab('edit')`));
+  if(j.phone)R.push(j.phoneBad?row('Phone',E(j.phone)+' <span class="fx-tag">doesn’t work</span>'):row('Phone',`<a href="tel:${E(String(j.phone).replace(/[^\d+]/g,''))}">${E(j.phone)}</a>`));
+  if(j.web)R.push(row('Website',`<a href="#" onclick="event.preventDefault();Work.url('${E(/^https?:/i.test(j.web)?j.web:'https://'+j.web)}')">${E(String(j.web).replace(/^https?:\/\/(www\.)?/i,'').slice(0,40))}</a>`));
+  R.push(row('Paid',j.type==='salary'?'Yearly salary':'By the hour'));
+  if(j.hired)R.push(row('Got the job',E(longD(j.hired))));if(j.start)R.push(row(j.start>ymd(new Date())?'First day':'Started',E(longD(j.start))+(j.start>ymd(new Date())?' <span class="fx-tag">coming up</span>':'')));if(j.end)R.push(row('Last day',E(longD(j.end))));
+  if(j.hrs>0)R.push(row('Usual hours',E(j.hrs+' h a week')));
+  let wk='';try{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));const w=Schedule.week(ymd(d)),D=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],L=w.list.filter(x=>!x.j||x.j===j.id);if(L.length)wk=L.map(x=>`${D[x.d]} ${tL(x.s)}–${tL(x.e)}`).join(' · ')}catch(e){}
+  if(wk)R.push(row('This week',E(wk)));
+  const du=(j.duties||[]).length?`<div class="fx-card jb-du"><div class="t-label" style="margin:0 0 6px">What you do there</div><ul>${j.duties.map(x=>`<li>${E(x)}</li>`).join('')}</ul></div>`:'';
+  let kd='';try{const K=KeyDates.upcoming().filter(x=>!j.employer||new RegExp(j.employer.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(x.title+' '+(x.l||''))).slice(0,3);if(K.length)kd=`<div class="fx-card"><div class="t-label" style="margin:0 0 6px">Coming up</div>${K.map(x=>`<div class="jb-kd"><b>${E(x.title)}</b><small>${E(x.d)}${x.t?' · '+E(x.t):''}</small>${Cal.btns(KeyDates.toEv(x))}</div>`).join('')}</div>`}catch(e){}
+  const pay=s.cur>0&&j.type==='hourly';
+  return`<div class="fx-card jb-det" style="margin-top:14px">${R.join('')}</div>${du}${kd}
+<div class="set-group" style="margin-top:14px">${pay?SettingsUI.row('≈','Use this pay for my paycheck estimate','',`closeSheet();Work.usePay('${j.id}')`):''}${j.end?'':SettingsUI.row('⏏','I don’t work here now','',`closeSheet();Work.endJob('${j.id}')`)}</div>`}
+const tL=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');if(!m)return t||'';let h=+m[1];const ap=h>=12?'p':'a';h=h%12||12;return h+(m[2]!=='00'?':'+m[2]:'')+ap};
 function vRaises(j,C){const st=steps(j).slice().reverse(),ed=j.raises.find(r=>r.id===S.editRaise),prevOf=d=>{let p=j.startPay;j.raises.forEach(r=>{if(r.d<d&&r.id!==(ed&&ed.id))p=r.pay});return p};
   const d0=ed?ed.d:ymd(new Date()),p0=ed?ed.pay:'';
   return`<p class="cf-msg" style="margin-top:0">Every time your pay changed. Friends can see the percentage and the date if you share them, never the amounts.</p>
@@ -11778,7 +11803,7 @@ ${(tower&&!st.length)?`<div class="social-card"><div class="progress-note" style
 <div class="field" style="margin-top:14px"><label class="field-label">Spin</label>${seg('spin',[['off','Off'],['slow','Slow'],['normal','Normal'],['fast','Fast']],v.spin)}</div>
 <div class="field"><label class="field-label">Direction</label>${seg('dir',[[1,'↻ Clockwise'],[-1,'↺ Counter']],v.dir)}</div>
 ${rng('tilt','Tilt',8,70,v.tilt,'°')}${rng('depth','Perspective',0,100,v.depth,'')}${rng('light','Light angle',0,359,v.light,'°')}
-${tower?`<div class="field"><label class="field-label">Shape</label>${seg('shape',[['block','Blocks'],['pillar','Pillars'],['round','Round']],v.shape)}</div>
+${tower?`<div class="field"><label class="field-label">Shape</label>${seg('shape',[['cash','Cash'],['block','Blocks'],['pillar','Pillars'],['round','Round']],v.shape)}</div>
 <div class="field"><label class="field-label">Colour</label>${seg('color',[['accent','Theme'],['growth','Fade in'],['job','Job colour']],v.color)}</div>
 <div class="field"><label class="field-label">Scale</label>${seg('scale',[['true','True to scale'],['zoom','Zoomed in']],v.scale)}<div class="fx-hint">${v.scale==='zoom'?'Zoomed in makes small raises easier to see, but the bars exaggerate the change.':'Bars start at zero, so a bar twice as tall really is twice the pay.'}</div></div>`:''}
 <div class="set-group" style="margin-top:6px">${tgl('rise','↑','Rise in',v.rise,'Bars grow up when it appears.')}${tgl('pulse','◉','Pulse the newest',v.pulse,'A soft ring on your current pay.')}${tgl('labels','Ａ','Labels',v.labels,'Values and dates on the chart.')}</div>
@@ -11796,8 +11821,12 @@ ${sc.on?`<div class="t-label" style="margin:16px 0 6px">What friends can see</di
 <div class="set-group" style="margin-top:12px">${SettingsUI.row('⏳','Share my payday','','Payday.open()')}</div>${(()=>{try{return JobBoard.section()}catch(e){return''}})()}`}
 
 function render(keep){const C=cfg(),j=cur(C);if(!j){empty();return}S.id=j.id;
-  const body=({overview:vOverview,raises:vRaises,hours:vHours,photos:vPhotos,view:vView,share:vShare}[S.tab]||vOverview)(j,C);
-  put(`<button class="sheet-back" onclick="closeSheet()" aria-label="Close">‹ Close</button><div class="sheet-title">Job profile</div>${picker(C,j)}${tabs()}${body}<button class="btn btn-secondary" style="margin-top:14px" onclick="JobBoard.browse()">Shared jobs</button><button class="btn btn-secondary" style="margin-top:8px" onclick="closeSheet()">Done</button>`,keep);after(j,C)}
+  if(S.tab==='edit'&&(!draft||draft.id!==j.id||draft._new)){draft=cleanOne(j);draft._new=false;draft._cur=!draft.end;aaLast=''}
+  const body=({overview:vOverview,edit:vEdit,raises:vRaises,hours:vHours,photos:vPhotos,view:vView,share:vShare}[S.tab]||vOverview)(j,C);
+  put(`<button class="sheet-back" onclick="closeSheet()" aria-label="Close">‹ Close</button><div class="sheet-title">Job profile</div>${picker(C,j)}${tabs()}${body}`,keep);after(j,C)}
+/* Edit: the job's details, its raises, and the extras (hours, photos, 3D look, sharing) */
+function vEdit(j,C){return formBody()+`<div class="t-label" style="margin:26px 0 8px">Raises</div>${vRaises(j,C)}
+<div class="t-label" style="margin:22px 0 8px">More</div><div class="set-group">${[['⏱','Hours you worked','hours'],['▦','Photos','photos'],['◈','3D chart look','view'],['⇪','Share with friends','share']].map(([i,l,t])=>SettingsUI.row(i,l,'',`Jobs.tab('${t}')`)).join('')}${SettingsUI.row('⇄','Jobs friends shared','',"JobBoard.browse()")}${C.items.length<MAX_JOBS?SettingsUI.row('＋','Add another job','',"Jobs.edit('new')"):''}</div>`}
 /* the parts that need the page to exist first */
 function mountScene(id,spec,view){try{Scene3D.mount(id,spec,view)}catch(e){}}
 async function after(j,C){const id=j.id;
@@ -11821,10 +11850,10 @@ let draft=null;
 function adopt(j,from){if(!me){toast('Sign in first');return}j=j||{};const C=cfg(),t=txt(j.title||'',40),e=txt(j.employer||'',40);
   const same=(C.jobs||[]).find(x=>String(x.title||'').toLowerCase()===t.toLowerCase()&&String(x.employer||'').toLowerCase()===e.toLowerCase());if(same){toast('You already have this job');open();return}
   const tp=j.tpl||{};draft=cleanOne({id:rid(),title:t,employer:e,color:j.color,start:'',type:tp.type==='salary'?'salary':'hourly',startPay:Number(tp.rate)||0,hrs:j.hrs||0,pfp:j.pfp||''});if(!draft)return;draft._new=true;draft._cur=true;draft._from=from||'';try{closeSheet()}catch(x){}setTimeout(()=>{form();toast('Add your own start date and pay')},120)}
-function edit(id){aaLast='';const C=cfg();draft=id==='new'?cleanOne({id:rid(),title:'',employer:'',start:'',type:'hourly',startPay:0,hrs:0}):cleanOne(find(id,C));if(!draft)return;draft._new=id==='new'||!find(id,C);draft._cur=!draft.end;form()}
-function form(){const d=draft,isNew=d._new;
-  put(`<button class="sheet-back" onclick="Jobs.open()" aria-label="Back">‹ Back</button><div class="sheet-title">${isNew?'New job':'Edit job'}</div>
-${isNew?`<div class="field jb-quick"><label class="field-label" for="jb-f-q">Fastest way: type it in one line</label><input class="field-input" id="jb-f-q" maxlength="160" placeholder="Cashier at McDonald’s, $15/hr, started March 3" autocomplete="off" oninput="Jobs.quick(this.value)"><div class="fx-hint" id="jb-f-qh">We fill in the boxes below as you type.</div></div>`:''}
+function edit(id){aaLast='';const C=cfg();if(id&&id!=='new'&&find(id,C)){S.id=id;S.tab='edit';draft=null;S.editRaise='';render();return}draft=id==='new'?cleanOne({id:rid(),title:'',employer:'',start:'',type:'hourly',startPay:0,hrs:0}):cleanOne(find(id,C));if(!draft)return;draft._new=id==='new'||!find(id,C);draft._cur=!draft.end;form()}
+function form(){const d=draft;if(!d)return;if(!d._new&&S.tab==='edit'&&document.getElementById('jb-ctr')){render(true);return}const isNew=d._new;
+  put(`<button class="sheet-back" onclick="Jobs.open()" aria-label="Back">‹ Back</button><div class="sheet-title">${isNew?'New job':'Edit job'}</div>`+formBody()+`<button class="btn btn-secondary" style="margin-top:8px" onclick="${isNew&&!cfg().items.length?'closeSheet()':'Jobs.open()'}">Cancel</button>`)}
+function formBody(){const d=draft,isNew=d._new;return`${isNew?`<div class="field jb-quick"><label class="field-label" for="jb-f-q">Fastest way: type it in one line</label><input class="field-input" id="jb-f-q" maxlength="160" placeholder="Cashier at McDonald’s, $15/hr, started March 3" autocomplete="off" oninput="Jobs.quick(this.value)"><div class="fx-hint" id="jb-f-qh">We fill in the boxes below as you type.</div></div>`:''}
 <div class="field"><label class="field-label" for="jb-f-title">Job title</label><input class="field-input" id="jb-f-title" maxlength="40" list="jb-dl-t" value="${E(d.title)}" placeholder="Barista, Stocker, Nurse…" autocomplete="off" oninput="Jobs.f('title',this.value)" onkeydown="Jobs.next(event,'jb-f-emp')"><datalist id="jb-dl-t">${['Cashier','Crew member','Cook','Server','Stocker','Sales associate','Warehouse','Driver','Barista','Host','Dishwasher','Shift lead'].map(t=>`<option value="${t}">`).join('')}</datalist>${d.title?'':`<div class="chips jb-qc">${['Cashier','Crew member','Cook','Server','Stocker','Sales associate','Warehouse','Driver','Barista','Host','Dishwasher','Shift lead'].slice(0,8).map(t=>`<button type="button" class="chip" onclick="Jobs.setV('jb-f-title','title','${t}')">${t}</button>`).join('')}</div>`}</div>
 <div class="field"><label class="field-label" for="jb-f-emp">Employer</label><input class="field-input" id="jb-f-emp" maxlength="40" list="jb-dl-e" value="${E(d.employer)}" placeholder="Chick-fil-A, Kroger, Pasquale’s…" autocomplete="off" oninput="Jobs.f('employer',this.value)" onchange="Jobs.autoAddr()" onkeydown="Jobs.next(event,'jb-f-pay')"><datalist id="jb-dl-e">${EMPL.map(n=>`<option value="${E(n)}">`).join('')}</datalist>${(()=>{let L=[];try{L=Work.cfg().employers}catch(e){}return L.length?`<div class="chips" style="margin-top:6px">${L.slice(0,8).map(e=>`<button type="button" class="chip" onclick="Jobs.useEmp('${E(e.id)}')">${E(e.name)}</button>`).join('')}</div>`:''})()}</div>
 <div class="field"><label class="field-label" for="jb-f-addr">Work address</label><input class="field-input" id="jb-f-addr" maxlength="140" value="${E(d.addr||'')}" placeholder="Street, city, state" autocomplete="off" oninput="Jobs.f('addr',this.value)">
@@ -11846,7 +11875,7 @@ ${isNew?`<div class="field jb-quick"><label class="field-label" for="jb-f-q">Fas
 <div class="err" id="jb-f-err" role="alert"></div>
 <div class="jb-save-bar"><button class="btn btn-primary" onclick="Jobs.saveJob()">${isNew?'Add job':'Save'}</button></div>
 ${!isNew?`<button class="btn btn-danger" style="margin-top:8px" onclick="Jobs.delJob()">Delete this job</button>`:''}
-<button class="btn btn-secondary" style="margin-top:8px" onclick="${isNew&&!cfg().items.length?'closeSheet()':'Jobs.open()'}">Cancel</button>`)}
+`}
 function f(k,v,el){if(!draft)return;
   if(k==='type'){draft.type=v==='salary'?'salary':'hourly';if(el){[...el.parentNode.children].forEach(b=>b.classList.toggle('active',b===el))}const l=document.getElementById('jb-f-paylbl');if(l)l.textContent=draft.type==='salary'?'Starting salary (per year)':'Starting pay (per hour)';const p=document.getElementById('jb-f-pay');if(p)p.placeholder=draft.type==='salary'?'52000':'18.00';return}
   if(k==='cur'){draft._cur=!draft._cur;if(el){el.setAttribute('aria-checked',String(draft._cur));const t=el.querySelector('.toggle');if(t)t.classList.toggle('on',draft._cur)}const b=document.getElementById('jb-f-endbox');if(b)b.style.display=draft._cur?'none':'';if(draft._cur)draft.end='';return}
@@ -11966,7 +11995,7 @@ async function delPhoto(){const p=S.photos;if(!p||!p.list[S.sel])return;if(!(awa
 /* — the 3D look — */
 let vT=0,vPend={};
 /* every change goes to the live chart at once; the saving waits for the person to stop dragging, and keeps all the changes made meanwhile */
-function saveView(v){Object.assign(vPend,v);clearTimeout(vT);vT=setTimeout(()=>{const D=cfg(),patch=vPend;vPend={};D.view=Scene3D.cleanView(Object.assign({},D.view,patch));Store.updatePreferences({jobs:{items:D.items,primary:D.primary,view:D.view}})},350)}
+function saveView(v){if(v&&'shape' in v)v=Object.assign({},v,{sv:1});Object.assign(vPend,v);clearTimeout(vT);vT=setTimeout(()=>{const D=cfg(),patch=vPend;vPend={};D.view=Scene3D.cleanView(Object.assign({},D.view,patch));Store.updatePreferences({jobs:{items:D.items,primary:D.primary,view:D.view}})},350)}
 const SCENES=['jb-s-tower','jb-s-ring','jb-s-main'];
 function v(k,val,el){const patch={};patch[k]=val;SCENES.forEach(id=>{const c=Scene3D.get(id);if(c)c.set(patch)});
   if(el&&el.parentNode&&el.parentNode.classList.contains('segmented')){[...el.parentNode.children].forEach(b=>b.classList.toggle('active',b===el))}
@@ -14520,14 +14549,14 @@ function go2(a){Mode.set('work',{tab:a&&a.v==='app'?'apps':'overview'});if(a&&a.
 function vEmp(){const c=cfg(),A=activeJobs(),P=pastJobs(),st=status();
   return card('Employment status',`<div class="segmented wk-seg4" role="group" aria-label="Employment status">${STATUS.map(s=>`<button type="button" class="seg ${st===s[0]?'active':''}" onclick="Work.setStatus('${s[0]}')">${s[1]}</button>`).join('')}</div><div class="fx-hint">Your status is separate from your job list: ending a job keeps it, with its pay history, under Past jobs.</div>`)+
   `<div class="section-h" style="margin-top:18px"><span class="t-title">Current jobs</span><button class="mini-btn go" onclick="Work.newJob()">＋ Add a job</button></div>`+
-  (A.length?A.map(j=>{const pay=curPay(j);return`<div class="wk-card wk-jcard">${`<div class="wk-jh" onclick="Jobs.open('overview','${j.id}')">${logo(j.employer||j.title,46)}<div class="wk-jt"><b>${E(j.title)}</b><small>${E(j.employer||'')}</small><small>${pay>0?E(fmt(pay))+(j.type==='salary'?'/yr':'/hr'):'Pay not set'}${j.hrs?' · ~'+j.hrs+' h/wk':''}${j.start?' · since '+E(longD(j.start)):''}</small></div><button class="wk-more" aria-label="More for ${E(j.title)}" onclick="event.stopPropagation();Work.jobMenu('${j.id}')">⋯</button></div>`}
+  (A.length?A.map(j=>{const pay=curPay(j);return`<div class="wk-card wk-jcard">${`<div class="wk-jh" onclick="Jobs.open('overview','${j.id}')">${logo(j.employer||j.title,46)}<div class="wk-jt"><b>${E(j.title)}</b><small>${E(j.employer||'')}</small><small>${pay>0?E(fmt(pay))+(j.type==='salary'?'/yr':'/hr'):'Pay not set'}${j.hrs?' · ~'+j.hrs+' h/wk':''}${j.start?' · since '+E(longD(j.start)):''}</small></div><button class="wk-more" aria-label="Edit ${E(j.title)}" onclick="event.stopPropagation();Jobs.edit('${j.id}')">✎</button></div>`}
 ${j.addr?`<div class="wk-p wk-muted">${E(j.addr)}</div>`:''}</div>`}).join(''):`<div class="wk-card"><p class="wk-p">${st==='between'||st==='unemployed'?'No current job. When you start one, add it here.':'Add where you work to track pay, hours, raises and your schedule.'}</p></div>`)+
   card('',SettingsUI.tg('$','Paycheck estimate follows my main job’s pay',c.syncPay,'Work.setSyncPay('+(!c.syncPay)+')','When you get a raise, the hourly rate in the paycheck estimate updates. Past paychecks never change.'))+
   (P.length?`<div class="section-h" style="margin-top:18px"><span class="t-title">Past jobs</span></div>`+P.map(j=>`<div class="wk-arow" onclick="Jobs.open('overview','${j.id}')">${logo(j.employer||j.title,34)}<div class="wk-jt"><b>${E(j.title)}</b><small>${E(j.employer||'')}${j.start?' · '+E(longD(j.start)):''} – ${E(longD(j.end))}</small></div><button class="mini-btn" onclick="event.stopPropagation();Work.rehire('${j.id}')">Working here again</button></div>`).join(''):'')+
   `<div class="section-h" style="margin-top:18px"><span class="t-title">Saved workplaces</span><button class="mini-btn" onclick="Work.empForm()">＋ Add</button></div>`+
   (c.employers.length?c.employers.map(e=>`<div class="wk-arow" onclick="Work.empForm('${e.id}')">${logo(e.name,34)}<div class="wk-jt"><b>${E(e.name)}</b><small>${E(e.address||'No address')}${e.phone?' · '+E(e.phone):''}</small></div><span class="chev">›</span></div>`).join(''):'<div class="fx-hint">Workplaces you add to jobs or applications are kept here so you can reuse them, even after you move.</div>')+
   `<div class="wk-btns" style="margin-top:14px"><button class="mini-btn" onclick="Work.profile()">Work profile</button><button class="mini-btn" onclick="JobBoard.browse()">Shared jobs</button></div>`}
-function jobMenu(id){const j=activeJobs().find(x=>x.id===id);if(!j)return;const pay=curPay(j),R=(i,l,c)=>SettingsUI.row(i,l,'',c);
+function jobMenu(id){try{Jobs.open('overview',id);return}catch(e){}const j=activeJobs().find(x=>x.id===id);if(!j)return;const pay=curPay(j),R=(i,l,c)=>SettingsUI.row(i,l,'',c);
   openSheet(`<div class="sheet-title">${E(j.title)}${j.employer?' · '+E(j.employer):''}</div>${SettingsUI.group(R('$','Pay & raises',`Jobs.open('overview','${j.id}')`)+R('✎','Edit',`Jobs.edit('${j.id}')`)+(j.type==='hourly'&&pay>0?R('≈','Use this pay for my paycheck estimate',`closeSheet();Work.usePay('${j.id}')`):'')+(j.addr?R('📍',j.addr,`closeSheet();Jobs.mapsGo('${j.id}','g')`)+R('➚','Directions in Apple Maps',`closeSheet();Jobs.mapsGo('${j.id}','a')`):R('📍','Add the work address',`Jobs.edit('${j.id}')`))+(j.phone&&!j.phoneBad?R('☎','Call '+j.phone,`location.href='tel:${E(String(j.phone).replace(/[^\d+]/g,''))}'`):j.phone&&j.phoneBad?R('☎',j.phone+' · number doesn’t work',`Jobs.edit('${j.id}')`):''))}${SettingsUI.group(R('⏏','I don’t work here now',`Work.endJob('${j.id}')`))}`)}
 function newJob(){try{Jobs.edit('new')}catch(e){console.error(e)}}
 async function setStatus(s){const c=cfg();c.status=STATUS.some(x=>x[0]===s)?s:'';await save(c);try{haptic('select')}catch(e){}
@@ -14714,7 +14743,7 @@ function nextPay(){try{const n=(Store.incomeSettings||{}).nextPayday;if(!n)retur
 function jobTile(j,mode){if(!j){let st='';try{st=Work.status()}catch(e){}return`<button type="button" class="tp-job tp-none" onclick="Mode.set('work',{tab:'find'})"><span class="tp-jl tp-jl-ico" aria-hidden="true">⌕</span><span class="tp-jt"><b>${st==='between'||st==='unemployed'?'Not working':'No job yet'}</b><small>Find jobs ›</small></span></button>`}
   const si=startsIn(j),ck=Clock.on(),live=ck&&(!ck.job||ck.job===j.id);
   const sub=live?`<i class="tp-live" data-ck-live>${E(Clock.earnedText())}</i>`:si?`<i>Starts in ${si} day${si===1?'':'s'}</i>`:`<i>${E(nextPay()||payLine(j))}</i>`;
-  return`<button type="button" class="tp-job ${live?'tp-on':''}" onclick="${mode==='work'?"Jobs.open()":"Mode.set('work')"}" aria-label="Your job: ${E(j.title)} at ${E(j.employer||'')}">${Work.logo(j.employer||j.title,40,j.web)}<span class="tp-jt"><b>${E(j.title)}</b><small>${E(j.employer||'Your job')}</small>${sub}</span></button>`}
+  return`<button type="button" class="tp-job ${live?'tp-on':''}" onclick="Jobs.open('overview','${E(j.id)}')" aria-label="Your job: ${E(j.title)} at ${E(j.employer||'')}">${Work.logo(j.employer||j.title,40,j.web)}<span class="tp-jt"><b>${E(j.title)}</b><small>${E(j.employer||'Your job')}</small>${sub}</span></button>`}
 function html(mode){if(!me)return'';let snap;try{snap=Store.getSnapshot()}catch(e){return''}const j=job(),ck=Clock.on();
   const acts=qa(mode),PER=['wave','bounce','type'].includes(fx());
   return`<div class="tp" id="tp" data-mode="${mode}"><div class="tp-row"><button type="button" class="tp-cash" onclick="Places.open()" aria-label="Available cash ${E(fmt(snap.available))}. Tap to see where your money is"><small>Available</small><b class="cfx cfx-${fx()} ${fcCls()}" style="--cfs:${(()=>{const n=fmt(snap.available).length;return n<=7?34:n<=9?30:n<=11?25:21})()}px;${fcStyle()}" ${PER?'':`data-roll="${snap.available}" data-rid="tp-bal"`}>${PER?wave(fmt(snap.available),fx()):fmt(snap.available)}</b>${snap.saved>0.004?`<span>Savings ${fmt(snap.saved)}</span>`:`<span>Cash</span>`}</button>${jobTile(j,mode)}</div>
