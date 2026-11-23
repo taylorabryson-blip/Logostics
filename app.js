@@ -3,8 +3,8 @@
 /* Friends/social sync runs on a free Supabase project. CLOUD_URL (optional): your project URL, e.g. 'https://abcd.supabase.co', to skip the in-app setup. CLOUD_KEY: the project's publishable key (safe to ship in client code). */
 const CLOUD_URL='https://pwsrrxtugjvnvstzbnps.supabase.co';
 const CLOUD_KEY='sb_publishable_tyaz3Ynes8AFu7YimRw7xQ_BbCSajC_';
-const APP_VERSION='4.8.1';
-const APP_BUILD='2026-11-23T15:19:25Z';
+const APP_VERSION='4.8.2';
+const APP_BUILD='2026-11-23T19:31:18Z';
 const KV={mem:{},get(k){try{const v=localStorage.getItem(k);if(v!==null)return v}catch(e){}return this.mem[k]===undefined?null:this.mem[k]},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}},del(k){delete this.mem[k];try{localStorage.removeItem(k)}catch(e){}}};
 /* iPhone/iPod only (iPad and desktop browsers are deliberately excluded): gates every touch gesture and iOS haptic */
 const IPHONE=/iPhone|iPod/.test(navigator.userAgent||'');try{document.documentElement.classList.toggle('iphone',IPHONE)}catch(e){}
@@ -83,7 +83,7 @@ function commit(fn,meta){
 if(Cloud.on()){migrateDB(db);const before=Cloud.index(db),n=nowISO();db.notifs=db.notifs.filter(x=>!x.expiresAt||x.expiresAt>n);const r=fn(db);Cloud.local(Cloud.diff(before,Cloud.index(db)));Bus.emit('db',Object.assign({local:true},meta||{}));return r}
 reloadDB();migrateDB(db);const n=nowISO();db.notifs=db.notifs.filter(x=>!x.expiresAt||x.expiresAt>n);const r=fn(db);Backend.save(db);Bus.emit('db',Object.assign({local:true},meta||{}));return r}
 migrateDB(db);
-function presenceOf(u){if(!u)return'offline';const fresh=u.online!==false&&u.lastActive&&Date.now()+Cloud.offset()-new Date(u.lastActive).getTime()<75000;if(!fresh||u.status==='invisible')return'offline';return u.status==='away'?'away':'online'}
+function presenceOf(u){if(!u)return'offline';const fresh=u.online!==false&&u.lastActive&&Date.now()+Cloud.offset()-new Date(u.lastActive).getTime()<110000;if(!fresh||u.status==='invisible')return'offline';return u.status==='away'?'away':'online'}
 
 /* ═══ GOAL MATH (pure, real data only) ═══ */
 const GoalMath={
@@ -1047,6 +1047,7 @@ function setDeviceLook(on){const u=Accounts.current();if(!u)return false;
   dlBase=null;notify();return!!devLook}
 function updatePreferences(p){if(devLook&&p&&typeof p==='object'){const loc={},rest={};let n=0;Object.keys(p).forEach(k=>{if(DEV_LOOK.includes(k)){loc[k]=p[k];n++}else rest[k]=p[k]});
     if(n){devLook.prefs=Object.assign({},devLook.prefs,loc);dlSave();dlBase=null}p=rest}
+  {const kt=Object.assign({},(state.preferences&&state.preferences._kt)||{}),t=Date.now();Object.keys(p||{}).forEach(k=>{if(k!=='_kt')kt[k]=t});p=Object.assign({},p,{_kt:kt})}
   state.preferences=Object.assign({},state.preferences,p);notify();return prefsView()}
 function computePaycheckEstimate(){const c=computeIncome();return{gross:c.grossPeriod,withholding:c.grossPeriod-c.netPeriod,takeHome:c.netPeriod,hourlyRate:state.incomeSettings.hourlyRate,hoursPerWeek:state.incomeSettings.hoursPerWeek,withholdingPct:state.incomeSettings.withholdingPct}}
 function availableWeekly(){let net=computeIncome().netWeekly;if(net<=0)net=IncomeEstimator.estimate().avgWeeklyIncome||0;if(net<=0)return 0;return Math.max(0,net-computeTotalSpending(28)/4)}
@@ -1172,10 +1173,14 @@ const syncApi={
    if(!r.d||typeof r.d!=='object'||r.d.id==null)continue;
    const rec=Object.assign({},r.d,{ownerId:me});if(k==='goals'&&!rec.type)rec.type='standard';
    if(i>=0)master[k][i]=rec;else master[k].push(rec);await putRaw(k,rec);n++}return n},
- applySettings(p,inc){if(!me)return;const keep={};DEVICE_ONLY.forEach(k=>{if(state.preferences[k]!==undefined)keep[k]=state.preferences[k]});
-   if(p&&typeof p==='object')state.preferences=Object.assign(merge(defaultPrefs(),clone(p)),keep);
+ applySettings(p,inc){if(!me)return false;const keep={};DEVICE_ONLY.forEach(k=>{if(state.preferences[k]!==undefined)keep[k]=state.preferences[k]});let mine=false;
+   /* 4.8.2: settings merge key by key — whichever device changed a setting last wins that setting, so an old phone can't switch privacy mode (or anything else) back off */
+   if(p&&typeof p==='object'){const L=state.preferences||{},lk=L._kt||{},rk=p._kt||{},q=clone(p),kt=Object.assign({},rk);
+     Object.keys(lk).forEach(k=>{if(k==='_kt')return;if((lk[k]||0)>(rk[k]||0)&&L[k]!==undefined){q[k]=clone(L[k]);kt[k]=lk[k];mine=true}});q._kt=kt;
+     state.preferences=Object.assign(merge(defaultPrefs(),q),keep);
+     try{if(typeof Veil!=='undefined'&&!!state.preferences.privacyOn!==Veil.on())setTimeout(()=>{try{Veil.set(!!state.preferences.privacyOn,{quiet:true,save:false})}catch(e){}},0)}catch(e){}}
    if(inc&&typeof inc==='object')state.incomeSettings=Object.assign(defaultIncome(),clone(inc));
-   Social.saveUserSettings(state.preferences,state.incomeSettings)},
+   Social.saveUserSettings(state.preferences,state.incomeSettings);return mine},
  refresh(){refreshView();state.lastUpdated=Date.now();pushWidgetData();state._listeners.forEach(fn=>{try{fn()}catch(e){}});housekeeping()},
  totals(){let inc=0,exp=0,n=0;master.transactions.forEach(t=>{if(t.ownerId!==me)return;n++;if(t.type==='income')inc+=Number(t.amount)||0;else exp+=Number(t.amount)||0});const c={};COLL.forEach(k=>{c[k]=master[k].filter(r=>r.ownerId===me).length});return{counts:c,income:rd(inc),expense:rd(exp)}}
 };
@@ -1270,6 +1275,7 @@ return{getConfig,saveConfig,order,move,isEditMode:()=>edit,enterEditMode(){try{D
 const PatchNotes=(function(){
 const CURRENT=APP_VERSION;
 const NOTES=[
+{version:'4.8.2',date:'2026-11-23',title:'Faster, smoother, on your calendar',new:['Add to calendar in one tap — Google Calendar, Apple Calendar or Outlook. No file to download.','Important dates on your schedule: orientation, uniform pickup, a drug test, a shift swap — saved with your schedule and one tap into your calendar.','Add a whole week of shifts to your calendar at once.','Add a job in one line: “Cashier at McDonald’s, $15/hr, started March 3” fills in the whole form and finds the address.','Quick picks for job titles, pay and start dates; employer suggestions as you type; Enter jumps to the next box.','Smooth mode: if a computer can’t keep up, Logostics turns off blur and moving effects so it doesn’t freeze. Change it in Customize.'],fixed:['Privacy mode no longer switches itself off when you use another device — settings now sync one by one, and the newest change wins.','Less work for the server: presence updates only while the app is open, and the widget refreshes less often.']},
 {version:'4.8.1',date:'2026-11-23',title:'Work addresses',new:['Every job now needs its work address. Tap “Find it for me” and Logostics finds that employer near you, nearest first, and fills in the address, phone and website.','Look it up yourself in Google Maps or Apple Maps from the job form.','Tick “This number doesn’t work” when a work phone is wrong or dead.','Your job menu shows the address (opens Google Maps), Apple Maps directions, and a tap-to-call phone.'],improved:['Work shows a reminder when a job is missing its address.']},
 {version:'4.8.0',date:'2026-11-21',title:'Work feels like its own app',new:['Hold Home for half a second to jump between Finance and Work: a bubble pops up, then the screen swipes across to the other side.','Work has its own look and colour (Indigo by default). Change it with the ✎ at the end of the quick actions.','Quick actions are yours: tap ✎ to add, remove or reorder them. Clock in and Style are no longer there by default.','10 new cash styles: Fire, Ice, Holo, Chrome, Glitch, Outline, 3D, Sparkle, Bounce and Typewriter.','Every cash style can match your theme or use any colour you pick.','Falling money background: bills and coins fall, and the more money you have, the more there is. Turn it on in Cash style.','Apple theme: pick your own finish colour and accent colour.','Resume: “Find all my skills” pulls job skills, people skills, computer skills, certificates and languages from your jobs, duties, school, volunteering and profile.'],improved:['“Add my jobs” on your resume also adds the skills it finds.']},
 {version:'4.7.1',date:'2026-11-21',title:'Floating cards and cash styles',new:['Your cards float above your balance on Home — tap them to open, spin and flip. They’re no longer in Work.','Cash style: tap “✨ Style” on Home to animate your balance — Shimmer, Glow, Neon, Gold, Rainbow, Heartbeat, Wave, Float or Hacker.'],improved:['Your full balance always fits in the top bar.']},
@@ -1377,12 +1383,12 @@ function enqueueAll(){const m=meta(),all=Store.sync.all(MU),now=Date.now();let n
 
 /* apply what the server sent. A newer local edit that is still waiting to be uploaded wins and is left alone. */
 async function applyRows(rows){const m=meta();if(!m||!Array.isArray(rows)||!rows.length)return 0;const docs=[];let prefs=null,inc=null;
-  for(const r of rows){if(!r||typeof r.c!=='string'||r.id==null)continue;const k=r.c+'/'+r.id,p=m.pend[k];if(p&&!p.i&&p.u>(+r.u||0))continue;if(p)delete m.pend[k];
+  for(const r of rows){if(!r||typeof r.c!=='string'||r.id==null)continue;const k=r.c+'/'+r.id,p=m.pend[k];if(p&&!p.i&&p.u>(+r.u||0)&&r.c!=='prefs')continue;if(p)delete m.pend[k];
     if(r.c==='prefs'){if(!r.x&&r.d&&typeof r.d==='object')prefs=r.d;continue}
     if(r.c==='income'){if(!r.x&&r.d&&typeof r.d==='object')inc=r.d;continue}
     docs.push(r)}
   const n=await Store.sync.apply(docs);
-  if(prefs||inc){Store.sync.applySettings(prefs,inc);const s=Store.sync.settings();m.hp=hsh(stable(s.prefs));m.hi=hsh(stable(s.income))}
+  if(prefs||inc){const mine=Store.sync.applySettings(prefs,inc);const s=Store.sync.settings();m.hp=hsh(stable(s.prefs));m.hi=hsh(stable(s.income));if(mine){m.pend['prefs/main']={u:Date.now()};save();sched(1500)}}
   Store.sync.refresh();return n}
 
 async function pull(prog){const m=meta();let total=0,more=true;
@@ -9261,7 +9267,7 @@ async function putNow(force){
   if(!force&&j===lastJson&&Date.now()-lastPut<6*3600e3)return true;
   try{await Vault.call('widget_put',{d});lastJson=j;lastPut=Date.now();return true}catch(e){const m=emsg(e);if(/not found/.test(m)){KV.del(KT());KV.del(KO())}return false}
 }
-function soon(){if(!me||!mine())return;clearTimeout(putT);putT=setTimeout(()=>{if(Date.now()-lastPut<20e3){soon();return}putNow(false)},6000)}
+function soon(){if(!me||!mine())return;clearTimeout(putT);putT=setTimeout(()=>{if(Date.now()-lastPut<120e3){soon();return}putNow(false)},15000)}
 async function refresh(){
   if(!available()){loaded=true;return}
   try{if(!Vault.have()&&!(await Vault.ensure('Confirm your password to manage widgets.')))return;tokens=await Vault.call('widget_list',{});loaded=true;err='';
@@ -11815,12 +11821,12 @@ let draft=null;
 function adopt(j,from){if(!me){toast('Sign in first');return}j=j||{};const C=cfg(),t=txt(j.title||'',40),e=txt(j.employer||'',40);
   const same=(C.jobs||[]).find(x=>String(x.title||'').toLowerCase()===t.toLowerCase()&&String(x.employer||'').toLowerCase()===e.toLowerCase());if(same){toast('You already have this job');open();return}
   const tp=j.tpl||{};draft=cleanOne({id:rid(),title:t,employer:e,color:j.color,start:'',type:tp.type==='salary'?'salary':'hourly',startPay:Number(tp.rate)||0,hrs:j.hrs||0,pfp:j.pfp||''});if(!draft)return;draft._new=true;draft._cur=true;draft._from=from||'';try{closeSheet()}catch(x){}setTimeout(()=>{form();toast('Add your own start date and pay')},120)}
-function edit(id){const C=cfg();draft=id==='new'?cleanOne({id:rid(),title:'',employer:'',start:'',type:'hourly',startPay:0,hrs:0}):cleanOne(find(id,C));if(!draft)return;draft._new=id==='new'||!find(id,C);draft._cur=!draft.end;form()}
+function edit(id){aaLast='';const C=cfg();draft=id==='new'?cleanOne({id:rid(),title:'',employer:'',start:'',type:'hourly',startPay:0,hrs:0}):cleanOne(find(id,C));if(!draft)return;draft._new=id==='new'||!find(id,C);draft._cur=!draft.end;form()}
 function form(){const d=draft,isNew=d._new;
   put(`<button class="sheet-back" onclick="Jobs.open()" aria-label="Back">‹ Back</button><div class="sheet-title">${isNew?'New job':'Edit job'}</div>
-<div class="field"><label class="field-label">Work picture (optional)</label><div class="jb-pf-row">${pfpHTML(d,64)}<div style="flex:1;min-width:0;display:flex;gap:8px;flex-wrap:wrap"><label class="mini-btn go" style="cursor:pointer">${d.pfp?'Change picture':'Choose a picture'}<input type="file" accept="image/*" hidden onchange="Jobs.pfpFile(event,true)"></label>${d.pfp?`<button type="button" class="mini-btn" onclick="Jobs.pfpClear()">Remove</button>`:''}</div></div><div class="fx-hint">A logo, a uniform photo, anything that says “work”. You’ll move and zoom it to fit the circle.</div></div>
-<div class="field"><label class="field-label" for="jb-f-title">Job title</label><input class="field-input" id="jb-f-title" maxlength="40" value="${E(d.title)}" placeholder="Barista, Stocker, Nurse…" oninput="Jobs.f('title',this.value)"></div>
-<div class="field"><label class="field-label" for="jb-f-emp">Employer</label><input class="field-input" id="jb-f-emp" maxlength="40" value="${E(d.employer)}" placeholder="Chick-fil-A, Kroger, Pasquale’s…" oninput="Jobs.f('employer',this.value)">${(()=>{let L=[];try{L=Work.cfg().employers}catch(e){}return L.length?`<div class="chips" style="margin-top:6px">${L.slice(0,8).map(e=>`<button type="button" class="chip" onclick="Jobs.useEmp('${E(e.id)}')">${E(e.name)}</button>`).join('')}</div>`:''})()}</div>
+${isNew?`<div class="field jb-quick"><label class="field-label" for="jb-f-q">Fastest way: type it in one line</label><input class="field-input" id="jb-f-q" maxlength="160" placeholder="Cashier at McDonald’s, $15/hr, started March 3" autocomplete="off" oninput="Jobs.quick(this.value)"><div class="fx-hint" id="jb-f-qh">We fill in the boxes below as you type.</div></div>`:''}
+<div class="field"><label class="field-label" for="jb-f-title">Job title</label><input class="field-input" id="jb-f-title" maxlength="40" list="jb-dl-t" value="${E(d.title)}" placeholder="Barista, Stocker, Nurse…" autocomplete="off" oninput="Jobs.f('title',this.value)" onkeydown="Jobs.next(event,'jb-f-emp')"><datalist id="jb-dl-t">${['Cashier','Crew member','Cook','Server','Stocker','Sales associate','Warehouse','Driver','Barista','Host','Dishwasher','Shift lead'].map(t=>`<option value="${t}">`).join('')}</datalist>${d.title?'':`<div class="chips jb-qc">${['Cashier','Crew member','Cook','Server','Stocker','Sales associate','Warehouse','Driver','Barista','Host','Dishwasher','Shift lead'].slice(0,8).map(t=>`<button type="button" class="chip" onclick="Jobs.setV('jb-f-title','title','${t}')">${t}</button>`).join('')}</div>`}</div>
+<div class="field"><label class="field-label" for="jb-f-emp">Employer</label><input class="field-input" id="jb-f-emp" maxlength="40" list="jb-dl-e" value="${E(d.employer)}" placeholder="Chick-fil-A, Kroger, Pasquale’s…" autocomplete="off" oninput="Jobs.f('employer',this.value)" onchange="Jobs.autoAddr()" onkeydown="Jobs.next(event,'jb-f-pay')"><datalist id="jb-dl-e">${EMPL.map(n=>`<option value="${E(n)}">`).join('')}</datalist>${(()=>{let L=[];try{L=Work.cfg().employers}catch(e){}return L.length?`<div class="chips" style="margin-top:6px">${L.slice(0,8).map(e=>`<button type="button" class="chip" onclick="Jobs.useEmp('${E(e.id)}')">${E(e.name)}</button>`).join('')}</div>`:''})()}</div>
 <div class="field"><label class="field-label" for="jb-f-addr">Work address</label><input class="field-input" id="jb-f-addr" maxlength="140" value="${E(d.addr||'')}" placeholder="Street, city, state" autocomplete="off" oninput="Jobs.f('addr',this.value)">
 <div class="jb-ad-acts"><button type="button" class="mini-btn go" onclick="Jobs.findAddr()">✧ Find it for me</button><button type="button" class="mini-btn" onclick="Jobs.mapsLook('g')">Google Maps</button><button type="button" class="mini-btn" onclick="Jobs.mapsLook('a')">Apple Maps</button></div><div id="jb-ad-res" aria-live="polite"></div>
 <div class="fx-hint">Needed for every job. “Find it for me” looks up the employer near you and fills in the address and phone. Or find it in Maps and paste it here. Never shared.</div></div>
@@ -11828,15 +11834,17 @@ function form(){const d=draft,isNew=d._new;
 <label class="jb-bad"><input type="checkbox" id="jb-f-phbad" ${d.phoneBad?'checked':''} onchange="Jobs.f('phoneBad',this.checked)"> <span>This number doesn’t work${''}</span></label></div>
 <div class="field"><label class="field-label" for="jb-f-web">Website (optional)</label><input class="field-input" id="jb-f-web" maxlength="120" value="${E(d.web||'')}" placeholder="example.com" oninput="Jobs.f('web',this.value)"></div>
 <div class="field"><label class="field-label">You’re paid</label><div class="segmented" id="jb-f-type"><button type="button" class="seg ${d.type==='hourly'?'active':''}" onclick="Jobs.f('type','hourly',this)">By the hour</button><button type="button" class="seg ${d.type==='salary'?'active':''}" onclick="Jobs.f('type','salary',this)">A yearly salary</button></div></div>
-<div class="field"><label class="field-label" for="jb-f-pay" id="jb-f-paylbl">${d.type==='salary'?'Starting salary (per year)':'Starting pay (per hour)'}</label><input class="field-input" id="jb-f-pay" type="number" inputmode="decimal" min="0" step="0.01" value="${d.startPay>0?E(d.startPay):''}" placeholder="${d.type==='salary'?'52000':'18.00'}" oninput="Jobs.f('startPay',this.value)"></div>
-<div class="field-row"><div class="field"><label class="field-label" for="jb-f-hired">Got the job on</label><input class="field-input" id="jb-f-hired" type="date" max="${ymd(new Date())}" value="${E(d.hired||'')}" oninput="Jobs.f('hired',this.value)"></div><div class="field"><label class="field-label" for="jb-f-start">First day</label><input class="field-input" id="jb-f-start" type="date" value="${E(d.start)}" oninput="Jobs.f('start',this.value)"></div></div><div class="fx-hint" style="margin-top:-6px">Hired today but start next week? Put both — your first day can be in the future.</div>
+<div class="field"><label class="field-label" for="jb-f-pay" id="jb-f-paylbl">${d.type==='salary'?'Starting salary (per year)':'Starting pay (per hour)'}</label><input class="field-input" id="jb-f-pay" type="number" inputmode="decimal" min="0" step="0.01" value="${d.startPay>0?E(d.startPay):''}" placeholder="${d.type==='salary'?'52000':'18.00'}" oninput="Jobs.f('startPay',this.value)" onkeydown="Jobs.next(event,'jb-f-start')"><div class="chips jb-qc" id="jb-f-paych">${d.type==='salary'?'':[12,13,14,15,16,17,18,20].map(v=>`<button type="button" class="chip" onclick="Jobs.setV('jb-f-pay','startPay','${v}')">$${v}</button>`).join('')}</div></div>
+<div class="field-row"><div class="field"><label class="field-label" for="jb-f-hired">Got the job on</label><input class="field-input" id="jb-f-hired" type="date" max="${ymd(new Date())}" value="${E(d.hired||'')}" oninput="Jobs.f('hired',this.value)"></div><div class="field"><label class="field-label" for="jb-f-start">First day</label><input class="field-input" id="jb-f-start" type="date" value="${E(d.start)}" oninput="Jobs.f('start',this.value)"></div></div><div class="chips jb-qc" style="margin:-4px 0 12px">${[['Today',0],['Last week',7],['A month ago',30],['3 months',91],['6 months',182],['A year ago',365]].map(([l,n])=>`<button type="button" class="chip" onclick="Jobs.ago(${n})">${l}</button>`).join('')}</div><div class="fx-hint" style="margin-top:-6px">Hired today but start next week? Put both — your first day can be in the future.</div>
 <div class="set-group">${SettingsUI.tg('✓','I still work here',d._cur,"Jobs.f('cur',null,this)")}</div>
 <div class="field" id="jb-f-endbox" style="${d._cur?'display:none':''}"><label class="field-label" for="jb-f-end">Last day</label><input class="field-input" id="jb-f-end" type="date" max="${ymd(new Date())}" value="${E(d.end)}" oninput="Jobs.f('end',this.value)"></div>
 <div class="field"><label class="field-label" for="jb-f-duties">What you do there (for your resume)</label><textarea class="field-input" id="jb-f-duties" rows="3" maxlength="900" placeholder="Took orders and handled cash\nKept the dining room clean\nTrained new team members" oninput="Jobs.f('duties',this.value)">${E((d.duties||[]).join('\n'))}</textarea><div class="fx-hint">One per line. They go straight into Resume.</div></div>
 <div class="field"><label class="field-label" for="jb-f-hrs">Usual hours per week (optional)</label><input class="field-input" id="jb-f-hrs" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${d.hrs>0?E(d.hrs):''}" placeholder="32" oninput="Jobs.f('hrs',this.value)"></div>
 <div class="field"><label class="field-label">Chart colour</label><div class="fx-pick" id="jb-f-col">${COLORS.map(k=>`<button type="button" class="fx-pk fx-col ${k===d.color?'on':''}" style="background:${k||'var(--green)'}" aria-label="${k?'Colour '+k:'Theme colour'}" onclick="Jobs.f('color','${k}',this)"></button>`).join('')}</div><div class="fx-hint">Used when the 3D chart’s colour is set to “Job colour”.</div></div>
+<details class="ins-sec"${d.pfp?' open':''}><summary>Work picture (optional)</summary><div class="field"><label class="field-label">Work picture (optional)</label><div class="jb-pf-row">${pfpHTML(d,64)}<div style="flex:1;min-width:0;display:flex;gap:8px;flex-wrap:wrap"><label class="mini-btn go" style="cursor:pointer">${d.pfp?'Change picture':'Choose a picture'}<input type="file" accept="image/*" hidden onchange="Jobs.pfpFile(event,true)"></label>${d.pfp?`<button type="button" class="mini-btn" onclick="Jobs.pfpClear()">Remove</button>`:''}</div></div><div class="fx-hint">A logo, a uniform photo, anything that says “work”. You’ll move and zoom it to fit the circle.</div></div>
+</details>
 <div class="err" id="jb-f-err" role="alert"></div>
-<button class="btn btn-primary" onclick="Jobs.saveJob()">${isNew?'Add job':'Save'}</button>
+<div class="jb-save-bar"><button class="btn btn-primary" onclick="Jobs.saveJob()">${isNew?'Add job':'Save'}</button></div>
 ${!isNew?`<button class="btn btn-danger" style="margin-top:8px" onclick="Jobs.delJob()">Delete this job</button>`:''}
 <button class="btn btn-secondary" style="margin-top:8px" onclick="${isNew&&!cfg().items.length?'closeSheet()':'Jobs.open()'}">Cancel</button>`)}
 function f(k,v,el){if(!draft)return;
@@ -11845,6 +11853,26 @@ function f(k,v,el){if(!draft)return;
   if(k==='color'){draft.color=v;if(el){[...el.parentNode.children].forEach(b=>b.classList.toggle('on',b===el))}return}
   if(k==='phoneBad'){draft.phoneBad=!!v;return}if(k==='addr'){draft.lat=null;draft.lng=null}
   draft[k]=v}
+/* 4.8.2: faster job entry — one line fills the form, chips for common answers, Enter jumps ahead, the address finds itself */
+const EMPL=["McDonald's", "Chick-fil-A", "Wendy's", "Burger King", "Taco Bell", "KFC", "Arby's", "Subway", "Starbucks", "Dunkin'", "Popeyes", "Sonic", "White Castle", "Steak 'n Shake", "Culver's", "Five Guys", "Chipotle", "Panera Bread", "Jimmy John's", "Jersey Mike's", "Domino's", "Pizza Hut", "Papa John's", "Little Caesars", "Dairy Queen", "Raising Cane's", "Wingstop", "Panda Express", "Olive Garden", "Applebee's", "Chili's", "Texas Roadhouse", "Buffalo Wild Wings", "IHOP", "Denny's", "Cracker Barrel", "Bob Evans", "Waffle House", "Walmart", "Target", "Kroger", "Meijer", "Costco", "Sam's Club", "Aldi", "Dollar General", "Family Dollar", "Dollar Tree", "Walgreens", "CVS", "Speedway", "Circle K", "Marathon", "Home Depot", "Lowe's", "Menards", "Best Buy", "Kohl's", "TJ Maxx", "Marshalls", "Ross", "Burlington", "Old Navy", "Five Below", "PetSmart", "Petco", "GameStop", "Amazon", "FedEx", "UPS", "USPS", "DoorDash", "Uber", "Instacart", "Planet Fitness", "AMC Theatres", "Six Flags", "Goodwill"];
+function setV(id,k,v){const e=document.getElementById(id);if(e){e.value=v;e.dispatchEvent(new Event('input'))}else f(k,v);if(id==='jb-f-title'){const c=e&&e.parentNode.querySelector('.jb-qc');if(c)c.remove();const n=document.getElementById('jb-f-emp');if(n&&!n.value)n.focus()}}
+function next(ev,id){if(ev.key!=='Enter')return;ev.preventDefault();if(id==='jb-f-pay')autoAddr();const n=document.getElementById(id);if(n)n.focus()}
+function ago(n){const d=new Date();d.setDate(d.getDate()-n);const v=ymd(d);['jb-f-start','jb-f-hired'].forEach(id=>{const e=document.getElementById(id);if(e&&(id==='jb-f-start'||!e.value)){e.value=v;e.dispatchEvent(new Event('input'))}});try{haptic('select')}catch(e){}}
+let aaT=0,aaLast='';function autoAddr(ms){clearTimeout(aaT);aaT=setTimeout(()=>{const d=draft;if(!d||txt(d.addr,140)||txt(d.employer,40).length<3)return;const q=txt(d.employer,40).toLowerCase();if(q===aaLast)return;aaLast=q;findAddr()},ms||250)}
+const MON={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+let qT=0;function quick(v){clearTimeout(qT);qT=setTimeout(()=>{const d=draft;if(!d)return;v=String(v||'');const got=[];
+  const set=(id,k,val)=>{const e=document.getElementById(id);if(e&&String(e.value)!==String(val)){e.value=val}d[k]=val};
+  const pm=v.match(/\$\s?(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*(k)?\s*(?:\/|an?\s|per\s)?\s*(hr|hour|h|yr|year)?/i);
+  if(pm){let n=Number(pm[1].replace(/,/g,''))*(pm[2]?1000:1);const yr=/y/i.test(pm[3]||'')||n>=1000;d.type=yr?'salary':'hourly';set('jb-f-pay','startPay',n);try{document.querySelectorAll('#jb-f-type .seg').forEach((b,i)=>b.classList.toggle('active',(i===1)===yr))}catch(e){}got.push('pay')}
+  let w=v.replace(/\$[^,;]*/g,' ');
+  const dm=w.match(/(?:since|started|start(?:ing|s)?|from|on)\s+([a-z]{3,9})\.?\s*(\d{1,2})?(?:,?\s*(\d{4}))?/i)||w.match(/(?:since|started|from|on)\s+(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/i);
+  if(dm){let dt=null;if(/^\d/.test(dm[1])){const y=dm[3]?(dm[3].length===2?2000+ +dm[3]:+dm[3]):new Date().getFullYear();dt=new Date(y,+dm[1]-1,+dm[2])}else{const mo=MON[dm[1].slice(0,3).toLowerCase()];if(mo!==undefined){let y=dm[3]?+dm[3]:new Date().getFullYear();dt=new Date(y,mo,dm[2]?+dm[2]:1);if(!dm[3]&&dt>new Date(Date.now()+30*864e5))dt.setFullYear(y-1)}}
+    if(dt&&!isNaN(dt)){set('jb-f-start','start',ymd(dt));const h=document.getElementById('jb-f-hired');if(h&&!h.value){h.value=ymd(dt);d.hired=ymd(dt)}got.push('start date')}w=w.replace(dm[0],' ')}
+  else if(/\b(today|just started)\b/i.test(w)){set('jb-f-start','start',ymd(new Date()));got.push('start date');w=w.replace(/\b(today|just started)\b/i,' ')}
+  w=w.replace(/\b(since|started|starting|from)\b.*$/i,' ').replace(/[,;]+/g,' ').replace(/\s+/g,' ').trim();
+  const m=w.match(/^(.*?)\s+(?:at|@|for|with)\s+(.+)$/i);if(m){set('jb-f-title','title',txt(m[1],40));set('jb-f-emp','employer',txt(m[2],40));got.push('title','employer')}else if(w){set('jb-f-title','title',txt(w,40));got.push('title')}if(d.title){const c=document.querySelector('#jb-f-title ~ .jb-qc');if(c)c.remove()}
+  const h=document.getElementById('jb-f-qh');if(h)h.textContent=got.length?'✓ Filled in: '+[...new Set(got)].join(', ')+(m?' · looking up the address…':''):'We fill in the boxes below as you type.';
+  if(m)autoAddr(/[,$]/.test(v)?200:1400)},350)}
 /* 4.8.1: find the workplace — OpenStreetMap search near you (no key), nearest first; or look it up in Google / Apple Maps */
 let adHits=[];
 function near(){let p=null;try{p=Work.pt()}catch(e){}if(p&&isFinite(p.lat)&&isFinite(p.lng))return p;try{p=Home.get()}catch(e){}return p&&isFinite(p.lat)?p:null}
@@ -11952,12 +11980,12 @@ function shareFlip(k){const sc=shareCfg().job;const patch={};patch[k]=!sc[k];if(
 function shareJob(id){saveShareJob({id:goodId(id)?id:''});render(true)}
 
 /* what the Profile page and settings show */
-function summary(){try{const C=cfg(),j=find(C.primary,C);if(!j)return{findAddr,pickAddr,mapsLook,mapsGo,mapsUrl,has:false,line:'Add your job'};const s=stats(j);return{has:true,id:j.id,line:(j.title||'Your job')+(s.ten?' · '+s.ten.text:'')+(s.steps.length>1?' · '+pct(s.total,true)+' since start':'')}}catch(e){return{has:false,line:'Add your job'}}}
+function summary(){try{const C=cfg(),j=find(C.primary,C);if(!j)return{has:false,line:'Add your job'};const s=stats(j);return{has:true,id:j.id,line:(j.title||'Your job')+(s.ten?' · '+s.ten.text:'')+(s.steps.length>1?' · '+pct(s.total,true)+' since start':'')}}catch(e){return{has:false,line:'Add your job'}}}
 function card(){if(!me)return'';const s=summary();return`<div class="social-card jb-pcard" role="button" tabindex="0" onclick="Jobs.open()" onkeydown="if(event.key==='Enter')Jobs.open()"><div style="display:flex;align-items:center;gap:12px"><span class="jb-pico" aria-hidden="true">${(()=>{try{const C=cfg(),j=find(C.primary,C);return j&&j.pfp?`<img src="${E(j.pfp)}" alt="">`:'▣'}catch(e){return'▣'}})()}</span><div style="flex:1;min-width:0"><div style="font-weight:600">Job profile</div><div class="friend-status" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${E(s.line)}</div></div><span aria-hidden="true" style="color:var(--gray-500)">›</span></div></div>`}
 /* keep what friends see up to date: when the app starts, and when it comes back */
 function boot(){try{publish()}catch(e){}}
 
-return{findAddr,pickAddr,mapsLook,mapsGo,mapsUrl,useEmp,adopt,open,tab:setTab,pick,scene,edit,f,pfpFile,pfpClear,pfpHTML,saveJob,delJob,editRaise,calcRaise,saveRaise,delRaise,saveUsual,useIncome,logWeek,delWeek,addFiles,select,caption,setCover,delPhoto,v,flipV,resetView,shareFlip,shareJob,publish,boot,card,summary,cfg,find,
+return{findAddr,pickAddr,mapsLook,mapsGo,mapsUrl,setV,next,ago,autoAddr,quick,useEmp,adopt,open,tab:setTab,pick,scene,edit,f,pfpFile,pfpClear,pfpHTML,saveJob,delJob,editRaise,calcRaise,saveRaise,delRaise,saveUsual,useIncome,logWeek,delWeek,addFiles,select,caption,setCover,delPhoto,v,flipV,resetView,shareFlip,shareJob,publish,boot,card,summary,cfg,find,
   stats,steps,tenure,spanText,pct,hoursAvg,towerSpec,ringSpec,payload,shareCfg,cleanOne,shrink,thumb,loadPhotos,longD,shortD,PRIVACY,_s:()=>S}})();
 /* ═══ SHARING PAYDAY AND WORK WITH FRIENDS ═══
    PaySharing  publishes the person's own payday as a short list of upcoming dates (never an amount, never the pay rule), only when they switch it on.
@@ -12396,7 +12424,7 @@ function Engine(cv,o){o=o||{};const cx=cv.getContext('2d');let on=false,rf=0,las
   const structSig=C=>[C.style,C.density,C.size,C.color,C.hex,palKey,C.stars,C.moons].join('|');
   function build(){const C=refresh();S=STYLES[C.style];if(!S)return false;sig=structSig(C);cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);fit();E.q=E.q||1;S.init(E);return true}
   function frame(t){rf=0;if(!on)return;if(!cv.isConnected){on=false;return}if(o.ok&&!o.ok()){stop();return}
-    rf=requestAnimationFrame(frame);const gap=1000/(S.fps||30);if(t-last<gap-2)return;const dt=Math.min(.08,last?(t-last)/1000:.033);last=t;
+    rf=requestAnimationFrame(frame);const gap=Math.max(1000/(S.fps||30),document.documentElement.classList.contains('lite')?50:0);if(t-last<gap-2)return;const dt=Math.min(.08,last?(t-last)/1000:.033);last=t;
     const C=refresh();if(structSig(C)!==sig){if(!build()){stop();return}}
     const t1=performance.now();E.t=t/1000;E.dt=dt;E.tt+=dt*E.sp;cx.setTransform(E.sx,0,0,E.sy,0,0);S.step(E);E.ptr.tap=0;
     cost.push(performance.now()-t1);if(cost.length>40){const a=cost.reduce((x,y)=>x+y,0)/cost.length;cost=[];if(a>13&&E.q>.4){E.q=Math.max(.4,E.q*.75);S.init(E)}}}
@@ -13182,10 +13210,85 @@ function build(o){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(o.date||''));i
   else{const t=/^(\d{2}):(\d{2})$/.exec(o.time);const s=new Date(+m[1],+m[2]-1,+m[3],+t[1],+t[2]),e=new Date(s.getTime()+(o.minutes||30)*6e4);L.push('DTSTART:'+stamp(s),'DTEND:'+stamp(e))}
   L.push('SUMMARY:'+esc(o.title));if(o.note)L.push('DESCRIPTION:'+esc(o.note));if(o.rrule&&/^FREQ=(DAILY|WEEKLY|MONTHLY|YEARLY)(;INTERVAL=\d{1,2})?$/.test(o.rrule))L.push('RRULE:'+o.rrule);
   L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+esc(o.title),allDay?'TRIGGER:PT9H':'TRIGGER:-PT'+(Math.max(0,o.alarm==null?30:o.alarm))+'M','END:VALARM','END:VEVENT','END:VCALENDAR');return L.join('\r\n')}
-async function add(o){const txt=build(o);if(!txt)return false;const name=(String(o.title||'reminder').replace(/[^\w\- ]+/g,'').trim().slice(0,40)||'reminder')+'.ics';
-  try{const f=new File([txt],name,{type:'text/calendar'});if(navigator.canShare&&navigator.canShare({files:[f]})&&/iPhone|iPad|Android/i.test(navigator.userAgent)){await navigator.share({files:[f],title:o.title});return true}}catch(e){if(e&&e.name==='AbortError')return true}
-  try{const u=URL.createObjectURL(new Blob([txt],{type:'text/calendar'})),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(u)},4000);return true}catch(e){return false}}
-return{build,add}})();
+async function add(o){try{return Cal.sheet(o)}catch(e){return file(o)}}
+function file(o){const txt=build(o);if(!txt)return false;const name=(String(o.title||'reminder').replace(/[^\w\- ]+/g,'').trim().slice(0,40)||'reminder')+'.ics';
+    try{const u=URL.createObjectURL(new Blob([txt],{type:'text/calendar'})),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(u)},4000);return true}catch(e){return false}}
+return{build,add,file}})();
+/* ═══ 4.8.2 Add to calendar in one tap — Google Calendar, Apple Calendar or Outlook. No file to download:
+   Google and Outlook open their own "new event" page already filled in; Apple opens a link that iPhone / Mac Calendar
+   shows as "Add to Calendar" (served by the app's own `cal` function, which stores nothing). ═══ */
+const Cal=(function(){
+const E=s=>escapeHtml(s),pad=n=>String(n).padStart(2,'0');
+const utc=d=>d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+'T'+pad(d.getUTCHours())+pad(d.getUTCMinutes())+'00Z';
+const dd=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+/* o: {title, date "YYYY-MM-DD", time "HH:MM"?, minutes?, note?, loc?, rrule?, alarm?} → start/end */
+function span(o){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(o.date||''));if(!m)return null;const all=!o.time;
+  if(all){const a=new Date(+m[1],+m[2]-1,+m[3]),b=new Date(+m[1],+m[2]-1,+m[3]+1);return{all,a,b}}
+  const t=/^(\d{1,2}):(\d{2})$/.exec(o.time);if(!t)return null;const a=new Date(+m[1],+m[2]-1,+m[3],+t[1],+t[2]);let b;
+  if(o.end&&/^\d{1,2}:\d{2}$/.test(o.end)){const u=o.end.split(':');b=new Date(+m[1],+m[2]-1,+m[3],+u[0],+u[1]);if(b<=a)b.setDate(b.getDate()+1)}else b=new Date(a.getTime()+(o.minutes||30)*6e4);return{all,a,b}}
+const b64=x=>btoa(unescape(encodeURIComponent(JSON.stringify(x)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+function ev(o){const s=span(o);if(!s)return null;const r={t:String(o.title||'').slice(0,200)};if(s.all)r.ad=dd(s.a);else{r.s=utc(s.a);r.e=utc(s.b)}if(o.note)r.n=String(o.note).slice(0,700);if(o.loc)r.l=String(o.loc).slice(0,200);if(o.rrule)r.r=o.rrule;if(o.alarm!=null)r.a=o.alarm;return r}
+function url(kind,o){const s=span(o);if(!s)return'';const T=String(o.title||'Event'),N=String(o.note||''),L=String(o.loc||'');
+  if(kind==='g'){const q=new URLSearchParams({action:'TEMPLATE',text:T,dates:s.all?dd(s.a)+'/'+dd(s.b):utc(s.a)+'/'+utc(s.b),details:N,location:L});if(o.rrule)q.set('recur','RRULE:'+o.rrule);return'https://calendar.google.com/calendar/render?'+q}
+  if(kind==='o'){const iso=d=>s.all?dd(d).replace(/(\d{4})(\d{2})(\d{2})/,'$1-$2-$3'):d.toISOString();const q=new URLSearchParams({path:'/calendar/action/compose',rru:'addevent',subject:T,startdt:iso(s.a),enddt:iso(s.b),allday:String(s.all),body:N,location:L});return'https://outlook.live.com/calendar/0/deeplink/compose?'+q}
+  if(kind==='a'){const x=ev(o);return x&&typeof CLOUD_URL!=='undefined'&&CLOUD_URL?CLOUD_URL+'/functions/v1/cal?e='+b64(x):''}return''}
+function appleMany(list){const ev2=list.map(ev).filter(Boolean).slice(0,20);if(!ev2.length||typeof CLOUD_URL==='undefined'||!CLOUD_URL)return'';return CLOUD_URL+'/functions/v1/cal?e='+b64({t:list[0].title,ev:ev2})}
+function openUrl(u){if(!u)return false;try{const w=window.open(u,'_blank','noopener');if(!w)location.href=u}catch(e){location.href=u}return true}
+const REG=new Map();let rn=0;const reg=o=>{const k='c'+(++rn);REG.set(k,o);if(REG.size>300){REG.delete(REG.keys().next().value)}return k};
+const isApple=/iPhone|iPad|Macintosh|Mac OS/i.test(navigator.userAgent||'');
+function go(k,kind){const o=REG.get(k);if(!o)return;let ok;if(kind==='a'&&!url('a',o)){try{ok=ICS.file(o)}catch(e){ok=false}}else ok=openUrl(Array.isArray(o)?appleMany(o):url(kind,o));
+  try{haptic('success')}catch(e){}try{KV.set('lg_cal_last',kind)}catch(e){}if(ok)toast(kind==='g'?'Opening Google Calendar…':kind==='o'?'Opening Outlook…':'Opening Apple Calendar — tap “Add”');closeSheetIf()}
+function closeSheetIf(){try{if(document.getElementById('cal-sheet'))closeSheet()}catch(e){}}
+const ICO={g:'<span class="cal-ic cal-g">G</span>',a:'<span class="cal-ic cal-a"></span>',o:'<span class="cal-ic cal-o">O</span>'};
+/* small inline row of buttons for any event */
+function btns(o,cls){const k=reg(o);const order=isApple?['a','g','o']:['g','o','a'];return`<div class="cal-row ${cls||''}" role="group" aria-label="Add to calendar">${order.map(x=>`<button type="button" class="cal-b" onclick="Cal.go('${k}','${x}')">${ICO[x]}${x==='g'?'Google':x==='a'?'Apple':'Outlook'}</button>`).join('')}</div>`}
+/* a sheet (used everywhere that used to download an .ics file) */
+function sheet(o){const s=span(o);if(!s){toast('That event needs a date');return false}const k=reg(o);const order=isApple?['a','g','o']:['g','a','o'];
+  const when=s.all?s.a.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}):s.a.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  openSheet(`<div id="cal-sheet"></div><div class="sheet-title">Add to your calendar</div><p class="sheet-sub"><b>${E(o.title||'Event')}</b><br>${E(when)}${o.loc?' · '+E(o.loc):''}</p>
+<div class="cal-big">${order.map(x=>`<button type="button" class="cal-bb" onclick="Cal.go('${k}','${x}')">${ICO[x]}<span><b>${x==='g'?'Google Calendar':x==='a'?'Apple Calendar':'Outlook'}</b><small>${x==='a'?'iPhone, iPad and Mac':x==='g'?'Opens with it filled in':'Outlook.com and Microsoft 365'}</small></span></button>`).join('')}</div>`);return true}
+/* a whole list at once: Apple takes them all in one tap; Google/Outlook one at a time */
+function sheetMany(list,title){list=list.filter(o=>span(o));if(!list.length){toast('Nothing to add yet');return}const k=reg(list);
+  openSheet(`<div id="cal-sheet"></div><div class="sheet-title">${E(title||'Add to your calendar')}</div>
+<button type="button" class="cal-bb" onclick="Cal.go('${k}','a')">${ICO.a}<span><b>Apple Calendar — add all ${list.length}</b><small>One tap on iPhone, iPad and Mac</small></span></button>
+<div class="field-label" style="margin:14px 0 6px">Google Calendar or Outlook — one at a time</div>${list.map(o=>{const s=span(o);return`<div class="cal-li"><div><b>${E(o.title)}</b><small>${E(s.all?s.a.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):s.a.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))}</small></div>${btns(o,'cal-row-sm')}</div>`}).join('')}`)}
+return{url,btns,sheet,sheetMany,go,span}})();
+
+/* ═══ 4.8.2 Important dates: anything you need to remember for work (orientation, uniform pickup, drug test, payday,
+   a shift swap…) kept with your schedule — and one tap into your calendar. ═══ */
+const KeyDates=(function(){
+const E=s=>escapeHtml(s);const txt=(v,n)=>String(v==null?'':v).replace(/[\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim().slice(0,n);const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const list=()=>{try{const L=(Store.preferences||{}).keyDates;return Array.isArray(L)?L.filter(x=>x&&x.id&&/^\d{4}-\d{2}-\d{2}$/.test(x.d)):[]}catch(e){return[]}};
+const today=()=>ymd(new Date());
+const upcoming=()=>list().filter(x=>x.d>=today()).sort((a,b)=>(a.d+(a.t||''))<(b.d+(b.t||''))?-1:1);
+const toEv=x=>({title:x.title,date:x.d,time:x.t||'',minutes:x.min||60,note:x.n||'',loc:x.l||''});
+const lbl=x=>{const d=new Date(x.d+'T12:00');const dd=Math.round((new Date(x.d+'T00:00')-new Date(today()+'T00:00'))/864e5);const day=dd===0?'Today':dd===1?'Tomorrow':d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});return day+(x.t?' · '+new Date('2000-01-01T'+x.t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):'')};
+function card(){const L=upcoming().slice(0,8);return`<div class="wk-card"><div class="wk-ct">Important dates</div>${L.length?L.map(x=>`<div class="kd-row"><div class="kd-t"><b>${E(x.title)}</b><small>${E(lbl(x))}${x.l?' · '+E(x.l):''}</small>${x.n?`<small class="kd-n">${E(x.n)}</small>`:''}</div><button type="button" class="kd-x" aria-label="Delete ${E(x.title)}" onclick="KeyDates.del('${x.id}')">×</button>${Cal.btns(toEv(x))}</div>`).join(''):`<p class="wk-p">Orientation, uniform pickup, a drug test, a shift swap — add it here and put it in your calendar with one tap.</p>`}
+<div class="wk-btns"><button class="mini-btn go" onclick="KeyDates.add()">＋ Add a date</button>${upcoming().length>1?`<button class="mini-btn" onclick="KeyDates.all()">Add all to calendar</button>`:''}</div></div>`}
+let dr=null;
+function add(pre){dr=Object.assign({title:'',d:today(),t:'',n:'',l:''},pre||{});const Q=['Orientation','Interview','Uniform pickup','Drug test','Training','Shift swap','Payday','Meeting'];
+  const dch=[['Today',0],['Tomorrow',1],['In 2 days',2],['Next week',7]];
+  openSheet(`<div class="sheet-title">Important date</div>
+<div class="field"><label class="field-label" for="kd-t">What is it?</label><input class="field-input" id="kd-t" maxlength="80" placeholder="Orientation at Chick-fil-A" value="${E(dr.title)}" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('kd-tm').focus()}"><div class="chips jb-qc">${Q.map(q=>`<button type="button" class="chip" onclick="KeyDates.q('${q}')">${q}</button>`).join('')}</div></div>
+<div class="field-row"><div class="field"><label class="field-label" for="kd-d">Day</label><input class="field-input" id="kd-d" type="date" value="${dr.d}"></div><div class="field"><label class="field-label" for="kd-tm">Time (optional)</label><input class="field-input" id="kd-tm" type="time" value="${E(dr.t)}"></div></div>
+<div class="chips jb-qc" style="margin:-4px 0 12px">${dch.map(([l,n])=>`<button type="button" class="chip" onclick="KeyDates.day(${n})">${l}</button>`).join('')}</div>
+<div class="field"><label class="field-label" for="kd-l">Where (optional)</label><input class="field-input" id="kd-l" maxlength="140" value="${E(dr.l)}" placeholder="Address or place">${(()=>{try{const J=Work.activeJobs().filter(j=>j.addr);return J.length?`<div class="chips jb-qc">${J.slice(0,3).map(j=>`<button type="button" class="chip" onclick="document.getElementById('kd-l').value=${E(JSON.stringify(j.addr))}">📍 ${E(j.employer||j.title)}</button>`).join('')}</div>`:''}catch(e){return''}})()}</div>
+<div class="field"><label class="field-label" for="kd-n">Notes (optional)</label><textarea class="field-input" id="kd-n" rows="2" maxlength="500" placeholder="Bring ID and black non-slip shoes">${E(dr.n)}</textarea></div>
+<div class="err" id="kd-err" role="alert"></div>
+<button class="btn btn-primary" onclick="KeyDates.save(false)">Save</button>
+<button class="btn btn-secondary" style="margin-top:8px" onclick="KeyDates.save(true)">Save &amp; add to calendar</button>`);setTimeout(()=>{const e=document.getElementById('kd-t');if(e&&!e.value)e.focus()},250)}
+function q(v){const e=document.getElementById('kd-t');if(e){const emp=(()=>{try{const J=Work.activeJobs();return J[0]&&J[0].employer||''}catch(x){return''}})();e.value=v+(emp&&!/payday/i.test(v)?' — '+emp:'');e.focus()}}
+function day(n){const d=new Date();d.setDate(d.getDate()+n);const e=document.getElementById('kd-d');if(e)e.value=ymd(d)}
+async function save(cal){const v=id=>(document.getElementById(id)||{}).value||'';const title=txt(v('kd-t'),80),d=v('kd-d'),t=v('kd-tm');
+  const err=m=>{const e=document.getElementById('kd-err');if(e)e.textContent=m};
+  if(!title)return err('Say what it is, like “Orientation”.');if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return err('Pick the day.');
+  const x={id:'kd'+Date.now().toString(36),title,d,t:/^\d{2}:\d{2}$/.test(t)?t:'',l:txt(v('kd-l'),140),n:txt(v('kd-n'),500),at:Date.now()};
+  const L=list().filter(y=>y.d>=ymd(new Date(Date.now()-60*864e5)));L.push(x);await Store.updatePreferences({keyDates:L.slice(-80)});try{haptic('success')}catch(e){}
+  if(cal){Cal.sheet(toEv(x))}else{closeSheet();toast('Saved')}try{Work.paint()}catch(e){}}
+async function del(id){await Store.updatePreferences({keyDates:list().filter(x=>x.id!==id)});try{Work.paint()}catch(e){}toast('Removed')}
+function all(){Cal.sheetMany(upcoming().slice(0,20).map(toEv),'Add your dates to your calendar')}
+return{list,upcoming,card,add,q,day,save,del,all,toEv}})();
+
 
 const IOU=(function(){
 const E=s=>escapeHtml(s);
@@ -14270,7 +14373,7 @@ function tab(t){S.tab=TABS.some(x=>x[0]===t)?t:'overview';try{KV.set('lg_wk_tab'
 function card(title,inner,extra){return`<div class="wk-card"${extra||''}>${title?`<div class="wk-ct">${title}</div>`:''}${inner}</div>`}
 function vOverview(){const c=cfg(),p=c.profile,A=activeJobs(),st=status(),r=last(),m=market(r),open=c.apps.filter(a=>!CLOSED.includes(a.status)),up=upcoming(c).slice(0,5);
   let h=nudgeCard();if(A.length){try{h+=Clock.card()}catch(e){}try{h+=CoBrief.card()}catch(e){}try{h+=ShiftGoal.card()}catch(e){}}
-  h=profileCard()+(()=>{try{const L=activeJobs().filter(j=>!j.addr);return L.length?`<div class="wk-card wk-addr"><div class="wk-ct">Missing address</div><p class="wk-p">${L.map(j=>`<b>${E(j.title||'Your job')}${j.employer?' · '+E(j.employer):''}</b>`).join(', ')} ${L.length===1?'needs its':'need their'} work address — for directions and your resume.</p><button class="mini-btn go" onclick="Jobs.edit('${L[0].id}');setTimeout(()=>{try{Jobs.findAddr()}catch(e){}},350)">✧ Find it for me</button></div>`:''}catch(e){return''}})()+h;
+  h=profileCard()+(()=>{try{const U=KeyDates.upcoming().filter(x=>x.d<=ymd(new Date(Date.now()+14*864e5)));return U.length?KeyDates.card():''}catch(e){return''}})()+(()=>{try{const L=activeJobs().filter(j=>!j.addr);return L.length?`<div class="wk-card wk-addr"><div class="wk-ct">Missing address</div><p class="wk-p">${L.map(j=>`<b>${E(j.title||'Your job')}${j.employer?' · '+E(j.employer):''}</b>`).join(', ')} ${L.length===1?'needs its':'need their'} work address — for directions and your resume.</p><button class="mini-btn go" onclick="Jobs.edit('${L[0].id}');setTimeout(()=>{try{Jobs.findAddr()}catch(e){}},350)">✧ Find it for me</button></div>`:''}catch(e){return''}})()+h;
 
   h+=card('Your work',`<div class="wk-status"><b>${E(statusLbl(st))}</b>${A.length?`<span>${A.length} active job${A.length===1?'':'s'}</span>`:''}</div>
 ${A.slice(0,3).map(j=>`<div class="wk-jrow" onclick="Work.tab('emp')">${logo(j.employer||j.title,34)}<div class="wk-jt"><b>${E(j.title)}</b><small>${E(j.employer||'')}${curPay(j)>0?' · '+E(fmt(curPay(j)))+(j.type==='salary'?'/yr':'/hr'):''}</small></div><span class="chev">›</span></div>`).join('')}
@@ -14466,8 +14569,11 @@ function vSched(){let w={list:[],from:'none'},t=0,key='';try{const d=new Date();
   const inc=Store.incomeSettings||{};let est='';try{const x=Schedule.inputs();if(x&&(x.hourlyRate||inc.hourlyRate))est=fmt(Math.min(40,t)*(x.hourlyRate||inc.hourlyRate)+Math.max(0,t-40)*(x.hourlyRate||inc.hourlyRate)*(Number(inc.overtimeMultiplier)||1.5))}catch(e){}
   return card('This week',`<div class="wk-week">${D.map((d,i)=>{const L=w.list.filter(s=>s.d===i);return`<div class="wk-wd ${L.length?'on':''}"><b>${d}</b>${L.map(s=>`<small>${E(tLbl(s.s).replace(':00',''))}–${E(tLbl(s.e).replace(':00',''))}${s.j&&J.length>1?'<i>'+E(jn(s.j))+'</i>':''}</small>`).join('')||'<small class="wk-muted">off</small>'}</div>`}).join('')}</div>
 <div class="wk-stats"><div><b>${t%1?t.toFixed(2):t}</b><small>hours</small></div><div><b>${Math.max(0,t-40)%1?Math.max(0,t-40).toFixed(2):Math.max(0,t-40)}</b><small>overtime</small></div><div><b>${est||'–'}</b><small>before tax (est.)</small></div></div>${w.from==='usual'?'<div class="fx-hint">This is your usual week. Edit it to make this week its own.</div>':''}
-<div class="wk-btns"><button class="mini-btn go" onclick="Schedule.open(0)">Edit schedule</button><button class="mini-btn" onclick="Grid.scan()">📷 Scan a schedule</button></div>`)+
+<div class="wk-btns"><button class="mini-btn go" onclick="Schedule.open(0)">Edit schedule</button><button class="mini-btn" onclick="Grid.scan()">📷 Scan a schedule</button>${w.list.length?`<button class="mini-btn" onclick="Work.weekToCal('${key}')">📅 Add this week to my calendar</button>`:''}</div>`)+(()=>{try{return KeyDates.card()}catch(e){return''}})()+
   card('Your name on schedules',`<p class="wk-p">A posted schedule may list you as “Mike A.” or “Anderson, M”. Add the ways your name appears so a scan can find your row. A name match is only a suggestion — you always confirm it.</p><div class="chips">${namesFor().map(n=>`<span class="chip selected">${E(n)}</span>`).join('')}</div><button class="mini-btn" onclick="Work.profile('names')">Edit names</button>`)}
+function weekToCal(key){let w={list:[]};try{w=Schedule.week(key)}catch(e){}const J=activeJobs(),m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(key||'');if(!m)return;
+  const L=w.list.map(x=>{const d=new Date(+m[1],+m[2]-1,+m[3]+x.d),j=J.find(y=>y.id===x.j)||J[0]||{};return{title:'Work'+(j.employer?' — '+j.employer:j.title?' — '+j.title:''),date:ymd(d),time:x.s,end:x.e,loc:j.addr||'',note:(j.title||'')+(j.phone&&!j.phoneBad?'\n'+j.phone:''),alarm:60}}).filter(o=>o.date>=today());
+  Cal.sheetMany(L,'Add this week’s shifts')}
 function namesFor(){const p=cfg().profile,out=[];[p.name,p.full].concat(p.aliases,p.schedNames).forEach(n=>{n=txt(n,40);if(n&&!out.some(x=>x.toLowerCase()===n.toLowerCase()))out.push(n)});try{const u=Social.user(me);if(u&&u.displayName&&!out.some(x=>x.toLowerCase()===String(u.displayName).toLowerCase()))out.push(String(u.displayName))}catch(e){}return out}
 
 /* work profile (progressive: nothing is required) */
@@ -14591,7 +14697,7 @@ function chat(t){const s=String(t||'').toLowerCase();
 
 /* boot: keep the pay in step once the account is loaded */
 try{Bus.on&&Bus.on('vault',()=>{})}catch(e){}
-return{pt:ptGet,setAge,autoProfile,profileCard,logo,nudges,nudgeDone,quickParse,here,more,backSay,askBack,compareApps,lane,tidy,quitAll,render,paint,tab,cfg,save,status,activeJobs,pastJobs,curPay,syncPay,setSyncPay,jobSaved,search,refresh,go,filt,ind,url,detail,saveJob,addTrack,apply,applied,askAbout,
+return{pt:ptGet,weekToCal,setAge,autoProfile,profileCard,logo,nudges,nudgeDone,quickParse,here,more,backSay,askBack,compareApps,lane,tidy,quitAll,render,paint,tab,cfg,save,status,activeJobs,pastJobs,curPay,syncPay,setSyncPay,jobSaved,search,refresh,go,filt,ind,url,detail,saveJob,addTrack,apply,applied,askAbout,
   appFilter,appForm,appSave,jobMenu,useEmp,app,setSt,hire,note,delApp,toCal,events,go2,setStatus,endJob,endSave,endJobAt,rehire,usePay,newJob,empForm,empSave,empDel,
   pickChip,quickSave,profile,profileSave,rememberName,namesFor,market,facts,payOf,ageOf,filtered,last,ACT_HELP,forAI,aiCheck,aiDescribe,aiRun,chat,STATUS,APP_ST,_s:()=>S,_reset:()=>{S.res=null;S.err='';S.q=null;try{KV.set(LAST,'')}catch(e){}}}})();
 /* ═══ 4.7.0 — the pinned top (Cash App style), the shift clock, company research, and your cards ═══ */
@@ -14614,7 +14720,9 @@ function html(mode){if(!me)return'';let snap;try{snap=Store.getSnapshot()}catch(
   return`<div class="tp" id="tp" data-mode="${mode}"><div class="tp-row"><button type="button" class="tp-cash" onclick="Places.open()" aria-label="Available cash ${E(fmt(snap.available))}. Tap to see where your money is"><small>Available</small><b class="cfx cfx-${fx()} ${fcCls()}" style="--cfs:${(()=>{const n=fmt(snap.available).length;return n<=7?34:n<=9?30:n<=11?25:21})()}px;${fcStyle()}" ${PER?'':`data-roll="${snap.available}" data-rid="tp-bal"`}>${PER?wave(fmt(snap.available),fx()):fmt(snap.available)}</b>${snap.saved>0.004?`<span>Savings ${fmt(snap.saved)}</span>`:`<span>Cash</span>`}</button>${jobTile(j,mode)}</div>
 <div class="tp-acts">${acts.map(actBtn).join('')}<button type="button" class="tp-a tp-a-ed" onclick="TopPin.custom('acts')" aria-label="Customize quick actions and cash style"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button></div></div>`}
 /* it shrinks a little once you scroll, like Cash App's balance */
-let wired=false;function wire(){if(wired)return;wired=true;let raf=0;window.addEventListener('scroll',()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const t=document.getElementById('tp');if(t)t.classList.toggle('tp-small',window.scrollY>60)})},{passive:true})}
+let wired=false;function wire(){if(wired)return;wired=true;let raf=0;window.addEventListener('scroll',()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const t=document.getElementById('tp');if(!t)return;const y=window.scrollY,sm=t.classList.contains('tp-small');
+  /* 4.8.2: a gap between shrinking and growing, and never on a page too short to scroll past it. Without it, shrinking the bar could shorten the page, which un-shrank it, over and over (the Windows freeze) */
+  const room=document.documentElement.scrollHeight-window.innerHeight;const want=sm?y>24:(y>96&&room>320);if(want!==sm)t.classList.toggle('tp-small',want)})},{passive:true})}
 function paint(){const t=document.getElementById('tp');if(!t)return;const m=t.dataset.mode;const d=document.createElement('div');d.innerHTML=html(m);const n=d.firstElementChild;if(n){if(t.classList.contains('tp-small'))n.classList.add('tp-small');t.replaceWith(n)}}
 /* animations for your cash number */
 function fx(){try{const v=(Store.preferences||{}).cashFx;return FX.some(f=>f[0]===v)?v:'none'}catch(e){return'none'}}
@@ -14645,6 +14753,7 @@ ${avail.length&&cur.length<6?`<div class="field-label" style="margin:14px 0 8px"
     body=`<p class="sheet-sub">How your balance looks at the top. Colour works with every style.</p>
 <div class="field-label" style="margin:0 0 8px">Colour</div><div class="cfx-cols">${[['auto','Style’s own',''],['theme','Match theme','var(--green)']].concat(SW.map(h=>[h,'',h])).map(([k,l,c])=>`<button type="button" class="cfx-sw ${fc===k?'on':''} ${l?'cfx-sw-l':''}" aria-label="${E(l||k)}" aria-pressed="${fc===k}" onclick="TopPin.setFxC('${k}')" ${c?`style="--sw:${c}"`:''}>${l?`<i></i>${E(l)}`:''}</button>`).join('')}<label class="cfx-sw cfx-sw-l cfx-sw-pick ${/^#/.test(fc)&&!SW.includes(fc)?'on':''}"><i style="--sw:${/^#/.test(fc)?fc:'#ff6ad5'}"></i>Custom<input type="color" value="${/^#/.test(fc)?fc:'#ff6ad5'}" onchange="TopPin.setFxC(this.value)" aria-label="Pick your own colour"></label></div>
 <button type="button" class="set-row cfx-money ${(()=>{try{return Particles.cfg().style==='money'}catch(e){return false}})()?'on':''}" onclick="TopPin.money()"><span><b>💸 Falling money background</b><small class="sec-row-sub" style="display:block">More money, more bills falling</small></span><span class="cfx-tg" aria-hidden="true"></span></button>
+<div class="field-label" style="margin:16px 0 8px">Effects on this device</div><div class="segmented" role="tablist">${[['auto','Auto'],['off','All effects'],['on','Smooth mode']].map(([k,l])=>`<button type="button" class="seg ${Smooth.pref()===k?'active':''}" onclick="Smooth.set('${k}');TopPin.custom('cash')">${l}</button>`).join('')}</div><div class="fx-hint">Smooth mode turns off blur and moving effects so slower computers don’t freeze.${Smooth.on()?' On now.':''}</div>
 <div class="field-label" style="margin:16px 0 8px">Style</div><div class="cfx-grid">${FX.map(f=>`<button type="button" class="cfx-opt ${fx()===f[0]?'on':''}" onclick="TopPin.setFx('${f[0]}')"><b class="cfx cfx-${f[0]} ${fcCls()}" style="${fcStyle()}">${wave(amt,f[0])}</b><small>${f[1]}</small></button>`).join('')}</div>`}
   else{const wa=Mode.workAcc();body=`<p class="sheet-sub">Work has its own look so it feels like its own app. Pick its colour.</p><div class="cfx-cols">${Mode.WORK_SW.map(([h,l])=>`<button type="button" class="cfx-sw cfx-sw-l ${wa.k===h?'on':''}" onclick="Mode.setWorkAcc('${h}')"><i style="--sw:${h==='theme'?'var(--fin-acc,#30d158)':h}"></i>${E(l)}</button>`).join('')}<label class="cfx-sw cfx-sw-l cfx-sw-pick ${wa.custom?'on':''}"><i style="--sw:${wa.hex}"></i>Custom<input type="color" value="${wa.hex}" onchange="Mode.setWorkAcc(this.value)" aria-label="Pick your own Work colour"></label></div>`}
   openSheet(`<div class="sheet-title">Customize</div><div class="segmented" role="tablist" style="margin:4px 0 14px">${tabs.map(t=>`<button type="button" role="tab" class="seg ${cTab===t[0]?'active':''}" aria-selected="${cTab===t[0]}" onclick="TopPin.custom('${t[0]}')">${t[1]}</button>`).join('')}</div>${body}`)}
@@ -14810,6 +14919,21 @@ function floating(){const L=list();if(!L.length)return`<div class="fl-wrap" styl
   return`<div class="fl-wrap" onclick="Wallet.open()" role="button" tabindex="0" aria-label="Your cards (${L.length}). Tap to open">${L.slice(0,3).map((c,i)=>`<div class="fl-c" style="--i:${i};--n:${Math.min(L.length,3)}">${face(c)}</div>`).join('')}</div>`}
 return{open,edit,f,save,del,card,list,spin,floating}})();
 
+/* ═══ 4.8.2 Smooth mode: if this device can't keep up (slow laptops, some Windows PCs), switch off the expensive effects —
+   glass blur, glowing/animated cash, floating cards — and slow the background. Auto, or forced on/off per device. ═══ */
+const Smooth=(function(){const K='lg_smooth';
+const pref=()=>{try{return KV.get(K)||'auto'}catch(e){return'auto'}};
+let auto=false;try{auto=KV.get(K+'_hit')==='1'}catch(e){}
+function apply(){const p=pref(),on=p==='on'||(p==='auto'&&auto);document.documentElement.classList.toggle('lite',on);return on}
+function sample(ms){if(pref()!=='auto'||auto||document.hidden)return;let n=0,slow=0,last=0;const t0=performance.now();
+  const f=t=>{if(document.hidden)return;if(last){const d=t-last;n++;if(d>45)slow++}last=t;if(t-t0<ms)requestAnimationFrame(f);else done()};
+  const done=()=>{if(n<20)return;const fps=n/(ms/1000);if(fps<32||slow/n>.25){auto=true;try{KV.set(K+'_hit','1')}catch(e){}apply();try{Particles.sync()}catch(e){}try{toast('Smooth mode on — fewer effects so this device keeps up. Change it in Customize.')}catch(e){}}};
+  requestAnimationFrame(f)}
+function set(v){try{KV.set(K,v);if(v!=='auto'){KV.del(K+'_hit');auto=false}}catch(e){}apply();try{haptic('select')}catch(e){}}
+function on(){return document.documentElement.classList.contains('lite')}
+function boot(){apply();setTimeout(()=>sample(4000),2500)}
+return{boot,sample,set,pref,on,apply}})();
+
 /* ═══ FINANCE ⇄ WORK (4.3.0)
    Hold the Home button (or right-click it on a computer) and a bubble rises with the two sides of the app: Finance ($) and
    Work (the briefcase). Pick one and the Home button becomes that side — tapping it takes you there, the icon and label
@@ -14829,7 +14953,7 @@ function paintBtn(flip){const b=btn();if(!b)return;const m=mode(),ic=b.querySele
 function set(m,o){o=o||{};m=m==='work'?'work':'finance';const was=mode();if(was!==m&&!o.instant&&canAnim()){close();swipe(m,()=>go(m,o,was,true));return}go(m,o,was,false)}
 function go(m,o,was,swiped){try{KV.set(K,m)}catch(e){}close();paintBtn(was!==m&&!swiped);if(m==='work'&&o.tab){try{Work._s().tab=o.tab}catch(e){}}
   try{haptic(was!==m?'heavy':'select')}catch(e){}const t=m==='work'?'work':'home';if(currentTab===t){try{render()}catch(e){}window.scrollTo(0,0)}else switchTab(t);
-  if(was!==m&&!swiped)bubble(m);tipDone()}
+  if(was!==m&&!swiped)bubble(m);tipDone();if(was!==m)setTimeout(()=>{try{Smooth.sample(3000)}catch(e){}},1200)}
 const canAnim=()=>{try{return!Look.still()&&!matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
 /* Work's own colour (it feels like its own app); "theme" keeps your Finance colour */
 const WORK_SW=[['#5e8bff','Indigo'],['#2ec4b6','Teal'],['#ff9f0a','Orange'],['#bf5af2','Purple'],['#ff375f','Red'],['theme','Same as Finance']];
@@ -15588,11 +15712,11 @@ try{await Promise.race([Cloud.boot(),new Promise(r=>setTimeout(r,9000))])}catch(
 try{Accounts.restore();if(me){Store.loadUser();applyAppearance();seedSeen();try{FinSync.boot().then(()=>setTimeout(()=>{try{SyncUI.maybeAsk();SyncUI.installedHint()}catch(e){}},6000)).catch(()=>{})}catch(e){}}}catch(e){console.error(e);me=null}
 Store.subscribe(()=>{try{Look.sync()}catch(e){}});Backend.subscribe(()=>{if(Cloud.on())return;reloadDB();migrateDB(db);Bus.emit('db',{local:false})});Bus.on('db',onDb);Bus.on('cloud',updateCloudStat);Store.subscribe(scheduleRender);
 try{const t=sessionStorage.getItem('logostics_tab');if(t&&['home','goals','analytics','friends','settings','notifications','profile','work'].includes(t))currentTab=t;else if(me){currentTab=NavUI.startTab();/* open on the side you were on: Work if you left in Work, Finance if Finance */if((currentTab==='home'||currentTab==='work')&&typeof Mode!=='undefined')currentTab=Mode.mode()==='work'?'work':'home'}}catch(e){}
-try{Mode.boot()}catch(e){console.error(e)}
+try{Mode.boot()}catch(e){console.error(e)}try{Smooth.boot()}catch(e){}
 navSync();
 if(me){Lock.startup();Gate.start();try{Notify.boot()}catch(e){}try{Telemetry.session()}catch(e){}try{Onboard.start(false)}catch(e){}}
 render();try{AndroidX.init();Music.boot();try{Veil.boot()}catch(e){console.error(e)}try{Particles.boot()}catch(e){console.error(e)}Rating.boot();AutoSort.boot();Stocks.boot();Jobs.boot();PaySharing.boot();ThemeKit.boot();LaunchAction.check()}catch(e){console.error(e)}try{Rescue.boot()}catch(e){console.error(e)}try{IP.pump()}catch(e){}try{VacUI.boot();if(me)Vac.touch()}catch(e){console.error(e)}if(me){beat();if(PatchNotes.hasUnseenVersion()&&Store.preferences.lastSeenVersion)setTimeout(openPatchNotes,800);else if(!Store.preferences.lastSeenVersion)PatchNotes.markSeen()}
-setInterval(beat,30000);setInterval(presenceTick,20000);
+setInterval(()=>{if(!document.hidden)beat()},45000);setInterval(()=>{if(!document.hidden)presenceTick()},20000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me){beat();scheduleRender()}});
 window.addEventListener('pagehide',()=>{Cloud.bye();if(me&&db.users[me]&&!Cloud.on()){try{commit(d=>{if(d.users[me])d.users[me].online=false},{kind:'presence'})}catch(e){}}});
 setTimeout(()=>NotificationScheduler.checkAndFire().catch(()=>{}),2000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)NotificationScheduler.checkAndFire().catch(()=>{})});

@@ -2097,6 +2097,32 @@ body.mode-work .mini-btn.go,body.mode-work .btn-primary{background:var(--green);
 .jb-ad-hit b{font-size:14px}.jb-ad-hit span{font-size:13.5px}.jb-ad-hit small{font-size:12px;color:var(--gray-400)}
 .jb-ad-hit:active{background:rgba(var(--acc-rgb),.15)}
 .jb-bad{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;cursor:pointer}.jb-bad input{width:18px;height:18px;accent-color:var(--green)}
+
+/* 4.8.2 Smooth mode */
+html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.lite .tp,html.lite #bottom-nav,html.lite .top-header,html.lite .sheet,html.lite #sheet-overlay .sheet{background-color:var(--bg)!important}
+html.lite .cfx,html.lite .cfx i,html.lite .cfx::before,html.lite .cfx::after,html.lite .fl-c,html.lite .fl-wrap *,html.lite .wc3-card,html.lite .md-hold::after{animation:none!important}
+html.lite .cfx{filter:none!important}
+html.lite .cfx-type i{opacity:1!important}
+html.lite .wk-card,html.lite .social-card,html.lite .card{box-shadow:none!important}
+.jb-qc{margin-top:8px;gap:6px}.jb-qc .chip{padding:6px 11px;font-size:13px}
+.jb-quick .field-input{border:1.5px dashed rgba(var(--acc-rgb),.55);background:rgba(var(--acc-rgb),.06)}
+.jb-save-bar{position:sticky;bottom:0;padding:10px 0 calc(6px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 35%);z-index:2}
+.cal-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;width:100%}
+.cal-b{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 6px;border-radius:999px;border:0;background:rgba(127,127,127,.14);color:inherit;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.cal-b:active{transform:scale(.97)}
+.cal-ic{width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#fff;flex:none}
+.cal-g{background:conic-gradient(#4285f4 0 25%,#34a853 0 50%,#fbbc05 0 75%,#ea4335 0)}.cal-o{background:#0a64c8}
+.cal-a{background:#fff;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);position:relative}.cal-a::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;border-radius:6px 6px 0 0;background:#ff3b30}
+.cal-big{display:flex;flex-direction:column;gap:8px}
+.cal-bb{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border-radius:14px;border:1px solid rgba(127,127,127,.25);background:rgba(127,127,127,.08);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.cal-bb .cal-ic{width:34px;height:34px;border-radius:10px;font-size:18px}.cal-bb .cal-a::before{height:9px;border-radius:10px 10px 0 0}
+.cal-bb b{display:block;font-size:15px}.cal-bb small{display:block;font-size:12.5px;color:var(--gray-400)}
+.cal-li{display:flex;flex-direction:column;padding:10px 0;border-bottom:1px solid rgba(127,127,127,.15)}.cal-li b{display:block;font-size:14px}.cal-li small{font-size:12.5px;color:var(--gray-400)}
+.cal-row-sm .cal-b{padding:4px 9px 4px 4px;font-size:12px}
+.kd-row{position:relative;display:flex;flex-wrap:wrap;padding:10px 28px 10px 0;border-bottom:1px solid rgba(127,127,127,.15)}.kd-row:last-of-type{border-bottom:0}
+.kd-t b{display:block;font-size:15px}.kd-t small{display:block;font-size:12.5px;color:var(--gray-400)}.kd-t .kd-n{color:inherit;opacity:.8;margin-top:2px}
+.kd-x{position:absolute;top:8px;right:0;width:26px;height:26px;border-radius:50%;border:0;background:rgba(127,127,127,.15);color:inherit;font-size:16px;line-height:1;cursor:pointer}
 </style>
 </head>
 <body>
@@ -2116,6 +2142,6 @@ body.mode-work .mini-btn.go,body.mode-work .btn-primary{background:var(--green);
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)"><div class="sheet" id="sheet" onclick="event.stopPropagation()"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
 <div class="celebration-overlay" id="celebration-overlay"><div class="celebration-burst" id="celebration-burst">✓</div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-<script src="app.js?v=4.8.1"></script>
+<script src="app.js?v=4.8.2"></script>
 </body>
 </html>

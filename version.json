@@ -1,10 +1,10 @@
 {
- "version": "4.8.1",
- "build": "2026-11-23T15:19:25Z",
- "title": "Logostics 4.8.1",
+ "version": "4.8.2",
+ "build": "2026-11-23T19:31:18Z",
+ "title": "Logostics 4.8.2",
  "notes": [
-  "Jobs need a work address — Find it for me fills it in",
-  "Google Maps / Apple Maps lookup, and mark a number that doesn't work"
+  "One-tap Google / Apple / Outlook calendar, important dates, faster job entry",
+  "Privacy mode stays on across devices; Smooth mode for slower computers"
  ],
  "announce": false,
  "min": ""
