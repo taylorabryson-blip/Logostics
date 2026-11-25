@@ -2140,6 +2140,37 @@ html.lite .wk-card,html.lite .social-card,html.lite .card{box-shadow:none!import
 .wk-dbb{display:flex;align-items:center;gap:12px;width:100%;padding:14px;margin:0 0 12px;border-radius:16px;border:1px solid rgba(var(--acc-rgb),.3);background:linear-gradient(135deg,rgba(var(--acc-rgb),.16),rgba(var(--acc-rgb),.04));color:inherit;font:inherit;text-align:left;cursor:pointer}
 .wk-dbi{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--green);color:var(--on-accent);font-size:18px;flex:none}.wk-dbb b{display:block;font-size:15.5px}.wk-dbb small{display:block;font-size:12.5px;color:var(--gray-400)}
 .oe-bar{margin:2px 0 14px}
+
+/* 4.8.5 shift counter */
+.sh-hero{position:relative;overflow:hidden;border-radius:22px;padding:18px 18px 14px;margin:0 0 14px;background:radial-gradient(120% 90% at 100% 0%,rgba(var(--acc-rgb),.30),transparent 60%),linear-gradient(160deg,rgba(var(--acc-rgb),.14),rgba(127,127,127,.06));border:1px solid rgba(var(--acc-rgb),.35)}
+.sh-live{border-color:rgba(48,209,88,.6);background:radial-gradient(120% 90% at 100% 0%,rgba(48,209,88,.32),transparent 60%),linear-gradient(160deg,rgba(48,209,88,.14),rgba(127,127,127,.06))}
+.sh-lbl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);display:flex;align-items:center;gap:7px}
+.sh-dot{width:9px;height:9px;border-radius:50%;background:#30d158;box-shadow:0 0 0 0 rgba(48,209,88,.6);animation:shPulse 1.6s infinite;flex:none}
+@keyframes shPulse{70%{box-shadow:0 0 0 9px rgba(48,209,88,0)}100%{box-shadow:0 0 0 0 rgba(48,209,88,0)}}
+.sh-cash{font-size:48px;font-weight:900;letter-spacing:-.04em;line-height:1.05;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.sh-live .sh-cash{color:#30d158;text-shadow:0 0 24px rgba(48,209,88,.35)}
+.sh-off{font-size:40px}.sh-cash small{font-size:15px;font-weight:600;letter-spacing:0;color:var(--gray-400)}
+.sh-sub{font-size:14px;color:var(--gray-400);font-variant-numeric:tabular-nums}
+.sh-bar{height:6px;border-radius:9px;background:rgba(127,127,127,.2);margin:10px 0 2px;overflow:hidden}.sh-bar i{display:block;height:100%;background:#30d158;border-radius:9px;transition:width 1s linear}
+.sh-btns{display:flex;gap:8px;margin-top:12px}.sh-btns .btn{flex:1;margin:0}
+.sh-in{font-size:17px}
+.sh-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.sh-stats>div{background:rgba(127,127,127,.1);border-radius:12px;padding:9px 8px;text-align:center}
+.sh-stats b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.sh-stats small{font-size:11px;color:var(--gray-400)}.sh-stats .up{color:#30d158}.sh-stats .dn{color:#ff453a}
+.sh-warn,.sh-ot{margin-top:10px;padding:9px 12px;border-radius:12px;font-size:13.5px;background:rgba(255,159,10,.15);color:#ff9f0a;font-weight:600}.sh-ot.near{background:rgba(127,127,127,.12);color:inherit;font-weight:500}
+.sh-ask{margin-top:12px;padding:12px;border-radius:14px;background:rgba(127,127,127,.12)}.sh-ask b{display:block;font-size:15px}.sh-ask span{font-size:13px;color:var(--gray-400)}.sh-ask .sh-btns{margin-top:8px}
+.sh-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--gray-400)}.sh-foot span:last-child{margin-left:auto}
+.sh-link{border:0;background:none;color:var(--green);font:inherit;font-weight:700;padding:0;cursor:pointer}
+.sh-empty .sh-lbl{margin-bottom:4px}
+.sh-strip{display:flex;align-items:center;gap:10px;width:100%;margin:0 0 12px;padding:10px 14px;border-radius:14px;border:1px solid rgba(48,209,88,.45);background:rgba(48,209,88,.12);color:inherit;font:inherit;text-align:left;cursor:pointer}.sh-strip b{color:#30d158;font-variant-numeric:tabular-nums}.sh-strip span:last-child{font-size:13px;color:var(--gray-400)}
+/* opportunity check */
+.dc-item{padding:10px 0;border-bottom:1px solid rgba(127,127,127,.15)}.dc-item b{display:block;font-size:15px}.dc-item small{display:block;font-size:13px;color:var(--gray-400);margin:2px 0 6px}
+.dc-list{margin-top:8px}.dc-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer}.dc-row .wk-jt small{white-space:normal}
+.dc-tag{flex:none;font-size:11px;font-weight:800;padding:4px 8px;border-radius:99px;white-space:nowrap}
+.dc-go{background:rgba(48,209,88,.18);color:#30d158}.dc-maybe{background:rgba(255,214,10,.18);color:#e6b800}.dc-same{background:rgba(127,127,127,.2)}.dc-less{background:rgba(255,69,58,.16);color:#ff6961}.dc-ask{background:rgba(10,132,255,.16);color:#409cff}
+.prep-i{display:flex;gap:10px;align-items:flex-start;padding:7px 0;font-size:14px;cursor:pointer}.prep-i input{width:18px;height:18px;margin-top:1px;accent-color:var(--green);flex:none}.prep-i input:checked+span{text-decoration:line-through;opacity:.55}
+.wk-cust{display:block;width:100%;margin:6px 0 4px;padding:12px;border-radius:14px;border:1px dashed rgba(127,127,127,.4);background:none;color:var(--gray-400);font:inherit;font-weight:700;cursor:pointer}
+html.lite .sh-dot{animation:none}
+@media (prefers-reduced-motion:reduce){.sh-dot{animation:none}}
 </style>
 </head>
 <body>
@@ -2159,6 +2190,6 @@ html.lite .wk-card,html.lite .social-card,html.lite .card{box-shadow:none!import
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)"><div class="sheet" id="sheet" onclick="event.stopPropagation()"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
 <div class="celebration-overlay" id="celebration-overlay"><div class="celebration-burst" id="celebration-burst">✓</div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-<script src="app.js?v=4.8.4"></script>
+<script src="app.js?v=4.8.5"></script>
 </body>
 </html>
