@@ -1,10 +1,9 @@
 {
- "version": "4.8.5",
- "build": "2026-11-25T00:50:44Z",
- "title": "Logostics 4.8.5",
+ "version": "4.8.6",
+ "build": "2026-11-26T01:39:28Z",
+ "title": "Logostics 4.8.6",
  "notes": [
-  "The shift counter: your pay counting up live, pinned to the top of Work",
-  "Opportunity check, interview reminders, customizable Work, and more"
+  "Undo withdrawals — one or all, any time"
  ],
  "announce": false,
  "min": ""
